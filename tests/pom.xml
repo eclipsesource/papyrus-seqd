@@ -13,29 +13,10 @@
 		<module>org.eclipse.papyrus.uml.diagram.sequence.figure.tests</module>
 	</modules>
 	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<outputDirectory>bin</outputDirectory>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.12.4</version>
-				<executions>
-					<execution>
-						<id>test</id>
-						<phase>test</phase>
-						<configuration>
-							<includes>
-								<include>**/*Test.java</include>
-							</includes>
-							<excludes>
-								<exclude>**/*UITest.class</exclude>
-							</excludes>
-						</configuration>
-						<goals>
-							<goal>test</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+			<!-- tycho surefire include/exclude pattern -->
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
@@ -43,11 +24,45 @@
 				<configuration>
 					<useUIHarness>true</useUIHarness>
 					<includes>
-						<include>**/*UITest.class</include>
+						<include>**/*UITest.java</include>
 					</includes>
+					<testFailureIgnore>false</testFailureIgnore>
 				</configuration>
+			</plugin>
+			<!-- maven surefire include/exclude pattern -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${mav-surefire-version}</version>
+				<executions>
+					<execution>
+						<id>test</id>
+						<phase>test</phase>
+						<configuration>
+							<testClassesDirectory>${project.build.outputDirectory}</testClassesDirectory>
+							<includes>
+								<include>**/*Test.java</include>
+							</includes>
+							<excludes>
+								<exclude>**/*UITest.java</exclude>
+							</excludes>
+							<testFailureIgnore>false</testFailureIgnore>
+						</configuration>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit-version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 	<packaging>pom</packaging>
 </project>
