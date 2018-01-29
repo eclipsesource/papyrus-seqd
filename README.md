@@ -1,1 +1,1 @@
-# Papyrus Sequence Diagrams
+# Papyrus Sequence Diagrams [![Build Status](https://travis-ci.org/eclipsesource/papyrus-seqd.svg?branch=master)](https://travis-ci.org/eclipsesource/papyrus-seqd)
