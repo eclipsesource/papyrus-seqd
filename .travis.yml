@@ -17,5 +17,5 @@ before_install:
 install: true
 
 script:
- - mvn -f releng/org.eclipse.papyrus.uml.diagram.sequence.releng/pom.xml clean verify
+ - mvn -f releng/org.eclipse.papyrus.uml.diagram.sequence.releng/pom.xml clean verify -Dtycho.localArtifacts=ignore
 
