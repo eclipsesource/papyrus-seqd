@@ -17,5 +17,5 @@ before_install:
 install: true
 
 script:
- - cd /releng/org.eclipse.papyrus.uml.diagram.sequence.releng && mvn clean verify
+ - mvn -f releng/org.eclipse.papyrus.uml.diagram.sequence.releng/pom.xml clean verify
 

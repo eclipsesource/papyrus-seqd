@@ -1,0 +1,9 @@
+bin/
+target/
+*.java._trace
+*.pyc
+.DS_Store
+*.xtendbin
+*~
+tests/**/.metadata/
+**/src/site/resources/images/rcptt-screenshots
