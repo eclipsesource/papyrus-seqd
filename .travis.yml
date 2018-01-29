@@ -1,0 +1,21 @@
+language: java
+
+jdk:
+  - oraclejdk8
+
+cache:
+  directories:
+  - "$HOME/.m2/repository"
+
+env:  
+  global:  
+    - DISPLAY=:99.0
+
+before_install:
+   - sh -e /etc/init.d/xvfb start - sleep 10
+
+install: true
+
+script:
+ - cd /releng/org.eclipse.papyrus.uml.diagram.sequence.releng && mvn clean verify
+

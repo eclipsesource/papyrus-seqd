@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project>
+	<artifactId>org.eclipse.papyrus.uml.diagram.sequence.releng</artifactId>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.eclipse.papyrus.uml.diagram.sequence</groupId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<properties>
+		<tycho-version>1.0.0</tycho-version>
+		<tycho-extras-version>1.0.0</tycho-extras-version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<mav-surefire-version>2.20</mav-surefire-version>
+		<junit-version>4.11</junit-version>
+		<jacoco-version>0.7.9</jacoco-version>
+		<findbugs.version>3.0.1</findbugs.version>
+		<!-- Platform-specific command-line arguments for tests. -->
+		<baseTestArgLine></baseTestArgLine>
+	</properties>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>eclipse-maven-releases</id>
+			<url>https://repo.eclipse.org/content/repositories/releases/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<modules>
+		<module>../org.eclipse.papyrus.uml.diagram.sequence.targetplatform</module> 
+		<module>../../plugins/org.eclipse.papyrus.uml.diagram.sequence.modelexplorer</module>
+	</modules>
+
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<outputDirectory>bin</outputDirectory>
+
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-versions-plugin</artifactId>
+				<version>${tycho-version}</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<extensions>true</extensions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<resolver>p2</resolver>
+					<pomDependencies>consider</pomDependencies>
+					<allowConflictingDependencies>true</allowConflictingDependencies>
+					<includePackedArtifacts>true</includePackedArtifacts>
+					<target>
+						<artifact>
+							<groupId>org.eclipse.papyrus.uml.diagram.sequence</groupId>
+							<artifactId>org.eclipse.papyrus.uml.diagram.sequence.targetplatform</artifactId>
+							<version>${project.version}</version>
+						</artifact>
+					</target>
+				</configuration>
+			</plugin>
+
+			<!-- enable source bundle generation -->
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-source-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<executions>
+					<execution>
+						<id>plugin-source</id>
+						<goals>
+							<goal>plugin-source</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-compiler-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<useProjectSettings>true</useProjectSettings>
+					<logEnabled>true</logEnabled>
+					<logDirectory>${project.build.directory}/logfiles</logDirectory>
+					<log>xml</log>
+				</configuration>
+			</plugin>
+
+			<!-- We need the 'argLine' property always to be defined, otherwise Tycho 
+				test execution fails with a literal '${argLine}' on the command-line. But, 
+				we cannot define it statically in the Maven <properties> section because 
+				then the second pass for replacement of dynamic properties doesn't happen, 
+				so Jacoco's alteration of the argLine property would be for naught. Therefore, 
+				we define the property initially in a dynamic way based on the statically 
+				defined base value. -->
+			<plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>groovy-maven-plugin</artifactId>
+				<version>2.0</version>
+				<executions>
+					<execution>
+						<id>add-dynamic-properties</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<source>
+								project.properties.argLine = '${baseTestArgLine}'
+							</source>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+	</build>
+	<profiles>
+	<profile>
+			<id>findBugs</id> <!-- Analysis profile. Takes +1h -->
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>findbugs-maven-plugin</artifactId>
+						<version>${findbugs.version}</version>
+						<configuration>
+							<findbugsXmlOutput>true</findbugsXmlOutput>
+							<failOnError>false</failOnError>
+							<maxHeap>1024</maxHeap>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-p2-plugin</artifactId>
+						<version>${tycho-version}</version>
+						<executions>
+							<execution>
+								<id>attach-p2-metadata</id>
+								<phase>package</phase>
+								<goals>
+									<goal>p2-metadata</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
