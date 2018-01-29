@@ -7,3 +7,4 @@ target/
 *~
 tests/**/.metadata/
 **/src/site/resources/images/rcptt-screenshots
+.vscode
