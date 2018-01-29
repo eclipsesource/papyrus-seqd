@@ -17,9 +17,9 @@
       [Enter License Description here.]
    </license>
 
-   <requires>
-      <import feature="org.eclipse.papyrus.uml.diagram.sequence.feature" version="1.0.0.qualifier" match="compatible"/>
-   </requires>
+   <includes
+         id="org.eclipse.papyrus.uml.diagram.sequence.feature"
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.papyrus.uml.diagram.sequence.contribution"

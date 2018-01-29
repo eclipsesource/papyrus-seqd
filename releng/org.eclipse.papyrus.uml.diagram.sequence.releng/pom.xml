@@ -30,6 +30,7 @@
 
 	<modules>
 		<module>../org.eclipse.papyrus.uml.diagram.sequence.targetplatform</module>
+		<module>../org.eclipse.papyrus.uml.diagram.sequence.updatesite</module>
 		<module>../../plugins</module>
 		<module>../../tests</module>
 		<module>../../features</module>
