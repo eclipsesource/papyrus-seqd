@@ -9,7 +9,7 @@ This section provides information for developers, such as the project structure,
 The project is structured in four folders.
 
 * [`features`](features) contains the p2 features as well as the p2 repository configuraitons.
-* [`plugins`](plugins) hosts all plug-ins. Find out more about the [ARCHITECTURE.md](plug-in architecture).
+* [`plugins`](plugins) hosts all plug-ins. Find out more about the [plug-in architecture](ARCHITECTURE.md).
 * [`releng`](releng) encompasses all artifacts related to release engineering, such as the target platform and the maven parent.
 * [`tests`](tests) contains the test plug-ins. Please see below to find out more about the test configuration.
 
