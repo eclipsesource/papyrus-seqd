@@ -19,3 +19,12 @@ install: true
 script:
  - mvn -f releng/org.eclipse.papyrus.uml.diagram.sequence.releng/pom.xml clean verify -Dtycho.localArtifacts=ignore
 
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $github-token
+  keep-history: true
+  local-dir: releng/org.eclipse.papyrus.uml.diagram.sequence.updatesite/target/repository
+  github-url: eclipsesource.com
+  on:
+    branch: master
