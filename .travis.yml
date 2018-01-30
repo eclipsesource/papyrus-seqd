@@ -25,6 +25,5 @@ deploy:
   github-token: $GITHUBTOKEN
   keep-history: true
   local-dir: releng/org.eclipse.papyrus.uml.diagram.sequence.updatesite/target/repository
-  github-url: eclipsesource.com
   on:
     branch: master
