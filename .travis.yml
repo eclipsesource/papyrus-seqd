@@ -22,7 +22,7 @@ script:
 deploy:
   provider: pages
   skip-cleanup: true
-  github-token: $github-token
+  github-token: $GITHUBTOKEN
   keep-history: true
   local-dir: releng/org.eclipse.papyrus.uml.diagram.sequence.updatesite/target/repository
   github-url: eclipsesource.com
