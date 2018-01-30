@@ -1,5 +1,9 @@
 # Papyrus Sequence Diagrams [![Build Status](https://travis-ci.org/eclipsesource/papyrus-seqd.svg?branch=master)](https://travis-ci.org/eclipsesource/papyrus-seqd)
 
+## Installation
+
+At this point, only a nightly built test version is provided. The nightly version can be installed from the following p2 repository: http://github.eclipsesource.com/papyrus-seqd/
+
 ## Developer information
 
 This section provides information for developers, such as the project structure, how to set up tests, and how to build.
