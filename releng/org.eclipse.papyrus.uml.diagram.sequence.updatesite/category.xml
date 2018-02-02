@@ -7,4 +7,11 @@
       <category name="org.eclipse.papyrus.uml.diagram.sequence"/>
    </feature>
    <category-def name="org.eclipse.papyrus.uml.diagram.sequence" label="Papyrus Sequence Diagram"/>
+   <feature url="features/org.eclipse.emf.facade.feature_0.7.0.qualifier.jar" id="org.eclipse.emf.facade.feature" version="0.7.0.qualifier">
+      <category name="org.eclipse.emf.facade"/>
+   </feature>
+   <feature url="features/org.eclipse.emf.facade.uml2.feature_0.7.0.qualifier.jar" id="org.eclipse.emf.facade.uml2.feature" version="0.7.0.qualifier">
+      <category name="org.eclipse.emf.facade"/>
+   </feature>
+   <category-def name="org.eclipse.emf.facade" label="EMF Facade"/>
 </site>
