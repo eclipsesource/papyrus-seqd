@@ -1,6 +1,7 @@
 target "Sequence Diagram" with requirements source 
 
 location oxygen-release "http://download.eclipse.org/releases/oxygen" {
+	org.eclipse.platform.feature.group
 	org.eclipse.m2m.qvt.oml.sdk.feature.group
 	org.eclipse.emf.transaction.sdk.feature.group
 	org.eclipse.xpand.sdk.feature.group
@@ -27,4 +28,9 @@ location orbit "http://download.eclipse.org/tools/orbit/S-builds/S20170804160030
 	com.google.gson.source 2.7.0	
 	org.apache.commons.lang3 3.1.0
 	org.apache.commons.lang3.source 3.1.0
+	
+	// For testing
+	org.junit 4.12.0
+	org.hamcrest.library 1.3.0
+	org.mockito 1.9.5
 }
