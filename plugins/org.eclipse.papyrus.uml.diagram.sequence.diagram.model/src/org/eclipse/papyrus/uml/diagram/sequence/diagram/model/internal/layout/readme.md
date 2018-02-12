@@ -64,7 +64,7 @@ obtainResource.setPosition(new MPosition(beginX, beginY, endX, endY));
 The layout model can now be used to validate and fix the layout, either only for one element or the entire interaction. 
 
 ```java
-if (interaction.areAllYRangesValid()) {
+if (!interaction.areAllYRangesValid()) {
 	for (MElement element : interaction.getElementsWithInvalidYRange()) {
 		element.fixPosition();
 	}
@@ -72,7 +72,7 @@ if (interaction.areAllYRangesValid()) {
 // interaction.areAllYRangesValid() == true
 ```
 
-Fixing the layout will only move the elements to the right place to restore a valid graphical order. If an element is moved, all subsequent elements will automatically be adjusted accordingly. It will leave the elements' heights untouched. With this action, gaps may occur, because elements above will not be moved up. If the client want to achieve that, we can use `MElement.fixPosition()` either on single elements, fragments and their children, or entire interactions.
+Fixing the layout will only move the elements to the right place to restore a valid graphical order. If an element is moved, all subsequent elements will automatically be adjusted accordingly. It will leave the elements' heights untouched. With this action, gaps may occur, because elements above will not be moved up. If the client wants to remove gaps that, we can use `MElement.fixPosition()` on the single element that has a gap to the previous element or on fragments or entire interactions.
 
 ```java
 if (!interaction.isLayoutFreeOfGaps()) {
@@ -80,9 +80,9 @@ if (!interaction.isLayoutFreeOfGaps()) {
 }
 ```
 
-Clients of the layout model may also just modify the model to reflect changes in the semantic model, such as adding elements at a certain position, swapping elements, removing or moving elements. Currently there is no nice API for manipulating the model yet, however, all it has to do is to modify the element tree, as it is currently done using, e.g., `MInteraction.addElement(fragment)` (see above).
+Clients of the layout model may also just manipulate the layout model to reflect changes in the semantic model, such as adding messages or fragments at a certain position, swapping elements, removing or moving elements. Currently there is no nice API for manipulating the model yet, however, all it has to do is to modify the element tree, as it is currently done using, e.g., `MInteraction.addElement(fragment)` (see above).
 
-After the semantic model has been changed, clients may use `interaction.fixPosition()` to compute and assign the corresponding position and adjust the positions of all subsequent elements.  
+After the semantic model has been changed, clients may again use `interaction.fixPosition()` to compute and assign the corresponding position and adjust the positions of all subsequent elements.  
 
 TODO
 ====
