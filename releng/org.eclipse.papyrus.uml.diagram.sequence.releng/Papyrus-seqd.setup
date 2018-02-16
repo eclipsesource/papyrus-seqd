@@ -93,10 +93,25 @@
           xsi:type="predicates:AndPredicate">
         <operand
             xsi:type="predicates:RepositoryPredicate"
-            project="org.eclipse.papyrus.uml.diagram.sequence.contribution"/>
+            project="org.eclipse.papyrus.uml.diagram.sequence.runtime"/>
         <operand
             xsi:type="workingsets:ExclusionPredicate"
-            excludedWorkingSet="//@setupTasks.6/@workingSets.0 //@setupTasks.6/@workingSets.2"/>
+            excludedWorkingSet="//@setupTasks.6/@workingSets.0 //@setupTasks.6/@workingSets.2 //@setupTasks.6/@workingSets.3"/>
+      </predicate>
+    </workingSet>
+    <workingSet
+        name="Papyrus Seqd Tests">
+      <predicate
+          xsi:type="predicates:AndPredicate">
+        <operand
+            xsi:type="predicates:RepositoryPredicate"
+            project="org.eclipse.papyrus.uml.diagram.sequence.runtime"/>
+        <operand
+            xsi:type="workingsets:ExclusionPredicate"
+            excludedWorkingSet="//@setupTasks.6/@workingSets.0 //@setupTasks.6/@workingSets.3"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern=".+\.tests?"/>
       </predicate>
     </workingSet>
     <workingSet
@@ -105,7 +120,7 @@
           xsi:type="predicates:AndPredicate">
         <operand
             xsi:type="predicates:RepositoryPredicate"
-            project="org.eclipse.papyrus.uml.diagram.sequence.diagram.model"/>
+            project="org.eclipse.papyrus.uml.diagram.sequence.releng"/>
         <operand
             xsi:type="workingsets:ExclusionPredicate"
             excludedWorkingSet="//@setupTasks.6/@workingSets.0"/>
