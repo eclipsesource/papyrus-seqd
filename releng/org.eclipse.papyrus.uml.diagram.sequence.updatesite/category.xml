@@ -3,7 +3,7 @@
    <feature url="features/org.eclipse.papyrus.uml.diagram.sequence.contribution.feature_1.0.0.qualifier.jar" id="org.eclipse.papyrus.uml.diagram.sequence.contribution.feature" version="1.0.0.qualifier">
       <category name="org.eclipse.papyrus.uml.diagram.sequence"/>
    </feature>
-   <feature url="features/org.eclipse.papyrus.uml.diagram.sequence.feature_1.0.0.qualifier.jar" id="org.eclipse.papyrus.uml.diagram.sequence.feature" version="1.0.0.qualifier">
+   <feature url="features/org.eclipse.papyrus.uml.diagram.lightweightsequence.feature_1.0.0.qualifier.jar" id="org.eclipse.papyrus.uml.diagram.lightweightsequence.feature" version="1.0.0.qualifier">
       <category name="org.eclipse.papyrus.uml.diagram.sequence"/>
    </feature>
    <category-def name="org.eclipse.papyrus.uml.diagram.sequence" label="Papyrus Sequence Diagram"/>
