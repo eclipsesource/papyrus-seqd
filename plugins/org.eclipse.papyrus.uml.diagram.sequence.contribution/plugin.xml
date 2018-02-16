@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   
+   <extension
+         point="org.eclipse.papyrus.infra.ui.papyrusDiagram">
+      <editorDiagram
+    	    actionBarContributorId="org.eclipse.papyrus.uml.diagram.common.part.UMLDiagramActionBarContributor"
+            factoryClass="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.part.LightweightSequenceDiagramEditorFactory"
+            icon="icons/obj16/Diagram_LightweightSequence.gif">
+      </editorDiagram>
+      <creationCommand
+            creationCommandClass="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.part.CreateLightweightSequenceDiagramCommand"
+            creationCondition="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.part.LightweightSequenceDiagramCreationCondition"
+            icon="icons/obj16/Diagram_LightweightSequence.gif"
+            id="org.eclipse.papyrus.uml.diagram.sequence.runtime.command.CreateLightweightSequenceDiagramCommand"
+            label="Lightweight Sequence Diagram"
+            language="uml">
+      </creationCommand>
+   </extension>
+
+   <extension point="org.eclipse.gmf.runtime.diagram.core.viewProviders" id="view-provider">
+	      <?gmfgen generated="true"?>
+	      <viewProvider class="org.eclipse.papyrus.uml.diagram.sequence.providers.UMLViewProvider">
+	         <Priority name="Lowest"/>
+	         <context viewClass="org.eclipse.gmf.runtime.notation.Diagram" semanticHints="PapyrusUMLSequenceDiagram"/>
+	         <context viewClass="org.eclipse.gmf.runtime.notation.Node" semanticHints="Interaction_Shape,ConsiderIgnoreFragment_Shape,CombinedFragment_Shape,InteractionOperand_Shape,InteractionUse_Shape,Continuation_Shape,Lifeline_Shape,ActionExecutionSpecification_Shape,BehaviorExecutionSpecification_Shape,StateInvariant_Shape,TimeConstraint_Shape,TimeObservation_Shape,DurationConstraint_Shape,DestructionOccurrenceSpecification_Shape,Constraint_Shape,Comment_Shape,DurationConstraint_Shape_CN,DurationObservation_Shape,Gate_Shape"/>
+         	 <context viewClass="org.eclipse.gmf.runtime.notation.Edge" semanticHints="Message_SynchEdge,Message_AsynchEdge,Message_ReplyEdge,Message_CreateEdge,Message_DeleteEdge,Message_LostEdge,Message_FoundEdge,Comment_AnnotatedElementEdge,Constraint_ConstrainedElementEdge,GeneralOrdering_Edge,Constraint_ContextEdge"/>
+	      </viewProvider>
+	</extension>
+
+   <extension point="org.eclipse.gmf.runtime.diagram.ui.editpartProviders" id="ep-provider">
+	      <?gmfgen generated="true"?>
+	      <editpartProvider class="org.eclipse.papyrus.uml.diagram.sequence.providers.UMLEditPartProvider">
+	         <Priority name="Lowest"/>
+	         <object class="org.eclipse.gmf.runtime.notation.Diagram" id="generated-diagram">
+	            <method name="getType()" value="PapyrusUMLSequenceDiagram"/>
+	         </object>
+	         <object class="org.eclipse.gmf.runtime.notation.Node" id="generated-nodes">
+	            <method name="getType()" value="Interaction_Shape,ConsiderIgnoreFragment_Shape,CombinedFragment_Shape,InteractionOperand_Shape,InteractionUse_Shape,Continuation_Shape,Lifeline_Shape,ActionExecutionSpecification_Shape,BehaviorExecutionSpecification_Shape,StateInvariant_Shape,TimeConstraint_Shape,TimeObservation_Shape,DurationConstraint_Shape,DestructionOccurrenceSpecification_Shape,Constraint_Shape,Comment_Shape,DurationConstraint_Shape_CN,DurationObservation_Shape,Gate_Shape"/>
+	         </object>
+	         <object class="org.eclipse.gmf.runtime.notation.Edge" id="generated-links">
+	            <method name="getType()" value="Message_SynchEdge,Message_AsynchEdge,Message_ReplyEdge,Message_CreateEdge,Message_DeleteEdge,Message_LostEdge,Message_FoundEdge,Comment_AnnotatedElementEdge,Constraint_ConstrainedElementEdge,GeneralOrdering_Edge,Constraint_ContextEdge"/>
+	         </object>
+	         <object class="org.eclipse.gmf.runtime.notation.Node" id="generated-labels">
+	            <method name="getType()" value="Interaction_NameLabel,InteractionUse_NameLabel,InteractionUse_TypeLabel,Continuation_NameLabel,Lifeline_NameLabel,StateInvariant_NameLabel,StateInvariant_ConstraintLabel,TimeConstraint_ConstraintLabel,TimeConstraint_StereotypeLabel,TimeObservation_NameLabel,TimeObservation_StereotypeLabel,DurationConstraint_BodyLabel,DurationConstraint_StereotypeLabel,Constraint_NameLabel,Constraint_BodyLabel,Comment_BodyLabel,DurationConstraint_BodyLabel_CN,DurationConstraint_StereotypeLabel_CN,DurationObservation_NameLabel,DurationObservation_StereotypeLabel,Gate_NameLabel"/>
+	         </object>
+	         <object class="org.eclipse.gmf.runtime.notation.Node" id="generated-compartments">
+	            <method name="getType()" value="Interaction_SubfragmentCompartment,CombinedFragment_SubfragmentCompartment"/>
+	         </object>
+	         <context views="generated-diagram,generated-nodes,generated-links,generated-labels,generated-compartments"/>
+	      </editpartProvider>
+	   </extension>
+
+   <extension point="org.eclipse.gmf.runtime.common.ui.services.iconProviders" id="icon-provider">
+	      <IconProvider class="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceIconProvider">
+	         <Priority name="Low"/>
+	      </IconProvider>
+	   </extension>
+
+   <extension point="org.eclipse.gmf.runtime.common.ui.services.parserProviders" id="parser-provider">
+	      <ParserProvider class="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceParserProvider">
+	         <Priority name="Lowest"/>
+	      </ParserProvider>
+	   </extension>
+
+	<extension point="org.eclipse.gmf.runtime.common.ui.services.markerNavigationProviders" id="markers-navigation">
+		<MarkerNavigationProvider class="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceMarkerNavigationProvider">
+			<MarkerType name="org.eclipse.papyrus.uml.diagram.sequence.runtime.diagnostic"/>
+			<Priority name="Lowest"/>
+		</MarkerNavigationProvider>
+	</extension>
+
+	<extension id="diagnostic" name="UML Plugin problems" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.problemmarker"/>
+		<super type="org.eclipse.gmf.runtime.common.ui.services.marker"/>
+		<persistent value="true"/>
+	</extension>   
+				   
+	<extension id="validationDecoratorProvider" name="ValidationDecorations" point="org.eclipse.gmf.runtime.diagram.ui.decoratorProviders">
+		<decoratorProvider class="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceValidationDecoratorProvider">
+			<Priority name="Lowest"/>
+			<object class="org.eclipse.gmf.runtime.diagram.ui.editparts.IPrimaryEditPart" id="PRIMARY_VIEW"/>
+			<context decoratorTargets="PRIMARY_VIEW"/>
+		</decoratorProvider>
+	</extension>
+
+   
+   <extension point="org.eclipse.gmf.runtime.diagram.core.viewProviders">
+      <viewProvider class="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceViewProvider">
+         <Priority name="Medium"/>
+         <context viewClass="org.eclipse.gmf.runtime.notation.Diagram" semanticHints="LightweightSequenceDiagram"/>
+         <context viewClass="org.eclipse.gmf.runtime.notation.Node" semanticHints="Shape_Interaction, Shape_Lifeline"/>
+         <context viewClass="org.eclipse.gmf.runtime.notation.Edge" semanticHints="Edge_Message_Asynch"/>
+      </viewProvider>
+   </extension>
+
+	<extension point="org.eclipse.papyrus.infra.gmfdiag.common.visualTypeProviders">
+		<visualTypeProvider
+	    	class="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceVisualTypeProvider"
+	        diagramType="PapyrusUMLSequenceDiagram">
+		</visualTypeProvider>
+	</extension>
+ <extension
+       point="org.eclipse.papyrus.infra.architecture.models">
+    <model
+          path="architecture/LightweightSequence.architecture">
+    </model>
+ </extension>
+
+</plugin>

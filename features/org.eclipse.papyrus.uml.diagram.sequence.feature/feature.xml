@@ -16,57 +16,9 @@
       [Enter License Description here.]
    </license>
 
-   <plugin
-         id="org.eclipse.papyrus.uml.diagram.sequence.figure"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.papyrus.uml.diagram.sequence.notation.model"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.papyrus.uml.diagram.sequence.diagram.model.edit"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
 
    <plugin
          id="org.eclipse.papyrus.uml.diagram.sequence.runtime"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.papyrus.uml.diagram.sequence.properties"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.papyrus.uml.diagram.sequence.runtime.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.papyrus.uml.diagram.sequence.modelexplorer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.papyrus.uml.diagram.sequence.diagram.model"
          download-size="0"
          install-size="0"
          version="0.0.0"

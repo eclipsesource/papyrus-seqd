@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<architecture:ArchitectureDomain xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:architecture="http://www.eclipse.org/papyrus/infra/core/architecture" xmlns:gmfdiagrepresentation="http://www.eclipse.org/papyrus/infra/gmfdiag/representation" xmi:id="_R4crQBIpEeiAgaYa_vQKcA" id="org.eclipse.papyrus.softwareEngineering" name="Software Engineering">
+  <contexts xsi:type="architecture:ArchitectureDescriptionLanguage" xmi:id="_UQA_kBIpEeiAgaYa_vQKcA" id="org.eclipse.papyrus.infra.services.edit.TypeContext" name="UML">
+    <viewpoints xmi:id="_9AaP8BIpEeiAgaYa_vQKcA" id="org.eclipse.papyrus.uml.design" name="Software Design" representationKinds="_Vcc9gBIpEeiAgaYa_vQKcA"/>
+    <representationKinds xsi:type="gmfdiagrepresentation:PapyrusDiagram" xmi:id="_Vcc9gBIpEeiAgaYa_vQKcA" id="org.eclipse.papyrus.uml.diagram.lightweightsequence" name="Lightweight Sequence Diagram" description="" icon="platform:/plugin/org.eclipse.papyrus.uml.diagram.sequence.contribution/icons/obj16/Diagram_LightweightSequence.gif" implementationID="LightweightSequenceDiagram" creationCommandClass="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.part.CreateLightweightSequenceDiagramCommand">
+      <concerns href="../../org.eclipse.papyrus.uml.architecture/model/uml.architecture#_HQhf5MSYEeaKZJ_pGfaSiA"/>
+      <modelRules xmi:id="_rNtDUBIpEeiAgaYa_vQKcA">
+        <element href="http://www.eclipse.org/uml2/5.0.0/UML#//Interaction"/>
+      </modelRules>
+      <owningRules xmi:id="_sAd9ABIpEeiAgaYa_vQKcA">
+        <element href="http://www.eclipse.org/uml2/5.0.0/UML#//Interaction"/>
+      </owningRules>
+      <owningRules xmi:id="_sn3UMBIpEeiAgaYa_vQKcA">
+        <element href="http://www.eclipse.org/uml2/5.0.0/UML#//BehavioredClassifier"/>
+        <newModelPath xmi:id="_sn3UMRIpEeiAgaYa_vQKcA" creationType="org.eclipse.papyrus.uml.Interaction">
+          <feature href="http://www.eclipse.org/uml2/5.0.0/UML#//BehavioredClassifier/classifierBehavior"/>
+        </newModelPath>
+      </owningRules>
+      <owningRules xmi:id="_sn3UMhIpEeiAgaYa_vQKcA">
+        <element href="http://www.eclipse.org/uml2/5.0.0/UML#//BehavioredClassifier"/>
+        <newModelPath xmi:id="_sn3UMxIpEeiAgaYa_vQKcA" creationType="org.eclipse.papyrus.uml.Interaction">
+          <feature href="http://www.eclipse.org/uml2/5.0.0/UML#//BehavioredClassifier/ownedBehavior"/>
+        </newModelPath>
+      </owningRules>
+      <owningRules xmi:id="_sn3UNBIpEeiAgaYa_vQKcA">
+        <element href="http://www.eclipse.org/uml2/5.0.0/UML#//Package"/>
+        <newModelPath xmi:id="_sn3UNRIpEeiAgaYa_vQKcA" creationType="org.eclipse.papyrus.uml.Interaction">
+          <feature href="http://www.eclipse.org/uml2/5.0.0/UML#//Package/packagedElement"/>
+        </newModelPath>
+      </owningRules>
+      <owningRules xmi:id="_sn3UNhIpEeiAgaYa_vQKcA">
+        <element href="http://www.eclipse.org/uml2/5.0.0/UML#//UseCase"/>
+        <newModelPath xmi:id="_sn3UNxIpEeiAgaYa_vQKcA" creationType="org.eclipse.papyrus.uml.Interaction">
+          <feature href="http://www.eclipse.org/uml2/5.0.0/UML#//BehavioredClassifier/classifierBehavior"/>
+        </newModelPath>
+      </owningRules>
+      <childRules xmi:id="_sn3UOBIpEeiAgaYa_vQKcA"/>
+    </representationKinds>
+  </contexts>
+</architecture:ArchitectureDomain>

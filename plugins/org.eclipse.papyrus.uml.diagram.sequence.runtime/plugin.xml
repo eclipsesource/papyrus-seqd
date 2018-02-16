@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+      <extension
+            point="org.eclipse.ui.commands">
+      	      <command
+            categoryId="org.eclipse.papyrus.editor.category"
+            description="Create a new Lightweight Sequence Diagram"
+            id="org.eclipse.papyrus.uml.diagram.sequence.runtime.command.CreateLightweightSequenceDiagramCommand"
+            name="Create a new Sequence Diagram">
+    	  </command>
+      </extension>
+      <extension
+            id="ui-context"
+            point="org.eclipse.ui.contexts">
+         <context
+               description="%context.description"
+               id="org.eclipse.papyrus.uml.diagram.sequence.runtime.diagramContext"
+               name="%context.name"
+               parentId="org.eclipse.gmf.runtime.diagram.ui.diagramContext">
+         </context>
+      </extension>
+</plugin>

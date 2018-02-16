@@ -1,6 +1,6 @@
 /*****************************************************************************
  * Copyright (c) 2018 EclipseSource and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,25 +11,52 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal;
 
-import org.osgi.framework.BundleActivator;
+import org.eclipse.gmf.runtime.diagram.core.preferences.PreferencesHint;
+import org.eclipse.papyrus.infra.core.log.LogHelper;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 /**
- * Activator for this plugin.
+ * The activator class controls the plug-in life cycle
  */
-public class Activator implements BundleActivator {
+public class Activator extends AbstractUIPlugin {
 
-	private static BundleContext context;
+	/** plug-in identifier */
+	public static final String PLUGIN_ID = "org.eclipse.papyrus.uml.diagram.sequence.runtime"; //$NON-NLS-1$
 
-	static BundleContext getContext() {
-		return context;
+	public static final PreferencesHint DIAGRAM_PREFERENCES_HINT = new PreferencesHint(PLUGIN_ID);
+
+	/** Logging helper */
+	public static LogHelper log;
+
+	private static Activator instance;
+
+	/**
+	 * The constructor
+	 */
+	public Activator() {
 	}
 
-	public void start(BundleContext bundleContext) throws Exception {
-		Activator.context = bundleContext;
+	@Override
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
+		instance = this;
+		PreferencesHint.registerPreferenceStore(DIAGRAM_PREFERENCES_HINT, getPreferenceStore());
+		log = new LogHelper(instance);
 	}
 
-	public void stop(BundleContext bundleContext) throws Exception {
-		Activator.context = null;
+	@Override
+	public void stop(BundleContext context) throws Exception {
+		instance = null;
+		super.stop(context);
+	}
+
+	/**
+	 * Returns the shared instance.
+	 *
+	 * @return the shared instance
+	 */
+	public static Activator getDefault() {
+		return instance;
 	}
 }
