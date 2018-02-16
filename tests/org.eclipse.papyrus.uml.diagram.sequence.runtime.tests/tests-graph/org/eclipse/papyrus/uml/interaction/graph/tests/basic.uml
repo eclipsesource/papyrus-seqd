@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_Sr1HABKMEeiu4d_glA_Agg" name="basic">
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_St8m4BKMEeiu4d_glA_Agg" name="Basic">
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_lnNL4BKMEeiu4d_glA_Agg" name="A" coveredBy="_qm-RgBKMEeiu4d_glA_Agg _1SLP8BKMEeiu4d_glA_Agg _96tMABKMEeiu4d_glA_Agg _AT0YcBKNEeiu4d_glA_Agg"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_nmx28BKMEeiu4d_glA_Agg" name="B" coveredBy="_qm-4kBKMEeiu4d_glA_Agg _1SKo4BKMEeiu4d_glA_Agg _AT0_gBKNEeiu4d_glA_Agg _4ebGgBKtEeiu4d_glA_Agg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_qm-RgBKMEeiu4d_glA_Agg" name="make-send" covered="_lnNL4BKMEeiu4d_glA_Agg" message="_qm6AEBKMEeiu4d_glA_Agg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_qm-4kBKMEeiu4d_glA_Agg" name="make-recv" covered="_nmx28BKMEeiu4d_glA_Agg" message="_qm6AEBKMEeiu4d_glA_Agg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_1SKo4BKMEeiu4d_glA_Agg" name="doIt-send" covered="_nmx28BKMEeiu4d_glA_Agg" message="_1SKB0BKMEeiu4d_glA_Agg"/>
+    <fragment xmi:type="uml:BehaviorExecutionSpecification" xmi:id="_96tMABKMEeiu4d_glA_Agg" name="BehaviorExecSpec" covered="_lnNL4BKMEeiu4d_glA_Agg" finish="_AT0YcBKNEeiu4d_glA_Agg" start="_1SLP8BKMEeiu4d_glA_Agg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_1SLP8BKMEeiu4d_glA_Agg" name="doIt-recv" covered="_lnNL4BKMEeiu4d_glA_Agg" message="_1SKB0BKMEeiu4d_glA_Agg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_AT0YcBKNEeiu4d_glA_Agg" name="reply-send" covered="_lnNL4BKMEeiu4d_glA_Agg" message="_ATzxYBKNEeiu4d_glA_Agg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_AT0_gBKNEeiu4d_glA_Agg" name="reply-recv" covered="_nmx28BKMEeiu4d_glA_Agg" message="_ATzxYBKNEeiu4d_glA_Agg"/>
+    <fragment xmi:type="uml:DestructionOccurrenceSpecification" xmi:id="_4ebGgBKtEeiu4d_glA_Agg" name="B_destroyed" covered="_nmx28BKMEeiu4d_glA_Agg"/>
+    <message xmi:type="uml:Message" xmi:id="_qm6AEBKMEeiu4d_glA_Agg" name="make" messageSort="createMessage" receiveEvent="_qm-4kBKMEeiu4d_glA_Agg" sendEvent="_qm-RgBKMEeiu4d_glA_Agg"/>
+    <message xmi:type="uml:Message" xmi:id="_1SKB0BKMEeiu4d_glA_Agg" name="doIt" receiveEvent="_1SLP8BKMEeiu4d_glA_Agg" sendEvent="_1SKo4BKMEeiu4d_glA_Agg"/>
+    <message xmi:type="uml:Message" xmi:id="_ATzxYBKNEeiu4d_glA_Agg" name="reply" messageSort="reply" receiveEvent="_AT0_gBKNEeiu4d_glA_Agg" sendEvent="_AT0YcBKNEeiu4d_glA_Agg"/>
+  </packagedElement>
+</uml:Model>
