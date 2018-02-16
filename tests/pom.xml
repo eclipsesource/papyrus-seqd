@@ -10,7 +10,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.eclipse.papyrus.uml.diagram.sequence.tests</artifactId>
 	<modules>
-		<module>org.eclipse.papyrus.uml.diagram.sequence.figure.tests</module>
 	</modules>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
