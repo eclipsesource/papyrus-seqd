@@ -12,7 +12,7 @@
 
 	<modules>
 		<module>org.eclipse.papyrus.uml.diagram.sequence.contribution.feature</module>
-		<module>org.eclipse.papyrus.uml.diagram.sequence.feature</module>
+		<module>org.eclipse.papyrus.uml.diagram.lightweightsequence.feature</module>
 	</modules>
 
 	<packaging>pom</packaging>

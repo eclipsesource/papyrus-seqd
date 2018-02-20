@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.papyrus.uml.diagram.sequence.feature"
-      label="Sequence diagram Feature"
+      id="org.eclipse.papyrus.uml.diagram.lightweightsequence.feature"
+      label="Lightweight Sequence diagram Feature"
       version="1.0.0.qualifier">
 
    <description url="http://www.example.com/description">
@@ -15,7 +15,6 @@
    <license url="http://www.example.com/license">
       [Enter License Description here.]
    </license>
-
 
    <plugin
          id="org.eclipse.papyrus.uml.diagram.sequence.runtime"

@@ -19,7 +19,11 @@ location oxygen-release "http://download.eclipse.org/releases/oxygen" {
 	org.eclipse.emf.validation.sdk.feature.group
 	org.eclipse.emf.sdk.feature.group
 	org.eclipse.gef.feature.group
+}
+
+location papyrus-oxygen "http://download.eclipse.org/modeling/mdt/papyrus/updates/releases/oxygen" {
 	org.eclipse.papyrus.sdk.feature.feature.group [3.1.0,4.0.0)
+	org.eclipse.papyrus.sdk.feature.source.feature.group [3.1.0,4.0.0)
 }
 
 location orbit "http://download.eclipse.org/tools/orbit/S-builds/S20170804160030/repository" {

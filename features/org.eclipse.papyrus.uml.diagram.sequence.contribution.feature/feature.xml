@@ -18,7 +18,7 @@
    </license>
 
    <includes
-         id="org.eclipse.papyrus.uml.diagram.sequence.feature"
+         id="org.eclipse.papyrus.uml.diagram.lightweightsequence.feature"
          version="0.0.0"/>
 
    <plugin
