@@ -12,6 +12,8 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.graph;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,11 +43,18 @@ public class GraphImpl implements Graph {
 
 	/**
 	 * Initializes me.
+	 * 
+	 * @param interaction
+	 *            the interaction model (required)
+	 * @param sequenceDiagram
+	 *            an optional sequence diagram on the {@code interaction}
+	 * @throws NullPointerException
+	 *             if the {@code interaction} is {@code null}
 	 */
 	public GraphImpl(Interaction interaction, Diagram sequenceDiagram) {
 		super();
 
-		this.initial = new VertexImpl(interaction, sequenceDiagram);
+		this.initial = new VertexImpl(requireNonNull(interaction), sequenceDiagram);
 		vertices.put(interaction, initial);
 
 		if (sequenceDiagram == null) {

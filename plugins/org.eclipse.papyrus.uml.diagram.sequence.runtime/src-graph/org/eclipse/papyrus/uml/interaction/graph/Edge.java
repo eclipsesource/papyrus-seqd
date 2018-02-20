@@ -15,7 +15,7 @@ package org.eclipse.papyrus.uml.interaction.graph;
 import java.util.stream.Stream;
 
 /**
- * A directed edge in the dependency graph, connecting an a vertex with another that depends on it.
+ * A directed edge in the dependency graph, connecting a vertex with another that depends on it.
  *
  * @author Christian W. Damus
  */

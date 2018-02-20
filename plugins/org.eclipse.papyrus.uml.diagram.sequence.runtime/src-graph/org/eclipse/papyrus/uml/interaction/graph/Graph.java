@@ -47,6 +47,26 @@ public interface Graph {
 	 */
 	Vertex vertex(Element element);
 
+	/**
+	 * Compute the <em>Dependency Graph</em> of the given {@code interaction}. If a diagram is provided, then
+	 * the resultant graph will have
+	 * <ul>
+	 * <li>a {@linkplain Vertex#getDiagramView() view} associated with each {@link Vertex} for which the
+	 * {@linkplain Vertex#getInteractionElement() interaction element} has a visualization in the diagram</li>
+	 * <li>a distinct {@link Vertex} for each view of an element that is visualized more than once in the
+	 * diagram</li>
+	 * <li>as appropriate, a {@link Vertex} for each {@link org.eclipse.gmf.runtime.notation.View View} in the
+	 * diagram that does not have a corresponding interaction element</li>
+	 * </ul>
+	 * 
+	 * @param interaction
+	 *            an interaction (required)
+	 * @param sequenceDiagram
+	 *            an optional sequence diagram in which the {@code interaction} is visualized
+	 * @return the dependency graph
+	 * @throws NullPointerException
+	 *             if the {@code interaction} is {@code null}
+	 */
 	static Graph compute(Interaction interaction, Diagram sequenceDiagram) {
 		return new GraphImpl(interaction, sequenceDiagram);
 	}
