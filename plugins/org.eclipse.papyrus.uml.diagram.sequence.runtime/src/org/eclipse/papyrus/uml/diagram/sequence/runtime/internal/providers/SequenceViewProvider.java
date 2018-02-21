@@ -12,8 +12,8 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.gmf.runtime.diagram.core.services.view.CreateNodeViewOperation;
 import org.eclipse.papyrus.infra.gmfdiag.common.providers.CustomAbstractViewProvider;
-import org.eclipse.papyrus.infra.gmfdiag.common.providers.GraphicalTypeRegistry;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.factories.SequenceDiagramViewFactory;
 
@@ -29,7 +29,7 @@ public class SequenceViewProvider extends CustomAbstractViewProvider {
 	}
 
 	protected void initGraphicalTypeRegistry() {
-		this.registry = new SequenceGraphicalTypeRegistry();
+		this.registry = SequenceGraphicalTypeRegistry.getInstance();
 	}
 
 	@Override
@@ -37,16 +37,8 @@ public class SequenceViewProvider extends CustomAbstractViewProvider {
 		return SequenceDiagramViewFactory.class;
 	}
 
-	private static class SequenceGraphicalTypeRegistry extends GraphicalTypeRegistry {
-
-		public SequenceGraphicalTypeRegistry() {
-			knownNodes.add(RepresentationKind.INTERACTION_ID);
-			knownNodes.add(RepresentationKind.LIFELINE_ID);
-			knownNodes.add(RepresentationKind.LIFELINE_HEADER_COMPARMENT_ID);
-
-			knownEdges.add(RepresentationKind.ASYNC_MESSAGE_ID);
-		}
-
-
+	@Override
+	protected boolean provides(CreateNodeViewOperation operation) {
+		return super.provides(operation);
 	}
 }

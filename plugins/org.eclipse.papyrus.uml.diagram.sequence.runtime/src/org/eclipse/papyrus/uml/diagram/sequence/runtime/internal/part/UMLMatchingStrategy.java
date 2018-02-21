@@ -17,14 +17,8 @@ import org.eclipse.ui.IEditorMatchingStrategy;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
 
-/**
- * @generated
- */
 public class UMLMatchingStrategy implements IEditorMatchingStrategy {
 
-	/**
-	 * @generated
-	 */
 	@Override
 	public boolean matches(IEditorReference editorRef, IEditorInput input) {
 		IEditorInput editorInput;
@@ -38,7 +32,7 @@ public class UMLMatchingStrategy implements IEditorMatchingStrategy {
 			return true;
 		}
 		if (editorInput instanceof URIEditorInput && input instanceof URIEditorInput) {
-			return ((URIEditorInput) editorInput).getURI().equals(((URIEditorInput) input).getURI());
+			return ((URIEditorInput)editorInput).getURI().equals(((URIEditorInput)input).getURI());
 		}
 		return false;
 	}
