@@ -9,6 +9,7 @@
 	<properties>
 		<tycho-version>1.0.0</tycho-version>
 		<tycho-extras-version>1.0.0</tycho-extras-version>
+		<xtext-version>2.12.0</xtext-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<mav-surefire-version>2.20</mav-surefire-version>
 		<junit-version>4.11</junit-version>
@@ -124,12 +125,27 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.7.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>3.0.0</version>
+				</plugin>
+				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-surefire-plugin</artifactId>
 					<version>${tycho-version}</version>
 					<configuration>
 						<argLine>-Xms40m -Xmx1G ${os-jvm-flags}</argLine>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.xtend</groupId>
+					<artifactId>xtend-maven-plugin</artifactId>
+					<version>${xtext-version}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

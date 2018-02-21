@@ -13,6 +13,9 @@
 	<modules>
 		<module>org.eclipse.papyrus.uml.diagram.sequence.contribution</module>
 		<module>org.eclipse.papyrus.uml.diagram.sequence.runtime</module>
+		
+		<!-- Xtext-based direct editors -->
+		<module>xtext</module>
 	</modules>
 
 	<packaging>pom</packaging>
