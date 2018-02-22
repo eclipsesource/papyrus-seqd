@@ -12,7 +12,6 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.diagram.sequence.figure;
 
-import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.PositionConstants;
@@ -20,16 +19,22 @@ import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel;
+import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 
-public class LifelineFigure extends Figure {
+public class LifelineFigure extends NodeFigure {
 
 	private RectangleFigure bodyFigure;
+
 	private WrappingLabel label;
+
 	private RoundedRectangle headerFigure;
+
 	private GridLayout layout;
+
 	private GridData headerLayoutData;
+
 	private GridData bodyGridData;
 
 	public LifelineFigure() {

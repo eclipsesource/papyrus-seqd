@@ -31,24 +31,11 @@
 
    <extension point="org.eclipse.gmf.runtime.diagram.ui.editpartProviders" id="ep-provider">
 	      <?gmfgen generated="true"?>
-	      <editpartProvider class="org.eclipse.papyrus.uml.diagram.sequence.providers.UMLEditPartProvider">
-	         <Priority name="Lowest"/>
-	         <object class="org.eclipse.gmf.runtime.notation.Diagram" id="generated-diagram">
-	            <method name="getType()" value="PapyrusUMLSequenceDiagram"/>
-	         </object>
-	         <object class="org.eclipse.gmf.runtime.notation.Node" id="generated-nodes">
-	            <method name="getType()" value="Interaction_Shape,ConsiderIgnoreFragment_Shape,CombinedFragment_Shape,InteractionOperand_Shape,InteractionUse_Shape,Continuation_Shape,Lifeline_Shape,ActionExecutionSpecification_Shape,BehaviorExecutionSpecification_Shape,StateInvariant_Shape,TimeConstraint_Shape,TimeObservation_Shape,DurationConstraint_Shape,DestructionOccurrenceSpecification_Shape,Constraint_Shape,Comment_Shape,DurationConstraint_Shape_CN,DurationObservation_Shape,Gate_Shape"/>
-	         </object>
-	         <object class="org.eclipse.gmf.runtime.notation.Edge" id="generated-links">
-	            <method name="getType()" value="Message_SynchEdge,Message_AsynchEdge,Message_ReplyEdge,Message_CreateEdge,Message_DeleteEdge,Message_LostEdge,Message_FoundEdge,Comment_AnnotatedElementEdge,Constraint_ConstrainedElementEdge,GeneralOrdering_Edge,Constraint_ContextEdge"/>
-	         </object>
-	         <object class="org.eclipse.gmf.runtime.notation.Node" id="generated-labels">
-	            <method name="getType()" value="Interaction_NameLabel,InteractionUse_NameLabel,InteractionUse_TypeLabel,Continuation_NameLabel,Lifeline_NameLabel,StateInvariant_NameLabel,StateInvariant_ConstraintLabel,TimeConstraint_ConstraintLabel,TimeConstraint_StereotypeLabel,TimeObservation_NameLabel,TimeObservation_StereotypeLabel,DurationConstraint_BodyLabel,DurationConstraint_StereotypeLabel,Constraint_NameLabel,Constraint_BodyLabel,Comment_BodyLabel,DurationConstraint_BodyLabel_CN,DurationConstraint_StereotypeLabel_CN,DurationObservation_NameLabel,DurationObservation_StereotypeLabel,Gate_NameLabel"/>
-	         </object>
-	         <object class="org.eclipse.gmf.runtime.notation.Node" id="generated-compartments">
-	            <method name="getType()" value="Interaction_SubfragmentCompartment,CombinedFragment_SubfragmentCompartment"/>
-	         </object>
-	         <context views="generated-diagram,generated-nodes,generated-links,generated-labels,generated-compartments"/>
+	      <editpartProvider class="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.SequenceEditPartProvider">
+          <Priority
+                name="Low">
+          </Priority>
+	         
 	      </editpartProvider>
 	   </extension>
 

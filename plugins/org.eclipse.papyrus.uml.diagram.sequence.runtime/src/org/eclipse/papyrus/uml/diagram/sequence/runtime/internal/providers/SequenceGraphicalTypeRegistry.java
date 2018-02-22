@@ -38,7 +38,7 @@ public class SequenceGraphicalTypeRegistry extends GraphicalTypeRegistry {
 		knownNodes.add(RepresentationKind.LIFELINE_ID);
 		knownNodes.add(RepresentationKind.LIFELINE_HEADER_COMPARMENT_ID);
 
-		knownEdges.add(RepresentationKind.ASYNC_MESSAGE_ID);
+		knownEdges.add(RepresentationKind.MESSAGE_ID);
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class SequenceGraphicalTypeRegistry extends GraphicalTypeRegistry {
 
 			@Override
 			public String caseMessage(Message object) {
-				return RepresentationKind.ASYNC_MESSAGE_ID;
+				return RepresentationKind.MESSAGE_ID;
 			}
 
 			@Override

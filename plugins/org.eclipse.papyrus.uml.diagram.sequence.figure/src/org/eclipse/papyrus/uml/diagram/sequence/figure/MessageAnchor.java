@@ -17,25 +17,31 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 
 /**
- * This anchor is a bit specific, as its position depends on the previous anchor on the line and the standard owner of the anchor.
+ * This anchor is a bit specific, as its position depends on the previous anchor on the line and the standard
+ * owner of the anchor.
  */
+// TODO: Check that the Anchor properly supports translation (e.g. when the container is translated)
 public class MessageAnchor extends AbstractConnectionAnchor {
 
 	private MessageAnchor previousAnchor;
+
 	private int delta_y = 20;
+
 	private String name;
+
 	/** stores locally position. should be set to null when invalidated */
 	private Point point;
+
 	private Point referencePoint;
-	
+
 	public MessageAnchor(IFigure owner, MessageAnchor previousAnchor) {
 		super(owner);
 		this.previousAnchor = previousAnchor;
 	}
-	
+
 	@Override
 	public Point getLocation(Point reference) {
-		if(point == null) {
+		if (point == null) {
 			point = getReferencePoint().getCopy().translate(new Point(0, delta_y)); // delta y
 			// System.err.print("location for "+getName()+ ": ");
 			// System.err.println(point.x+", "+point.y);
@@ -54,30 +60,28 @@ public class MessageAnchor extends AbstractConnectionAnchor {
 	public void setPreviousAnchor(MessageAnchor previousAnchor) {
 		this.previousAnchor = previousAnchor;
 	}
-	
+
 	/**
-	 * Returns the point which is used as the reference by this
-	 * AbstractConnectionAnchor. It is generally dependent on the Figure which
-	 * is the owner of this AbstractConnectionAnchor.
+	 * Returns the point which is used as the reference by this AbstractConnectionAnchor. It is generally
+	 * dependent on the Figure which is the owner of this AbstractConnectionAnchor.
 	 * 
 	 * @since 2.0
 	 * @return The reference point of this anchor
 	 * @see org.eclipse.draw2d.ConnectionAnchor#getReferencePoint()
 	 */
+	@Override
 	public Point getReferencePoint() {
 		if (getOwner() == null) {
 			return null;
-		}
-		else {
-			if(referencePoint ==null) {
-				if(getPreviousAnchor()!=null) {
+		} else {
+			if (referencePoint == null) {
+				if (getPreviousAnchor() != null) {
 					// get x absolute position of the owner
 					Point ownerLocation = getOwner().getBounds().getCenter();
 					getOwner().translateToAbsolute(ownerLocation);
 					referencePoint = new Point(ownerLocation.x, getPreviousAnchor().getLocation(null).y);
 					// System.err.println("ref "+getName()+": "+referencePoint);
-				}
-				else {
+				} else {
 					referencePoint = getOwner().getBounds().getTop();
 					getOwner().translateToAbsolute(referencePoint);
 					// System.err.println("ref (no anchor)"+getName()+": "+referencePoint);
@@ -94,5 +98,5 @@ public class MessageAnchor extends AbstractConnectionAnchor {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 }

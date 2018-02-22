@@ -32,10 +32,9 @@ public class RepresentationKind {
 
 	public static final String INTERACTION_NAME_ID = "Label_Interaction_Name"; //$NON-NLS-1$
 
-	public static final String ASYNC_MESSAGE_ID = "Edge_AsyncMessage"; //$NON-NLS-1$
+	public static final String MESSAGE_ID = "Edge_Message"; //$NON-NLS-1$
 
-	public static final String ASYNC_MESSAGE_NAME_ID = "Edge_AsyncMessage_Name"; //$NON-NLS-1$
-
+	public static final String MESSAGE_NAME_ID = "Edge_Message_Name"; //$NON-NLS-1$
 
 	private RepresentationKind() {
 		// constants class.
