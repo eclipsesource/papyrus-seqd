@@ -9,8 +9,11 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.eclipse.papyrus.uml.diagram.sequence.tests</artifactId>
+	
 	<modules>
+		<module>org.eclipse.papyrus.uml.diagram.sequence.runtime.tests</module>
 	</modules>
+	
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<outputDirectory>bin</outputDirectory>
@@ -23,8 +26,10 @@
 				<configuration>
 					<useUIHarness>true</useUIHarness>
 					<includes>
+						<include>**/*_PTest.java</include>
 						<include>**/*UITest.java</include>
 					</includes>
+					<failIfNoTests>false</failIfNoTests>
 					<testFailureIgnore>false</testFailureIgnore>
 				</configuration>
 			</plugin>
@@ -43,8 +48,10 @@
 								<include>**/*Test.java</include>
 							</includes>
 							<excludes>
+								<exclude>**/*_PTest.java</exclude>
 								<exclude>**/*UITest.java</exclude>
 							</excludes>
+							<failIfNoTests>false</failIfNoTests>
 							<testFailureIgnore>false</testFailureIgnore>
 						</configuration>
 						<goals>
