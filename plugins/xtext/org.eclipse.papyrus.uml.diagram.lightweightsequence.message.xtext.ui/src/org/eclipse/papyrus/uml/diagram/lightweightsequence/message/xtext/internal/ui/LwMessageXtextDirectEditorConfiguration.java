@@ -60,6 +60,7 @@ import org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.lwMessa
 import org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.ui.contentassist.CompletionUtil;
 import org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.ui.internal.LwMessageActivator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.parsers.MessageParser;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.NamedElementUtil;
 import org.eclipse.papyrus.uml.internationalization.utils.utils.UMLLabelInternationalization;
 import org.eclipse.papyrus.uml.xtext.integration.DefaultXtextDirectEditorConfiguration;
 import org.eclipse.swt.widgets.Composite;
@@ -476,13 +477,13 @@ public class LwMessageXtextDirectEditorConfiguration extends DefaultXtextDirectE
 		try {
 			if (!replyMessage.getOutputs().isEmpty()) {
 				replyMessage.getOutputs().stream() //
-						.map(output -> createOutput(output, valueFactory)) //
+						.map(output -> createOutput(message, output, valueFactory)) //
 						.filter(Optional::isPresent).map(Optional::get) //
 						.forEach(result::add);
 			}
 
 			// And maybe there's a return assignment
-			createOutput(replyMessage, valueFactory).ifPresent(result::add);
+			createOutput(message, replyMessage, valueFactory).ifPresent(result::add);
 		} finally {
 			valueFactory.copyReferences();
 		}
@@ -490,7 +491,7 @@ public class LwMessageXtextDirectEditorConfiguration extends DefaultXtextDirectE
 		return result;
 	}
 
-	private Optional<Expression> createOutput(AssignmentTarget assignment,
+	private Optional<Expression> createOutput(Message owner, AssignmentTarget assignment,
 			ValueSpecificationFactory valueFactory) {
 
 		Expression result = null;
@@ -506,8 +507,7 @@ public class LwMessageXtextDirectEditorConfiguration extends DefaultXtextDirectE
 			}
 
 			if (assignment.getTarget() != null) {
-				// TODO: Qualification of context/lifeline attribute name
-				result.setSymbol(assignment.getTarget().getName());
+				result.setSymbol(NamedElementUtil.getQualifiedName(assignment.getTarget(), owner));
 			}
 			if (assignment.getValue() != null) {
 				result.getOperands().add(valueFactory.create(assignment.getValue()));

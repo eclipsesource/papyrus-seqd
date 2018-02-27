@@ -6,7 +6,7 @@
   <packagedElement xmi:type="uml:Collaboration" xmi:id="_-WrwQBcUEeiAKuV2grPJYg" name="scenario">
     <ownedAttribute xmi:id="_VGV_EBcVEeiAKuV2grPJYg" name="foo" type="_LhchYBcVEeiAKuV2grPJYg"/>
     <ownedAttribute xmi:id="_X3WHEBcVEeiAKuV2grPJYg" name="thing" type="_NKlpcBcVEeiAKuV2grPJYg"/>
-    <ownedAttribute xmi:id="_7VL3kBioEeiEhaTqddcKJw" name="" type="_DwbbABioEeiEhaTqddcKJw"/>
+    <ownedAttribute xmi:id="_7VL3kBioEeiEhaTqddcKJw" name="whatsIt" type="_DwbbABioEeiEhaTqddcKJw"/>
     <ownedBehavior xmi:type="uml:Interaction" xmi:id="_kvfiYBcOEei_uYMqf_9LkA" name="Interaction1">
       <ownedParameter xmi:id="_mS0K8BmuEeiWioNIMuV1fQ" name="input" effect="read">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
@@ -58,7 +58,7 @@
         </argument>
       </message>
       <message xmi:id="_8hD00BioEeiEhaTqddcKJw" name="getStuff" messageSort="reply" receiveEvent="_xb3AIBmnEeiWioNIMuV1fQ" sendEvent="_8hFC8BioEeiEhaTqddcKJw" signature="_M-YYUBioEeiEhaTqddcKJw">
-        <argument xmi:type="uml:Expression" xmi:id="_wuKIQBmJEeiJhfalgKoqZg" name="text" symbol="content">
+        <argument xmi:type="uml:Expression" xmi:id="_wuKIQBmJEeiJhfalgKoqZg" name="text" symbol="thing::content">
           <operand xmi:type="uml:LiteralString" xmi:id="_wuKIQRmJEeiJhfalgKoqZg" value="Hello, world">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </operand>
@@ -68,7 +68,7 @@
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
           </operand>
         </argument>
-        <argument xmi:type="uml:Expression" xmi:id="_wuKIRBmJEeiJhfalgKoqZg" symbol="ok">
+        <argument xmi:type="uml:Expression" xmi:id="_wuKIRBmJEeiJhfalgKoqZg" symbol="thing::ok">
           <operand xmi:type="uml:LiteralBoolean" xmi:id="_wuKIRRmJEeiJhfalgKoqZg" value="true">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </operand>

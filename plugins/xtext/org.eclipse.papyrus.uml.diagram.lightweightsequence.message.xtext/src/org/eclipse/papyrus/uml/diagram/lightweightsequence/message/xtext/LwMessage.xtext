@@ -25,7 +25,7 @@ AbstractRequestMessage returns AbstractMessage:
 	AnyMessage | RequestMessage;
 
 RequestMessage:
-	( => name = ID |
+	( => name = Name |
 		// These are only here to trigger content-assist for signal and operation signatures.
 		// They can never be matched because the name always will be.
 		=> signal = [uml::Signal] | => operation = [uml::Operation])
@@ -46,7 +46,7 @@ MessageRequestArgumentWithName returns MessageArgument:
 	MessageRequestNameAndValue;	
 
 MessageRequestNameAndValue returns MessageArgument:
-	 (=> name = ID |
+	 (=> name = Name |
 		// These are only here to trigger content-assist for the signal attributes
 		// and operation parameters.  They can never be matched because the name
 		// always will be.
@@ -58,7 +58,7 @@ fragment MessageRequestValue returns MessageArgument:
 
 ReplyMessage:
 	AssignmentTarget?
-	( => name = ID |
+	( => name = Name |
 		// This is only here to trigger content-assist for operation signatures.
 		// It can never be matched because the name always will be.
 		=> operation = [uml::Operation])
@@ -66,7 +66,7 @@ ReplyMessage:
 	( value = OutputValue)? ;
 
 fragment AssignmentTarget:
-	=> target = [uml::ConnectableElement] '=';
+	=> target = [uml::ConnectableElement|QName] '=';
 	
 fragment MessageReplyOutputs:	
 	(outputs += MessageReplyOutput ("," outputs += MessageReplyOutput)*);
@@ -125,7 +125,7 @@ Integer returns ecore::EIntegerObject:
 Boolean returns ecore::EBoolean:
 	'true' | 'false';
 
-NameQN returns ecore::EString:
+QName returns ecore::EString:
 	Name ('::' Name)*;
 
 Name returns ecore::EString:

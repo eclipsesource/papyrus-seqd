@@ -89,8 +89,7 @@ ruleAbstractMessage returns [EObject current=null]
 
     |((
 (
-	RULE_ID
-
+		ruleQName
 )
 )=>
     { 
@@ -164,24 +163,23 @@ ruleRequestMessage returns [EObject current=null]
     @after { leaveRule(); }:
 ((((
 (
-RULE_ID
-
+ruleName
 )
 )=>
 (
-		lv_name_0_0=RULE_ID
-		{
-			newLeafNode(lv_name_0_0, grammarAccess.getRequestMessageAccess().getNameIDTerminalRuleCall_0_0_0()); 
-		}
-		{
+		{ 
+	        newCompositeNode(grammarAccess.getRequestMessageAccess().getNameNameParserRuleCall_0_0_0()); 
+	    }
+		lv_name_0_0=ruleName		{
 	        if ($current==null) {
-	            $current = createModelElement(grammarAccess.getRequestMessageRule());
+	            $current = createModelElementForParent(grammarAccess.getRequestMessageRule());
 	        }
-       		setWithLastConsumed(
+       		set(
        			$current, 
        			"name",
         		lv_name_0_0, 
-        		"org.eclipse.papyrus.uml.alf.Common.ID");
+        		"org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.LwMessage.Name");
+	        afterParserOrEnumRuleCall();
 	    }
 
 )
@@ -466,24 +464,23 @@ ruleMessageRequestNameAndValue returns [EObject current=null]
     @after { leaveRule(); }:
 ((((
 (
-RULE_ID
-
+ruleName
 )
 )=>
 (
-		lv_name_0_0=RULE_ID
-		{
-			newLeafNode(lv_name_0_0, grammarAccess.getMessageRequestNameAndValueAccess().getNameIDTerminalRuleCall_0_0_0()); 
-		}
-		{
+		{ 
+	        newCompositeNode(grammarAccess.getMessageRequestNameAndValueAccess().getNameNameParserRuleCall_0_0_0()); 
+	    }
+		lv_name_0_0=ruleName		{
 	        if ($current==null) {
-	            $current = createModelElement(grammarAccess.getMessageRequestNameAndValueRule());
+	            $current = createModelElementForParent(grammarAccess.getMessageRequestNameAndValueRule());
 	        }
-       		setWithLastConsumed(
+       		set(
        			$current, 
        			"name",
         		lv_name_0_0, 
-        		"org.eclipse.papyrus.uml.alf.Common.ID");
+        		"org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.LwMessage.Name");
+	        afterParserOrEnumRuleCall();
 	    }
 
 )
@@ -595,8 +592,7 @@ ruleReplyMessage returns [EObject current=null]
     @after { leaveRule(); }:
 (((
 (
-	RULE_ID
-
+		ruleQName
 )
 )=>
     { 
@@ -612,24 +608,23 @@ ruleReplyMessage returns [EObject current=null]
     }
 )?(((
 (
-RULE_ID
-
+ruleName
 )
 )=>
 (
-		lv_name_1_0=RULE_ID
-		{
-			newLeafNode(lv_name_1_0, grammarAccess.getReplyMessageAccess().getNameIDTerminalRuleCall_1_0_0()); 
-		}
-		{
+		{ 
+	        newCompositeNode(grammarAccess.getReplyMessageAccess().getNameNameParserRuleCall_1_0_0()); 
+	    }
+		lv_name_1_0=ruleName		{
 	        if ($current==null) {
-	            $current = createModelElement(grammarAccess.getReplyMessageRule());
+	            $current = createModelElementForParent(grammarAccess.getReplyMessageRule());
 	        }
-       		setWithLastConsumed(
+       		set(
        			$current, 
        			"name",
         		lv_name_1_0, 
-        		"org.eclipse.papyrus.uml.alf.Common.ID");
+        		"org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.LwMessage.Name");
+	        afterParserOrEnumRuleCall();
 	    }
 
 )
@@ -705,8 +700,7 @@ ruleAssignmentTarget [EObject in_current] returns [EObject current=in_current]
     @after { leaveRule(); }:
 (((
 (
-	RULE_ID
-
+		ruleQName
 )
 )=>
 (
@@ -715,10 +709,12 @@ ruleAssignmentTarget [EObject in_current] returns [EObject current=in_current]
 	            $current = createModelElement(grammarAccess.getAssignmentTargetRule());
 	        }
         }
-	otherlv_0=RULE_ID
-	{
-		newLeafNode(otherlv_0, grammarAccess.getAssignmentTargetAccess().getTargetConnectableElementCrossReference_0_0()); 
-	}
+		{ 
+	        newCompositeNode(grammarAccess.getAssignmentTargetAccess().getTargetConnectableElementCrossReference_0_0()); 
+	    }
+		ruleQName		{ 
+	        afterParserOrEnumRuleCall();
+	    }
 
 )
 )	otherlv_1='=' 
@@ -801,8 +797,7 @@ ruleMessageReplyOutput returns [EObject current=null]
     @after { leaveRule(); }:
 ((((
 (
-	RULE_ID
-
+		ruleQName
 )
 )=>
     { 
@@ -1379,6 +1374,53 @@ ruleBoolean returns [AntlrDatatypeRuleToken current=new AntlrDatatypeRuleToken()
     ;
 
 
+
+
+
+// Entry rule entryRuleQName
+entryRuleQName returns [String current=null] 
+	:
+	{ newCompositeNode(grammarAccess.getQNameRule()); } 
+	 iv_ruleQName=ruleQName 
+	 { $current=$iv_ruleQName.current.getText(); }  
+	 EOF 
+;
+
+// Rule QName
+ruleQName returns [AntlrDatatypeRuleToken current=new AntlrDatatypeRuleToken()] 
+    @init { enterRule(); 
+    }
+    @after { leaveRule(); }:
+(
+    { 
+        newCompositeNode(grammarAccess.getQNameAccess().getNameParserRuleCall_0()); 
+    }
+    this_Name_0=ruleName    {
+		$current.merge(this_Name_0);
+    }
+
+    { 
+        afterParserOrEnumRuleCall();
+    }
+(
+	kw='::' 
+    {
+        $current.merge(kw);
+        newLeafNode(kw, grammarAccess.getQNameAccess().getColonColonKeyword_1_0()); 
+    }
+
+    { 
+        newCompositeNode(grammarAccess.getQNameAccess().getNameParserRuleCall_1_1()); 
+    }
+    this_Name_2=ruleName    {
+		$current.merge(this_Name_2);
+    }
+
+    { 
+        afterParserOrEnumRuleCall();
+    }
+)*)
+    ;
 
 
 

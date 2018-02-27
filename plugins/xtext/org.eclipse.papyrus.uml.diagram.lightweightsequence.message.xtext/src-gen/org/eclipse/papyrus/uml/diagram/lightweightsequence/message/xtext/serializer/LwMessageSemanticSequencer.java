@@ -119,7 +119,7 @@ public class LwMessageSemanticSequencer extends AbstractDelegatingSemanticSequen
 	 *     MessageReplyOutput returns MessageReplyOutput
 	 *
 	 * Constraint:
-	 *     ((target=[ConnectableElement|ID] parameter=[Parameter|ID] value=OutputValue?) | (parameter=[Parameter|ID] value=OutputValue))
+	 *     ((target=[ConnectableElement|QName] parameter=[Parameter|ID] value=OutputValue?) | (parameter=[Parameter|ID] value=OutputValue))
 	 */
 	protected void sequence_AssignmentTarget_MessageReplyOutput(ISerializationContext context, MessageReplyOutput semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -133,8 +133,8 @@ public class LwMessageSemanticSequencer extends AbstractDelegatingSemanticSequen
 	 *
 	 * Constraint:
 	 *     (
-	 *         target=[ConnectableElement|ID]? 
-	 *         (name=ID | operation=[Operation|ID]) 
+	 *         target=[ConnectableElement|QName]? 
+	 *         (name=Name | operation=[Operation|ID]) 
 	 *         (outputs+=MessageReplyOutput outputs+=MessageReplyOutput*)? 
 	 *         value=OutputValue?
 	 *     )
@@ -202,7 +202,7 @@ public class LwMessageSemanticSequencer extends AbstractDelegatingSemanticSequen
 	 *
 	 * Constraint:
 	 *     (
-	 *         (name=ID | signal=[Signal|ID] | operation=[Operation|ID]) 
+	 *         (name=Name | signal=[Signal|ID] | operation=[Operation|ID]) 
 	 *         (
 	 *             (arguments+=MessageRequestArgument arguments+=MessageRequestArgument*) | 
 	 *             (arguments+=MessageRequestArgumentWithName arguments+=MessageRequestArgumentWithName*)
@@ -220,7 +220,7 @@ public class LwMessageSemanticSequencer extends AbstractDelegatingSemanticSequen
 	 *     MessageRequestNameAndValue returns MessageArgument
 	 *
 	 * Constraint:
-	 *     ((name=ID | property=[Property|ID] | parameter=[Parameter|ID]) value=Value)
+	 *     ((name=Name | property=[Property|ID] | parameter=[Parameter|ID]) value=Value)
 	 */
 	protected void sequence_MessageRequestNameAndValue_MessageRequestValue(ISerializationContext context, MessageArgument semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);

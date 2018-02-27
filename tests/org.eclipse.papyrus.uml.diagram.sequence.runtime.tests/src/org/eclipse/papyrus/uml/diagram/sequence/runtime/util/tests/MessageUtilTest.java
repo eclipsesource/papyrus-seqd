@@ -235,7 +235,7 @@ public class MessageUtilTest {
 		Message getStuffReply = model.getMessage("whatsIt", "thing");
 		ValueSpecification argument = getStuffReply.getArgument("text", null);
 		String target = MessageUtil.getAssignmentTarget(argument);
-		assertThat(target, is("content"));
+		assertThat(target, is("thing::content"));
 	}
 
 	@Test

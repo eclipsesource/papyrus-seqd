@@ -68,8 +68,8 @@ public class LwMessageParser extends AbstractContentAssistParser {
 					put(grammarAccess.getMessageReplyOutputAccess().getGroup_1(), "rule__MessageReplyOutput__Group_1__0");
 					put(grammarAccess.getOutputValueAccess().getGroup(), "rule__OutputValue__Group__0");
 					put(grammarAccess.getNullValueAccess().getGroup(), "rule__NullValue__Group__0");
-					put(grammarAccess.getNameQNAccess().getGroup(), "rule__NameQN__Group__0");
-					put(grammarAccess.getNameQNAccess().getGroup_1(), "rule__NameQN__Group_1__0");
+					put(grammarAccess.getQNameAccess().getGroup(), "rule__QName__Group__0");
+					put(grammarAccess.getQNameAccess().getGroup_1(), "rule__QName__Group_1__0");
 					put(grammarAccess.getRequestMessageAccess().getNameAssignment_0_0(), "rule__RequestMessage__NameAssignment_0_0");
 					put(grammarAccess.getRequestMessageAccess().getSignalAssignment_0_1(), "rule__RequestMessage__SignalAssignment_0_1");
 					put(grammarAccess.getRequestMessageAccess().getOperationAssignment_0_2(), "rule__RequestMessage__OperationAssignment_0_2");

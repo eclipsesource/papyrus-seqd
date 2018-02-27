@@ -81,7 +81,8 @@ public class MessageParserTest_PTest {
 	@Test
 	public void replyWithAssignedAndUnassignedOutputs() {
 		Message reply = model.getMessage("whatsIt", "thing");
-		assertThat(reply, rendersAs("ok=getStuff(content=text: \"Hello, world\", expiration: 60): true"));
+		assertThat(reply, rendersAs(
+				"thing::ok=getStuff(thing::content=text: \"Hello, world\", expiration: 60): true"));
 	}
 
 	@Test

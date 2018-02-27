@@ -23,7 +23,7 @@ import java.util.HashMap;
 @SuppressWarnings("all")
 public class InternalLwMessageParser extends AbstractInternalContentAssistParser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_ID", "RULE_INT", "RULE_REAL", "RULE_NEG_INT", "RULE_STRING", "RULE_DIGIT", "RULE_DIGIT0", "RULE_DIGITS", "RULE_DECIMAL", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_INTEGER_VALUE", "RULE_WS", "RULE_ANY_OTHER", "'*'", "'true'", "'false'", "'('", "')'", "','", "'-'", "'='", "':'", "'null'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_ID", "RULE_INT", "RULE_REAL", "RULE_NEG_INT", "RULE_STRING", "RULE_DIGIT", "RULE_DIGIT0", "RULE_DIGITS", "RULE_DECIMAL", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_INTEGER_VALUE", "RULE_WS", "RULE_ANY_OTHER", "'*'", "'true'", "'false'", "'('", "')'", "','", "'-'", "'='", "':'", "'null'", "'::'"
     };
     public static final int RULE_STRING=8;
     public static final int RULE_DIGITS=11;
@@ -41,6 +41,7 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
     public static final int RULE_DECIMAL=12;
     public static final int T__26=26;
     public static final int T__27=27;
+    public static final int T__28=28;
     public static final int RULE_INT=5;
     public static final int T__22=22;
     public static final int RULE_ML_COMMENT=13;
@@ -2071,12 +2072,97 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
     // $ANTLR end "ruleBoolean"
 
 
+    // $ANTLR start "entryRuleQName"
+    // InternalLwMessage.g:731:1: entryRuleQName : ruleQName EOF ;
+    public final void entryRuleQName() throws RecognitionException {
+        try {
+            // InternalLwMessage.g:732:1: ( ruleQName EOF )
+            // InternalLwMessage.g:733:1: ruleQName EOF
+            {
+            if ( state.backtracking==0 ) {
+               before(grammarAccess.getQNameRule()); 
+            }
+            pushFollow(FOLLOW_1);
+            ruleQName();
+
+            state._fsp--;
+            if (state.failed) return ;
+            if ( state.backtracking==0 ) {
+               after(grammarAccess.getQNameRule()); 
+            }
+            match(input,EOF,FOLLOW_2); if (state.failed) return ;
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+        }
+        return ;
+    }
+    // $ANTLR end "entryRuleQName"
+
+
+    // $ANTLR start "ruleQName"
+    // InternalLwMessage.g:740:1: ruleQName : ( ( rule__QName__Group__0 ) ) ;
+    public final void ruleQName() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // InternalLwMessage.g:744:2: ( ( ( rule__QName__Group__0 ) ) )
+            // InternalLwMessage.g:745:1: ( ( rule__QName__Group__0 ) )
+            {
+            // InternalLwMessage.g:745:1: ( ( rule__QName__Group__0 ) )
+            // InternalLwMessage.g:746:1: ( rule__QName__Group__0 )
+            {
+            if ( state.backtracking==0 ) {
+               before(grammarAccess.getQNameAccess().getGroup()); 
+            }
+            // InternalLwMessage.g:747:1: ( rule__QName__Group__0 )
+            // InternalLwMessage.g:747:2: rule__QName__Group__0
+            {
+            pushFollow(FOLLOW_2);
+            rule__QName__Group__0();
+
+            state._fsp--;
+            if (state.failed) return ;
+
+            }
+
+            if ( state.backtracking==0 ) {
+               after(grammarAccess.getQNameAccess().getGroup()); 
+            }
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "ruleQName"
+
+
     // $ANTLR start "entryRuleName"
-    // InternalLwMessage.g:733:1: entryRuleName : ruleName EOF ;
+    // InternalLwMessage.g:759:1: entryRuleName : ruleName EOF ;
     public final void entryRuleName() throws RecognitionException {
         try {
-            // InternalLwMessage.g:734:1: ( ruleName EOF )
-            // InternalLwMessage.g:735:1: ruleName EOF
+            // InternalLwMessage.g:760:1: ( ruleName EOF )
+            // InternalLwMessage.g:761:1: ruleName EOF
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getNameRule()); 
@@ -2106,17 +2192,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "ruleName"
-    // InternalLwMessage.g:742:1: ruleName : ( RULE_ID ) ;
+    // InternalLwMessage.g:768:1: ruleName : ( RULE_ID ) ;
     public final void ruleName() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:746:2: ( ( RULE_ID ) )
-            // InternalLwMessage.g:747:1: ( RULE_ID )
+            // InternalLwMessage.g:772:2: ( ( RULE_ID ) )
+            // InternalLwMessage.g:773:1: ( RULE_ID )
             {
-            // InternalLwMessage.g:747:1: ( RULE_ID )
-            // InternalLwMessage.g:748:1: RULE_ID
+            // InternalLwMessage.g:773:1: ( RULE_ID )
+            // InternalLwMessage.g:774:1: RULE_ID
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getNameAccess().getIDTerminalRuleCall()); 
@@ -2147,13 +2233,13 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__AbstractMessage__Alternatives"
-    // InternalLwMessage.g:761:1: rule__AbstractMessage__Alternatives : ( ( ruleAbstractRequestMessage ) | ( ( ruleReplyMessage ) ) );
+    // InternalLwMessage.g:787:1: rule__AbstractMessage__Alternatives : ( ( ruleAbstractRequestMessage ) | ( ( ruleReplyMessage ) ) );
     public final void rule__AbstractMessage__Alternatives() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:765:1: ( ( ruleAbstractRequestMessage ) | ( ( ruleReplyMessage ) ) )
+            // InternalLwMessage.g:791:1: ( ( ruleAbstractRequestMessage ) | ( ( ruleReplyMessage ) ) )
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -2186,10 +2272,10 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt1) {
                 case 1 :
-                    // InternalLwMessage.g:766:1: ( ruleAbstractRequestMessage )
+                    // InternalLwMessage.g:792:1: ( ruleAbstractRequestMessage )
                     {
-                    // InternalLwMessage.g:766:1: ( ruleAbstractRequestMessage )
-                    // InternalLwMessage.g:767:1: ruleAbstractRequestMessage
+                    // InternalLwMessage.g:792:1: ( ruleAbstractRequestMessage )
+                    // InternalLwMessage.g:793:1: ruleAbstractRequestMessage
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getAbstractMessageAccess().getAbstractRequestMessageParserRuleCall_0()); 
@@ -2209,16 +2295,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 2 :
-                    // InternalLwMessage.g:772:6: ( ( ruleReplyMessage ) )
+                    // InternalLwMessage.g:798:6: ( ( ruleReplyMessage ) )
                     {
-                    // InternalLwMessage.g:772:6: ( ( ruleReplyMessage ) )
-                    // InternalLwMessage.g:773:1: ( ruleReplyMessage )
+                    // InternalLwMessage.g:798:6: ( ( ruleReplyMessage ) )
+                    // InternalLwMessage.g:799:1: ( ruleReplyMessage )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getAbstractMessageAccess().getReplyMessageParserRuleCall_1()); 
                     }
-                    // InternalLwMessage.g:774:1: ( ruleReplyMessage )
-                    // InternalLwMessage.g:774:3: ruleReplyMessage
+                    // InternalLwMessage.g:800:1: ( ruleReplyMessage )
+                    // InternalLwMessage.g:800:3: ruleReplyMessage
                     {
                     pushFollow(FOLLOW_2);
                     ruleReplyMessage();
@@ -2255,13 +2341,13 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__AbstractRequestMessage__Alternatives"
-    // InternalLwMessage.g:783:1: rule__AbstractRequestMessage__Alternatives : ( ( ruleAnyMessage ) | ( ruleRequestMessage ) );
+    // InternalLwMessage.g:809:1: rule__AbstractRequestMessage__Alternatives : ( ( ruleAnyMessage ) | ( ruleRequestMessage ) );
     public final void rule__AbstractRequestMessage__Alternatives() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:787:1: ( ( ruleAnyMessage ) | ( ruleRequestMessage ) )
+            // InternalLwMessage.g:813:1: ( ( ruleAnyMessage ) | ( ruleRequestMessage ) )
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -2280,10 +2366,10 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt2) {
                 case 1 :
-                    // InternalLwMessage.g:788:1: ( ruleAnyMessage )
+                    // InternalLwMessage.g:814:1: ( ruleAnyMessage )
                     {
-                    // InternalLwMessage.g:788:1: ( ruleAnyMessage )
-                    // InternalLwMessage.g:789:1: ruleAnyMessage
+                    // InternalLwMessage.g:814:1: ( ruleAnyMessage )
+                    // InternalLwMessage.g:815:1: ruleAnyMessage
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getAbstractRequestMessageAccess().getAnyMessageParserRuleCall_0()); 
@@ -2303,10 +2389,10 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 2 :
-                    // InternalLwMessage.g:794:6: ( ruleRequestMessage )
+                    // InternalLwMessage.g:820:6: ( ruleRequestMessage )
                     {
-                    // InternalLwMessage.g:794:6: ( ruleRequestMessage )
-                    // InternalLwMessage.g:795:1: ruleRequestMessage
+                    // InternalLwMessage.g:820:6: ( ruleRequestMessage )
+                    // InternalLwMessage.g:821:1: ruleRequestMessage
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getAbstractRequestMessageAccess().getRequestMessageParserRuleCall_1()); 
@@ -2343,13 +2429,13 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__RequestMessage__Alternatives_0"
-    // InternalLwMessage.g:805:1: rule__RequestMessage__Alternatives_0 : ( ( ( rule__RequestMessage__NameAssignment_0_0 ) ) | ( ( rule__RequestMessage__SignalAssignment_0_1 ) ) | ( ( rule__RequestMessage__OperationAssignment_0_2 ) ) );
+    // InternalLwMessage.g:831:1: rule__RequestMessage__Alternatives_0 : ( ( ( rule__RequestMessage__NameAssignment_0_0 ) ) | ( ( rule__RequestMessage__SignalAssignment_0_1 ) ) | ( ( rule__RequestMessage__OperationAssignment_0_2 ) ) );
     public final void rule__RequestMessage__Alternatives_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:809:1: ( ( ( rule__RequestMessage__NameAssignment_0_0 ) ) | ( ( rule__RequestMessage__SignalAssignment_0_1 ) ) | ( ( rule__RequestMessage__OperationAssignment_0_2 ) ) )
+            // InternalLwMessage.g:835:1: ( ( ( rule__RequestMessage__NameAssignment_0_0 ) ) | ( ( rule__RequestMessage__SignalAssignment_0_1 ) ) | ( ( rule__RequestMessage__OperationAssignment_0_2 ) ) )
             int alt3=3;
             int LA3_0 = input.LA(1);
 
@@ -2382,16 +2468,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt3) {
                 case 1 :
-                    // InternalLwMessage.g:810:1: ( ( rule__RequestMessage__NameAssignment_0_0 ) )
+                    // InternalLwMessage.g:836:1: ( ( rule__RequestMessage__NameAssignment_0_0 ) )
                     {
-                    // InternalLwMessage.g:810:1: ( ( rule__RequestMessage__NameAssignment_0_0 ) )
-                    // InternalLwMessage.g:811:1: ( rule__RequestMessage__NameAssignment_0_0 )
+                    // InternalLwMessage.g:836:1: ( ( rule__RequestMessage__NameAssignment_0_0 ) )
+                    // InternalLwMessage.g:837:1: ( rule__RequestMessage__NameAssignment_0_0 )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getRequestMessageAccess().getNameAssignment_0_0()); 
                     }
-                    // InternalLwMessage.g:812:1: ( rule__RequestMessage__NameAssignment_0_0 )
-                    // InternalLwMessage.g:812:2: rule__RequestMessage__NameAssignment_0_0
+                    // InternalLwMessage.g:838:1: ( rule__RequestMessage__NameAssignment_0_0 )
+                    // InternalLwMessage.g:838:2: rule__RequestMessage__NameAssignment_0_0
                     {
                     pushFollow(FOLLOW_2);
                     rule__RequestMessage__NameAssignment_0_0();
@@ -2411,16 +2497,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 2 :
-                    // InternalLwMessage.g:816:6: ( ( rule__RequestMessage__SignalAssignment_0_1 ) )
+                    // InternalLwMessage.g:842:6: ( ( rule__RequestMessage__SignalAssignment_0_1 ) )
                     {
-                    // InternalLwMessage.g:816:6: ( ( rule__RequestMessage__SignalAssignment_0_1 ) )
-                    // InternalLwMessage.g:817:1: ( rule__RequestMessage__SignalAssignment_0_1 )
+                    // InternalLwMessage.g:842:6: ( ( rule__RequestMessage__SignalAssignment_0_1 ) )
+                    // InternalLwMessage.g:843:1: ( rule__RequestMessage__SignalAssignment_0_1 )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getRequestMessageAccess().getSignalAssignment_0_1()); 
                     }
-                    // InternalLwMessage.g:818:1: ( rule__RequestMessage__SignalAssignment_0_1 )
-                    // InternalLwMessage.g:818:2: rule__RequestMessage__SignalAssignment_0_1
+                    // InternalLwMessage.g:844:1: ( rule__RequestMessage__SignalAssignment_0_1 )
+                    // InternalLwMessage.g:844:2: rule__RequestMessage__SignalAssignment_0_1
                     {
                     pushFollow(FOLLOW_2);
                     rule__RequestMessage__SignalAssignment_0_1();
@@ -2440,16 +2526,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 3 :
-                    // InternalLwMessage.g:822:6: ( ( rule__RequestMessage__OperationAssignment_0_2 ) )
+                    // InternalLwMessage.g:848:6: ( ( rule__RequestMessage__OperationAssignment_0_2 ) )
                     {
-                    // InternalLwMessage.g:822:6: ( ( rule__RequestMessage__OperationAssignment_0_2 ) )
-                    // InternalLwMessage.g:823:1: ( rule__RequestMessage__OperationAssignment_0_2 )
+                    // InternalLwMessage.g:848:6: ( ( rule__RequestMessage__OperationAssignment_0_2 ) )
+                    // InternalLwMessage.g:849:1: ( rule__RequestMessage__OperationAssignment_0_2 )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getRequestMessageAccess().getOperationAssignment_0_2()); 
                     }
-                    // InternalLwMessage.g:824:1: ( rule__RequestMessage__OperationAssignment_0_2 )
-                    // InternalLwMessage.g:824:2: rule__RequestMessage__OperationAssignment_0_2
+                    // InternalLwMessage.g:850:1: ( rule__RequestMessage__OperationAssignment_0_2 )
+                    // InternalLwMessage.g:850:2: rule__RequestMessage__OperationAssignment_0_2
                     {
                     pushFollow(FOLLOW_2);
                     rule__RequestMessage__OperationAssignment_0_2();
@@ -2486,13 +2572,13 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Alternatives"
-    // InternalLwMessage.g:833:1: rule__MessageRequestArguments__Alternatives : ( ( ( rule__MessageRequestArguments__Group_0__0 ) ) | ( ( rule__MessageRequestArguments__Group_1__0 ) ) );
+    // InternalLwMessage.g:859:1: rule__MessageRequestArguments__Alternatives : ( ( ( rule__MessageRequestArguments__Group_0__0 ) ) | ( ( rule__MessageRequestArguments__Group_1__0 ) ) );
     public final void rule__MessageRequestArguments__Alternatives() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:837:1: ( ( ( rule__MessageRequestArguments__Group_0__0 ) ) | ( ( rule__MessageRequestArguments__Group_1__0 ) ) )
+            // InternalLwMessage.g:863:1: ( ( ( rule__MessageRequestArguments__Group_0__0 ) ) | ( ( rule__MessageRequestArguments__Group_1__0 ) ) )
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -2511,16 +2597,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt4) {
                 case 1 :
-                    // InternalLwMessage.g:838:1: ( ( rule__MessageRequestArguments__Group_0__0 ) )
+                    // InternalLwMessage.g:864:1: ( ( rule__MessageRequestArguments__Group_0__0 ) )
                     {
-                    // InternalLwMessage.g:838:1: ( ( rule__MessageRequestArguments__Group_0__0 ) )
-                    // InternalLwMessage.g:839:1: ( rule__MessageRequestArguments__Group_0__0 )
+                    // InternalLwMessage.g:864:1: ( ( rule__MessageRequestArguments__Group_0__0 ) )
+                    // InternalLwMessage.g:865:1: ( rule__MessageRequestArguments__Group_0__0 )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getMessageRequestArgumentsAccess().getGroup_0()); 
                     }
-                    // InternalLwMessage.g:840:1: ( rule__MessageRequestArguments__Group_0__0 )
-                    // InternalLwMessage.g:840:2: rule__MessageRequestArguments__Group_0__0
+                    // InternalLwMessage.g:866:1: ( rule__MessageRequestArguments__Group_0__0 )
+                    // InternalLwMessage.g:866:2: rule__MessageRequestArguments__Group_0__0
                     {
                     pushFollow(FOLLOW_2);
                     rule__MessageRequestArguments__Group_0__0();
@@ -2540,16 +2626,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 2 :
-                    // InternalLwMessage.g:844:6: ( ( rule__MessageRequestArguments__Group_1__0 ) )
+                    // InternalLwMessage.g:870:6: ( ( rule__MessageRequestArguments__Group_1__0 ) )
                     {
-                    // InternalLwMessage.g:844:6: ( ( rule__MessageRequestArguments__Group_1__0 ) )
-                    // InternalLwMessage.g:845:1: ( rule__MessageRequestArguments__Group_1__0 )
+                    // InternalLwMessage.g:870:6: ( ( rule__MessageRequestArguments__Group_1__0 ) )
+                    // InternalLwMessage.g:871:1: ( rule__MessageRequestArguments__Group_1__0 )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getMessageRequestArgumentsAccess().getGroup_1()); 
                     }
-                    // InternalLwMessage.g:846:1: ( rule__MessageRequestArguments__Group_1__0 )
-                    // InternalLwMessage.g:846:2: rule__MessageRequestArguments__Group_1__0
+                    // InternalLwMessage.g:872:1: ( rule__MessageRequestArguments__Group_1__0 )
+                    // InternalLwMessage.g:872:2: rule__MessageRequestArguments__Group_1__0
                     {
                     pushFollow(FOLLOW_2);
                     rule__MessageRequestArguments__Group_1__0();
@@ -2586,13 +2672,13 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArgument__Alternatives"
-    // InternalLwMessage.g:855:1: rule__MessageRequestArgument__Alternatives : ( ( ( rule__MessageRequestArgument__Group_0__0 ) ) | ( ruleMessageRequestValue ) );
+    // InternalLwMessage.g:881:1: rule__MessageRequestArgument__Alternatives : ( ( ( rule__MessageRequestArgument__Group_0__0 ) ) | ( ruleMessageRequestValue ) );
     public final void rule__MessageRequestArgument__Alternatives() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:859:1: ( ( ( rule__MessageRequestArgument__Group_0__0 ) ) | ( ruleMessageRequestValue ) )
+            // InternalLwMessage.g:885:1: ( ( ( rule__MessageRequestArgument__Group_0__0 ) ) | ( ruleMessageRequestValue ) )
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -2611,16 +2697,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt5) {
                 case 1 :
-                    // InternalLwMessage.g:860:1: ( ( rule__MessageRequestArgument__Group_0__0 ) )
+                    // InternalLwMessage.g:886:1: ( ( rule__MessageRequestArgument__Group_0__0 ) )
                     {
-                    // InternalLwMessage.g:860:1: ( ( rule__MessageRequestArgument__Group_0__0 ) )
-                    // InternalLwMessage.g:861:1: ( rule__MessageRequestArgument__Group_0__0 )
+                    // InternalLwMessage.g:886:1: ( ( rule__MessageRequestArgument__Group_0__0 ) )
+                    // InternalLwMessage.g:887:1: ( rule__MessageRequestArgument__Group_0__0 )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getMessageRequestArgumentAccess().getGroup_0()); 
                     }
-                    // InternalLwMessage.g:862:1: ( rule__MessageRequestArgument__Group_0__0 )
-                    // InternalLwMessage.g:862:2: rule__MessageRequestArgument__Group_0__0
+                    // InternalLwMessage.g:888:1: ( rule__MessageRequestArgument__Group_0__0 )
+                    // InternalLwMessage.g:888:2: rule__MessageRequestArgument__Group_0__0
                     {
                     pushFollow(FOLLOW_2);
                     rule__MessageRequestArgument__Group_0__0();
@@ -2640,10 +2726,10 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 2 :
-                    // InternalLwMessage.g:866:6: ( ruleMessageRequestValue )
+                    // InternalLwMessage.g:892:6: ( ruleMessageRequestValue )
                     {
-                    // InternalLwMessage.g:866:6: ( ruleMessageRequestValue )
-                    // InternalLwMessage.g:867:1: ruleMessageRequestValue
+                    // InternalLwMessage.g:892:6: ( ruleMessageRequestValue )
+                    // InternalLwMessage.g:893:1: ruleMessageRequestValue
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getMessageRequestArgumentAccess().getMessageRequestValueParserRuleCall_1()); 
@@ -2680,13 +2766,13 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestNameAndValue__Alternatives_0"
-    // InternalLwMessage.g:877:1: rule__MessageRequestNameAndValue__Alternatives_0 : ( ( ( rule__MessageRequestNameAndValue__NameAssignment_0_0 ) ) | ( ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 ) ) | ( ( rule__MessageRequestNameAndValue__ParameterAssignment_0_2 ) ) );
+    // InternalLwMessage.g:903:1: rule__MessageRequestNameAndValue__Alternatives_0 : ( ( ( rule__MessageRequestNameAndValue__NameAssignment_0_0 ) ) | ( ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 ) ) | ( ( rule__MessageRequestNameAndValue__ParameterAssignment_0_2 ) ) );
     public final void rule__MessageRequestNameAndValue__Alternatives_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:881:1: ( ( ( rule__MessageRequestNameAndValue__NameAssignment_0_0 ) ) | ( ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 ) ) | ( ( rule__MessageRequestNameAndValue__ParameterAssignment_0_2 ) ) )
+            // InternalLwMessage.g:907:1: ( ( ( rule__MessageRequestNameAndValue__NameAssignment_0_0 ) ) | ( ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 ) ) | ( ( rule__MessageRequestNameAndValue__ParameterAssignment_0_2 ) ) )
             int alt6=3;
             int LA6_0 = input.LA(1);
 
@@ -2719,16 +2805,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt6) {
                 case 1 :
-                    // InternalLwMessage.g:882:1: ( ( rule__MessageRequestNameAndValue__NameAssignment_0_0 ) )
+                    // InternalLwMessage.g:908:1: ( ( rule__MessageRequestNameAndValue__NameAssignment_0_0 ) )
                     {
-                    // InternalLwMessage.g:882:1: ( ( rule__MessageRequestNameAndValue__NameAssignment_0_0 ) )
-                    // InternalLwMessage.g:883:1: ( rule__MessageRequestNameAndValue__NameAssignment_0_0 )
+                    // InternalLwMessage.g:908:1: ( ( rule__MessageRequestNameAndValue__NameAssignment_0_0 ) )
+                    // InternalLwMessage.g:909:1: ( rule__MessageRequestNameAndValue__NameAssignment_0_0 )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getMessageRequestNameAndValueAccess().getNameAssignment_0_0()); 
                     }
-                    // InternalLwMessage.g:884:1: ( rule__MessageRequestNameAndValue__NameAssignment_0_0 )
-                    // InternalLwMessage.g:884:2: rule__MessageRequestNameAndValue__NameAssignment_0_0
+                    // InternalLwMessage.g:910:1: ( rule__MessageRequestNameAndValue__NameAssignment_0_0 )
+                    // InternalLwMessage.g:910:2: rule__MessageRequestNameAndValue__NameAssignment_0_0
                     {
                     pushFollow(FOLLOW_2);
                     rule__MessageRequestNameAndValue__NameAssignment_0_0();
@@ -2748,16 +2834,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 2 :
-                    // InternalLwMessage.g:888:6: ( ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 ) )
+                    // InternalLwMessage.g:914:6: ( ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 ) )
                     {
-                    // InternalLwMessage.g:888:6: ( ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 ) )
-                    // InternalLwMessage.g:889:1: ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 )
+                    // InternalLwMessage.g:914:6: ( ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 ) )
+                    // InternalLwMessage.g:915:1: ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getMessageRequestNameAndValueAccess().getPropertyAssignment_0_1()); 
                     }
-                    // InternalLwMessage.g:890:1: ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 )
-                    // InternalLwMessage.g:890:2: rule__MessageRequestNameAndValue__PropertyAssignment_0_1
+                    // InternalLwMessage.g:916:1: ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 )
+                    // InternalLwMessage.g:916:2: rule__MessageRequestNameAndValue__PropertyAssignment_0_1
                     {
                     pushFollow(FOLLOW_2);
                     rule__MessageRequestNameAndValue__PropertyAssignment_0_1();
@@ -2777,16 +2863,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 3 :
-                    // InternalLwMessage.g:894:6: ( ( rule__MessageRequestNameAndValue__ParameterAssignment_0_2 ) )
+                    // InternalLwMessage.g:920:6: ( ( rule__MessageRequestNameAndValue__ParameterAssignment_0_2 ) )
                     {
-                    // InternalLwMessage.g:894:6: ( ( rule__MessageRequestNameAndValue__ParameterAssignment_0_2 ) )
-                    // InternalLwMessage.g:895:1: ( rule__MessageRequestNameAndValue__ParameterAssignment_0_2 )
+                    // InternalLwMessage.g:920:6: ( ( rule__MessageRequestNameAndValue__ParameterAssignment_0_2 ) )
+                    // InternalLwMessage.g:921:1: ( rule__MessageRequestNameAndValue__ParameterAssignment_0_2 )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getMessageRequestNameAndValueAccess().getParameterAssignment_0_2()); 
                     }
-                    // InternalLwMessage.g:896:1: ( rule__MessageRequestNameAndValue__ParameterAssignment_0_2 )
-                    // InternalLwMessage.g:896:2: rule__MessageRequestNameAndValue__ParameterAssignment_0_2
+                    // InternalLwMessage.g:922:1: ( rule__MessageRequestNameAndValue__ParameterAssignment_0_2 )
+                    // InternalLwMessage.g:922:2: rule__MessageRequestNameAndValue__ParameterAssignment_0_2
                     {
                     pushFollow(FOLLOW_2);
                     rule__MessageRequestNameAndValue__ParameterAssignment_0_2();
@@ -2823,13 +2909,13 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__Alternatives_1"
-    // InternalLwMessage.g:905:1: rule__ReplyMessage__Alternatives_1 : ( ( ( rule__ReplyMessage__NameAssignment_1_0 ) ) | ( ( rule__ReplyMessage__OperationAssignment_1_1 ) ) );
+    // InternalLwMessage.g:931:1: rule__ReplyMessage__Alternatives_1 : ( ( ( rule__ReplyMessage__NameAssignment_1_0 ) ) | ( ( rule__ReplyMessage__OperationAssignment_1_1 ) ) );
     public final void rule__ReplyMessage__Alternatives_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:909:1: ( ( ( rule__ReplyMessage__NameAssignment_1_0 ) ) | ( ( rule__ReplyMessage__OperationAssignment_1_1 ) ) )
+            // InternalLwMessage.g:935:1: ( ( ( rule__ReplyMessage__NameAssignment_1_0 ) ) | ( ( rule__ReplyMessage__OperationAssignment_1_1 ) ) )
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -2859,16 +2945,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt7) {
                 case 1 :
-                    // InternalLwMessage.g:910:1: ( ( rule__ReplyMessage__NameAssignment_1_0 ) )
+                    // InternalLwMessage.g:936:1: ( ( rule__ReplyMessage__NameAssignment_1_0 ) )
                     {
-                    // InternalLwMessage.g:910:1: ( ( rule__ReplyMessage__NameAssignment_1_0 ) )
-                    // InternalLwMessage.g:911:1: ( rule__ReplyMessage__NameAssignment_1_0 )
+                    // InternalLwMessage.g:936:1: ( ( rule__ReplyMessage__NameAssignment_1_0 ) )
+                    // InternalLwMessage.g:937:1: ( rule__ReplyMessage__NameAssignment_1_0 )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getReplyMessageAccess().getNameAssignment_1_0()); 
                     }
-                    // InternalLwMessage.g:912:1: ( rule__ReplyMessage__NameAssignment_1_0 )
-                    // InternalLwMessage.g:912:2: rule__ReplyMessage__NameAssignment_1_0
+                    // InternalLwMessage.g:938:1: ( rule__ReplyMessage__NameAssignment_1_0 )
+                    // InternalLwMessage.g:938:2: rule__ReplyMessage__NameAssignment_1_0
                     {
                     pushFollow(FOLLOW_2);
                     rule__ReplyMessage__NameAssignment_1_0();
@@ -2888,16 +2974,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 2 :
-                    // InternalLwMessage.g:916:6: ( ( rule__ReplyMessage__OperationAssignment_1_1 ) )
+                    // InternalLwMessage.g:942:6: ( ( rule__ReplyMessage__OperationAssignment_1_1 ) )
                     {
-                    // InternalLwMessage.g:916:6: ( ( rule__ReplyMessage__OperationAssignment_1_1 ) )
-                    // InternalLwMessage.g:917:1: ( rule__ReplyMessage__OperationAssignment_1_1 )
+                    // InternalLwMessage.g:942:6: ( ( rule__ReplyMessage__OperationAssignment_1_1 ) )
+                    // InternalLwMessage.g:943:1: ( rule__ReplyMessage__OperationAssignment_1_1 )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getReplyMessageAccess().getOperationAssignment_1_1()); 
                     }
-                    // InternalLwMessage.g:918:1: ( rule__ReplyMessage__OperationAssignment_1_1 )
-                    // InternalLwMessage.g:918:2: rule__ReplyMessage__OperationAssignment_1_1
+                    // InternalLwMessage.g:944:1: ( rule__ReplyMessage__OperationAssignment_1_1 )
+                    // InternalLwMessage.g:944:2: rule__ReplyMessage__OperationAssignment_1_1
                     {
                     pushFollow(FOLLOW_2);
                     rule__ReplyMessage__OperationAssignment_1_1();
@@ -2934,24 +3020,24 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutput__Alternatives"
-    // InternalLwMessage.g:927:1: rule__MessageReplyOutput__Alternatives : ( ( ( rule__MessageReplyOutput__Group_0__0 ) ) | ( ( rule__MessageReplyOutput__Group_1__0 ) ) );
+    // InternalLwMessage.g:953:1: rule__MessageReplyOutput__Alternatives : ( ( ( rule__MessageReplyOutput__Group_0__0 ) ) | ( ( rule__MessageReplyOutput__Group_1__0 ) ) );
     public final void rule__MessageReplyOutput__Alternatives() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:931:1: ( ( ( rule__MessageReplyOutput__Group_0__0 ) ) | ( ( rule__MessageReplyOutput__Group_1__0 ) ) )
+            // InternalLwMessage.g:957:1: ( ( ( rule__MessageReplyOutput__Group_0__0 ) ) | ( ( rule__MessageReplyOutput__Group_1__0 ) ) )
             int alt8=2;
             int LA8_0 = input.LA(1);
 
             if ( (LA8_0==RULE_ID) ) {
                 int LA8_1 = input.LA(2);
 
-                if ( (LA8_1==25) ) {
-                    alt8=1;
-                }
-                else if ( (LA8_1==26) ) {
+                if ( (LA8_1==26) ) {
                     alt8=2;
+                }
+                else if ( (LA8_1==25||LA8_1==28) ) {
+                    alt8=1;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return ;}
@@ -2970,16 +3056,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt8) {
                 case 1 :
-                    // InternalLwMessage.g:932:1: ( ( rule__MessageReplyOutput__Group_0__0 ) )
+                    // InternalLwMessage.g:958:1: ( ( rule__MessageReplyOutput__Group_0__0 ) )
                     {
-                    // InternalLwMessage.g:932:1: ( ( rule__MessageReplyOutput__Group_0__0 ) )
-                    // InternalLwMessage.g:933:1: ( rule__MessageReplyOutput__Group_0__0 )
+                    // InternalLwMessage.g:958:1: ( ( rule__MessageReplyOutput__Group_0__0 ) )
+                    // InternalLwMessage.g:959:1: ( rule__MessageReplyOutput__Group_0__0 )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getMessageReplyOutputAccess().getGroup_0()); 
                     }
-                    // InternalLwMessage.g:934:1: ( rule__MessageReplyOutput__Group_0__0 )
-                    // InternalLwMessage.g:934:2: rule__MessageReplyOutput__Group_0__0
+                    // InternalLwMessage.g:960:1: ( rule__MessageReplyOutput__Group_0__0 )
+                    // InternalLwMessage.g:960:2: rule__MessageReplyOutput__Group_0__0
                     {
                     pushFollow(FOLLOW_2);
                     rule__MessageReplyOutput__Group_0__0();
@@ -2999,16 +3085,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 2 :
-                    // InternalLwMessage.g:938:6: ( ( rule__MessageReplyOutput__Group_1__0 ) )
+                    // InternalLwMessage.g:964:6: ( ( rule__MessageReplyOutput__Group_1__0 ) )
                     {
-                    // InternalLwMessage.g:938:6: ( ( rule__MessageReplyOutput__Group_1__0 ) )
-                    // InternalLwMessage.g:939:1: ( rule__MessageReplyOutput__Group_1__0 )
+                    // InternalLwMessage.g:964:6: ( ( rule__MessageReplyOutput__Group_1__0 ) )
+                    // InternalLwMessage.g:965:1: ( rule__MessageReplyOutput__Group_1__0 )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getMessageReplyOutputAccess().getGroup_1()); 
                     }
-                    // InternalLwMessage.g:940:1: ( rule__MessageReplyOutput__Group_1__0 )
-                    // InternalLwMessage.g:940:2: rule__MessageReplyOutput__Group_1__0
+                    // InternalLwMessage.g:966:1: ( rule__MessageReplyOutput__Group_1__0 )
+                    // InternalLwMessage.g:966:2: rule__MessageReplyOutput__Group_1__0
                     {
                     pushFollow(FOLLOW_2);
                     rule__MessageReplyOutput__Group_1__0();
@@ -3045,13 +3131,13 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__Value__Alternatives"
-    // InternalLwMessage.g:949:1: rule__Value__Alternatives : ( ( ruleBooleanValue ) | ( ( ruleIntegerValue ) ) | ( ( ruleUnlimitedNaturalValue ) ) | ( ( ruleRealValue ) ) | ( ruleNullValue ) | ( ruleStringValue ) );
+    // InternalLwMessage.g:975:1: rule__Value__Alternatives : ( ( ruleBooleanValue ) | ( ( ruleIntegerValue ) ) | ( ( ruleUnlimitedNaturalValue ) ) | ( ( ruleRealValue ) ) | ( ruleNullValue ) | ( ruleStringValue ) );
     public final void rule__Value__Alternatives() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:953:1: ( ( ruleBooleanValue ) | ( ( ruleIntegerValue ) ) | ( ( ruleUnlimitedNaturalValue ) ) | ( ( ruleRealValue ) ) | ( ruleNullValue ) | ( ruleStringValue ) )
+            // InternalLwMessage.g:979:1: ( ( ruleBooleanValue ) | ( ( ruleIntegerValue ) ) | ( ( ruleUnlimitedNaturalValue ) ) | ( ( ruleRealValue ) ) | ( ruleNullValue ) | ( ruleStringValue ) )
             int alt9=6;
             switch ( input.LA(1) ) {
             case 19:
@@ -3113,10 +3199,10 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
             switch (alt9) {
                 case 1 :
-                    // InternalLwMessage.g:954:1: ( ruleBooleanValue )
+                    // InternalLwMessage.g:980:1: ( ruleBooleanValue )
                     {
-                    // InternalLwMessage.g:954:1: ( ruleBooleanValue )
-                    // InternalLwMessage.g:955:1: ruleBooleanValue
+                    // InternalLwMessage.g:980:1: ( ruleBooleanValue )
+                    // InternalLwMessage.g:981:1: ruleBooleanValue
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getValueAccess().getBooleanValueParserRuleCall_0()); 
@@ -3136,16 +3222,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 2 :
-                    // InternalLwMessage.g:960:6: ( ( ruleIntegerValue ) )
+                    // InternalLwMessage.g:986:6: ( ( ruleIntegerValue ) )
                     {
-                    // InternalLwMessage.g:960:6: ( ( ruleIntegerValue ) )
-                    // InternalLwMessage.g:961:1: ( ruleIntegerValue )
+                    // InternalLwMessage.g:986:6: ( ( ruleIntegerValue ) )
+                    // InternalLwMessage.g:987:1: ( ruleIntegerValue )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getValueAccess().getIntegerValueParserRuleCall_1()); 
                     }
-                    // InternalLwMessage.g:962:1: ( ruleIntegerValue )
-                    // InternalLwMessage.g:962:3: ruleIntegerValue
+                    // InternalLwMessage.g:988:1: ( ruleIntegerValue )
+                    // InternalLwMessage.g:988:3: ruleIntegerValue
                     {
                     pushFollow(FOLLOW_2);
                     ruleIntegerValue();
@@ -3165,16 +3251,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 3 :
-                    // InternalLwMessage.g:966:6: ( ( ruleUnlimitedNaturalValue ) )
+                    // InternalLwMessage.g:992:6: ( ( ruleUnlimitedNaturalValue ) )
                     {
-                    // InternalLwMessage.g:966:6: ( ( ruleUnlimitedNaturalValue ) )
-                    // InternalLwMessage.g:967:1: ( ruleUnlimitedNaturalValue )
+                    // InternalLwMessage.g:992:6: ( ( ruleUnlimitedNaturalValue ) )
+                    // InternalLwMessage.g:993:1: ( ruleUnlimitedNaturalValue )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getValueAccess().getUnlimitedNaturalValueParserRuleCall_2()); 
                     }
-                    // InternalLwMessage.g:968:1: ( ruleUnlimitedNaturalValue )
-                    // InternalLwMessage.g:968:3: ruleUnlimitedNaturalValue
+                    // InternalLwMessage.g:994:1: ( ruleUnlimitedNaturalValue )
+                    // InternalLwMessage.g:994:3: ruleUnlimitedNaturalValue
                     {
                     pushFollow(FOLLOW_2);
                     ruleUnlimitedNaturalValue();
@@ -3194,16 +3280,16 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 4 :
-                    // InternalLwMessage.g:972:6: ( ( ruleRealValue ) )
+                    // InternalLwMessage.g:998:6: ( ( ruleRealValue ) )
                     {
-                    // InternalLwMessage.g:972:6: ( ( ruleRealValue ) )
-                    // InternalLwMessage.g:973:1: ( ruleRealValue )
+                    // InternalLwMessage.g:998:6: ( ( ruleRealValue ) )
+                    // InternalLwMessage.g:999:1: ( ruleRealValue )
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getValueAccess().getRealValueParserRuleCall_3()); 
                     }
-                    // InternalLwMessage.g:974:1: ( ruleRealValue )
-                    // InternalLwMessage.g:974:3: ruleRealValue
+                    // InternalLwMessage.g:1000:1: ( ruleRealValue )
+                    // InternalLwMessage.g:1000:3: ruleRealValue
                     {
                     pushFollow(FOLLOW_2);
                     ruleRealValue();
@@ -3223,10 +3309,10 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 5 :
-                    // InternalLwMessage.g:978:6: ( ruleNullValue )
+                    // InternalLwMessage.g:1004:6: ( ruleNullValue )
                     {
-                    // InternalLwMessage.g:978:6: ( ruleNullValue )
-                    // InternalLwMessage.g:979:1: ruleNullValue
+                    // InternalLwMessage.g:1004:6: ( ruleNullValue )
+                    // InternalLwMessage.g:1005:1: ruleNullValue
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getValueAccess().getNullValueParserRuleCall_4()); 
@@ -3246,10 +3332,10 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 6 :
-                    // InternalLwMessage.g:984:6: ( ruleStringValue )
+                    // InternalLwMessage.g:1010:6: ( ruleStringValue )
                     {
-                    // InternalLwMessage.g:984:6: ( ruleStringValue )
-                    // InternalLwMessage.g:985:1: ruleStringValue
+                    // InternalLwMessage.g:1010:6: ( ruleStringValue )
+                    // InternalLwMessage.g:1011:1: ruleStringValue
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getValueAccess().getStringValueParserRuleCall_5()); 
@@ -3286,13 +3372,13 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__Double__Alternatives"
-    // InternalLwMessage.g:995:1: rule__Double__Alternatives : ( ( RULE_INT ) | ( RULE_REAL ) );
+    // InternalLwMessage.g:1021:1: rule__Double__Alternatives : ( ( RULE_INT ) | ( RULE_REAL ) );
     public final void rule__Double__Alternatives() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:999:1: ( ( RULE_INT ) | ( RULE_REAL ) )
+            // InternalLwMessage.g:1025:1: ( ( RULE_INT ) | ( RULE_REAL ) )
             int alt10=2;
             int LA10_0 = input.LA(1);
 
@@ -3311,10 +3397,10 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt10) {
                 case 1 :
-                    // InternalLwMessage.g:1000:1: ( RULE_INT )
+                    // InternalLwMessage.g:1026:1: ( RULE_INT )
                     {
-                    // InternalLwMessage.g:1000:1: ( RULE_INT )
-                    // InternalLwMessage.g:1001:1: RULE_INT
+                    // InternalLwMessage.g:1026:1: ( RULE_INT )
+                    // InternalLwMessage.g:1027:1: RULE_INT
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getDoubleAccess().getINTTerminalRuleCall_0()); 
@@ -3330,10 +3416,10 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 2 :
-                    // InternalLwMessage.g:1006:6: ( RULE_REAL )
+                    // InternalLwMessage.g:1032:6: ( RULE_REAL )
                     {
-                    // InternalLwMessage.g:1006:6: ( RULE_REAL )
-                    // InternalLwMessage.g:1007:1: RULE_REAL
+                    // InternalLwMessage.g:1032:6: ( RULE_REAL )
+                    // InternalLwMessage.g:1033:1: RULE_REAL
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getDoubleAccess().getREALTerminalRuleCall_1()); 
@@ -3366,13 +3452,13 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__UnlimitedNatural__Alternatives"
-    // InternalLwMessage.g:1017:1: rule__UnlimitedNatural__Alternatives : ( ( ruleInteger ) | ( '*' ) );
+    // InternalLwMessage.g:1043:1: rule__UnlimitedNatural__Alternatives : ( ( ruleInteger ) | ( '*' ) );
     public final void rule__UnlimitedNatural__Alternatives() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1021:1: ( ( ruleInteger ) | ( '*' ) )
+            // InternalLwMessage.g:1047:1: ( ( ruleInteger ) | ( '*' ) )
             int alt11=2;
             int LA11_0 = input.LA(1);
 
@@ -3391,10 +3477,10 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt11) {
                 case 1 :
-                    // InternalLwMessage.g:1022:1: ( ruleInteger )
+                    // InternalLwMessage.g:1048:1: ( ruleInteger )
                     {
-                    // InternalLwMessage.g:1022:1: ( ruleInteger )
-                    // InternalLwMessage.g:1023:1: ruleInteger
+                    // InternalLwMessage.g:1048:1: ( ruleInteger )
+                    // InternalLwMessage.g:1049:1: ruleInteger
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getUnlimitedNaturalAccess().getIntegerParserRuleCall_0()); 
@@ -3414,10 +3500,10 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 2 :
-                    // InternalLwMessage.g:1028:6: ( '*' )
+                    // InternalLwMessage.g:1054:6: ( '*' )
                     {
-                    // InternalLwMessage.g:1028:6: ( '*' )
-                    // InternalLwMessage.g:1029:1: '*'
+                    // InternalLwMessage.g:1054:6: ( '*' )
+                    // InternalLwMessage.g:1055:1: '*'
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getUnlimitedNaturalAccess().getAsteriskKeyword_1()); 
@@ -3450,13 +3536,13 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__Integer__Alternatives"
-    // InternalLwMessage.g:1041:1: rule__Integer__Alternatives : ( ( RULE_INT ) | ( RULE_NEG_INT ) );
+    // InternalLwMessage.g:1067:1: rule__Integer__Alternatives : ( ( RULE_INT ) | ( RULE_NEG_INT ) );
     public final void rule__Integer__Alternatives() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1045:1: ( ( RULE_INT ) | ( RULE_NEG_INT ) )
+            // InternalLwMessage.g:1071:1: ( ( RULE_INT ) | ( RULE_NEG_INT ) )
             int alt12=2;
             int LA12_0 = input.LA(1);
 
@@ -3475,10 +3561,10 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt12) {
                 case 1 :
-                    // InternalLwMessage.g:1046:1: ( RULE_INT )
+                    // InternalLwMessage.g:1072:1: ( RULE_INT )
                     {
-                    // InternalLwMessage.g:1046:1: ( RULE_INT )
-                    // InternalLwMessage.g:1047:1: RULE_INT
+                    // InternalLwMessage.g:1072:1: ( RULE_INT )
+                    // InternalLwMessage.g:1073:1: RULE_INT
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getIntegerAccess().getINTTerminalRuleCall_0()); 
@@ -3494,10 +3580,10 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 2 :
-                    // InternalLwMessage.g:1052:6: ( RULE_NEG_INT )
+                    // InternalLwMessage.g:1078:6: ( RULE_NEG_INT )
                     {
-                    // InternalLwMessage.g:1052:6: ( RULE_NEG_INT )
-                    // InternalLwMessage.g:1053:1: RULE_NEG_INT
+                    // InternalLwMessage.g:1078:6: ( RULE_NEG_INT )
+                    // InternalLwMessage.g:1079:1: RULE_NEG_INT
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getIntegerAccess().getNEG_INTTerminalRuleCall_1()); 
@@ -3530,13 +3616,13 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__Boolean__Alternatives"
-    // InternalLwMessage.g:1063:1: rule__Boolean__Alternatives : ( ( 'true' ) | ( 'false' ) );
+    // InternalLwMessage.g:1089:1: rule__Boolean__Alternatives : ( ( 'true' ) | ( 'false' ) );
     public final void rule__Boolean__Alternatives() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1067:1: ( ( 'true' ) | ( 'false' ) )
+            // InternalLwMessage.g:1093:1: ( ( 'true' ) | ( 'false' ) )
             int alt13=2;
             int LA13_0 = input.LA(1);
 
@@ -3555,10 +3641,10 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt13) {
                 case 1 :
-                    // InternalLwMessage.g:1068:1: ( 'true' )
+                    // InternalLwMessage.g:1094:1: ( 'true' )
                     {
-                    // InternalLwMessage.g:1068:1: ( 'true' )
-                    // InternalLwMessage.g:1069:1: 'true'
+                    // InternalLwMessage.g:1094:1: ( 'true' )
+                    // InternalLwMessage.g:1095:1: 'true'
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getBooleanAccess().getTrueKeyword_0()); 
@@ -3574,10 +3660,10 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
                     }
                     break;
                 case 2 :
-                    // InternalLwMessage.g:1076:6: ( 'false' )
+                    // InternalLwMessage.g:1102:6: ( 'false' )
                     {
-                    // InternalLwMessage.g:1076:6: ( 'false' )
-                    // InternalLwMessage.g:1077:1: 'false'
+                    // InternalLwMessage.g:1102:6: ( 'false' )
+                    // InternalLwMessage.g:1103:1: 'false'
                     {
                     if ( state.backtracking==0 ) {
                        before(grammarAccess.getBooleanAccess().getFalseKeyword_1()); 
@@ -3610,14 +3696,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__RequestMessage__Group__0"
-    // InternalLwMessage.g:1091:1: rule__RequestMessage__Group__0 : rule__RequestMessage__Group__0__Impl rule__RequestMessage__Group__1 ;
+    // InternalLwMessage.g:1117:1: rule__RequestMessage__Group__0 : rule__RequestMessage__Group__0__Impl rule__RequestMessage__Group__1 ;
     public final void rule__RequestMessage__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1095:1: ( rule__RequestMessage__Group__0__Impl rule__RequestMessage__Group__1 )
-            // InternalLwMessage.g:1096:2: rule__RequestMessage__Group__0__Impl rule__RequestMessage__Group__1
+            // InternalLwMessage.g:1121:1: ( rule__RequestMessage__Group__0__Impl rule__RequestMessage__Group__1 )
+            // InternalLwMessage.g:1122:2: rule__RequestMessage__Group__0__Impl rule__RequestMessage__Group__1
             {
             pushFollow(FOLLOW_3);
             rule__RequestMessage__Group__0__Impl();
@@ -3648,23 +3734,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__RequestMessage__Group__0__Impl"
-    // InternalLwMessage.g:1103:1: rule__RequestMessage__Group__0__Impl : ( ( rule__RequestMessage__Alternatives_0 ) ) ;
+    // InternalLwMessage.g:1129:1: rule__RequestMessage__Group__0__Impl : ( ( rule__RequestMessage__Alternatives_0 ) ) ;
     public final void rule__RequestMessage__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1107:1: ( ( ( rule__RequestMessage__Alternatives_0 ) ) )
-            // InternalLwMessage.g:1108:1: ( ( rule__RequestMessage__Alternatives_0 ) )
+            // InternalLwMessage.g:1133:1: ( ( ( rule__RequestMessage__Alternatives_0 ) ) )
+            // InternalLwMessage.g:1134:1: ( ( rule__RequestMessage__Alternatives_0 ) )
             {
-            // InternalLwMessage.g:1108:1: ( ( rule__RequestMessage__Alternatives_0 ) )
-            // InternalLwMessage.g:1109:1: ( rule__RequestMessage__Alternatives_0 )
+            // InternalLwMessage.g:1134:1: ( ( rule__RequestMessage__Alternatives_0 ) )
+            // InternalLwMessage.g:1135:1: ( rule__RequestMessage__Alternatives_0 )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getRequestMessageAccess().getAlternatives_0()); 
             }
-            // InternalLwMessage.g:1110:1: ( rule__RequestMessage__Alternatives_0 )
-            // InternalLwMessage.g:1110:2: rule__RequestMessage__Alternatives_0
+            // InternalLwMessage.g:1136:1: ( rule__RequestMessage__Alternatives_0 )
+            // InternalLwMessage.g:1136:2: rule__RequestMessage__Alternatives_0
             {
             pushFollow(FOLLOW_2);
             rule__RequestMessage__Alternatives_0();
@@ -3699,14 +3785,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__RequestMessage__Group__1"
-    // InternalLwMessage.g:1120:1: rule__RequestMessage__Group__1 : rule__RequestMessage__Group__1__Impl ;
+    // InternalLwMessage.g:1146:1: rule__RequestMessage__Group__1 : rule__RequestMessage__Group__1__Impl ;
     public final void rule__RequestMessage__Group__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1124:1: ( rule__RequestMessage__Group__1__Impl )
-            // InternalLwMessage.g:1125:2: rule__RequestMessage__Group__1__Impl
+            // InternalLwMessage.g:1150:1: ( rule__RequestMessage__Group__1__Impl )
+            // InternalLwMessage.g:1151:2: rule__RequestMessage__Group__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__RequestMessage__Group__1__Impl();
@@ -3732,22 +3818,22 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__RequestMessage__Group__1__Impl"
-    // InternalLwMessage.g:1131:1: rule__RequestMessage__Group__1__Impl : ( ( rule__RequestMessage__Group_1__0 )? ) ;
+    // InternalLwMessage.g:1157:1: rule__RequestMessage__Group__1__Impl : ( ( rule__RequestMessage__Group_1__0 )? ) ;
     public final void rule__RequestMessage__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1135:1: ( ( ( rule__RequestMessage__Group_1__0 )? ) )
-            // InternalLwMessage.g:1136:1: ( ( rule__RequestMessage__Group_1__0 )? )
+            // InternalLwMessage.g:1161:1: ( ( ( rule__RequestMessage__Group_1__0 )? ) )
+            // InternalLwMessage.g:1162:1: ( ( rule__RequestMessage__Group_1__0 )? )
             {
-            // InternalLwMessage.g:1136:1: ( ( rule__RequestMessage__Group_1__0 )? )
-            // InternalLwMessage.g:1137:1: ( rule__RequestMessage__Group_1__0 )?
+            // InternalLwMessage.g:1162:1: ( ( rule__RequestMessage__Group_1__0 )? )
+            // InternalLwMessage.g:1163:1: ( rule__RequestMessage__Group_1__0 )?
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getRequestMessageAccess().getGroup_1()); 
             }
-            // InternalLwMessage.g:1138:1: ( rule__RequestMessage__Group_1__0 )?
+            // InternalLwMessage.g:1164:1: ( rule__RequestMessage__Group_1__0 )?
             int alt14=2;
             int LA14_0 = input.LA(1);
 
@@ -3756,7 +3842,7 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt14) {
                 case 1 :
-                    // InternalLwMessage.g:1138:2: rule__RequestMessage__Group_1__0
+                    // InternalLwMessage.g:1164:2: rule__RequestMessage__Group_1__0
                     {
                     pushFollow(FOLLOW_2);
                     rule__RequestMessage__Group_1__0();
@@ -3794,14 +3880,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__RequestMessage__Group_1__0"
-    // InternalLwMessage.g:1152:1: rule__RequestMessage__Group_1__0 : rule__RequestMessage__Group_1__0__Impl rule__RequestMessage__Group_1__1 ;
+    // InternalLwMessage.g:1178:1: rule__RequestMessage__Group_1__0 : rule__RequestMessage__Group_1__0__Impl rule__RequestMessage__Group_1__1 ;
     public final void rule__RequestMessage__Group_1__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1156:1: ( rule__RequestMessage__Group_1__0__Impl rule__RequestMessage__Group_1__1 )
-            // InternalLwMessage.g:1157:2: rule__RequestMessage__Group_1__0__Impl rule__RequestMessage__Group_1__1
+            // InternalLwMessage.g:1182:1: ( rule__RequestMessage__Group_1__0__Impl rule__RequestMessage__Group_1__1 )
+            // InternalLwMessage.g:1183:2: rule__RequestMessage__Group_1__0__Impl rule__RequestMessage__Group_1__1
             {
             pushFollow(FOLLOW_4);
             rule__RequestMessage__Group_1__0__Impl();
@@ -3832,17 +3918,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__RequestMessage__Group_1__0__Impl"
-    // InternalLwMessage.g:1164:1: rule__RequestMessage__Group_1__0__Impl : ( '(' ) ;
+    // InternalLwMessage.g:1190:1: rule__RequestMessage__Group_1__0__Impl : ( '(' ) ;
     public final void rule__RequestMessage__Group_1__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1168:1: ( ( '(' ) )
-            // InternalLwMessage.g:1169:1: ( '(' )
+            // InternalLwMessage.g:1194:1: ( ( '(' ) )
+            // InternalLwMessage.g:1195:1: ( '(' )
             {
-            // InternalLwMessage.g:1169:1: ( '(' )
-            // InternalLwMessage.g:1170:1: '('
+            // InternalLwMessage.g:1195:1: ( '(' )
+            // InternalLwMessage.g:1196:1: '('
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getRequestMessageAccess().getLeftParenthesisKeyword_1_0()); 
@@ -3873,14 +3959,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__RequestMessage__Group_1__1"
-    // InternalLwMessage.g:1183:1: rule__RequestMessage__Group_1__1 : rule__RequestMessage__Group_1__1__Impl rule__RequestMessage__Group_1__2 ;
+    // InternalLwMessage.g:1209:1: rule__RequestMessage__Group_1__1 : rule__RequestMessage__Group_1__1__Impl rule__RequestMessage__Group_1__2 ;
     public final void rule__RequestMessage__Group_1__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1187:1: ( rule__RequestMessage__Group_1__1__Impl rule__RequestMessage__Group_1__2 )
-            // InternalLwMessage.g:1188:2: rule__RequestMessage__Group_1__1__Impl rule__RequestMessage__Group_1__2
+            // InternalLwMessage.g:1213:1: ( rule__RequestMessage__Group_1__1__Impl rule__RequestMessage__Group_1__2 )
+            // InternalLwMessage.g:1214:2: rule__RequestMessage__Group_1__1__Impl rule__RequestMessage__Group_1__2
             {
             pushFollow(FOLLOW_4);
             rule__RequestMessage__Group_1__1__Impl();
@@ -3911,22 +3997,22 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__RequestMessage__Group_1__1__Impl"
-    // InternalLwMessage.g:1195:1: rule__RequestMessage__Group_1__1__Impl : ( ( ruleMessageRequestArguments )? ) ;
+    // InternalLwMessage.g:1221:1: rule__RequestMessage__Group_1__1__Impl : ( ( ruleMessageRequestArguments )? ) ;
     public final void rule__RequestMessage__Group_1__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1199:1: ( ( ( ruleMessageRequestArguments )? ) )
-            // InternalLwMessage.g:1200:1: ( ( ruleMessageRequestArguments )? )
+            // InternalLwMessage.g:1225:1: ( ( ( ruleMessageRequestArguments )? ) )
+            // InternalLwMessage.g:1226:1: ( ( ruleMessageRequestArguments )? )
             {
-            // InternalLwMessage.g:1200:1: ( ( ruleMessageRequestArguments )? )
-            // InternalLwMessage.g:1201:1: ( ruleMessageRequestArguments )?
+            // InternalLwMessage.g:1226:1: ( ( ruleMessageRequestArguments )? )
+            // InternalLwMessage.g:1227:1: ( ruleMessageRequestArguments )?
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getRequestMessageAccess().getMessageRequestArgumentsParserRuleCall_1_1()); 
             }
-            // InternalLwMessage.g:1202:1: ( ruleMessageRequestArguments )?
+            // InternalLwMessage.g:1228:1: ( ruleMessageRequestArguments )?
             int alt15=2;
             int LA15_0 = input.LA(1);
 
@@ -3935,7 +4021,7 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt15) {
                 case 1 :
-                    // InternalLwMessage.g:1202:3: ruleMessageRequestArguments
+                    // InternalLwMessage.g:1228:3: ruleMessageRequestArguments
                     {
                     pushFollow(FOLLOW_2);
                     ruleMessageRequestArguments();
@@ -3973,14 +4059,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__RequestMessage__Group_1__2"
-    // InternalLwMessage.g:1212:1: rule__RequestMessage__Group_1__2 : rule__RequestMessage__Group_1__2__Impl ;
+    // InternalLwMessage.g:1238:1: rule__RequestMessage__Group_1__2 : rule__RequestMessage__Group_1__2__Impl ;
     public final void rule__RequestMessage__Group_1__2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1216:1: ( rule__RequestMessage__Group_1__2__Impl )
-            // InternalLwMessage.g:1217:2: rule__RequestMessage__Group_1__2__Impl
+            // InternalLwMessage.g:1242:1: ( rule__RequestMessage__Group_1__2__Impl )
+            // InternalLwMessage.g:1243:2: rule__RequestMessage__Group_1__2__Impl
             {
             pushFollow(FOLLOW_2);
             rule__RequestMessage__Group_1__2__Impl();
@@ -4006,17 +4092,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__RequestMessage__Group_1__2__Impl"
-    // InternalLwMessage.g:1223:1: rule__RequestMessage__Group_1__2__Impl : ( ')' ) ;
+    // InternalLwMessage.g:1249:1: rule__RequestMessage__Group_1__2__Impl : ( ')' ) ;
     public final void rule__RequestMessage__Group_1__2__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1227:1: ( ( ')' ) )
-            // InternalLwMessage.g:1228:1: ( ')' )
+            // InternalLwMessage.g:1253:1: ( ( ')' ) )
+            // InternalLwMessage.g:1254:1: ( ')' )
             {
-            // InternalLwMessage.g:1228:1: ( ')' )
-            // InternalLwMessage.g:1229:1: ')'
+            // InternalLwMessage.g:1254:1: ( ')' )
+            // InternalLwMessage.g:1255:1: ')'
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getRequestMessageAccess().getRightParenthesisKeyword_1_2()); 
@@ -4047,14 +4133,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__AnyMessage__Group__0"
-    // InternalLwMessage.g:1248:1: rule__AnyMessage__Group__0 : rule__AnyMessage__Group__0__Impl rule__AnyMessage__Group__1 ;
+    // InternalLwMessage.g:1274:1: rule__AnyMessage__Group__0 : rule__AnyMessage__Group__0__Impl rule__AnyMessage__Group__1 ;
     public final void rule__AnyMessage__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1252:1: ( rule__AnyMessage__Group__0__Impl rule__AnyMessage__Group__1 )
-            // InternalLwMessage.g:1253:2: rule__AnyMessage__Group__0__Impl rule__AnyMessage__Group__1
+            // InternalLwMessage.g:1278:1: ( rule__AnyMessage__Group__0__Impl rule__AnyMessage__Group__1 )
+            // InternalLwMessage.g:1279:2: rule__AnyMessage__Group__0__Impl rule__AnyMessage__Group__1
             {
             pushFollow(FOLLOW_5);
             rule__AnyMessage__Group__0__Impl();
@@ -4085,23 +4171,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__AnyMessage__Group__0__Impl"
-    // InternalLwMessage.g:1260:1: rule__AnyMessage__Group__0__Impl : ( () ) ;
+    // InternalLwMessage.g:1286:1: rule__AnyMessage__Group__0__Impl : ( () ) ;
     public final void rule__AnyMessage__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1264:1: ( ( () ) )
-            // InternalLwMessage.g:1265:1: ( () )
+            // InternalLwMessage.g:1290:1: ( ( () ) )
+            // InternalLwMessage.g:1291:1: ( () )
             {
-            // InternalLwMessage.g:1265:1: ( () )
-            // InternalLwMessage.g:1266:1: ()
+            // InternalLwMessage.g:1291:1: ( () )
+            // InternalLwMessage.g:1292:1: ()
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getAnyMessageAccess().getAnyMessageAction_0()); 
             }
-            // InternalLwMessage.g:1267:1: ()
-            // InternalLwMessage.g:1269:1: 
+            // InternalLwMessage.g:1293:1: ()
+            // InternalLwMessage.g:1295:1: 
             {
             }
 
@@ -4126,14 +4212,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__AnyMessage__Group__1"
-    // InternalLwMessage.g:1279:1: rule__AnyMessage__Group__1 : rule__AnyMessage__Group__1__Impl ;
+    // InternalLwMessage.g:1305:1: rule__AnyMessage__Group__1 : rule__AnyMessage__Group__1__Impl ;
     public final void rule__AnyMessage__Group__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1283:1: ( rule__AnyMessage__Group__1__Impl )
-            // InternalLwMessage.g:1284:2: rule__AnyMessage__Group__1__Impl
+            // InternalLwMessage.g:1309:1: ( rule__AnyMessage__Group__1__Impl )
+            // InternalLwMessage.g:1310:2: rule__AnyMessage__Group__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__AnyMessage__Group__1__Impl();
@@ -4159,17 +4245,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__AnyMessage__Group__1__Impl"
-    // InternalLwMessage.g:1290:1: rule__AnyMessage__Group__1__Impl : ( '*' ) ;
+    // InternalLwMessage.g:1316:1: rule__AnyMessage__Group__1__Impl : ( '*' ) ;
     public final void rule__AnyMessage__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1294:1: ( ( '*' ) )
-            // InternalLwMessage.g:1295:1: ( '*' )
+            // InternalLwMessage.g:1320:1: ( ( '*' ) )
+            // InternalLwMessage.g:1321:1: ( '*' )
             {
-            // InternalLwMessage.g:1295:1: ( '*' )
-            // InternalLwMessage.g:1296:1: '*'
+            // InternalLwMessage.g:1321:1: ( '*' )
+            // InternalLwMessage.g:1322:1: '*'
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getAnyMessageAccess().getAsteriskKeyword_1()); 
@@ -4200,14 +4286,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Group_0__0"
-    // InternalLwMessage.g:1313:1: rule__MessageRequestArguments__Group_0__0 : rule__MessageRequestArguments__Group_0__0__Impl rule__MessageRequestArguments__Group_0__1 ;
+    // InternalLwMessage.g:1339:1: rule__MessageRequestArguments__Group_0__0 : rule__MessageRequestArguments__Group_0__0__Impl rule__MessageRequestArguments__Group_0__1 ;
     public final void rule__MessageRequestArguments__Group_0__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1317:1: ( rule__MessageRequestArguments__Group_0__0__Impl rule__MessageRequestArguments__Group_0__1 )
-            // InternalLwMessage.g:1318:2: rule__MessageRequestArguments__Group_0__0__Impl rule__MessageRequestArguments__Group_0__1
+            // InternalLwMessage.g:1343:1: ( rule__MessageRequestArguments__Group_0__0__Impl rule__MessageRequestArguments__Group_0__1 )
+            // InternalLwMessage.g:1344:2: rule__MessageRequestArguments__Group_0__0__Impl rule__MessageRequestArguments__Group_0__1
             {
             pushFollow(FOLLOW_6);
             rule__MessageRequestArguments__Group_0__0__Impl();
@@ -4238,23 +4324,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Group_0__0__Impl"
-    // InternalLwMessage.g:1325:1: rule__MessageRequestArguments__Group_0__0__Impl : ( ( rule__MessageRequestArguments__ArgumentsAssignment_0_0 ) ) ;
+    // InternalLwMessage.g:1351:1: rule__MessageRequestArguments__Group_0__0__Impl : ( ( rule__MessageRequestArguments__ArgumentsAssignment_0_0 ) ) ;
     public final void rule__MessageRequestArguments__Group_0__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1329:1: ( ( ( rule__MessageRequestArguments__ArgumentsAssignment_0_0 ) ) )
-            // InternalLwMessage.g:1330:1: ( ( rule__MessageRequestArguments__ArgumentsAssignment_0_0 ) )
+            // InternalLwMessage.g:1355:1: ( ( ( rule__MessageRequestArguments__ArgumentsAssignment_0_0 ) ) )
+            // InternalLwMessage.g:1356:1: ( ( rule__MessageRequestArguments__ArgumentsAssignment_0_0 ) )
             {
-            // InternalLwMessage.g:1330:1: ( ( rule__MessageRequestArguments__ArgumentsAssignment_0_0 ) )
-            // InternalLwMessage.g:1331:1: ( rule__MessageRequestArguments__ArgumentsAssignment_0_0 )
+            // InternalLwMessage.g:1356:1: ( ( rule__MessageRequestArguments__ArgumentsAssignment_0_0 ) )
+            // InternalLwMessage.g:1357:1: ( rule__MessageRequestArguments__ArgumentsAssignment_0_0 )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestArgumentsAccess().getArgumentsAssignment_0_0()); 
             }
-            // InternalLwMessage.g:1332:1: ( rule__MessageRequestArguments__ArgumentsAssignment_0_0 )
-            // InternalLwMessage.g:1332:2: rule__MessageRequestArguments__ArgumentsAssignment_0_0
+            // InternalLwMessage.g:1358:1: ( rule__MessageRequestArguments__ArgumentsAssignment_0_0 )
+            // InternalLwMessage.g:1358:2: rule__MessageRequestArguments__ArgumentsAssignment_0_0
             {
             pushFollow(FOLLOW_2);
             rule__MessageRequestArguments__ArgumentsAssignment_0_0();
@@ -4289,14 +4375,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Group_0__1"
-    // InternalLwMessage.g:1342:1: rule__MessageRequestArguments__Group_0__1 : rule__MessageRequestArguments__Group_0__1__Impl ;
+    // InternalLwMessage.g:1368:1: rule__MessageRequestArguments__Group_0__1 : rule__MessageRequestArguments__Group_0__1__Impl ;
     public final void rule__MessageRequestArguments__Group_0__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1346:1: ( rule__MessageRequestArguments__Group_0__1__Impl )
-            // InternalLwMessage.g:1347:2: rule__MessageRequestArguments__Group_0__1__Impl
+            // InternalLwMessage.g:1372:1: ( rule__MessageRequestArguments__Group_0__1__Impl )
+            // InternalLwMessage.g:1373:2: rule__MessageRequestArguments__Group_0__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__MessageRequestArguments__Group_0__1__Impl();
@@ -4322,22 +4408,22 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Group_0__1__Impl"
-    // InternalLwMessage.g:1353:1: rule__MessageRequestArguments__Group_0__1__Impl : ( ( rule__MessageRequestArguments__Group_0_1__0 )* ) ;
+    // InternalLwMessage.g:1379:1: rule__MessageRequestArguments__Group_0__1__Impl : ( ( rule__MessageRequestArguments__Group_0_1__0 )* ) ;
     public final void rule__MessageRequestArguments__Group_0__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1357:1: ( ( ( rule__MessageRequestArguments__Group_0_1__0 )* ) )
-            // InternalLwMessage.g:1358:1: ( ( rule__MessageRequestArguments__Group_0_1__0 )* )
+            // InternalLwMessage.g:1383:1: ( ( ( rule__MessageRequestArguments__Group_0_1__0 )* ) )
+            // InternalLwMessage.g:1384:1: ( ( rule__MessageRequestArguments__Group_0_1__0 )* )
             {
-            // InternalLwMessage.g:1358:1: ( ( rule__MessageRequestArguments__Group_0_1__0 )* )
-            // InternalLwMessage.g:1359:1: ( rule__MessageRequestArguments__Group_0_1__0 )*
+            // InternalLwMessage.g:1384:1: ( ( rule__MessageRequestArguments__Group_0_1__0 )* )
+            // InternalLwMessage.g:1385:1: ( rule__MessageRequestArguments__Group_0_1__0 )*
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestArgumentsAccess().getGroup_0_1()); 
             }
-            // InternalLwMessage.g:1360:1: ( rule__MessageRequestArguments__Group_0_1__0 )*
+            // InternalLwMessage.g:1386:1: ( rule__MessageRequestArguments__Group_0_1__0 )*
             loop16:
             do {
                 int alt16=2;
@@ -4350,7 +4436,7 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
                 switch (alt16) {
             	case 1 :
-            	    // InternalLwMessage.g:1360:2: rule__MessageRequestArguments__Group_0_1__0
+            	    // InternalLwMessage.g:1386:2: rule__MessageRequestArguments__Group_0_1__0
             	    {
             	    pushFollow(FOLLOW_7);
             	    rule__MessageRequestArguments__Group_0_1__0();
@@ -4391,14 +4477,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Group_0_1__0"
-    // InternalLwMessage.g:1374:1: rule__MessageRequestArguments__Group_0_1__0 : rule__MessageRequestArguments__Group_0_1__0__Impl rule__MessageRequestArguments__Group_0_1__1 ;
+    // InternalLwMessage.g:1400:1: rule__MessageRequestArguments__Group_0_1__0 : rule__MessageRequestArguments__Group_0_1__0__Impl rule__MessageRequestArguments__Group_0_1__1 ;
     public final void rule__MessageRequestArguments__Group_0_1__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1378:1: ( rule__MessageRequestArguments__Group_0_1__0__Impl rule__MessageRequestArguments__Group_0_1__1 )
-            // InternalLwMessage.g:1379:2: rule__MessageRequestArguments__Group_0_1__0__Impl rule__MessageRequestArguments__Group_0_1__1
+            // InternalLwMessage.g:1404:1: ( rule__MessageRequestArguments__Group_0_1__0__Impl rule__MessageRequestArguments__Group_0_1__1 )
+            // InternalLwMessage.g:1405:2: rule__MessageRequestArguments__Group_0_1__0__Impl rule__MessageRequestArguments__Group_0_1__1
             {
             pushFollow(FOLLOW_8);
             rule__MessageRequestArguments__Group_0_1__0__Impl();
@@ -4429,17 +4515,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Group_0_1__0__Impl"
-    // InternalLwMessage.g:1386:1: rule__MessageRequestArguments__Group_0_1__0__Impl : ( ',' ) ;
+    // InternalLwMessage.g:1412:1: rule__MessageRequestArguments__Group_0_1__0__Impl : ( ',' ) ;
     public final void rule__MessageRequestArguments__Group_0_1__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1390:1: ( ( ',' ) )
-            // InternalLwMessage.g:1391:1: ( ',' )
+            // InternalLwMessage.g:1416:1: ( ( ',' ) )
+            // InternalLwMessage.g:1417:1: ( ',' )
             {
-            // InternalLwMessage.g:1391:1: ( ',' )
-            // InternalLwMessage.g:1392:1: ','
+            // InternalLwMessage.g:1417:1: ( ',' )
+            // InternalLwMessage.g:1418:1: ','
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestArgumentsAccess().getCommaKeyword_0_1_0()); 
@@ -4470,14 +4556,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Group_0_1__1"
-    // InternalLwMessage.g:1405:1: rule__MessageRequestArguments__Group_0_1__1 : rule__MessageRequestArguments__Group_0_1__1__Impl ;
+    // InternalLwMessage.g:1431:1: rule__MessageRequestArguments__Group_0_1__1 : rule__MessageRequestArguments__Group_0_1__1__Impl ;
     public final void rule__MessageRequestArguments__Group_0_1__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1409:1: ( rule__MessageRequestArguments__Group_0_1__1__Impl )
-            // InternalLwMessage.g:1410:2: rule__MessageRequestArguments__Group_0_1__1__Impl
+            // InternalLwMessage.g:1435:1: ( rule__MessageRequestArguments__Group_0_1__1__Impl )
+            // InternalLwMessage.g:1436:2: rule__MessageRequestArguments__Group_0_1__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__MessageRequestArguments__Group_0_1__1__Impl();
@@ -4503,23 +4589,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Group_0_1__1__Impl"
-    // InternalLwMessage.g:1416:1: rule__MessageRequestArguments__Group_0_1__1__Impl : ( ( rule__MessageRequestArguments__ArgumentsAssignment_0_1_1 ) ) ;
+    // InternalLwMessage.g:1442:1: rule__MessageRequestArguments__Group_0_1__1__Impl : ( ( rule__MessageRequestArguments__ArgumentsAssignment_0_1_1 ) ) ;
     public final void rule__MessageRequestArguments__Group_0_1__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1420:1: ( ( ( rule__MessageRequestArguments__ArgumentsAssignment_0_1_1 ) ) )
-            // InternalLwMessage.g:1421:1: ( ( rule__MessageRequestArguments__ArgumentsAssignment_0_1_1 ) )
+            // InternalLwMessage.g:1446:1: ( ( ( rule__MessageRequestArguments__ArgumentsAssignment_0_1_1 ) ) )
+            // InternalLwMessage.g:1447:1: ( ( rule__MessageRequestArguments__ArgumentsAssignment_0_1_1 ) )
             {
-            // InternalLwMessage.g:1421:1: ( ( rule__MessageRequestArguments__ArgumentsAssignment_0_1_1 ) )
-            // InternalLwMessage.g:1422:1: ( rule__MessageRequestArguments__ArgumentsAssignment_0_1_1 )
+            // InternalLwMessage.g:1447:1: ( ( rule__MessageRequestArguments__ArgumentsAssignment_0_1_1 ) )
+            // InternalLwMessage.g:1448:1: ( rule__MessageRequestArguments__ArgumentsAssignment_0_1_1 )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestArgumentsAccess().getArgumentsAssignment_0_1_1()); 
             }
-            // InternalLwMessage.g:1423:1: ( rule__MessageRequestArguments__ArgumentsAssignment_0_1_1 )
-            // InternalLwMessage.g:1423:2: rule__MessageRequestArguments__ArgumentsAssignment_0_1_1
+            // InternalLwMessage.g:1449:1: ( rule__MessageRequestArguments__ArgumentsAssignment_0_1_1 )
+            // InternalLwMessage.g:1449:2: rule__MessageRequestArguments__ArgumentsAssignment_0_1_1
             {
             pushFollow(FOLLOW_2);
             rule__MessageRequestArguments__ArgumentsAssignment_0_1_1();
@@ -4554,14 +4640,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Group_1__0"
-    // InternalLwMessage.g:1437:1: rule__MessageRequestArguments__Group_1__0 : rule__MessageRequestArguments__Group_1__0__Impl rule__MessageRequestArguments__Group_1__1 ;
+    // InternalLwMessage.g:1463:1: rule__MessageRequestArguments__Group_1__0 : rule__MessageRequestArguments__Group_1__0__Impl rule__MessageRequestArguments__Group_1__1 ;
     public final void rule__MessageRequestArguments__Group_1__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1441:1: ( rule__MessageRequestArguments__Group_1__0__Impl rule__MessageRequestArguments__Group_1__1 )
-            // InternalLwMessage.g:1442:2: rule__MessageRequestArguments__Group_1__0__Impl rule__MessageRequestArguments__Group_1__1
+            // InternalLwMessage.g:1467:1: ( rule__MessageRequestArguments__Group_1__0__Impl rule__MessageRequestArguments__Group_1__1 )
+            // InternalLwMessage.g:1468:2: rule__MessageRequestArguments__Group_1__0__Impl rule__MessageRequestArguments__Group_1__1
             {
             pushFollow(FOLLOW_6);
             rule__MessageRequestArguments__Group_1__0__Impl();
@@ -4592,23 +4678,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Group_1__0__Impl"
-    // InternalLwMessage.g:1449:1: rule__MessageRequestArguments__Group_1__0__Impl : ( ( rule__MessageRequestArguments__ArgumentsAssignment_1_0 ) ) ;
+    // InternalLwMessage.g:1475:1: rule__MessageRequestArguments__Group_1__0__Impl : ( ( rule__MessageRequestArguments__ArgumentsAssignment_1_0 ) ) ;
     public final void rule__MessageRequestArguments__Group_1__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1453:1: ( ( ( rule__MessageRequestArguments__ArgumentsAssignment_1_0 ) ) )
-            // InternalLwMessage.g:1454:1: ( ( rule__MessageRequestArguments__ArgumentsAssignment_1_0 ) )
+            // InternalLwMessage.g:1479:1: ( ( ( rule__MessageRequestArguments__ArgumentsAssignment_1_0 ) ) )
+            // InternalLwMessage.g:1480:1: ( ( rule__MessageRequestArguments__ArgumentsAssignment_1_0 ) )
             {
-            // InternalLwMessage.g:1454:1: ( ( rule__MessageRequestArguments__ArgumentsAssignment_1_0 ) )
-            // InternalLwMessage.g:1455:1: ( rule__MessageRequestArguments__ArgumentsAssignment_1_0 )
+            // InternalLwMessage.g:1480:1: ( ( rule__MessageRequestArguments__ArgumentsAssignment_1_0 ) )
+            // InternalLwMessage.g:1481:1: ( rule__MessageRequestArguments__ArgumentsAssignment_1_0 )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestArgumentsAccess().getArgumentsAssignment_1_0()); 
             }
-            // InternalLwMessage.g:1456:1: ( rule__MessageRequestArguments__ArgumentsAssignment_1_0 )
-            // InternalLwMessage.g:1456:2: rule__MessageRequestArguments__ArgumentsAssignment_1_0
+            // InternalLwMessage.g:1482:1: ( rule__MessageRequestArguments__ArgumentsAssignment_1_0 )
+            // InternalLwMessage.g:1482:2: rule__MessageRequestArguments__ArgumentsAssignment_1_0
             {
             pushFollow(FOLLOW_2);
             rule__MessageRequestArguments__ArgumentsAssignment_1_0();
@@ -4643,14 +4729,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Group_1__1"
-    // InternalLwMessage.g:1466:1: rule__MessageRequestArguments__Group_1__1 : rule__MessageRequestArguments__Group_1__1__Impl ;
+    // InternalLwMessage.g:1492:1: rule__MessageRequestArguments__Group_1__1 : rule__MessageRequestArguments__Group_1__1__Impl ;
     public final void rule__MessageRequestArguments__Group_1__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1470:1: ( rule__MessageRequestArguments__Group_1__1__Impl )
-            // InternalLwMessage.g:1471:2: rule__MessageRequestArguments__Group_1__1__Impl
+            // InternalLwMessage.g:1496:1: ( rule__MessageRequestArguments__Group_1__1__Impl )
+            // InternalLwMessage.g:1497:2: rule__MessageRequestArguments__Group_1__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__MessageRequestArguments__Group_1__1__Impl();
@@ -4676,22 +4762,22 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Group_1__1__Impl"
-    // InternalLwMessage.g:1477:1: rule__MessageRequestArguments__Group_1__1__Impl : ( ( rule__MessageRequestArguments__Group_1_1__0 )* ) ;
+    // InternalLwMessage.g:1503:1: rule__MessageRequestArguments__Group_1__1__Impl : ( ( rule__MessageRequestArguments__Group_1_1__0 )* ) ;
     public final void rule__MessageRequestArguments__Group_1__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1481:1: ( ( ( rule__MessageRequestArguments__Group_1_1__0 )* ) )
-            // InternalLwMessage.g:1482:1: ( ( rule__MessageRequestArguments__Group_1_1__0 )* )
+            // InternalLwMessage.g:1507:1: ( ( ( rule__MessageRequestArguments__Group_1_1__0 )* ) )
+            // InternalLwMessage.g:1508:1: ( ( rule__MessageRequestArguments__Group_1_1__0 )* )
             {
-            // InternalLwMessage.g:1482:1: ( ( rule__MessageRequestArguments__Group_1_1__0 )* )
-            // InternalLwMessage.g:1483:1: ( rule__MessageRequestArguments__Group_1_1__0 )*
+            // InternalLwMessage.g:1508:1: ( ( rule__MessageRequestArguments__Group_1_1__0 )* )
+            // InternalLwMessage.g:1509:1: ( rule__MessageRequestArguments__Group_1_1__0 )*
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestArgumentsAccess().getGroup_1_1()); 
             }
-            // InternalLwMessage.g:1484:1: ( rule__MessageRequestArguments__Group_1_1__0 )*
+            // InternalLwMessage.g:1510:1: ( rule__MessageRequestArguments__Group_1_1__0 )*
             loop17:
             do {
                 int alt17=2;
@@ -4704,7 +4790,7 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
                 switch (alt17) {
             	case 1 :
-            	    // InternalLwMessage.g:1484:2: rule__MessageRequestArguments__Group_1_1__0
+            	    // InternalLwMessage.g:1510:2: rule__MessageRequestArguments__Group_1_1__0
             	    {
             	    pushFollow(FOLLOW_7);
             	    rule__MessageRequestArguments__Group_1_1__0();
@@ -4745,14 +4831,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Group_1_1__0"
-    // InternalLwMessage.g:1498:1: rule__MessageRequestArguments__Group_1_1__0 : rule__MessageRequestArguments__Group_1_1__0__Impl rule__MessageRequestArguments__Group_1_1__1 ;
+    // InternalLwMessage.g:1524:1: rule__MessageRequestArguments__Group_1_1__0 : rule__MessageRequestArguments__Group_1_1__0__Impl rule__MessageRequestArguments__Group_1_1__1 ;
     public final void rule__MessageRequestArguments__Group_1_1__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1502:1: ( rule__MessageRequestArguments__Group_1_1__0__Impl rule__MessageRequestArguments__Group_1_1__1 )
-            // InternalLwMessage.g:1503:2: rule__MessageRequestArguments__Group_1_1__0__Impl rule__MessageRequestArguments__Group_1_1__1
+            // InternalLwMessage.g:1528:1: ( rule__MessageRequestArguments__Group_1_1__0__Impl rule__MessageRequestArguments__Group_1_1__1 )
+            // InternalLwMessage.g:1529:2: rule__MessageRequestArguments__Group_1_1__0__Impl rule__MessageRequestArguments__Group_1_1__1
             {
             pushFollow(FOLLOW_9);
             rule__MessageRequestArguments__Group_1_1__0__Impl();
@@ -4783,17 +4869,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Group_1_1__0__Impl"
-    // InternalLwMessage.g:1510:1: rule__MessageRequestArguments__Group_1_1__0__Impl : ( ',' ) ;
+    // InternalLwMessage.g:1536:1: rule__MessageRequestArguments__Group_1_1__0__Impl : ( ',' ) ;
     public final void rule__MessageRequestArguments__Group_1_1__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1514:1: ( ( ',' ) )
-            // InternalLwMessage.g:1515:1: ( ',' )
+            // InternalLwMessage.g:1540:1: ( ( ',' ) )
+            // InternalLwMessage.g:1541:1: ( ',' )
             {
-            // InternalLwMessage.g:1515:1: ( ',' )
-            // InternalLwMessage.g:1516:1: ','
+            // InternalLwMessage.g:1541:1: ( ',' )
+            // InternalLwMessage.g:1542:1: ','
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestArgumentsAccess().getCommaKeyword_1_1_0()); 
@@ -4824,14 +4910,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Group_1_1__1"
-    // InternalLwMessage.g:1529:1: rule__MessageRequestArguments__Group_1_1__1 : rule__MessageRequestArguments__Group_1_1__1__Impl ;
+    // InternalLwMessage.g:1555:1: rule__MessageRequestArguments__Group_1_1__1 : rule__MessageRequestArguments__Group_1_1__1__Impl ;
     public final void rule__MessageRequestArguments__Group_1_1__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1533:1: ( rule__MessageRequestArguments__Group_1_1__1__Impl )
-            // InternalLwMessage.g:1534:2: rule__MessageRequestArguments__Group_1_1__1__Impl
+            // InternalLwMessage.g:1559:1: ( rule__MessageRequestArguments__Group_1_1__1__Impl )
+            // InternalLwMessage.g:1560:2: rule__MessageRequestArguments__Group_1_1__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__MessageRequestArguments__Group_1_1__1__Impl();
@@ -4857,23 +4943,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__Group_1_1__1__Impl"
-    // InternalLwMessage.g:1540:1: rule__MessageRequestArguments__Group_1_1__1__Impl : ( ( rule__MessageRequestArguments__ArgumentsAssignment_1_1_1 ) ) ;
+    // InternalLwMessage.g:1566:1: rule__MessageRequestArguments__Group_1_1__1__Impl : ( ( rule__MessageRequestArguments__ArgumentsAssignment_1_1_1 ) ) ;
     public final void rule__MessageRequestArguments__Group_1_1__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1544:1: ( ( ( rule__MessageRequestArguments__ArgumentsAssignment_1_1_1 ) ) )
-            // InternalLwMessage.g:1545:1: ( ( rule__MessageRequestArguments__ArgumentsAssignment_1_1_1 ) )
+            // InternalLwMessage.g:1570:1: ( ( ( rule__MessageRequestArguments__ArgumentsAssignment_1_1_1 ) ) )
+            // InternalLwMessage.g:1571:1: ( ( rule__MessageRequestArguments__ArgumentsAssignment_1_1_1 ) )
             {
-            // InternalLwMessage.g:1545:1: ( ( rule__MessageRequestArguments__ArgumentsAssignment_1_1_1 ) )
-            // InternalLwMessage.g:1546:1: ( rule__MessageRequestArguments__ArgumentsAssignment_1_1_1 )
+            // InternalLwMessage.g:1571:1: ( ( rule__MessageRequestArguments__ArgumentsAssignment_1_1_1 ) )
+            // InternalLwMessage.g:1572:1: ( rule__MessageRequestArguments__ArgumentsAssignment_1_1_1 )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestArgumentsAccess().getArgumentsAssignment_1_1_1()); 
             }
-            // InternalLwMessage.g:1547:1: ( rule__MessageRequestArguments__ArgumentsAssignment_1_1_1 )
-            // InternalLwMessage.g:1547:2: rule__MessageRequestArguments__ArgumentsAssignment_1_1_1
+            // InternalLwMessage.g:1573:1: ( rule__MessageRequestArguments__ArgumentsAssignment_1_1_1 )
+            // InternalLwMessage.g:1573:2: rule__MessageRequestArguments__ArgumentsAssignment_1_1_1
             {
             pushFollow(FOLLOW_2);
             rule__MessageRequestArguments__ArgumentsAssignment_1_1_1();
@@ -4908,14 +4994,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArgument__Group_0__0"
-    // InternalLwMessage.g:1561:1: rule__MessageRequestArgument__Group_0__0 : rule__MessageRequestArgument__Group_0__0__Impl rule__MessageRequestArgument__Group_0__1 ;
+    // InternalLwMessage.g:1587:1: rule__MessageRequestArgument__Group_0__0 : rule__MessageRequestArgument__Group_0__0__Impl rule__MessageRequestArgument__Group_0__1 ;
     public final void rule__MessageRequestArgument__Group_0__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1565:1: ( rule__MessageRequestArgument__Group_0__0__Impl rule__MessageRequestArgument__Group_0__1 )
-            // InternalLwMessage.g:1566:2: rule__MessageRequestArgument__Group_0__0__Impl rule__MessageRequestArgument__Group_0__1
+            // InternalLwMessage.g:1591:1: ( rule__MessageRequestArgument__Group_0__0__Impl rule__MessageRequestArgument__Group_0__1 )
+            // InternalLwMessage.g:1592:2: rule__MessageRequestArgument__Group_0__0__Impl rule__MessageRequestArgument__Group_0__1
             {
             pushFollow(FOLLOW_10);
             rule__MessageRequestArgument__Group_0__0__Impl();
@@ -4946,23 +5032,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArgument__Group_0__0__Impl"
-    // InternalLwMessage.g:1573:1: rule__MessageRequestArgument__Group_0__0__Impl : ( () ) ;
+    // InternalLwMessage.g:1599:1: rule__MessageRequestArgument__Group_0__0__Impl : ( () ) ;
     public final void rule__MessageRequestArgument__Group_0__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1577:1: ( ( () ) )
-            // InternalLwMessage.g:1578:1: ( () )
+            // InternalLwMessage.g:1603:1: ( ( () ) )
+            // InternalLwMessage.g:1604:1: ( () )
             {
-            // InternalLwMessage.g:1578:1: ( () )
-            // InternalLwMessage.g:1579:1: ()
+            // InternalLwMessage.g:1604:1: ( () )
+            // InternalLwMessage.g:1605:1: ()
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestArgumentAccess().getWildcardMessageArgumentAction_0_0()); 
             }
-            // InternalLwMessage.g:1580:1: ()
-            // InternalLwMessage.g:1582:1: 
+            // InternalLwMessage.g:1606:1: ()
+            // InternalLwMessage.g:1608:1: 
             {
             }
 
@@ -4987,14 +5073,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArgument__Group_0__1"
-    // InternalLwMessage.g:1592:1: rule__MessageRequestArgument__Group_0__1 : rule__MessageRequestArgument__Group_0__1__Impl ;
+    // InternalLwMessage.g:1618:1: rule__MessageRequestArgument__Group_0__1 : rule__MessageRequestArgument__Group_0__1__Impl ;
     public final void rule__MessageRequestArgument__Group_0__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1596:1: ( rule__MessageRequestArgument__Group_0__1__Impl )
-            // InternalLwMessage.g:1597:2: rule__MessageRequestArgument__Group_0__1__Impl
+            // InternalLwMessage.g:1622:1: ( rule__MessageRequestArgument__Group_0__1__Impl )
+            // InternalLwMessage.g:1623:2: rule__MessageRequestArgument__Group_0__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__MessageRequestArgument__Group_0__1__Impl();
@@ -5020,23 +5106,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArgument__Group_0__1__Impl"
-    // InternalLwMessage.g:1603:1: rule__MessageRequestArgument__Group_0__1__Impl : ( ( '-' ) ) ;
+    // InternalLwMessage.g:1629:1: rule__MessageRequestArgument__Group_0__1__Impl : ( ( '-' ) ) ;
     public final void rule__MessageRequestArgument__Group_0__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1607:1: ( ( ( '-' ) ) )
-            // InternalLwMessage.g:1608:1: ( ( '-' ) )
+            // InternalLwMessage.g:1633:1: ( ( ( '-' ) ) )
+            // InternalLwMessage.g:1634:1: ( ( '-' ) )
             {
-            // InternalLwMessage.g:1608:1: ( ( '-' ) )
-            // InternalLwMessage.g:1609:1: ( '-' )
+            // InternalLwMessage.g:1634:1: ( ( '-' ) )
+            // InternalLwMessage.g:1635:1: ( '-' )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestArgumentAccess().getHyphenMinusKeyword_0_1()); 
             }
-            // InternalLwMessage.g:1610:1: ( '-' )
-            // InternalLwMessage.g:1611:2: '-'
+            // InternalLwMessage.g:1636:1: ( '-' )
+            // InternalLwMessage.g:1637:2: '-'
             {
             match(input,24,FOLLOW_2); if (state.failed) return ;
 
@@ -5067,14 +5153,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestNameAndValue__Group__0"
-    // InternalLwMessage.g:1626:1: rule__MessageRequestNameAndValue__Group__0 : rule__MessageRequestNameAndValue__Group__0__Impl rule__MessageRequestNameAndValue__Group__1 ;
+    // InternalLwMessage.g:1652:1: rule__MessageRequestNameAndValue__Group__0 : rule__MessageRequestNameAndValue__Group__0__Impl rule__MessageRequestNameAndValue__Group__1 ;
     public final void rule__MessageRequestNameAndValue__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1630:1: ( rule__MessageRequestNameAndValue__Group__0__Impl rule__MessageRequestNameAndValue__Group__1 )
-            // InternalLwMessage.g:1631:2: rule__MessageRequestNameAndValue__Group__0__Impl rule__MessageRequestNameAndValue__Group__1
+            // InternalLwMessage.g:1656:1: ( rule__MessageRequestNameAndValue__Group__0__Impl rule__MessageRequestNameAndValue__Group__1 )
+            // InternalLwMessage.g:1657:2: rule__MessageRequestNameAndValue__Group__0__Impl rule__MessageRequestNameAndValue__Group__1
             {
             pushFollow(FOLLOW_11);
             rule__MessageRequestNameAndValue__Group__0__Impl();
@@ -5105,23 +5191,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestNameAndValue__Group__0__Impl"
-    // InternalLwMessage.g:1638:1: rule__MessageRequestNameAndValue__Group__0__Impl : ( ( rule__MessageRequestNameAndValue__Alternatives_0 ) ) ;
+    // InternalLwMessage.g:1664:1: rule__MessageRequestNameAndValue__Group__0__Impl : ( ( rule__MessageRequestNameAndValue__Alternatives_0 ) ) ;
     public final void rule__MessageRequestNameAndValue__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1642:1: ( ( ( rule__MessageRequestNameAndValue__Alternatives_0 ) ) )
-            // InternalLwMessage.g:1643:1: ( ( rule__MessageRequestNameAndValue__Alternatives_0 ) )
+            // InternalLwMessage.g:1668:1: ( ( ( rule__MessageRequestNameAndValue__Alternatives_0 ) ) )
+            // InternalLwMessage.g:1669:1: ( ( rule__MessageRequestNameAndValue__Alternatives_0 ) )
             {
-            // InternalLwMessage.g:1643:1: ( ( rule__MessageRequestNameAndValue__Alternatives_0 ) )
-            // InternalLwMessage.g:1644:1: ( rule__MessageRequestNameAndValue__Alternatives_0 )
+            // InternalLwMessage.g:1669:1: ( ( rule__MessageRequestNameAndValue__Alternatives_0 ) )
+            // InternalLwMessage.g:1670:1: ( rule__MessageRequestNameAndValue__Alternatives_0 )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestNameAndValueAccess().getAlternatives_0()); 
             }
-            // InternalLwMessage.g:1645:1: ( rule__MessageRequestNameAndValue__Alternatives_0 )
-            // InternalLwMessage.g:1645:2: rule__MessageRequestNameAndValue__Alternatives_0
+            // InternalLwMessage.g:1671:1: ( rule__MessageRequestNameAndValue__Alternatives_0 )
+            // InternalLwMessage.g:1671:2: rule__MessageRequestNameAndValue__Alternatives_0
             {
             pushFollow(FOLLOW_2);
             rule__MessageRequestNameAndValue__Alternatives_0();
@@ -5156,14 +5242,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestNameAndValue__Group__1"
-    // InternalLwMessage.g:1655:1: rule__MessageRequestNameAndValue__Group__1 : rule__MessageRequestNameAndValue__Group__1__Impl rule__MessageRequestNameAndValue__Group__2 ;
+    // InternalLwMessage.g:1681:1: rule__MessageRequestNameAndValue__Group__1 : rule__MessageRequestNameAndValue__Group__1__Impl rule__MessageRequestNameAndValue__Group__2 ;
     public final void rule__MessageRequestNameAndValue__Group__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1659:1: ( rule__MessageRequestNameAndValue__Group__1__Impl rule__MessageRequestNameAndValue__Group__2 )
-            // InternalLwMessage.g:1660:2: rule__MessageRequestNameAndValue__Group__1__Impl rule__MessageRequestNameAndValue__Group__2
+            // InternalLwMessage.g:1685:1: ( rule__MessageRequestNameAndValue__Group__1__Impl rule__MessageRequestNameAndValue__Group__2 )
+            // InternalLwMessage.g:1686:2: rule__MessageRequestNameAndValue__Group__1__Impl rule__MessageRequestNameAndValue__Group__2
             {
             pushFollow(FOLLOW_8);
             rule__MessageRequestNameAndValue__Group__1__Impl();
@@ -5194,17 +5280,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestNameAndValue__Group__1__Impl"
-    // InternalLwMessage.g:1667:1: rule__MessageRequestNameAndValue__Group__1__Impl : ( '=' ) ;
+    // InternalLwMessage.g:1693:1: rule__MessageRequestNameAndValue__Group__1__Impl : ( '=' ) ;
     public final void rule__MessageRequestNameAndValue__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1671:1: ( ( '=' ) )
-            // InternalLwMessage.g:1672:1: ( '=' )
+            // InternalLwMessage.g:1697:1: ( ( '=' ) )
+            // InternalLwMessage.g:1698:1: ( '=' )
             {
-            // InternalLwMessage.g:1672:1: ( '=' )
-            // InternalLwMessage.g:1673:1: '='
+            // InternalLwMessage.g:1698:1: ( '=' )
+            // InternalLwMessage.g:1699:1: '='
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestNameAndValueAccess().getEqualsSignKeyword_1()); 
@@ -5235,14 +5321,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestNameAndValue__Group__2"
-    // InternalLwMessage.g:1686:1: rule__MessageRequestNameAndValue__Group__2 : rule__MessageRequestNameAndValue__Group__2__Impl ;
+    // InternalLwMessage.g:1712:1: rule__MessageRequestNameAndValue__Group__2 : rule__MessageRequestNameAndValue__Group__2__Impl ;
     public final void rule__MessageRequestNameAndValue__Group__2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1690:1: ( rule__MessageRequestNameAndValue__Group__2__Impl )
-            // InternalLwMessage.g:1691:2: rule__MessageRequestNameAndValue__Group__2__Impl
+            // InternalLwMessage.g:1716:1: ( rule__MessageRequestNameAndValue__Group__2__Impl )
+            // InternalLwMessage.g:1717:2: rule__MessageRequestNameAndValue__Group__2__Impl
             {
             pushFollow(FOLLOW_2);
             rule__MessageRequestNameAndValue__Group__2__Impl();
@@ -5268,17 +5354,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestNameAndValue__Group__2__Impl"
-    // InternalLwMessage.g:1697:1: rule__MessageRequestNameAndValue__Group__2__Impl : ( ruleMessageRequestValue ) ;
+    // InternalLwMessage.g:1723:1: rule__MessageRequestNameAndValue__Group__2__Impl : ( ruleMessageRequestValue ) ;
     public final void rule__MessageRequestNameAndValue__Group__2__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1701:1: ( ( ruleMessageRequestValue ) )
-            // InternalLwMessage.g:1702:1: ( ruleMessageRequestValue )
+            // InternalLwMessage.g:1727:1: ( ( ruleMessageRequestValue ) )
+            // InternalLwMessage.g:1728:1: ( ruleMessageRequestValue )
             {
-            // InternalLwMessage.g:1702:1: ( ruleMessageRequestValue )
-            // InternalLwMessage.g:1703:1: ruleMessageRequestValue
+            // InternalLwMessage.g:1728:1: ( ruleMessageRequestValue )
+            // InternalLwMessage.g:1729:1: ruleMessageRequestValue
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestNameAndValueAccess().getMessageRequestValueParserRuleCall_2()); 
@@ -5313,14 +5399,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__Group__0"
-    // InternalLwMessage.g:1720:1: rule__ReplyMessage__Group__0 : rule__ReplyMessage__Group__0__Impl rule__ReplyMessage__Group__1 ;
+    // InternalLwMessage.g:1746:1: rule__ReplyMessage__Group__0 : rule__ReplyMessage__Group__0__Impl rule__ReplyMessage__Group__1 ;
     public final void rule__ReplyMessage__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1724:1: ( rule__ReplyMessage__Group__0__Impl rule__ReplyMessage__Group__1 )
-            // InternalLwMessage.g:1725:2: rule__ReplyMessage__Group__0__Impl rule__ReplyMessage__Group__1
+            // InternalLwMessage.g:1750:1: ( rule__ReplyMessage__Group__0__Impl rule__ReplyMessage__Group__1 )
+            // InternalLwMessage.g:1751:2: rule__ReplyMessage__Group__0__Impl rule__ReplyMessage__Group__1
             {
             pushFollow(FOLLOW_12);
             rule__ReplyMessage__Group__0__Impl();
@@ -5351,35 +5437,35 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__Group__0__Impl"
-    // InternalLwMessage.g:1732:1: rule__ReplyMessage__Group__0__Impl : ( ( ruleAssignmentTarget )? ) ;
+    // InternalLwMessage.g:1758:1: rule__ReplyMessage__Group__0__Impl : ( ( ruleAssignmentTarget )? ) ;
     public final void rule__ReplyMessage__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1736:1: ( ( ( ruleAssignmentTarget )? ) )
-            // InternalLwMessage.g:1737:1: ( ( ruleAssignmentTarget )? )
+            // InternalLwMessage.g:1762:1: ( ( ( ruleAssignmentTarget )? ) )
+            // InternalLwMessage.g:1763:1: ( ( ruleAssignmentTarget )? )
             {
-            // InternalLwMessage.g:1737:1: ( ( ruleAssignmentTarget )? )
-            // InternalLwMessage.g:1738:1: ( ruleAssignmentTarget )?
+            // InternalLwMessage.g:1763:1: ( ( ruleAssignmentTarget )? )
+            // InternalLwMessage.g:1764:1: ( ruleAssignmentTarget )?
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getReplyMessageAccess().getAssignmentTargetParserRuleCall_0()); 
             }
-            // InternalLwMessage.g:1739:1: ( ruleAssignmentTarget )?
+            // InternalLwMessage.g:1765:1: ( ruleAssignmentTarget )?
             int alt18=2;
             int LA18_0 = input.LA(1);
 
             if ( (LA18_0==RULE_ID) ) {
                 int LA18_1 = input.LA(2);
 
-                if ( (LA18_1==25) ) {
+                if ( (LA18_1==25||LA18_1==28) ) {
                     alt18=1;
                 }
             }
             switch (alt18) {
                 case 1 :
-                    // InternalLwMessage.g:1739:3: ruleAssignmentTarget
+                    // InternalLwMessage.g:1765:3: ruleAssignmentTarget
                     {
                     pushFollow(FOLLOW_2);
                     ruleAssignmentTarget();
@@ -5417,14 +5503,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__Group__1"
-    // InternalLwMessage.g:1749:1: rule__ReplyMessage__Group__1 : rule__ReplyMessage__Group__1__Impl rule__ReplyMessage__Group__2 ;
+    // InternalLwMessage.g:1775:1: rule__ReplyMessage__Group__1 : rule__ReplyMessage__Group__1__Impl rule__ReplyMessage__Group__2 ;
     public final void rule__ReplyMessage__Group__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1753:1: ( rule__ReplyMessage__Group__1__Impl rule__ReplyMessage__Group__2 )
-            // InternalLwMessage.g:1754:2: rule__ReplyMessage__Group__1__Impl rule__ReplyMessage__Group__2
+            // InternalLwMessage.g:1779:1: ( rule__ReplyMessage__Group__1__Impl rule__ReplyMessage__Group__2 )
+            // InternalLwMessage.g:1780:2: rule__ReplyMessage__Group__1__Impl rule__ReplyMessage__Group__2
             {
             pushFollow(FOLLOW_13);
             rule__ReplyMessage__Group__1__Impl();
@@ -5455,23 +5541,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__Group__1__Impl"
-    // InternalLwMessage.g:1761:1: rule__ReplyMessage__Group__1__Impl : ( ( rule__ReplyMessage__Alternatives_1 ) ) ;
+    // InternalLwMessage.g:1787:1: rule__ReplyMessage__Group__1__Impl : ( ( rule__ReplyMessage__Alternatives_1 ) ) ;
     public final void rule__ReplyMessage__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1765:1: ( ( ( rule__ReplyMessage__Alternatives_1 ) ) )
-            // InternalLwMessage.g:1766:1: ( ( rule__ReplyMessage__Alternatives_1 ) )
+            // InternalLwMessage.g:1791:1: ( ( ( rule__ReplyMessage__Alternatives_1 ) ) )
+            // InternalLwMessage.g:1792:1: ( ( rule__ReplyMessage__Alternatives_1 ) )
             {
-            // InternalLwMessage.g:1766:1: ( ( rule__ReplyMessage__Alternatives_1 ) )
-            // InternalLwMessage.g:1767:1: ( rule__ReplyMessage__Alternatives_1 )
+            // InternalLwMessage.g:1792:1: ( ( rule__ReplyMessage__Alternatives_1 ) )
+            // InternalLwMessage.g:1793:1: ( rule__ReplyMessage__Alternatives_1 )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getReplyMessageAccess().getAlternatives_1()); 
             }
-            // InternalLwMessage.g:1768:1: ( rule__ReplyMessage__Alternatives_1 )
-            // InternalLwMessage.g:1768:2: rule__ReplyMessage__Alternatives_1
+            // InternalLwMessage.g:1794:1: ( rule__ReplyMessage__Alternatives_1 )
+            // InternalLwMessage.g:1794:2: rule__ReplyMessage__Alternatives_1
             {
             pushFollow(FOLLOW_2);
             rule__ReplyMessage__Alternatives_1();
@@ -5506,14 +5592,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__Group__2"
-    // InternalLwMessage.g:1778:1: rule__ReplyMessage__Group__2 : rule__ReplyMessage__Group__2__Impl rule__ReplyMessage__Group__3 ;
+    // InternalLwMessage.g:1804:1: rule__ReplyMessage__Group__2 : rule__ReplyMessage__Group__2__Impl rule__ReplyMessage__Group__3 ;
     public final void rule__ReplyMessage__Group__2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1782:1: ( rule__ReplyMessage__Group__2__Impl rule__ReplyMessage__Group__3 )
-            // InternalLwMessage.g:1783:2: rule__ReplyMessage__Group__2__Impl rule__ReplyMessage__Group__3
+            // InternalLwMessage.g:1808:1: ( rule__ReplyMessage__Group__2__Impl rule__ReplyMessage__Group__3 )
+            // InternalLwMessage.g:1809:2: rule__ReplyMessage__Group__2__Impl rule__ReplyMessage__Group__3
             {
             pushFollow(FOLLOW_13);
             rule__ReplyMessage__Group__2__Impl();
@@ -5544,22 +5630,22 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__Group__2__Impl"
-    // InternalLwMessage.g:1790:1: rule__ReplyMessage__Group__2__Impl : ( ( rule__ReplyMessage__Group_2__0 )? ) ;
+    // InternalLwMessage.g:1816:1: rule__ReplyMessage__Group__2__Impl : ( ( rule__ReplyMessage__Group_2__0 )? ) ;
     public final void rule__ReplyMessage__Group__2__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1794:1: ( ( ( rule__ReplyMessage__Group_2__0 )? ) )
-            // InternalLwMessage.g:1795:1: ( ( rule__ReplyMessage__Group_2__0 )? )
+            // InternalLwMessage.g:1820:1: ( ( ( rule__ReplyMessage__Group_2__0 )? ) )
+            // InternalLwMessage.g:1821:1: ( ( rule__ReplyMessage__Group_2__0 )? )
             {
-            // InternalLwMessage.g:1795:1: ( ( rule__ReplyMessage__Group_2__0 )? )
-            // InternalLwMessage.g:1796:1: ( rule__ReplyMessage__Group_2__0 )?
+            // InternalLwMessage.g:1821:1: ( ( rule__ReplyMessage__Group_2__0 )? )
+            // InternalLwMessage.g:1822:1: ( rule__ReplyMessage__Group_2__0 )?
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getReplyMessageAccess().getGroup_2()); 
             }
-            // InternalLwMessage.g:1797:1: ( rule__ReplyMessage__Group_2__0 )?
+            // InternalLwMessage.g:1823:1: ( rule__ReplyMessage__Group_2__0 )?
             int alt19=2;
             int LA19_0 = input.LA(1);
 
@@ -5568,7 +5654,7 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt19) {
                 case 1 :
-                    // InternalLwMessage.g:1797:2: rule__ReplyMessage__Group_2__0
+                    // InternalLwMessage.g:1823:2: rule__ReplyMessage__Group_2__0
                     {
                     pushFollow(FOLLOW_2);
                     rule__ReplyMessage__Group_2__0();
@@ -5606,14 +5692,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__Group__3"
-    // InternalLwMessage.g:1807:1: rule__ReplyMessage__Group__3 : rule__ReplyMessage__Group__3__Impl ;
+    // InternalLwMessage.g:1833:1: rule__ReplyMessage__Group__3 : rule__ReplyMessage__Group__3__Impl ;
     public final void rule__ReplyMessage__Group__3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1811:1: ( rule__ReplyMessage__Group__3__Impl )
-            // InternalLwMessage.g:1812:2: rule__ReplyMessage__Group__3__Impl
+            // InternalLwMessage.g:1837:1: ( rule__ReplyMessage__Group__3__Impl )
+            // InternalLwMessage.g:1838:2: rule__ReplyMessage__Group__3__Impl
             {
             pushFollow(FOLLOW_2);
             rule__ReplyMessage__Group__3__Impl();
@@ -5639,22 +5725,22 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__Group__3__Impl"
-    // InternalLwMessage.g:1818:1: rule__ReplyMessage__Group__3__Impl : ( ( rule__ReplyMessage__ValueAssignment_3 )? ) ;
+    // InternalLwMessage.g:1844:1: rule__ReplyMessage__Group__3__Impl : ( ( rule__ReplyMessage__ValueAssignment_3 )? ) ;
     public final void rule__ReplyMessage__Group__3__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1822:1: ( ( ( rule__ReplyMessage__ValueAssignment_3 )? ) )
-            // InternalLwMessage.g:1823:1: ( ( rule__ReplyMessage__ValueAssignment_3 )? )
+            // InternalLwMessage.g:1848:1: ( ( ( rule__ReplyMessage__ValueAssignment_3 )? ) )
+            // InternalLwMessage.g:1849:1: ( ( rule__ReplyMessage__ValueAssignment_3 )? )
             {
-            // InternalLwMessage.g:1823:1: ( ( rule__ReplyMessage__ValueAssignment_3 )? )
-            // InternalLwMessage.g:1824:1: ( rule__ReplyMessage__ValueAssignment_3 )?
+            // InternalLwMessage.g:1849:1: ( ( rule__ReplyMessage__ValueAssignment_3 )? )
+            // InternalLwMessage.g:1850:1: ( rule__ReplyMessage__ValueAssignment_3 )?
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getReplyMessageAccess().getValueAssignment_3()); 
             }
-            // InternalLwMessage.g:1825:1: ( rule__ReplyMessage__ValueAssignment_3 )?
+            // InternalLwMessage.g:1851:1: ( rule__ReplyMessage__ValueAssignment_3 )?
             int alt20=2;
             int LA20_0 = input.LA(1);
 
@@ -5663,7 +5749,7 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt20) {
                 case 1 :
-                    // InternalLwMessage.g:1825:2: rule__ReplyMessage__ValueAssignment_3
+                    // InternalLwMessage.g:1851:2: rule__ReplyMessage__ValueAssignment_3
                     {
                     pushFollow(FOLLOW_2);
                     rule__ReplyMessage__ValueAssignment_3();
@@ -5701,14 +5787,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__Group_2__0"
-    // InternalLwMessage.g:1843:1: rule__ReplyMessage__Group_2__0 : rule__ReplyMessage__Group_2__0__Impl rule__ReplyMessage__Group_2__1 ;
+    // InternalLwMessage.g:1869:1: rule__ReplyMessage__Group_2__0 : rule__ReplyMessage__Group_2__0__Impl rule__ReplyMessage__Group_2__1 ;
     public final void rule__ReplyMessage__Group_2__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1847:1: ( rule__ReplyMessage__Group_2__0__Impl rule__ReplyMessage__Group_2__1 )
-            // InternalLwMessage.g:1848:2: rule__ReplyMessage__Group_2__0__Impl rule__ReplyMessage__Group_2__1
+            // InternalLwMessage.g:1873:1: ( rule__ReplyMessage__Group_2__0__Impl rule__ReplyMessage__Group_2__1 )
+            // InternalLwMessage.g:1874:2: rule__ReplyMessage__Group_2__0__Impl rule__ReplyMessage__Group_2__1
             {
             pushFollow(FOLLOW_14);
             rule__ReplyMessage__Group_2__0__Impl();
@@ -5739,17 +5825,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__Group_2__0__Impl"
-    // InternalLwMessage.g:1855:1: rule__ReplyMessage__Group_2__0__Impl : ( '(' ) ;
+    // InternalLwMessage.g:1881:1: rule__ReplyMessage__Group_2__0__Impl : ( '(' ) ;
     public final void rule__ReplyMessage__Group_2__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1859:1: ( ( '(' ) )
-            // InternalLwMessage.g:1860:1: ( '(' )
+            // InternalLwMessage.g:1885:1: ( ( '(' ) )
+            // InternalLwMessage.g:1886:1: ( '(' )
             {
-            // InternalLwMessage.g:1860:1: ( '(' )
-            // InternalLwMessage.g:1861:1: '('
+            // InternalLwMessage.g:1886:1: ( '(' )
+            // InternalLwMessage.g:1887:1: '('
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getReplyMessageAccess().getLeftParenthesisKeyword_2_0()); 
@@ -5780,14 +5866,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__Group_2__1"
-    // InternalLwMessage.g:1874:1: rule__ReplyMessage__Group_2__1 : rule__ReplyMessage__Group_2__1__Impl rule__ReplyMessage__Group_2__2 ;
+    // InternalLwMessage.g:1900:1: rule__ReplyMessage__Group_2__1 : rule__ReplyMessage__Group_2__1__Impl rule__ReplyMessage__Group_2__2 ;
     public final void rule__ReplyMessage__Group_2__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1878:1: ( rule__ReplyMessage__Group_2__1__Impl rule__ReplyMessage__Group_2__2 )
-            // InternalLwMessage.g:1879:2: rule__ReplyMessage__Group_2__1__Impl rule__ReplyMessage__Group_2__2
+            // InternalLwMessage.g:1904:1: ( rule__ReplyMessage__Group_2__1__Impl rule__ReplyMessage__Group_2__2 )
+            // InternalLwMessage.g:1905:2: rule__ReplyMessage__Group_2__1__Impl rule__ReplyMessage__Group_2__2
             {
             pushFollow(FOLLOW_14);
             rule__ReplyMessage__Group_2__1__Impl();
@@ -5818,22 +5904,22 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__Group_2__1__Impl"
-    // InternalLwMessage.g:1886:1: rule__ReplyMessage__Group_2__1__Impl : ( ( ruleMessageReplyOutputs )? ) ;
+    // InternalLwMessage.g:1912:1: rule__ReplyMessage__Group_2__1__Impl : ( ( ruleMessageReplyOutputs )? ) ;
     public final void rule__ReplyMessage__Group_2__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1890:1: ( ( ( ruleMessageReplyOutputs )? ) )
-            // InternalLwMessage.g:1891:1: ( ( ruleMessageReplyOutputs )? )
+            // InternalLwMessage.g:1916:1: ( ( ( ruleMessageReplyOutputs )? ) )
+            // InternalLwMessage.g:1917:1: ( ( ruleMessageReplyOutputs )? )
             {
-            // InternalLwMessage.g:1891:1: ( ( ruleMessageReplyOutputs )? )
-            // InternalLwMessage.g:1892:1: ( ruleMessageReplyOutputs )?
+            // InternalLwMessage.g:1917:1: ( ( ruleMessageReplyOutputs )? )
+            // InternalLwMessage.g:1918:1: ( ruleMessageReplyOutputs )?
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getReplyMessageAccess().getMessageReplyOutputsParserRuleCall_2_1()); 
             }
-            // InternalLwMessage.g:1893:1: ( ruleMessageReplyOutputs )?
+            // InternalLwMessage.g:1919:1: ( ruleMessageReplyOutputs )?
             int alt21=2;
             int LA21_0 = input.LA(1);
 
@@ -5842,7 +5928,7 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt21) {
                 case 1 :
-                    // InternalLwMessage.g:1893:3: ruleMessageReplyOutputs
+                    // InternalLwMessage.g:1919:3: ruleMessageReplyOutputs
                     {
                     pushFollow(FOLLOW_2);
                     ruleMessageReplyOutputs();
@@ -5880,14 +5966,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__Group_2__2"
-    // InternalLwMessage.g:1903:1: rule__ReplyMessage__Group_2__2 : rule__ReplyMessage__Group_2__2__Impl ;
+    // InternalLwMessage.g:1929:1: rule__ReplyMessage__Group_2__2 : rule__ReplyMessage__Group_2__2__Impl ;
     public final void rule__ReplyMessage__Group_2__2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1907:1: ( rule__ReplyMessage__Group_2__2__Impl )
-            // InternalLwMessage.g:1908:2: rule__ReplyMessage__Group_2__2__Impl
+            // InternalLwMessage.g:1933:1: ( rule__ReplyMessage__Group_2__2__Impl )
+            // InternalLwMessage.g:1934:2: rule__ReplyMessage__Group_2__2__Impl
             {
             pushFollow(FOLLOW_2);
             rule__ReplyMessage__Group_2__2__Impl();
@@ -5913,17 +5999,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__Group_2__2__Impl"
-    // InternalLwMessage.g:1914:1: rule__ReplyMessage__Group_2__2__Impl : ( ')' ) ;
+    // InternalLwMessage.g:1940:1: rule__ReplyMessage__Group_2__2__Impl : ( ')' ) ;
     public final void rule__ReplyMessage__Group_2__2__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1918:1: ( ( ')' ) )
-            // InternalLwMessage.g:1919:1: ( ')' )
+            // InternalLwMessage.g:1944:1: ( ( ')' ) )
+            // InternalLwMessage.g:1945:1: ( ')' )
             {
-            // InternalLwMessage.g:1919:1: ( ')' )
-            // InternalLwMessage.g:1920:1: ')'
+            // InternalLwMessage.g:1945:1: ( ')' )
+            // InternalLwMessage.g:1946:1: ')'
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getReplyMessageAccess().getRightParenthesisKeyword_2_2()); 
@@ -5954,14 +6040,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__AssignmentTarget__Group__0"
-    // InternalLwMessage.g:1939:1: rule__AssignmentTarget__Group__0 : rule__AssignmentTarget__Group__0__Impl rule__AssignmentTarget__Group__1 ;
+    // InternalLwMessage.g:1965:1: rule__AssignmentTarget__Group__0 : rule__AssignmentTarget__Group__0__Impl rule__AssignmentTarget__Group__1 ;
     public final void rule__AssignmentTarget__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1943:1: ( rule__AssignmentTarget__Group__0__Impl rule__AssignmentTarget__Group__1 )
-            // InternalLwMessage.g:1944:2: rule__AssignmentTarget__Group__0__Impl rule__AssignmentTarget__Group__1
+            // InternalLwMessage.g:1969:1: ( rule__AssignmentTarget__Group__0__Impl rule__AssignmentTarget__Group__1 )
+            // InternalLwMessage.g:1970:2: rule__AssignmentTarget__Group__0__Impl rule__AssignmentTarget__Group__1
             {
             pushFollow(FOLLOW_11);
             rule__AssignmentTarget__Group__0__Impl();
@@ -5992,23 +6078,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__AssignmentTarget__Group__0__Impl"
-    // InternalLwMessage.g:1951:1: rule__AssignmentTarget__Group__0__Impl : ( ( rule__AssignmentTarget__TargetAssignment_0 ) ) ;
+    // InternalLwMessage.g:1977:1: rule__AssignmentTarget__Group__0__Impl : ( ( rule__AssignmentTarget__TargetAssignment_0 ) ) ;
     public final void rule__AssignmentTarget__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1955:1: ( ( ( rule__AssignmentTarget__TargetAssignment_0 ) ) )
-            // InternalLwMessage.g:1956:1: ( ( rule__AssignmentTarget__TargetAssignment_0 ) )
+            // InternalLwMessage.g:1981:1: ( ( ( rule__AssignmentTarget__TargetAssignment_0 ) ) )
+            // InternalLwMessage.g:1982:1: ( ( rule__AssignmentTarget__TargetAssignment_0 ) )
             {
-            // InternalLwMessage.g:1956:1: ( ( rule__AssignmentTarget__TargetAssignment_0 ) )
-            // InternalLwMessage.g:1957:1: ( rule__AssignmentTarget__TargetAssignment_0 )
+            // InternalLwMessage.g:1982:1: ( ( rule__AssignmentTarget__TargetAssignment_0 ) )
+            // InternalLwMessage.g:1983:1: ( rule__AssignmentTarget__TargetAssignment_0 )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getAssignmentTargetAccess().getTargetAssignment_0()); 
             }
-            // InternalLwMessage.g:1958:1: ( rule__AssignmentTarget__TargetAssignment_0 )
-            // InternalLwMessage.g:1958:2: rule__AssignmentTarget__TargetAssignment_0
+            // InternalLwMessage.g:1984:1: ( rule__AssignmentTarget__TargetAssignment_0 )
+            // InternalLwMessage.g:1984:2: rule__AssignmentTarget__TargetAssignment_0
             {
             pushFollow(FOLLOW_2);
             rule__AssignmentTarget__TargetAssignment_0();
@@ -6043,14 +6129,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__AssignmentTarget__Group__1"
-    // InternalLwMessage.g:1968:1: rule__AssignmentTarget__Group__1 : rule__AssignmentTarget__Group__1__Impl ;
+    // InternalLwMessage.g:1994:1: rule__AssignmentTarget__Group__1 : rule__AssignmentTarget__Group__1__Impl ;
     public final void rule__AssignmentTarget__Group__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1972:1: ( rule__AssignmentTarget__Group__1__Impl )
-            // InternalLwMessage.g:1973:2: rule__AssignmentTarget__Group__1__Impl
+            // InternalLwMessage.g:1998:1: ( rule__AssignmentTarget__Group__1__Impl )
+            // InternalLwMessage.g:1999:2: rule__AssignmentTarget__Group__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__AssignmentTarget__Group__1__Impl();
@@ -6076,17 +6162,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__AssignmentTarget__Group__1__Impl"
-    // InternalLwMessage.g:1979:1: rule__AssignmentTarget__Group__1__Impl : ( '=' ) ;
+    // InternalLwMessage.g:2005:1: rule__AssignmentTarget__Group__1__Impl : ( '=' ) ;
     public final void rule__AssignmentTarget__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:1983:1: ( ( '=' ) )
-            // InternalLwMessage.g:1984:1: ( '=' )
+            // InternalLwMessage.g:2009:1: ( ( '=' ) )
+            // InternalLwMessage.g:2010:1: ( '=' )
             {
-            // InternalLwMessage.g:1984:1: ( '=' )
-            // InternalLwMessage.g:1985:1: '='
+            // InternalLwMessage.g:2010:1: ( '=' )
+            // InternalLwMessage.g:2011:1: '='
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getAssignmentTargetAccess().getEqualsSignKeyword_1()); 
@@ -6117,14 +6203,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutputs__Group__0"
-    // InternalLwMessage.g:2002:1: rule__MessageReplyOutputs__Group__0 : rule__MessageReplyOutputs__Group__0__Impl rule__MessageReplyOutputs__Group__1 ;
+    // InternalLwMessage.g:2028:1: rule__MessageReplyOutputs__Group__0 : rule__MessageReplyOutputs__Group__0__Impl rule__MessageReplyOutputs__Group__1 ;
     public final void rule__MessageReplyOutputs__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2006:1: ( rule__MessageReplyOutputs__Group__0__Impl rule__MessageReplyOutputs__Group__1 )
-            // InternalLwMessage.g:2007:2: rule__MessageReplyOutputs__Group__0__Impl rule__MessageReplyOutputs__Group__1
+            // InternalLwMessage.g:2032:1: ( rule__MessageReplyOutputs__Group__0__Impl rule__MessageReplyOutputs__Group__1 )
+            // InternalLwMessage.g:2033:2: rule__MessageReplyOutputs__Group__0__Impl rule__MessageReplyOutputs__Group__1
             {
             pushFollow(FOLLOW_6);
             rule__MessageReplyOutputs__Group__0__Impl();
@@ -6155,23 +6241,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutputs__Group__0__Impl"
-    // InternalLwMessage.g:2014:1: rule__MessageReplyOutputs__Group__0__Impl : ( ( rule__MessageReplyOutputs__OutputsAssignment_0 ) ) ;
+    // InternalLwMessage.g:2040:1: rule__MessageReplyOutputs__Group__0__Impl : ( ( rule__MessageReplyOutputs__OutputsAssignment_0 ) ) ;
     public final void rule__MessageReplyOutputs__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2018:1: ( ( ( rule__MessageReplyOutputs__OutputsAssignment_0 ) ) )
-            // InternalLwMessage.g:2019:1: ( ( rule__MessageReplyOutputs__OutputsAssignment_0 ) )
+            // InternalLwMessage.g:2044:1: ( ( ( rule__MessageReplyOutputs__OutputsAssignment_0 ) ) )
+            // InternalLwMessage.g:2045:1: ( ( rule__MessageReplyOutputs__OutputsAssignment_0 ) )
             {
-            // InternalLwMessage.g:2019:1: ( ( rule__MessageReplyOutputs__OutputsAssignment_0 ) )
-            // InternalLwMessage.g:2020:1: ( rule__MessageReplyOutputs__OutputsAssignment_0 )
+            // InternalLwMessage.g:2045:1: ( ( rule__MessageReplyOutputs__OutputsAssignment_0 ) )
+            // InternalLwMessage.g:2046:1: ( rule__MessageReplyOutputs__OutputsAssignment_0 )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputsAccess().getOutputsAssignment_0()); 
             }
-            // InternalLwMessage.g:2021:1: ( rule__MessageReplyOutputs__OutputsAssignment_0 )
-            // InternalLwMessage.g:2021:2: rule__MessageReplyOutputs__OutputsAssignment_0
+            // InternalLwMessage.g:2047:1: ( rule__MessageReplyOutputs__OutputsAssignment_0 )
+            // InternalLwMessage.g:2047:2: rule__MessageReplyOutputs__OutputsAssignment_0
             {
             pushFollow(FOLLOW_2);
             rule__MessageReplyOutputs__OutputsAssignment_0();
@@ -6206,14 +6292,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutputs__Group__1"
-    // InternalLwMessage.g:2031:1: rule__MessageReplyOutputs__Group__1 : rule__MessageReplyOutputs__Group__1__Impl ;
+    // InternalLwMessage.g:2057:1: rule__MessageReplyOutputs__Group__1 : rule__MessageReplyOutputs__Group__1__Impl ;
     public final void rule__MessageReplyOutputs__Group__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2035:1: ( rule__MessageReplyOutputs__Group__1__Impl )
-            // InternalLwMessage.g:2036:2: rule__MessageReplyOutputs__Group__1__Impl
+            // InternalLwMessage.g:2061:1: ( rule__MessageReplyOutputs__Group__1__Impl )
+            // InternalLwMessage.g:2062:2: rule__MessageReplyOutputs__Group__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__MessageReplyOutputs__Group__1__Impl();
@@ -6239,22 +6325,22 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutputs__Group__1__Impl"
-    // InternalLwMessage.g:2042:1: rule__MessageReplyOutputs__Group__1__Impl : ( ( rule__MessageReplyOutputs__Group_1__0 )* ) ;
+    // InternalLwMessage.g:2068:1: rule__MessageReplyOutputs__Group__1__Impl : ( ( rule__MessageReplyOutputs__Group_1__0 )* ) ;
     public final void rule__MessageReplyOutputs__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2046:1: ( ( ( rule__MessageReplyOutputs__Group_1__0 )* ) )
-            // InternalLwMessage.g:2047:1: ( ( rule__MessageReplyOutputs__Group_1__0 )* )
+            // InternalLwMessage.g:2072:1: ( ( ( rule__MessageReplyOutputs__Group_1__0 )* ) )
+            // InternalLwMessage.g:2073:1: ( ( rule__MessageReplyOutputs__Group_1__0 )* )
             {
-            // InternalLwMessage.g:2047:1: ( ( rule__MessageReplyOutputs__Group_1__0 )* )
-            // InternalLwMessage.g:2048:1: ( rule__MessageReplyOutputs__Group_1__0 )*
+            // InternalLwMessage.g:2073:1: ( ( rule__MessageReplyOutputs__Group_1__0 )* )
+            // InternalLwMessage.g:2074:1: ( rule__MessageReplyOutputs__Group_1__0 )*
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputsAccess().getGroup_1()); 
             }
-            // InternalLwMessage.g:2049:1: ( rule__MessageReplyOutputs__Group_1__0 )*
+            // InternalLwMessage.g:2075:1: ( rule__MessageReplyOutputs__Group_1__0 )*
             loop22:
             do {
                 int alt22=2;
@@ -6267,7 +6353,7 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
                 switch (alt22) {
             	case 1 :
-            	    // InternalLwMessage.g:2049:2: rule__MessageReplyOutputs__Group_1__0
+            	    // InternalLwMessage.g:2075:2: rule__MessageReplyOutputs__Group_1__0
             	    {
             	    pushFollow(FOLLOW_7);
             	    rule__MessageReplyOutputs__Group_1__0();
@@ -6308,14 +6394,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutputs__Group_1__0"
-    // InternalLwMessage.g:2063:1: rule__MessageReplyOutputs__Group_1__0 : rule__MessageReplyOutputs__Group_1__0__Impl rule__MessageReplyOutputs__Group_1__1 ;
+    // InternalLwMessage.g:2089:1: rule__MessageReplyOutputs__Group_1__0 : rule__MessageReplyOutputs__Group_1__0__Impl rule__MessageReplyOutputs__Group_1__1 ;
     public final void rule__MessageReplyOutputs__Group_1__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2067:1: ( rule__MessageReplyOutputs__Group_1__0__Impl rule__MessageReplyOutputs__Group_1__1 )
-            // InternalLwMessage.g:2068:2: rule__MessageReplyOutputs__Group_1__0__Impl rule__MessageReplyOutputs__Group_1__1
+            // InternalLwMessage.g:2093:1: ( rule__MessageReplyOutputs__Group_1__0__Impl rule__MessageReplyOutputs__Group_1__1 )
+            // InternalLwMessage.g:2094:2: rule__MessageReplyOutputs__Group_1__0__Impl rule__MessageReplyOutputs__Group_1__1
             {
             pushFollow(FOLLOW_12);
             rule__MessageReplyOutputs__Group_1__0__Impl();
@@ -6346,17 +6432,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutputs__Group_1__0__Impl"
-    // InternalLwMessage.g:2075:1: rule__MessageReplyOutputs__Group_1__0__Impl : ( ',' ) ;
+    // InternalLwMessage.g:2101:1: rule__MessageReplyOutputs__Group_1__0__Impl : ( ',' ) ;
     public final void rule__MessageReplyOutputs__Group_1__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2079:1: ( ( ',' ) )
-            // InternalLwMessage.g:2080:1: ( ',' )
+            // InternalLwMessage.g:2105:1: ( ( ',' ) )
+            // InternalLwMessage.g:2106:1: ( ',' )
             {
-            // InternalLwMessage.g:2080:1: ( ',' )
-            // InternalLwMessage.g:2081:1: ','
+            // InternalLwMessage.g:2106:1: ( ',' )
+            // InternalLwMessage.g:2107:1: ','
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputsAccess().getCommaKeyword_1_0()); 
@@ -6387,14 +6473,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutputs__Group_1__1"
-    // InternalLwMessage.g:2094:1: rule__MessageReplyOutputs__Group_1__1 : rule__MessageReplyOutputs__Group_1__1__Impl ;
+    // InternalLwMessage.g:2120:1: rule__MessageReplyOutputs__Group_1__1 : rule__MessageReplyOutputs__Group_1__1__Impl ;
     public final void rule__MessageReplyOutputs__Group_1__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2098:1: ( rule__MessageReplyOutputs__Group_1__1__Impl )
-            // InternalLwMessage.g:2099:2: rule__MessageReplyOutputs__Group_1__1__Impl
+            // InternalLwMessage.g:2124:1: ( rule__MessageReplyOutputs__Group_1__1__Impl )
+            // InternalLwMessage.g:2125:2: rule__MessageReplyOutputs__Group_1__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__MessageReplyOutputs__Group_1__1__Impl();
@@ -6420,23 +6506,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutputs__Group_1__1__Impl"
-    // InternalLwMessage.g:2105:1: rule__MessageReplyOutputs__Group_1__1__Impl : ( ( rule__MessageReplyOutputs__OutputsAssignment_1_1 ) ) ;
+    // InternalLwMessage.g:2131:1: rule__MessageReplyOutputs__Group_1__1__Impl : ( ( rule__MessageReplyOutputs__OutputsAssignment_1_1 ) ) ;
     public final void rule__MessageReplyOutputs__Group_1__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2109:1: ( ( ( rule__MessageReplyOutputs__OutputsAssignment_1_1 ) ) )
-            // InternalLwMessage.g:2110:1: ( ( rule__MessageReplyOutputs__OutputsAssignment_1_1 ) )
+            // InternalLwMessage.g:2135:1: ( ( ( rule__MessageReplyOutputs__OutputsAssignment_1_1 ) ) )
+            // InternalLwMessage.g:2136:1: ( ( rule__MessageReplyOutputs__OutputsAssignment_1_1 ) )
             {
-            // InternalLwMessage.g:2110:1: ( ( rule__MessageReplyOutputs__OutputsAssignment_1_1 ) )
-            // InternalLwMessage.g:2111:1: ( rule__MessageReplyOutputs__OutputsAssignment_1_1 )
+            // InternalLwMessage.g:2136:1: ( ( rule__MessageReplyOutputs__OutputsAssignment_1_1 ) )
+            // InternalLwMessage.g:2137:1: ( rule__MessageReplyOutputs__OutputsAssignment_1_1 )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputsAccess().getOutputsAssignment_1_1()); 
             }
-            // InternalLwMessage.g:2112:1: ( rule__MessageReplyOutputs__OutputsAssignment_1_1 )
-            // InternalLwMessage.g:2112:2: rule__MessageReplyOutputs__OutputsAssignment_1_1
+            // InternalLwMessage.g:2138:1: ( rule__MessageReplyOutputs__OutputsAssignment_1_1 )
+            // InternalLwMessage.g:2138:2: rule__MessageReplyOutputs__OutputsAssignment_1_1
             {
             pushFollow(FOLLOW_2);
             rule__MessageReplyOutputs__OutputsAssignment_1_1();
@@ -6471,14 +6557,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutput__Group_0__0"
-    // InternalLwMessage.g:2126:1: rule__MessageReplyOutput__Group_0__0 : rule__MessageReplyOutput__Group_0__0__Impl rule__MessageReplyOutput__Group_0__1 ;
+    // InternalLwMessage.g:2152:1: rule__MessageReplyOutput__Group_0__0 : rule__MessageReplyOutput__Group_0__0__Impl rule__MessageReplyOutput__Group_0__1 ;
     public final void rule__MessageReplyOutput__Group_0__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2130:1: ( rule__MessageReplyOutput__Group_0__0__Impl rule__MessageReplyOutput__Group_0__1 )
-            // InternalLwMessage.g:2131:2: rule__MessageReplyOutput__Group_0__0__Impl rule__MessageReplyOutput__Group_0__1
+            // InternalLwMessage.g:2156:1: ( rule__MessageReplyOutput__Group_0__0__Impl rule__MessageReplyOutput__Group_0__1 )
+            // InternalLwMessage.g:2157:2: rule__MessageReplyOutput__Group_0__0__Impl rule__MessageReplyOutput__Group_0__1
             {
             pushFollow(FOLLOW_12);
             rule__MessageReplyOutput__Group_0__0__Impl();
@@ -6509,23 +6595,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutput__Group_0__0__Impl"
-    // InternalLwMessage.g:2138:1: rule__MessageReplyOutput__Group_0__0__Impl : ( ( ruleAssignmentTarget ) ) ;
+    // InternalLwMessage.g:2164:1: rule__MessageReplyOutput__Group_0__0__Impl : ( ( ruleAssignmentTarget ) ) ;
     public final void rule__MessageReplyOutput__Group_0__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2142:1: ( ( ( ruleAssignmentTarget ) ) )
-            // InternalLwMessage.g:2143:1: ( ( ruleAssignmentTarget ) )
+            // InternalLwMessage.g:2168:1: ( ( ( ruleAssignmentTarget ) ) )
+            // InternalLwMessage.g:2169:1: ( ( ruleAssignmentTarget ) )
             {
-            // InternalLwMessage.g:2143:1: ( ( ruleAssignmentTarget ) )
-            // InternalLwMessage.g:2144:1: ( ruleAssignmentTarget )
+            // InternalLwMessage.g:2169:1: ( ( ruleAssignmentTarget ) )
+            // InternalLwMessage.g:2170:1: ( ruleAssignmentTarget )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputAccess().getAssignmentTargetParserRuleCall_0_0()); 
             }
-            // InternalLwMessage.g:2145:1: ( ruleAssignmentTarget )
-            // InternalLwMessage.g:2145:3: ruleAssignmentTarget
+            // InternalLwMessage.g:2171:1: ( ruleAssignmentTarget )
+            // InternalLwMessage.g:2171:3: ruleAssignmentTarget
             {
             pushFollow(FOLLOW_2);
             ruleAssignmentTarget();
@@ -6560,14 +6646,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutput__Group_0__1"
-    // InternalLwMessage.g:2155:1: rule__MessageReplyOutput__Group_0__1 : rule__MessageReplyOutput__Group_0__1__Impl rule__MessageReplyOutput__Group_0__2 ;
+    // InternalLwMessage.g:2181:1: rule__MessageReplyOutput__Group_0__1 : rule__MessageReplyOutput__Group_0__1__Impl rule__MessageReplyOutput__Group_0__2 ;
     public final void rule__MessageReplyOutput__Group_0__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2159:1: ( rule__MessageReplyOutput__Group_0__1__Impl rule__MessageReplyOutput__Group_0__2 )
-            // InternalLwMessage.g:2160:2: rule__MessageReplyOutput__Group_0__1__Impl rule__MessageReplyOutput__Group_0__2
+            // InternalLwMessage.g:2185:1: ( rule__MessageReplyOutput__Group_0__1__Impl rule__MessageReplyOutput__Group_0__2 )
+            // InternalLwMessage.g:2186:2: rule__MessageReplyOutput__Group_0__1__Impl rule__MessageReplyOutput__Group_0__2
             {
             pushFollow(FOLLOW_15);
             rule__MessageReplyOutput__Group_0__1__Impl();
@@ -6598,23 +6684,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutput__Group_0__1__Impl"
-    // InternalLwMessage.g:2167:1: rule__MessageReplyOutput__Group_0__1__Impl : ( ( rule__MessageReplyOutput__ParameterAssignment_0_1 ) ) ;
+    // InternalLwMessage.g:2193:1: rule__MessageReplyOutput__Group_0__1__Impl : ( ( rule__MessageReplyOutput__ParameterAssignment_0_1 ) ) ;
     public final void rule__MessageReplyOutput__Group_0__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2171:1: ( ( ( rule__MessageReplyOutput__ParameterAssignment_0_1 ) ) )
-            // InternalLwMessage.g:2172:1: ( ( rule__MessageReplyOutput__ParameterAssignment_0_1 ) )
+            // InternalLwMessage.g:2197:1: ( ( ( rule__MessageReplyOutput__ParameterAssignment_0_1 ) ) )
+            // InternalLwMessage.g:2198:1: ( ( rule__MessageReplyOutput__ParameterAssignment_0_1 ) )
             {
-            // InternalLwMessage.g:2172:1: ( ( rule__MessageReplyOutput__ParameterAssignment_0_1 ) )
-            // InternalLwMessage.g:2173:1: ( rule__MessageReplyOutput__ParameterAssignment_0_1 )
+            // InternalLwMessage.g:2198:1: ( ( rule__MessageReplyOutput__ParameterAssignment_0_1 ) )
+            // InternalLwMessage.g:2199:1: ( rule__MessageReplyOutput__ParameterAssignment_0_1 )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputAccess().getParameterAssignment_0_1()); 
             }
-            // InternalLwMessage.g:2174:1: ( rule__MessageReplyOutput__ParameterAssignment_0_1 )
-            // InternalLwMessage.g:2174:2: rule__MessageReplyOutput__ParameterAssignment_0_1
+            // InternalLwMessage.g:2200:1: ( rule__MessageReplyOutput__ParameterAssignment_0_1 )
+            // InternalLwMessage.g:2200:2: rule__MessageReplyOutput__ParameterAssignment_0_1
             {
             pushFollow(FOLLOW_2);
             rule__MessageReplyOutput__ParameterAssignment_0_1();
@@ -6649,14 +6735,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutput__Group_0__2"
-    // InternalLwMessage.g:2184:1: rule__MessageReplyOutput__Group_0__2 : rule__MessageReplyOutput__Group_0__2__Impl ;
+    // InternalLwMessage.g:2210:1: rule__MessageReplyOutput__Group_0__2 : rule__MessageReplyOutput__Group_0__2__Impl ;
     public final void rule__MessageReplyOutput__Group_0__2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2188:1: ( rule__MessageReplyOutput__Group_0__2__Impl )
-            // InternalLwMessage.g:2189:2: rule__MessageReplyOutput__Group_0__2__Impl
+            // InternalLwMessage.g:2214:1: ( rule__MessageReplyOutput__Group_0__2__Impl )
+            // InternalLwMessage.g:2215:2: rule__MessageReplyOutput__Group_0__2__Impl
             {
             pushFollow(FOLLOW_2);
             rule__MessageReplyOutput__Group_0__2__Impl();
@@ -6682,22 +6768,22 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutput__Group_0__2__Impl"
-    // InternalLwMessage.g:2195:1: rule__MessageReplyOutput__Group_0__2__Impl : ( ( rule__MessageReplyOutput__ValueAssignment_0_2 )? ) ;
+    // InternalLwMessage.g:2221:1: rule__MessageReplyOutput__Group_0__2__Impl : ( ( rule__MessageReplyOutput__ValueAssignment_0_2 )? ) ;
     public final void rule__MessageReplyOutput__Group_0__2__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2199:1: ( ( ( rule__MessageReplyOutput__ValueAssignment_0_2 )? ) )
-            // InternalLwMessage.g:2200:1: ( ( rule__MessageReplyOutput__ValueAssignment_0_2 )? )
+            // InternalLwMessage.g:2225:1: ( ( ( rule__MessageReplyOutput__ValueAssignment_0_2 )? ) )
+            // InternalLwMessage.g:2226:1: ( ( rule__MessageReplyOutput__ValueAssignment_0_2 )? )
             {
-            // InternalLwMessage.g:2200:1: ( ( rule__MessageReplyOutput__ValueAssignment_0_2 )? )
-            // InternalLwMessage.g:2201:1: ( rule__MessageReplyOutput__ValueAssignment_0_2 )?
+            // InternalLwMessage.g:2226:1: ( ( rule__MessageReplyOutput__ValueAssignment_0_2 )? )
+            // InternalLwMessage.g:2227:1: ( rule__MessageReplyOutput__ValueAssignment_0_2 )?
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputAccess().getValueAssignment_0_2()); 
             }
-            // InternalLwMessage.g:2202:1: ( rule__MessageReplyOutput__ValueAssignment_0_2 )?
+            // InternalLwMessage.g:2228:1: ( rule__MessageReplyOutput__ValueAssignment_0_2 )?
             int alt23=2;
             int LA23_0 = input.LA(1);
 
@@ -6706,7 +6792,7 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
             }
             switch (alt23) {
                 case 1 :
-                    // InternalLwMessage.g:2202:2: rule__MessageReplyOutput__ValueAssignment_0_2
+                    // InternalLwMessage.g:2228:2: rule__MessageReplyOutput__ValueAssignment_0_2
                     {
                     pushFollow(FOLLOW_2);
                     rule__MessageReplyOutput__ValueAssignment_0_2();
@@ -6744,14 +6830,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutput__Group_1__0"
-    // InternalLwMessage.g:2218:1: rule__MessageReplyOutput__Group_1__0 : rule__MessageReplyOutput__Group_1__0__Impl rule__MessageReplyOutput__Group_1__1 ;
+    // InternalLwMessage.g:2244:1: rule__MessageReplyOutput__Group_1__0 : rule__MessageReplyOutput__Group_1__0__Impl rule__MessageReplyOutput__Group_1__1 ;
     public final void rule__MessageReplyOutput__Group_1__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2222:1: ( rule__MessageReplyOutput__Group_1__0__Impl rule__MessageReplyOutput__Group_1__1 )
-            // InternalLwMessage.g:2223:2: rule__MessageReplyOutput__Group_1__0__Impl rule__MessageReplyOutput__Group_1__1
+            // InternalLwMessage.g:2248:1: ( rule__MessageReplyOutput__Group_1__0__Impl rule__MessageReplyOutput__Group_1__1 )
+            // InternalLwMessage.g:2249:2: rule__MessageReplyOutput__Group_1__0__Impl rule__MessageReplyOutput__Group_1__1
             {
             pushFollow(FOLLOW_15);
             rule__MessageReplyOutput__Group_1__0__Impl();
@@ -6782,23 +6868,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutput__Group_1__0__Impl"
-    // InternalLwMessage.g:2230:1: rule__MessageReplyOutput__Group_1__0__Impl : ( ( rule__MessageReplyOutput__ParameterAssignment_1_0 ) ) ;
+    // InternalLwMessage.g:2256:1: rule__MessageReplyOutput__Group_1__0__Impl : ( ( rule__MessageReplyOutput__ParameterAssignment_1_0 ) ) ;
     public final void rule__MessageReplyOutput__Group_1__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2234:1: ( ( ( rule__MessageReplyOutput__ParameterAssignment_1_0 ) ) )
-            // InternalLwMessage.g:2235:1: ( ( rule__MessageReplyOutput__ParameterAssignment_1_0 ) )
+            // InternalLwMessage.g:2260:1: ( ( ( rule__MessageReplyOutput__ParameterAssignment_1_0 ) ) )
+            // InternalLwMessage.g:2261:1: ( ( rule__MessageReplyOutput__ParameterAssignment_1_0 ) )
             {
-            // InternalLwMessage.g:2235:1: ( ( rule__MessageReplyOutput__ParameterAssignment_1_0 ) )
-            // InternalLwMessage.g:2236:1: ( rule__MessageReplyOutput__ParameterAssignment_1_0 )
+            // InternalLwMessage.g:2261:1: ( ( rule__MessageReplyOutput__ParameterAssignment_1_0 ) )
+            // InternalLwMessage.g:2262:1: ( rule__MessageReplyOutput__ParameterAssignment_1_0 )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputAccess().getParameterAssignment_1_0()); 
             }
-            // InternalLwMessage.g:2237:1: ( rule__MessageReplyOutput__ParameterAssignment_1_0 )
-            // InternalLwMessage.g:2237:2: rule__MessageReplyOutput__ParameterAssignment_1_0
+            // InternalLwMessage.g:2263:1: ( rule__MessageReplyOutput__ParameterAssignment_1_0 )
+            // InternalLwMessage.g:2263:2: rule__MessageReplyOutput__ParameterAssignment_1_0
             {
             pushFollow(FOLLOW_2);
             rule__MessageReplyOutput__ParameterAssignment_1_0();
@@ -6833,14 +6919,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutput__Group_1__1"
-    // InternalLwMessage.g:2247:1: rule__MessageReplyOutput__Group_1__1 : rule__MessageReplyOutput__Group_1__1__Impl ;
+    // InternalLwMessage.g:2273:1: rule__MessageReplyOutput__Group_1__1 : rule__MessageReplyOutput__Group_1__1__Impl ;
     public final void rule__MessageReplyOutput__Group_1__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2251:1: ( rule__MessageReplyOutput__Group_1__1__Impl )
-            // InternalLwMessage.g:2252:2: rule__MessageReplyOutput__Group_1__1__Impl
+            // InternalLwMessage.g:2277:1: ( rule__MessageReplyOutput__Group_1__1__Impl )
+            // InternalLwMessage.g:2278:2: rule__MessageReplyOutput__Group_1__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__MessageReplyOutput__Group_1__1__Impl();
@@ -6866,23 +6952,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutput__Group_1__1__Impl"
-    // InternalLwMessage.g:2258:1: rule__MessageReplyOutput__Group_1__1__Impl : ( ( rule__MessageReplyOutput__ValueAssignment_1_1 ) ) ;
+    // InternalLwMessage.g:2284:1: rule__MessageReplyOutput__Group_1__1__Impl : ( ( rule__MessageReplyOutput__ValueAssignment_1_1 ) ) ;
     public final void rule__MessageReplyOutput__Group_1__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2262:1: ( ( ( rule__MessageReplyOutput__ValueAssignment_1_1 ) ) )
-            // InternalLwMessage.g:2263:1: ( ( rule__MessageReplyOutput__ValueAssignment_1_1 ) )
+            // InternalLwMessage.g:2288:1: ( ( ( rule__MessageReplyOutput__ValueAssignment_1_1 ) ) )
+            // InternalLwMessage.g:2289:1: ( ( rule__MessageReplyOutput__ValueAssignment_1_1 ) )
             {
-            // InternalLwMessage.g:2263:1: ( ( rule__MessageReplyOutput__ValueAssignment_1_1 ) )
-            // InternalLwMessage.g:2264:1: ( rule__MessageReplyOutput__ValueAssignment_1_1 )
+            // InternalLwMessage.g:2289:1: ( ( rule__MessageReplyOutput__ValueAssignment_1_1 ) )
+            // InternalLwMessage.g:2290:1: ( rule__MessageReplyOutput__ValueAssignment_1_1 )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputAccess().getValueAssignment_1_1()); 
             }
-            // InternalLwMessage.g:2265:1: ( rule__MessageReplyOutput__ValueAssignment_1_1 )
-            // InternalLwMessage.g:2265:2: rule__MessageReplyOutput__ValueAssignment_1_1
+            // InternalLwMessage.g:2291:1: ( rule__MessageReplyOutput__ValueAssignment_1_1 )
+            // InternalLwMessage.g:2291:2: rule__MessageReplyOutput__ValueAssignment_1_1
             {
             pushFollow(FOLLOW_2);
             rule__MessageReplyOutput__ValueAssignment_1_1();
@@ -6917,14 +7003,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__OutputValue__Group__0"
-    // InternalLwMessage.g:2279:1: rule__OutputValue__Group__0 : rule__OutputValue__Group__0__Impl rule__OutputValue__Group__1 ;
+    // InternalLwMessage.g:2305:1: rule__OutputValue__Group__0 : rule__OutputValue__Group__0__Impl rule__OutputValue__Group__1 ;
     public final void rule__OutputValue__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2283:1: ( rule__OutputValue__Group__0__Impl rule__OutputValue__Group__1 )
-            // InternalLwMessage.g:2284:2: rule__OutputValue__Group__0__Impl rule__OutputValue__Group__1
+            // InternalLwMessage.g:2309:1: ( rule__OutputValue__Group__0__Impl rule__OutputValue__Group__1 )
+            // InternalLwMessage.g:2310:2: rule__OutputValue__Group__0__Impl rule__OutputValue__Group__1
             {
             pushFollow(FOLLOW_8);
             rule__OutputValue__Group__0__Impl();
@@ -6955,17 +7041,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__OutputValue__Group__0__Impl"
-    // InternalLwMessage.g:2291:1: rule__OutputValue__Group__0__Impl : ( ':' ) ;
+    // InternalLwMessage.g:2317:1: rule__OutputValue__Group__0__Impl : ( ':' ) ;
     public final void rule__OutputValue__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2295:1: ( ( ':' ) )
-            // InternalLwMessage.g:2296:1: ( ':' )
+            // InternalLwMessage.g:2321:1: ( ( ':' ) )
+            // InternalLwMessage.g:2322:1: ( ':' )
             {
-            // InternalLwMessage.g:2296:1: ( ':' )
-            // InternalLwMessage.g:2297:1: ':'
+            // InternalLwMessage.g:2322:1: ( ':' )
+            // InternalLwMessage.g:2323:1: ':'
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getOutputValueAccess().getColonKeyword_0()); 
@@ -6996,14 +7082,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__OutputValue__Group__1"
-    // InternalLwMessage.g:2310:1: rule__OutputValue__Group__1 : rule__OutputValue__Group__1__Impl ;
+    // InternalLwMessage.g:2336:1: rule__OutputValue__Group__1 : rule__OutputValue__Group__1__Impl ;
     public final void rule__OutputValue__Group__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2314:1: ( rule__OutputValue__Group__1__Impl )
-            // InternalLwMessage.g:2315:2: rule__OutputValue__Group__1__Impl
+            // InternalLwMessage.g:2340:1: ( rule__OutputValue__Group__1__Impl )
+            // InternalLwMessage.g:2341:2: rule__OutputValue__Group__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__OutputValue__Group__1__Impl();
@@ -7029,23 +7115,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__OutputValue__Group__1__Impl"
-    // InternalLwMessage.g:2321:1: rule__OutputValue__Group__1__Impl : ( ( rule__OutputValue__ValueAssignment_1 ) ) ;
+    // InternalLwMessage.g:2347:1: rule__OutputValue__Group__1__Impl : ( ( rule__OutputValue__ValueAssignment_1 ) ) ;
     public final void rule__OutputValue__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2325:1: ( ( ( rule__OutputValue__ValueAssignment_1 ) ) )
-            // InternalLwMessage.g:2326:1: ( ( rule__OutputValue__ValueAssignment_1 ) )
+            // InternalLwMessage.g:2351:1: ( ( ( rule__OutputValue__ValueAssignment_1 ) ) )
+            // InternalLwMessage.g:2352:1: ( ( rule__OutputValue__ValueAssignment_1 ) )
             {
-            // InternalLwMessage.g:2326:1: ( ( rule__OutputValue__ValueAssignment_1 ) )
-            // InternalLwMessage.g:2327:1: ( rule__OutputValue__ValueAssignment_1 )
+            // InternalLwMessage.g:2352:1: ( ( rule__OutputValue__ValueAssignment_1 ) )
+            // InternalLwMessage.g:2353:1: ( rule__OutputValue__ValueAssignment_1 )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getOutputValueAccess().getValueAssignment_1()); 
             }
-            // InternalLwMessage.g:2328:1: ( rule__OutputValue__ValueAssignment_1 )
-            // InternalLwMessage.g:2328:2: rule__OutputValue__ValueAssignment_1
+            // InternalLwMessage.g:2354:1: ( rule__OutputValue__ValueAssignment_1 )
+            // InternalLwMessage.g:2354:2: rule__OutputValue__ValueAssignment_1
             {
             pushFollow(FOLLOW_2);
             rule__OutputValue__ValueAssignment_1();
@@ -7080,14 +7166,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__NullValue__Group__0"
-    // InternalLwMessage.g:2342:1: rule__NullValue__Group__0 : rule__NullValue__Group__0__Impl rule__NullValue__Group__1 ;
+    // InternalLwMessage.g:2368:1: rule__NullValue__Group__0 : rule__NullValue__Group__0__Impl rule__NullValue__Group__1 ;
     public final void rule__NullValue__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2346:1: ( rule__NullValue__Group__0__Impl rule__NullValue__Group__1 )
-            // InternalLwMessage.g:2347:2: rule__NullValue__Group__0__Impl rule__NullValue__Group__1
+            // InternalLwMessage.g:2372:1: ( rule__NullValue__Group__0__Impl rule__NullValue__Group__1 )
+            // InternalLwMessage.g:2373:2: rule__NullValue__Group__0__Impl rule__NullValue__Group__1
             {
             pushFollow(FOLLOW_16);
             rule__NullValue__Group__0__Impl();
@@ -7118,23 +7204,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__NullValue__Group__0__Impl"
-    // InternalLwMessage.g:2354:1: rule__NullValue__Group__0__Impl : ( () ) ;
+    // InternalLwMessage.g:2380:1: rule__NullValue__Group__0__Impl : ( () ) ;
     public final void rule__NullValue__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2358:1: ( ( () ) )
-            // InternalLwMessage.g:2359:1: ( () )
+            // InternalLwMessage.g:2384:1: ( ( () ) )
+            // InternalLwMessage.g:2385:1: ( () )
             {
-            // InternalLwMessage.g:2359:1: ( () )
-            // InternalLwMessage.g:2360:1: ()
+            // InternalLwMessage.g:2385:1: ( () )
+            // InternalLwMessage.g:2386:1: ()
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getNullValueAccess().getNullValueAction_0()); 
             }
-            // InternalLwMessage.g:2361:1: ()
-            // InternalLwMessage.g:2363:1: 
+            // InternalLwMessage.g:2387:1: ()
+            // InternalLwMessage.g:2389:1: 
             {
             }
 
@@ -7159,14 +7245,14 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__NullValue__Group__1"
-    // InternalLwMessage.g:2373:1: rule__NullValue__Group__1 : rule__NullValue__Group__1__Impl ;
+    // InternalLwMessage.g:2399:1: rule__NullValue__Group__1 : rule__NullValue__Group__1__Impl ;
     public final void rule__NullValue__Group__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2377:1: ( rule__NullValue__Group__1__Impl )
-            // InternalLwMessage.g:2378:2: rule__NullValue__Group__1__Impl
+            // InternalLwMessage.g:2403:1: ( rule__NullValue__Group__1__Impl )
+            // InternalLwMessage.g:2404:2: rule__NullValue__Group__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__NullValue__Group__1__Impl();
@@ -7192,17 +7278,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__NullValue__Group__1__Impl"
-    // InternalLwMessage.g:2384:1: rule__NullValue__Group__1__Impl : ( 'null' ) ;
+    // InternalLwMessage.g:2410:1: rule__NullValue__Group__1__Impl : ( 'null' ) ;
     public final void rule__NullValue__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2388:1: ( ( 'null' ) )
-            // InternalLwMessage.g:2389:1: ( 'null' )
+            // InternalLwMessage.g:2414:1: ( ( 'null' ) )
+            // InternalLwMessage.g:2415:1: ( 'null' )
             {
-            // InternalLwMessage.g:2389:1: ( 'null' )
-            // InternalLwMessage.g:2390:1: 'null'
+            // InternalLwMessage.g:2415:1: ( 'null' )
+            // InternalLwMessage.g:2416:1: 'null'
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getNullValueAccess().getNullKeyword_1()); 
@@ -7232,25 +7318,371 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
     // $ANTLR end "rule__NullValue__Group__1__Impl"
 
 
+    // $ANTLR start "rule__QName__Group__0"
+    // InternalLwMessage.g:2433:1: rule__QName__Group__0 : rule__QName__Group__0__Impl rule__QName__Group__1 ;
+    public final void rule__QName__Group__0() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // InternalLwMessage.g:2437:1: ( rule__QName__Group__0__Impl rule__QName__Group__1 )
+            // InternalLwMessage.g:2438:2: rule__QName__Group__0__Impl rule__QName__Group__1
+            {
+            pushFollow(FOLLOW_17);
+            rule__QName__Group__0__Impl();
+
+            state._fsp--;
+            if (state.failed) return ;
+            pushFollow(FOLLOW_2);
+            rule__QName__Group__1();
+
+            state._fsp--;
+            if (state.failed) return ;
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__QName__Group__0"
+
+
+    // $ANTLR start "rule__QName__Group__0__Impl"
+    // InternalLwMessage.g:2445:1: rule__QName__Group__0__Impl : ( ruleName ) ;
+    public final void rule__QName__Group__0__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // InternalLwMessage.g:2449:1: ( ( ruleName ) )
+            // InternalLwMessage.g:2450:1: ( ruleName )
+            {
+            // InternalLwMessage.g:2450:1: ( ruleName )
+            // InternalLwMessage.g:2451:1: ruleName
+            {
+            if ( state.backtracking==0 ) {
+               before(grammarAccess.getQNameAccess().getNameParserRuleCall_0()); 
+            }
+            pushFollow(FOLLOW_2);
+            ruleName();
+
+            state._fsp--;
+            if (state.failed) return ;
+            if ( state.backtracking==0 ) {
+               after(grammarAccess.getQNameAccess().getNameParserRuleCall_0()); 
+            }
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__QName__Group__0__Impl"
+
+
+    // $ANTLR start "rule__QName__Group__1"
+    // InternalLwMessage.g:2462:1: rule__QName__Group__1 : rule__QName__Group__1__Impl ;
+    public final void rule__QName__Group__1() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // InternalLwMessage.g:2466:1: ( rule__QName__Group__1__Impl )
+            // InternalLwMessage.g:2467:2: rule__QName__Group__1__Impl
+            {
+            pushFollow(FOLLOW_2);
+            rule__QName__Group__1__Impl();
+
+            state._fsp--;
+            if (state.failed) return ;
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__QName__Group__1"
+
+
+    // $ANTLR start "rule__QName__Group__1__Impl"
+    // InternalLwMessage.g:2473:1: rule__QName__Group__1__Impl : ( ( rule__QName__Group_1__0 )* ) ;
+    public final void rule__QName__Group__1__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // InternalLwMessage.g:2477:1: ( ( ( rule__QName__Group_1__0 )* ) )
+            // InternalLwMessage.g:2478:1: ( ( rule__QName__Group_1__0 )* )
+            {
+            // InternalLwMessage.g:2478:1: ( ( rule__QName__Group_1__0 )* )
+            // InternalLwMessage.g:2479:1: ( rule__QName__Group_1__0 )*
+            {
+            if ( state.backtracking==0 ) {
+               before(grammarAccess.getQNameAccess().getGroup_1()); 
+            }
+            // InternalLwMessage.g:2480:1: ( rule__QName__Group_1__0 )*
+            loop24:
+            do {
+                int alt24=2;
+                int LA24_0 = input.LA(1);
+
+                if ( (LA24_0==28) ) {
+                    alt24=1;
+                }
+
+
+                switch (alt24) {
+            	case 1 :
+            	    // InternalLwMessage.g:2480:2: rule__QName__Group_1__0
+            	    {
+            	    pushFollow(FOLLOW_18);
+            	    rule__QName__Group_1__0();
+
+            	    state._fsp--;
+            	    if (state.failed) return ;
+
+            	    }
+            	    break;
+
+            	default :
+            	    break loop24;
+                }
+            } while (true);
+
+            if ( state.backtracking==0 ) {
+               after(grammarAccess.getQNameAccess().getGroup_1()); 
+            }
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__QName__Group__1__Impl"
+
+
+    // $ANTLR start "rule__QName__Group_1__0"
+    // InternalLwMessage.g:2494:1: rule__QName__Group_1__0 : rule__QName__Group_1__0__Impl rule__QName__Group_1__1 ;
+    public final void rule__QName__Group_1__0() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // InternalLwMessage.g:2498:1: ( rule__QName__Group_1__0__Impl rule__QName__Group_1__1 )
+            // InternalLwMessage.g:2499:2: rule__QName__Group_1__0__Impl rule__QName__Group_1__1
+            {
+            pushFollow(FOLLOW_12);
+            rule__QName__Group_1__0__Impl();
+
+            state._fsp--;
+            if (state.failed) return ;
+            pushFollow(FOLLOW_2);
+            rule__QName__Group_1__1();
+
+            state._fsp--;
+            if (state.failed) return ;
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__QName__Group_1__0"
+
+
+    // $ANTLR start "rule__QName__Group_1__0__Impl"
+    // InternalLwMessage.g:2506:1: rule__QName__Group_1__0__Impl : ( '::' ) ;
+    public final void rule__QName__Group_1__0__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // InternalLwMessage.g:2510:1: ( ( '::' ) )
+            // InternalLwMessage.g:2511:1: ( '::' )
+            {
+            // InternalLwMessage.g:2511:1: ( '::' )
+            // InternalLwMessage.g:2512:1: '::'
+            {
+            if ( state.backtracking==0 ) {
+               before(grammarAccess.getQNameAccess().getColonColonKeyword_1_0()); 
+            }
+            match(input,28,FOLLOW_2); if (state.failed) return ;
+            if ( state.backtracking==0 ) {
+               after(grammarAccess.getQNameAccess().getColonColonKeyword_1_0()); 
+            }
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__QName__Group_1__0__Impl"
+
+
+    // $ANTLR start "rule__QName__Group_1__1"
+    // InternalLwMessage.g:2525:1: rule__QName__Group_1__1 : rule__QName__Group_1__1__Impl ;
+    public final void rule__QName__Group_1__1() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // InternalLwMessage.g:2529:1: ( rule__QName__Group_1__1__Impl )
+            // InternalLwMessage.g:2530:2: rule__QName__Group_1__1__Impl
+            {
+            pushFollow(FOLLOW_2);
+            rule__QName__Group_1__1__Impl();
+
+            state._fsp--;
+            if (state.failed) return ;
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__QName__Group_1__1"
+
+
+    // $ANTLR start "rule__QName__Group_1__1__Impl"
+    // InternalLwMessage.g:2536:1: rule__QName__Group_1__1__Impl : ( ruleName ) ;
+    public final void rule__QName__Group_1__1__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // InternalLwMessage.g:2540:1: ( ( ruleName ) )
+            // InternalLwMessage.g:2541:1: ( ruleName )
+            {
+            // InternalLwMessage.g:2541:1: ( ruleName )
+            // InternalLwMessage.g:2542:1: ruleName
+            {
+            if ( state.backtracking==0 ) {
+               before(grammarAccess.getQNameAccess().getNameParserRuleCall_1_1()); 
+            }
+            pushFollow(FOLLOW_2);
+            ruleName();
+
+            state._fsp--;
+            if (state.failed) return ;
+            if ( state.backtracking==0 ) {
+               after(grammarAccess.getQNameAccess().getNameParserRuleCall_1_1()); 
+            }
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__QName__Group_1__1__Impl"
+
+
     // $ANTLR start "rule__RequestMessage__NameAssignment_0_0"
-    // InternalLwMessage.g:2410:1: rule__RequestMessage__NameAssignment_0_0 : ( RULE_ID ) ;
+    // InternalLwMessage.g:2558:1: rule__RequestMessage__NameAssignment_0_0 : ( ruleName ) ;
     public final void rule__RequestMessage__NameAssignment_0_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2414:1: ( ( RULE_ID ) )
-            // InternalLwMessage.g:2415:1: ( RULE_ID )
+            // InternalLwMessage.g:2562:1: ( ( ruleName ) )
+            // InternalLwMessage.g:2563:1: ( ruleName )
             {
-            // InternalLwMessage.g:2415:1: ( RULE_ID )
-            // InternalLwMessage.g:2416:1: RULE_ID
+            // InternalLwMessage.g:2563:1: ( ruleName )
+            // InternalLwMessage.g:2564:1: ruleName
             {
             if ( state.backtracking==0 ) {
-               before(grammarAccess.getRequestMessageAccess().getNameIDTerminalRuleCall_0_0_0()); 
+               before(grammarAccess.getRequestMessageAccess().getNameNameParserRuleCall_0_0_0()); 
             }
-            match(input,RULE_ID,FOLLOW_2); if (state.failed) return ;
+            pushFollow(FOLLOW_2);
+            ruleName();
+
+            state._fsp--;
+            if (state.failed) return ;
             if ( state.backtracking==0 ) {
-               after(grammarAccess.getRequestMessageAccess().getNameIDTerminalRuleCall_0_0_0()); 
+               after(grammarAccess.getRequestMessageAccess().getNameNameParserRuleCall_0_0_0()); 
             }
 
             }
@@ -7274,23 +7706,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__RequestMessage__SignalAssignment_0_1"
-    // InternalLwMessage.g:2425:1: rule__RequestMessage__SignalAssignment_0_1 : ( ( RULE_ID ) ) ;
+    // InternalLwMessage.g:2573:1: rule__RequestMessage__SignalAssignment_0_1 : ( ( RULE_ID ) ) ;
     public final void rule__RequestMessage__SignalAssignment_0_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2429:1: ( ( ( RULE_ID ) ) )
-            // InternalLwMessage.g:2430:1: ( ( RULE_ID ) )
+            // InternalLwMessage.g:2577:1: ( ( ( RULE_ID ) ) )
+            // InternalLwMessage.g:2578:1: ( ( RULE_ID ) )
             {
-            // InternalLwMessage.g:2430:1: ( ( RULE_ID ) )
-            // InternalLwMessage.g:2431:1: ( RULE_ID )
+            // InternalLwMessage.g:2578:1: ( ( RULE_ID ) )
+            // InternalLwMessage.g:2579:1: ( RULE_ID )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getRequestMessageAccess().getSignalSignalCrossReference_0_1_0()); 
             }
-            // InternalLwMessage.g:2432:1: ( RULE_ID )
-            // InternalLwMessage.g:2433:1: RULE_ID
+            // InternalLwMessage.g:2580:1: ( RULE_ID )
+            // InternalLwMessage.g:2581:1: RULE_ID
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getRequestMessageAccess().getSignalSignalIDTerminalRuleCall_0_1_0_1()); 
@@ -7327,23 +7759,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__RequestMessage__OperationAssignment_0_2"
-    // InternalLwMessage.g:2444:1: rule__RequestMessage__OperationAssignment_0_2 : ( ( RULE_ID ) ) ;
+    // InternalLwMessage.g:2592:1: rule__RequestMessage__OperationAssignment_0_2 : ( ( RULE_ID ) ) ;
     public final void rule__RequestMessage__OperationAssignment_0_2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2448:1: ( ( ( RULE_ID ) ) )
-            // InternalLwMessage.g:2449:1: ( ( RULE_ID ) )
+            // InternalLwMessage.g:2596:1: ( ( ( RULE_ID ) ) )
+            // InternalLwMessage.g:2597:1: ( ( RULE_ID ) )
             {
-            // InternalLwMessage.g:2449:1: ( ( RULE_ID ) )
-            // InternalLwMessage.g:2450:1: ( RULE_ID )
+            // InternalLwMessage.g:2597:1: ( ( RULE_ID ) )
+            // InternalLwMessage.g:2598:1: ( RULE_ID )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getRequestMessageAccess().getOperationOperationCrossReference_0_2_0()); 
             }
-            // InternalLwMessage.g:2451:1: ( RULE_ID )
-            // InternalLwMessage.g:2452:1: RULE_ID
+            // InternalLwMessage.g:2599:1: ( RULE_ID )
+            // InternalLwMessage.g:2600:1: RULE_ID
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getRequestMessageAccess().getOperationOperationIDTerminalRuleCall_0_2_0_1()); 
@@ -7380,17 +7812,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__ArgumentsAssignment_0_0"
-    // InternalLwMessage.g:2463:1: rule__MessageRequestArguments__ArgumentsAssignment_0_0 : ( ruleMessageRequestArgument ) ;
+    // InternalLwMessage.g:2611:1: rule__MessageRequestArguments__ArgumentsAssignment_0_0 : ( ruleMessageRequestArgument ) ;
     public final void rule__MessageRequestArguments__ArgumentsAssignment_0_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2467:1: ( ( ruleMessageRequestArgument ) )
-            // InternalLwMessage.g:2468:1: ( ruleMessageRequestArgument )
+            // InternalLwMessage.g:2615:1: ( ( ruleMessageRequestArgument ) )
+            // InternalLwMessage.g:2616:1: ( ruleMessageRequestArgument )
             {
-            // InternalLwMessage.g:2468:1: ( ruleMessageRequestArgument )
-            // InternalLwMessage.g:2469:1: ruleMessageRequestArgument
+            // InternalLwMessage.g:2616:1: ( ruleMessageRequestArgument )
+            // InternalLwMessage.g:2617:1: ruleMessageRequestArgument
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestArgumentsAccess().getArgumentsMessageRequestArgumentParserRuleCall_0_0_0()); 
@@ -7425,17 +7857,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__ArgumentsAssignment_0_1_1"
-    // InternalLwMessage.g:2478:1: rule__MessageRequestArguments__ArgumentsAssignment_0_1_1 : ( ruleMessageRequestArgument ) ;
+    // InternalLwMessage.g:2626:1: rule__MessageRequestArguments__ArgumentsAssignment_0_1_1 : ( ruleMessageRequestArgument ) ;
     public final void rule__MessageRequestArguments__ArgumentsAssignment_0_1_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2482:1: ( ( ruleMessageRequestArgument ) )
-            // InternalLwMessage.g:2483:1: ( ruleMessageRequestArgument )
+            // InternalLwMessage.g:2630:1: ( ( ruleMessageRequestArgument ) )
+            // InternalLwMessage.g:2631:1: ( ruleMessageRequestArgument )
             {
-            // InternalLwMessage.g:2483:1: ( ruleMessageRequestArgument )
-            // InternalLwMessage.g:2484:1: ruleMessageRequestArgument
+            // InternalLwMessage.g:2631:1: ( ruleMessageRequestArgument )
+            // InternalLwMessage.g:2632:1: ruleMessageRequestArgument
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestArgumentsAccess().getArgumentsMessageRequestArgumentParserRuleCall_0_1_1_0()); 
@@ -7470,17 +7902,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__ArgumentsAssignment_1_0"
-    // InternalLwMessage.g:2493:1: rule__MessageRequestArguments__ArgumentsAssignment_1_0 : ( ruleMessageRequestArgumentWithName ) ;
+    // InternalLwMessage.g:2641:1: rule__MessageRequestArguments__ArgumentsAssignment_1_0 : ( ruleMessageRequestArgumentWithName ) ;
     public final void rule__MessageRequestArguments__ArgumentsAssignment_1_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2497:1: ( ( ruleMessageRequestArgumentWithName ) )
-            // InternalLwMessage.g:2498:1: ( ruleMessageRequestArgumentWithName )
+            // InternalLwMessage.g:2645:1: ( ( ruleMessageRequestArgumentWithName ) )
+            // InternalLwMessage.g:2646:1: ( ruleMessageRequestArgumentWithName )
             {
-            // InternalLwMessage.g:2498:1: ( ruleMessageRequestArgumentWithName )
-            // InternalLwMessage.g:2499:1: ruleMessageRequestArgumentWithName
+            // InternalLwMessage.g:2646:1: ( ruleMessageRequestArgumentWithName )
+            // InternalLwMessage.g:2647:1: ruleMessageRequestArgumentWithName
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestArgumentsAccess().getArgumentsMessageRequestArgumentWithNameParserRuleCall_1_0_0()); 
@@ -7515,17 +7947,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestArguments__ArgumentsAssignment_1_1_1"
-    // InternalLwMessage.g:2508:1: rule__MessageRequestArguments__ArgumentsAssignment_1_1_1 : ( ruleMessageRequestArgumentWithName ) ;
+    // InternalLwMessage.g:2656:1: rule__MessageRequestArguments__ArgumentsAssignment_1_1_1 : ( ruleMessageRequestArgumentWithName ) ;
     public final void rule__MessageRequestArguments__ArgumentsAssignment_1_1_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2512:1: ( ( ruleMessageRequestArgumentWithName ) )
-            // InternalLwMessage.g:2513:1: ( ruleMessageRequestArgumentWithName )
+            // InternalLwMessage.g:2660:1: ( ( ruleMessageRequestArgumentWithName ) )
+            // InternalLwMessage.g:2661:1: ( ruleMessageRequestArgumentWithName )
             {
-            // InternalLwMessage.g:2513:1: ( ruleMessageRequestArgumentWithName )
-            // InternalLwMessage.g:2514:1: ruleMessageRequestArgumentWithName
+            // InternalLwMessage.g:2661:1: ( ruleMessageRequestArgumentWithName )
+            // InternalLwMessage.g:2662:1: ruleMessageRequestArgumentWithName
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestArgumentsAccess().getArgumentsMessageRequestArgumentWithNameParserRuleCall_1_1_1_0()); 
@@ -7560,24 +7992,28 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestNameAndValue__NameAssignment_0_0"
-    // InternalLwMessage.g:2523:1: rule__MessageRequestNameAndValue__NameAssignment_0_0 : ( RULE_ID ) ;
+    // InternalLwMessage.g:2671:1: rule__MessageRequestNameAndValue__NameAssignment_0_0 : ( ruleName ) ;
     public final void rule__MessageRequestNameAndValue__NameAssignment_0_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2527:1: ( ( RULE_ID ) )
-            // InternalLwMessage.g:2528:1: ( RULE_ID )
+            // InternalLwMessage.g:2675:1: ( ( ruleName ) )
+            // InternalLwMessage.g:2676:1: ( ruleName )
             {
-            // InternalLwMessage.g:2528:1: ( RULE_ID )
-            // InternalLwMessage.g:2529:1: RULE_ID
+            // InternalLwMessage.g:2676:1: ( ruleName )
+            // InternalLwMessage.g:2677:1: ruleName
             {
             if ( state.backtracking==0 ) {
-               before(grammarAccess.getMessageRequestNameAndValueAccess().getNameIDTerminalRuleCall_0_0_0()); 
+               before(grammarAccess.getMessageRequestNameAndValueAccess().getNameNameParserRuleCall_0_0_0()); 
             }
-            match(input,RULE_ID,FOLLOW_2); if (state.failed) return ;
+            pushFollow(FOLLOW_2);
+            ruleName();
+
+            state._fsp--;
+            if (state.failed) return ;
             if ( state.backtracking==0 ) {
-               after(grammarAccess.getMessageRequestNameAndValueAccess().getNameIDTerminalRuleCall_0_0_0()); 
+               after(grammarAccess.getMessageRequestNameAndValueAccess().getNameNameParserRuleCall_0_0_0()); 
             }
 
             }
@@ -7601,23 +8037,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestNameAndValue__PropertyAssignment_0_1"
-    // InternalLwMessage.g:2538:1: rule__MessageRequestNameAndValue__PropertyAssignment_0_1 : ( ( RULE_ID ) ) ;
+    // InternalLwMessage.g:2686:1: rule__MessageRequestNameAndValue__PropertyAssignment_0_1 : ( ( RULE_ID ) ) ;
     public final void rule__MessageRequestNameAndValue__PropertyAssignment_0_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2542:1: ( ( ( RULE_ID ) ) )
-            // InternalLwMessage.g:2543:1: ( ( RULE_ID ) )
+            // InternalLwMessage.g:2690:1: ( ( ( RULE_ID ) ) )
+            // InternalLwMessage.g:2691:1: ( ( RULE_ID ) )
             {
-            // InternalLwMessage.g:2543:1: ( ( RULE_ID ) )
-            // InternalLwMessage.g:2544:1: ( RULE_ID )
+            // InternalLwMessage.g:2691:1: ( ( RULE_ID ) )
+            // InternalLwMessage.g:2692:1: ( RULE_ID )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestNameAndValueAccess().getPropertyPropertyCrossReference_0_1_0()); 
             }
-            // InternalLwMessage.g:2545:1: ( RULE_ID )
-            // InternalLwMessage.g:2546:1: RULE_ID
+            // InternalLwMessage.g:2693:1: ( RULE_ID )
+            // InternalLwMessage.g:2694:1: RULE_ID
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestNameAndValueAccess().getPropertyPropertyIDTerminalRuleCall_0_1_0_1()); 
@@ -7654,23 +8090,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestNameAndValue__ParameterAssignment_0_2"
-    // InternalLwMessage.g:2557:1: rule__MessageRequestNameAndValue__ParameterAssignment_0_2 : ( ( RULE_ID ) ) ;
+    // InternalLwMessage.g:2705:1: rule__MessageRequestNameAndValue__ParameterAssignment_0_2 : ( ( RULE_ID ) ) ;
     public final void rule__MessageRequestNameAndValue__ParameterAssignment_0_2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2561:1: ( ( ( RULE_ID ) ) )
-            // InternalLwMessage.g:2562:1: ( ( RULE_ID ) )
+            // InternalLwMessage.g:2709:1: ( ( ( RULE_ID ) ) )
+            // InternalLwMessage.g:2710:1: ( ( RULE_ID ) )
             {
-            // InternalLwMessage.g:2562:1: ( ( RULE_ID ) )
-            // InternalLwMessage.g:2563:1: ( RULE_ID )
+            // InternalLwMessage.g:2710:1: ( ( RULE_ID ) )
+            // InternalLwMessage.g:2711:1: ( RULE_ID )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestNameAndValueAccess().getParameterParameterCrossReference_0_2_0()); 
             }
-            // InternalLwMessage.g:2564:1: ( RULE_ID )
-            // InternalLwMessage.g:2565:1: RULE_ID
+            // InternalLwMessage.g:2712:1: ( RULE_ID )
+            // InternalLwMessage.g:2713:1: RULE_ID
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestNameAndValueAccess().getParameterParameterIDTerminalRuleCall_0_2_0_1()); 
@@ -7707,17 +8143,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageRequestValue__ValueAssignment"
-    // InternalLwMessage.g:2576:1: rule__MessageRequestValue__ValueAssignment : ( ruleValue ) ;
+    // InternalLwMessage.g:2724:1: rule__MessageRequestValue__ValueAssignment : ( ruleValue ) ;
     public final void rule__MessageRequestValue__ValueAssignment() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2580:1: ( ( ruleValue ) )
-            // InternalLwMessage.g:2581:1: ( ruleValue )
+            // InternalLwMessage.g:2728:1: ( ( ruleValue ) )
+            // InternalLwMessage.g:2729:1: ( ruleValue )
             {
-            // InternalLwMessage.g:2581:1: ( ruleValue )
-            // InternalLwMessage.g:2582:1: ruleValue
+            // InternalLwMessage.g:2729:1: ( ruleValue )
+            // InternalLwMessage.g:2730:1: ruleValue
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageRequestValueAccess().getValueValueParserRuleCall_0()); 
@@ -7752,24 +8188,28 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__NameAssignment_1_0"
-    // InternalLwMessage.g:2591:1: rule__ReplyMessage__NameAssignment_1_0 : ( RULE_ID ) ;
+    // InternalLwMessage.g:2739:1: rule__ReplyMessage__NameAssignment_1_0 : ( ruleName ) ;
     public final void rule__ReplyMessage__NameAssignment_1_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2595:1: ( ( RULE_ID ) )
-            // InternalLwMessage.g:2596:1: ( RULE_ID )
+            // InternalLwMessage.g:2743:1: ( ( ruleName ) )
+            // InternalLwMessage.g:2744:1: ( ruleName )
             {
-            // InternalLwMessage.g:2596:1: ( RULE_ID )
-            // InternalLwMessage.g:2597:1: RULE_ID
+            // InternalLwMessage.g:2744:1: ( ruleName )
+            // InternalLwMessage.g:2745:1: ruleName
             {
             if ( state.backtracking==0 ) {
-               before(grammarAccess.getReplyMessageAccess().getNameIDTerminalRuleCall_1_0_0()); 
+               before(grammarAccess.getReplyMessageAccess().getNameNameParserRuleCall_1_0_0()); 
             }
-            match(input,RULE_ID,FOLLOW_2); if (state.failed) return ;
+            pushFollow(FOLLOW_2);
+            ruleName();
+
+            state._fsp--;
+            if (state.failed) return ;
             if ( state.backtracking==0 ) {
-               after(grammarAccess.getReplyMessageAccess().getNameIDTerminalRuleCall_1_0_0()); 
+               after(grammarAccess.getReplyMessageAccess().getNameNameParserRuleCall_1_0_0()); 
             }
 
             }
@@ -7793,23 +8233,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__OperationAssignment_1_1"
-    // InternalLwMessage.g:2606:1: rule__ReplyMessage__OperationAssignment_1_1 : ( ( RULE_ID ) ) ;
+    // InternalLwMessage.g:2754:1: rule__ReplyMessage__OperationAssignment_1_1 : ( ( RULE_ID ) ) ;
     public final void rule__ReplyMessage__OperationAssignment_1_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2610:1: ( ( ( RULE_ID ) ) )
-            // InternalLwMessage.g:2611:1: ( ( RULE_ID ) )
+            // InternalLwMessage.g:2758:1: ( ( ( RULE_ID ) ) )
+            // InternalLwMessage.g:2759:1: ( ( RULE_ID ) )
             {
-            // InternalLwMessage.g:2611:1: ( ( RULE_ID ) )
-            // InternalLwMessage.g:2612:1: ( RULE_ID )
+            // InternalLwMessage.g:2759:1: ( ( RULE_ID ) )
+            // InternalLwMessage.g:2760:1: ( RULE_ID )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getReplyMessageAccess().getOperationOperationCrossReference_1_1_0()); 
             }
-            // InternalLwMessage.g:2613:1: ( RULE_ID )
-            // InternalLwMessage.g:2614:1: RULE_ID
+            // InternalLwMessage.g:2761:1: ( RULE_ID )
+            // InternalLwMessage.g:2762:1: RULE_ID
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getReplyMessageAccess().getOperationOperationIDTerminalRuleCall_1_1_0_1()); 
@@ -7846,17 +8286,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__ReplyMessage__ValueAssignment_3"
-    // InternalLwMessage.g:2625:1: rule__ReplyMessage__ValueAssignment_3 : ( ruleOutputValue ) ;
+    // InternalLwMessage.g:2773:1: rule__ReplyMessage__ValueAssignment_3 : ( ruleOutputValue ) ;
     public final void rule__ReplyMessage__ValueAssignment_3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2629:1: ( ( ruleOutputValue ) )
-            // InternalLwMessage.g:2630:1: ( ruleOutputValue )
+            // InternalLwMessage.g:2777:1: ( ( ruleOutputValue ) )
+            // InternalLwMessage.g:2778:1: ( ruleOutputValue )
             {
-            // InternalLwMessage.g:2630:1: ( ruleOutputValue )
-            // InternalLwMessage.g:2631:1: ruleOutputValue
+            // InternalLwMessage.g:2778:1: ( ruleOutputValue )
+            // InternalLwMessage.g:2779:1: ruleOutputValue
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getReplyMessageAccess().getValueOutputValueParserRuleCall_3_0()); 
@@ -7891,30 +8331,34 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__AssignmentTarget__TargetAssignment_0"
-    // InternalLwMessage.g:2640:1: rule__AssignmentTarget__TargetAssignment_0 : ( ( RULE_ID ) ) ;
+    // InternalLwMessage.g:2788:1: rule__AssignmentTarget__TargetAssignment_0 : ( ( ruleQName ) ) ;
     public final void rule__AssignmentTarget__TargetAssignment_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2644:1: ( ( ( RULE_ID ) ) )
-            // InternalLwMessage.g:2645:1: ( ( RULE_ID ) )
+            // InternalLwMessage.g:2792:1: ( ( ( ruleQName ) ) )
+            // InternalLwMessage.g:2793:1: ( ( ruleQName ) )
             {
-            // InternalLwMessage.g:2645:1: ( ( RULE_ID ) )
-            // InternalLwMessage.g:2646:1: ( RULE_ID )
+            // InternalLwMessage.g:2793:1: ( ( ruleQName ) )
+            // InternalLwMessage.g:2794:1: ( ruleQName )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getAssignmentTargetAccess().getTargetConnectableElementCrossReference_0_0()); 
             }
-            // InternalLwMessage.g:2647:1: ( RULE_ID )
-            // InternalLwMessage.g:2648:1: RULE_ID
+            // InternalLwMessage.g:2795:1: ( ruleQName )
+            // InternalLwMessage.g:2796:1: ruleQName
             {
             if ( state.backtracking==0 ) {
-               before(grammarAccess.getAssignmentTargetAccess().getTargetConnectableElementIDTerminalRuleCall_0_0_1()); 
+               before(grammarAccess.getAssignmentTargetAccess().getTargetConnectableElementQNameParserRuleCall_0_0_1()); 
             }
-            match(input,RULE_ID,FOLLOW_2); if (state.failed) return ;
+            pushFollow(FOLLOW_2);
+            ruleQName();
+
+            state._fsp--;
+            if (state.failed) return ;
             if ( state.backtracking==0 ) {
-               after(grammarAccess.getAssignmentTargetAccess().getTargetConnectableElementIDTerminalRuleCall_0_0_1()); 
+               after(grammarAccess.getAssignmentTargetAccess().getTargetConnectableElementQNameParserRuleCall_0_0_1()); 
             }
 
             }
@@ -7944,17 +8388,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutputs__OutputsAssignment_0"
-    // InternalLwMessage.g:2659:1: rule__MessageReplyOutputs__OutputsAssignment_0 : ( ruleMessageReplyOutput ) ;
+    // InternalLwMessage.g:2807:1: rule__MessageReplyOutputs__OutputsAssignment_0 : ( ruleMessageReplyOutput ) ;
     public final void rule__MessageReplyOutputs__OutputsAssignment_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2663:1: ( ( ruleMessageReplyOutput ) )
-            // InternalLwMessage.g:2664:1: ( ruleMessageReplyOutput )
+            // InternalLwMessage.g:2811:1: ( ( ruleMessageReplyOutput ) )
+            // InternalLwMessage.g:2812:1: ( ruleMessageReplyOutput )
             {
-            // InternalLwMessage.g:2664:1: ( ruleMessageReplyOutput )
-            // InternalLwMessage.g:2665:1: ruleMessageReplyOutput
+            // InternalLwMessage.g:2812:1: ( ruleMessageReplyOutput )
+            // InternalLwMessage.g:2813:1: ruleMessageReplyOutput
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputsAccess().getOutputsMessageReplyOutputParserRuleCall_0_0()); 
@@ -7989,17 +8433,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutputs__OutputsAssignment_1_1"
-    // InternalLwMessage.g:2674:1: rule__MessageReplyOutputs__OutputsAssignment_1_1 : ( ruleMessageReplyOutput ) ;
+    // InternalLwMessage.g:2822:1: rule__MessageReplyOutputs__OutputsAssignment_1_1 : ( ruleMessageReplyOutput ) ;
     public final void rule__MessageReplyOutputs__OutputsAssignment_1_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2678:1: ( ( ruleMessageReplyOutput ) )
-            // InternalLwMessage.g:2679:1: ( ruleMessageReplyOutput )
+            // InternalLwMessage.g:2826:1: ( ( ruleMessageReplyOutput ) )
+            // InternalLwMessage.g:2827:1: ( ruleMessageReplyOutput )
             {
-            // InternalLwMessage.g:2679:1: ( ruleMessageReplyOutput )
-            // InternalLwMessage.g:2680:1: ruleMessageReplyOutput
+            // InternalLwMessage.g:2827:1: ( ruleMessageReplyOutput )
+            // InternalLwMessage.g:2828:1: ruleMessageReplyOutput
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputsAccess().getOutputsMessageReplyOutputParserRuleCall_1_1_0()); 
@@ -8034,23 +8478,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutput__ParameterAssignment_0_1"
-    // InternalLwMessage.g:2689:1: rule__MessageReplyOutput__ParameterAssignment_0_1 : ( ( RULE_ID ) ) ;
+    // InternalLwMessage.g:2837:1: rule__MessageReplyOutput__ParameterAssignment_0_1 : ( ( RULE_ID ) ) ;
     public final void rule__MessageReplyOutput__ParameterAssignment_0_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2693:1: ( ( ( RULE_ID ) ) )
-            // InternalLwMessage.g:2694:1: ( ( RULE_ID ) )
+            // InternalLwMessage.g:2841:1: ( ( ( RULE_ID ) ) )
+            // InternalLwMessage.g:2842:1: ( ( RULE_ID ) )
             {
-            // InternalLwMessage.g:2694:1: ( ( RULE_ID ) )
-            // InternalLwMessage.g:2695:1: ( RULE_ID )
+            // InternalLwMessage.g:2842:1: ( ( RULE_ID ) )
+            // InternalLwMessage.g:2843:1: ( RULE_ID )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputAccess().getParameterParameterCrossReference_0_1_0()); 
             }
-            // InternalLwMessage.g:2696:1: ( RULE_ID )
-            // InternalLwMessage.g:2697:1: RULE_ID
+            // InternalLwMessage.g:2844:1: ( RULE_ID )
+            // InternalLwMessage.g:2845:1: RULE_ID
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputAccess().getParameterParameterIDTerminalRuleCall_0_1_0_1()); 
@@ -8087,17 +8531,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutput__ValueAssignment_0_2"
-    // InternalLwMessage.g:2708:1: rule__MessageReplyOutput__ValueAssignment_0_2 : ( ruleOutputValue ) ;
+    // InternalLwMessage.g:2856:1: rule__MessageReplyOutput__ValueAssignment_0_2 : ( ruleOutputValue ) ;
     public final void rule__MessageReplyOutput__ValueAssignment_0_2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2712:1: ( ( ruleOutputValue ) )
-            // InternalLwMessage.g:2713:1: ( ruleOutputValue )
+            // InternalLwMessage.g:2860:1: ( ( ruleOutputValue ) )
+            // InternalLwMessage.g:2861:1: ( ruleOutputValue )
             {
-            // InternalLwMessage.g:2713:1: ( ruleOutputValue )
-            // InternalLwMessage.g:2714:1: ruleOutputValue
+            // InternalLwMessage.g:2861:1: ( ruleOutputValue )
+            // InternalLwMessage.g:2862:1: ruleOutputValue
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputAccess().getValueOutputValueParserRuleCall_0_2_0()); 
@@ -8132,23 +8576,23 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutput__ParameterAssignment_1_0"
-    // InternalLwMessage.g:2723:1: rule__MessageReplyOutput__ParameterAssignment_1_0 : ( ( RULE_ID ) ) ;
+    // InternalLwMessage.g:2871:1: rule__MessageReplyOutput__ParameterAssignment_1_0 : ( ( RULE_ID ) ) ;
     public final void rule__MessageReplyOutput__ParameterAssignment_1_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2727:1: ( ( ( RULE_ID ) ) )
-            // InternalLwMessage.g:2728:1: ( ( RULE_ID ) )
+            // InternalLwMessage.g:2875:1: ( ( ( RULE_ID ) ) )
+            // InternalLwMessage.g:2876:1: ( ( RULE_ID ) )
             {
-            // InternalLwMessage.g:2728:1: ( ( RULE_ID ) )
-            // InternalLwMessage.g:2729:1: ( RULE_ID )
+            // InternalLwMessage.g:2876:1: ( ( RULE_ID ) )
+            // InternalLwMessage.g:2877:1: ( RULE_ID )
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputAccess().getParameterParameterCrossReference_1_0_0()); 
             }
-            // InternalLwMessage.g:2730:1: ( RULE_ID )
-            // InternalLwMessage.g:2731:1: RULE_ID
+            // InternalLwMessage.g:2878:1: ( RULE_ID )
+            // InternalLwMessage.g:2879:1: RULE_ID
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputAccess().getParameterParameterIDTerminalRuleCall_1_0_0_1()); 
@@ -8185,17 +8629,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__MessageReplyOutput__ValueAssignment_1_1"
-    // InternalLwMessage.g:2742:1: rule__MessageReplyOutput__ValueAssignment_1_1 : ( ruleOutputValue ) ;
+    // InternalLwMessage.g:2890:1: rule__MessageReplyOutput__ValueAssignment_1_1 : ( ruleOutputValue ) ;
     public final void rule__MessageReplyOutput__ValueAssignment_1_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2746:1: ( ( ruleOutputValue ) )
-            // InternalLwMessage.g:2747:1: ( ruleOutputValue )
+            // InternalLwMessage.g:2894:1: ( ( ruleOutputValue ) )
+            // InternalLwMessage.g:2895:1: ( ruleOutputValue )
             {
-            // InternalLwMessage.g:2747:1: ( ruleOutputValue )
-            // InternalLwMessage.g:2748:1: ruleOutputValue
+            // InternalLwMessage.g:2895:1: ( ruleOutputValue )
+            // InternalLwMessage.g:2896:1: ruleOutputValue
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getMessageReplyOutputAccess().getValueOutputValueParserRuleCall_1_1_0()); 
@@ -8230,17 +8674,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__OutputValue__ValueAssignment_1"
-    // InternalLwMessage.g:2757:1: rule__OutputValue__ValueAssignment_1 : ( ruleValue ) ;
+    // InternalLwMessage.g:2905:1: rule__OutputValue__ValueAssignment_1 : ( ruleValue ) ;
     public final void rule__OutputValue__ValueAssignment_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2761:1: ( ( ruleValue ) )
-            // InternalLwMessage.g:2762:1: ( ruleValue )
+            // InternalLwMessage.g:2909:1: ( ( ruleValue ) )
+            // InternalLwMessage.g:2910:1: ( ruleValue )
             {
-            // InternalLwMessage.g:2762:1: ( ruleValue )
-            // InternalLwMessage.g:2763:1: ruleValue
+            // InternalLwMessage.g:2910:1: ( ruleValue )
+            // InternalLwMessage.g:2911:1: ruleValue
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getOutputValueAccess().getValueValueParserRuleCall_1_0()); 
@@ -8275,17 +8719,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__BooleanValue__ValueAssignment"
-    // InternalLwMessage.g:2772:1: rule__BooleanValue__ValueAssignment : ( ruleBoolean ) ;
+    // InternalLwMessage.g:2920:1: rule__BooleanValue__ValueAssignment : ( ruleBoolean ) ;
     public final void rule__BooleanValue__ValueAssignment() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2776:1: ( ( ruleBoolean ) )
-            // InternalLwMessage.g:2777:1: ( ruleBoolean )
+            // InternalLwMessage.g:2924:1: ( ( ruleBoolean ) )
+            // InternalLwMessage.g:2925:1: ( ruleBoolean )
             {
-            // InternalLwMessage.g:2777:1: ( ruleBoolean )
-            // InternalLwMessage.g:2778:1: ruleBoolean
+            // InternalLwMessage.g:2925:1: ( ruleBoolean )
+            // InternalLwMessage.g:2926:1: ruleBoolean
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getBooleanValueAccess().getValueBooleanParserRuleCall_0()); 
@@ -8320,17 +8764,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__IntegerValue__ValueAssignment"
-    // InternalLwMessage.g:2787:1: rule__IntegerValue__ValueAssignment : ( RULE_INT ) ;
+    // InternalLwMessage.g:2935:1: rule__IntegerValue__ValueAssignment : ( RULE_INT ) ;
     public final void rule__IntegerValue__ValueAssignment() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2791:1: ( ( RULE_INT ) )
-            // InternalLwMessage.g:2792:1: ( RULE_INT )
+            // InternalLwMessage.g:2939:1: ( ( RULE_INT ) )
+            // InternalLwMessage.g:2940:1: ( RULE_INT )
             {
-            // InternalLwMessage.g:2792:1: ( RULE_INT )
-            // InternalLwMessage.g:2793:1: RULE_INT
+            // InternalLwMessage.g:2940:1: ( RULE_INT )
+            // InternalLwMessage.g:2941:1: RULE_INT
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getIntegerValueAccess().getValueINTTerminalRuleCall_0()); 
@@ -8361,17 +8805,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__UnlimitedNaturalValue__ValueAssignment"
-    // InternalLwMessage.g:2802:1: rule__UnlimitedNaturalValue__ValueAssignment : ( ruleUnlimitedNatural ) ;
+    // InternalLwMessage.g:2950:1: rule__UnlimitedNaturalValue__ValueAssignment : ( ruleUnlimitedNatural ) ;
     public final void rule__UnlimitedNaturalValue__ValueAssignment() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2806:1: ( ( ruleUnlimitedNatural ) )
-            // InternalLwMessage.g:2807:1: ( ruleUnlimitedNatural )
+            // InternalLwMessage.g:2954:1: ( ( ruleUnlimitedNatural ) )
+            // InternalLwMessage.g:2955:1: ( ruleUnlimitedNatural )
             {
-            // InternalLwMessage.g:2807:1: ( ruleUnlimitedNatural )
-            // InternalLwMessage.g:2808:1: ruleUnlimitedNatural
+            // InternalLwMessage.g:2955:1: ( ruleUnlimitedNatural )
+            // InternalLwMessage.g:2956:1: ruleUnlimitedNatural
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getUnlimitedNaturalValueAccess().getValueUnlimitedNaturalParserRuleCall_0()); 
@@ -8406,17 +8850,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__RealValue__ValueAssignment"
-    // InternalLwMessage.g:2817:1: rule__RealValue__ValueAssignment : ( ruleDouble ) ;
+    // InternalLwMessage.g:2965:1: rule__RealValue__ValueAssignment : ( ruleDouble ) ;
     public final void rule__RealValue__ValueAssignment() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2821:1: ( ( ruleDouble ) )
-            // InternalLwMessage.g:2822:1: ( ruleDouble )
+            // InternalLwMessage.g:2969:1: ( ( ruleDouble ) )
+            // InternalLwMessage.g:2970:1: ( ruleDouble )
             {
-            // InternalLwMessage.g:2822:1: ( ruleDouble )
-            // InternalLwMessage.g:2823:1: ruleDouble
+            // InternalLwMessage.g:2970:1: ( ruleDouble )
+            // InternalLwMessage.g:2971:1: ruleDouble
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getRealValueAccess().getValueDoubleParserRuleCall_0()); 
@@ -8451,17 +8895,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
 
     // $ANTLR start "rule__StringValue__ValueAssignment"
-    // InternalLwMessage.g:2832:1: rule__StringValue__ValueAssignment : ( RULE_STRING ) ;
+    // InternalLwMessage.g:2980:1: rule__StringValue__ValueAssignment : ( RULE_STRING ) ;
     public final void rule__StringValue__ValueAssignment() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // InternalLwMessage.g:2836:1: ( ( RULE_STRING ) )
-            // InternalLwMessage.g:2837:1: ( RULE_STRING )
+            // InternalLwMessage.g:2984:1: ( ( RULE_STRING ) )
+            // InternalLwMessage.g:2985:1: ( RULE_STRING )
             {
-            // InternalLwMessage.g:2837:1: ( RULE_STRING )
-            // InternalLwMessage.g:2838:1: RULE_STRING
+            // InternalLwMessage.g:2985:1: ( RULE_STRING )
+            // InternalLwMessage.g:2986:1: RULE_STRING
             {
             if ( state.backtracking==0 ) {
                before(grammarAccess.getStringValueAccess().getValueSTRINGTerminalRuleCall_0()); 
@@ -8492,11 +8936,11 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
     // $ANTLR start synpred1_InternalLwMessage
     public final void synpred1_InternalLwMessage_fragment() throws RecognitionException {   
-        // InternalLwMessage.g:766:1: ( ( ruleAbstractRequestMessage ) )
-        // InternalLwMessage.g:766:1: ( ruleAbstractRequestMessage )
+        // InternalLwMessage.g:792:1: ( ( ruleAbstractRequestMessage ) )
+        // InternalLwMessage.g:792:1: ( ruleAbstractRequestMessage )
         {
-        // InternalLwMessage.g:766:1: ( ruleAbstractRequestMessage )
-        // InternalLwMessage.g:767:1: ruleAbstractRequestMessage
+        // InternalLwMessage.g:792:1: ( ruleAbstractRequestMessage )
+        // InternalLwMessage.g:793:1: ruleAbstractRequestMessage
         {
         if ( state.backtracking==0 ) {
            before(grammarAccess.getAbstractMessageAccess().getAbstractRequestMessageParserRuleCall_0()); 
@@ -8516,17 +8960,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
     // $ANTLR start synpred3_InternalLwMessage
     public final void synpred3_InternalLwMessage_fragment() throws RecognitionException {   
-        // InternalLwMessage.g:810:1: ( ( ( rule__RequestMessage__NameAssignment_0_0 ) ) )
-        // InternalLwMessage.g:810:1: ( ( rule__RequestMessage__NameAssignment_0_0 ) )
+        // InternalLwMessage.g:836:1: ( ( ( rule__RequestMessage__NameAssignment_0_0 ) ) )
+        // InternalLwMessage.g:836:1: ( ( rule__RequestMessage__NameAssignment_0_0 ) )
         {
-        // InternalLwMessage.g:810:1: ( ( rule__RequestMessage__NameAssignment_0_0 ) )
-        // InternalLwMessage.g:811:1: ( rule__RequestMessage__NameAssignment_0_0 )
+        // InternalLwMessage.g:836:1: ( ( rule__RequestMessage__NameAssignment_0_0 ) )
+        // InternalLwMessage.g:837:1: ( rule__RequestMessage__NameAssignment_0_0 )
         {
         if ( state.backtracking==0 ) {
            before(grammarAccess.getRequestMessageAccess().getNameAssignment_0_0()); 
         }
-        // InternalLwMessage.g:812:1: ( rule__RequestMessage__NameAssignment_0_0 )
-        // InternalLwMessage.g:812:2: rule__RequestMessage__NameAssignment_0_0
+        // InternalLwMessage.g:838:1: ( rule__RequestMessage__NameAssignment_0_0 )
+        // InternalLwMessage.g:838:2: rule__RequestMessage__NameAssignment_0_0
         {
         pushFollow(FOLLOW_2);
         rule__RequestMessage__NameAssignment_0_0();
@@ -8546,17 +8990,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
     // $ANTLR start synpred4_InternalLwMessage
     public final void synpred4_InternalLwMessage_fragment() throws RecognitionException {   
-        // InternalLwMessage.g:816:6: ( ( ( rule__RequestMessage__SignalAssignment_0_1 ) ) )
-        // InternalLwMessage.g:816:6: ( ( rule__RequestMessage__SignalAssignment_0_1 ) )
+        // InternalLwMessage.g:842:6: ( ( ( rule__RequestMessage__SignalAssignment_0_1 ) ) )
+        // InternalLwMessage.g:842:6: ( ( rule__RequestMessage__SignalAssignment_0_1 ) )
         {
-        // InternalLwMessage.g:816:6: ( ( rule__RequestMessage__SignalAssignment_0_1 ) )
-        // InternalLwMessage.g:817:1: ( rule__RequestMessage__SignalAssignment_0_1 )
+        // InternalLwMessage.g:842:6: ( ( rule__RequestMessage__SignalAssignment_0_1 ) )
+        // InternalLwMessage.g:843:1: ( rule__RequestMessage__SignalAssignment_0_1 )
         {
         if ( state.backtracking==0 ) {
            before(grammarAccess.getRequestMessageAccess().getSignalAssignment_0_1()); 
         }
-        // InternalLwMessage.g:818:1: ( rule__RequestMessage__SignalAssignment_0_1 )
-        // InternalLwMessage.g:818:2: rule__RequestMessage__SignalAssignment_0_1
+        // InternalLwMessage.g:844:1: ( rule__RequestMessage__SignalAssignment_0_1 )
+        // InternalLwMessage.g:844:2: rule__RequestMessage__SignalAssignment_0_1
         {
         pushFollow(FOLLOW_2);
         rule__RequestMessage__SignalAssignment_0_1();
@@ -8576,17 +9020,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
     // $ANTLR start synpred7_InternalLwMessage
     public final void synpred7_InternalLwMessage_fragment() throws RecognitionException {   
-        // InternalLwMessage.g:882:1: ( ( ( rule__MessageRequestNameAndValue__NameAssignment_0_0 ) ) )
-        // InternalLwMessage.g:882:1: ( ( rule__MessageRequestNameAndValue__NameAssignment_0_0 ) )
+        // InternalLwMessage.g:908:1: ( ( ( rule__MessageRequestNameAndValue__NameAssignment_0_0 ) ) )
+        // InternalLwMessage.g:908:1: ( ( rule__MessageRequestNameAndValue__NameAssignment_0_0 ) )
         {
-        // InternalLwMessage.g:882:1: ( ( rule__MessageRequestNameAndValue__NameAssignment_0_0 ) )
-        // InternalLwMessage.g:883:1: ( rule__MessageRequestNameAndValue__NameAssignment_0_0 )
+        // InternalLwMessage.g:908:1: ( ( rule__MessageRequestNameAndValue__NameAssignment_0_0 ) )
+        // InternalLwMessage.g:909:1: ( rule__MessageRequestNameAndValue__NameAssignment_0_0 )
         {
         if ( state.backtracking==0 ) {
            before(grammarAccess.getMessageRequestNameAndValueAccess().getNameAssignment_0_0()); 
         }
-        // InternalLwMessage.g:884:1: ( rule__MessageRequestNameAndValue__NameAssignment_0_0 )
-        // InternalLwMessage.g:884:2: rule__MessageRequestNameAndValue__NameAssignment_0_0
+        // InternalLwMessage.g:910:1: ( rule__MessageRequestNameAndValue__NameAssignment_0_0 )
+        // InternalLwMessage.g:910:2: rule__MessageRequestNameAndValue__NameAssignment_0_0
         {
         pushFollow(FOLLOW_2);
         rule__MessageRequestNameAndValue__NameAssignment_0_0();
@@ -8606,17 +9050,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
     // $ANTLR start synpred8_InternalLwMessage
     public final void synpred8_InternalLwMessage_fragment() throws RecognitionException {   
-        // InternalLwMessage.g:888:6: ( ( ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 ) ) )
-        // InternalLwMessage.g:888:6: ( ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 ) )
+        // InternalLwMessage.g:914:6: ( ( ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 ) ) )
+        // InternalLwMessage.g:914:6: ( ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 ) )
         {
-        // InternalLwMessage.g:888:6: ( ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 ) )
-        // InternalLwMessage.g:889:1: ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 )
+        // InternalLwMessage.g:914:6: ( ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 ) )
+        // InternalLwMessage.g:915:1: ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 )
         {
         if ( state.backtracking==0 ) {
            before(grammarAccess.getMessageRequestNameAndValueAccess().getPropertyAssignment_0_1()); 
         }
-        // InternalLwMessage.g:890:1: ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 )
-        // InternalLwMessage.g:890:2: rule__MessageRequestNameAndValue__PropertyAssignment_0_1
+        // InternalLwMessage.g:916:1: ( rule__MessageRequestNameAndValue__PropertyAssignment_0_1 )
+        // InternalLwMessage.g:916:2: rule__MessageRequestNameAndValue__PropertyAssignment_0_1
         {
         pushFollow(FOLLOW_2);
         rule__MessageRequestNameAndValue__PropertyAssignment_0_1();
@@ -8636,17 +9080,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
     // $ANTLR start synpred9_InternalLwMessage
     public final void synpred9_InternalLwMessage_fragment() throws RecognitionException {   
-        // InternalLwMessage.g:910:1: ( ( ( rule__ReplyMessage__NameAssignment_1_0 ) ) )
-        // InternalLwMessage.g:910:1: ( ( rule__ReplyMessage__NameAssignment_1_0 ) )
+        // InternalLwMessage.g:936:1: ( ( ( rule__ReplyMessage__NameAssignment_1_0 ) ) )
+        // InternalLwMessage.g:936:1: ( ( rule__ReplyMessage__NameAssignment_1_0 ) )
         {
-        // InternalLwMessage.g:910:1: ( ( rule__ReplyMessage__NameAssignment_1_0 ) )
-        // InternalLwMessage.g:911:1: ( rule__ReplyMessage__NameAssignment_1_0 )
+        // InternalLwMessage.g:936:1: ( ( rule__ReplyMessage__NameAssignment_1_0 ) )
+        // InternalLwMessage.g:937:1: ( rule__ReplyMessage__NameAssignment_1_0 )
         {
         if ( state.backtracking==0 ) {
            before(grammarAccess.getReplyMessageAccess().getNameAssignment_1_0()); 
         }
-        // InternalLwMessage.g:912:1: ( rule__ReplyMessage__NameAssignment_1_0 )
-        // InternalLwMessage.g:912:2: rule__ReplyMessage__NameAssignment_1_0
+        // InternalLwMessage.g:938:1: ( rule__ReplyMessage__NameAssignment_1_0 )
+        // InternalLwMessage.g:938:2: rule__ReplyMessage__NameAssignment_1_0
         {
         pushFollow(FOLLOW_2);
         rule__ReplyMessage__NameAssignment_1_0();
@@ -8666,17 +9110,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
     // $ANTLR start synpred12_InternalLwMessage
     public final void synpred12_InternalLwMessage_fragment() throws RecognitionException {   
-        // InternalLwMessage.g:960:6: ( ( ( ruleIntegerValue ) ) )
-        // InternalLwMessage.g:960:6: ( ( ruleIntegerValue ) )
+        // InternalLwMessage.g:986:6: ( ( ( ruleIntegerValue ) ) )
+        // InternalLwMessage.g:986:6: ( ( ruleIntegerValue ) )
         {
-        // InternalLwMessage.g:960:6: ( ( ruleIntegerValue ) )
-        // InternalLwMessage.g:961:1: ( ruleIntegerValue )
+        // InternalLwMessage.g:986:6: ( ( ruleIntegerValue ) )
+        // InternalLwMessage.g:987:1: ( ruleIntegerValue )
         {
         if ( state.backtracking==0 ) {
            before(grammarAccess.getValueAccess().getIntegerValueParserRuleCall_1()); 
         }
-        // InternalLwMessage.g:962:1: ( ruleIntegerValue )
-        // InternalLwMessage.g:962:3: ruleIntegerValue
+        // InternalLwMessage.g:988:1: ( ruleIntegerValue )
+        // InternalLwMessage.g:988:3: ruleIntegerValue
         {
         pushFollow(FOLLOW_2);
         ruleIntegerValue();
@@ -8696,17 +9140,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
     // $ANTLR start synpred13_InternalLwMessage
     public final void synpred13_InternalLwMessage_fragment() throws RecognitionException {   
-        // InternalLwMessage.g:966:6: ( ( ( ruleUnlimitedNaturalValue ) ) )
-        // InternalLwMessage.g:966:6: ( ( ruleUnlimitedNaturalValue ) )
+        // InternalLwMessage.g:992:6: ( ( ( ruleUnlimitedNaturalValue ) ) )
+        // InternalLwMessage.g:992:6: ( ( ruleUnlimitedNaturalValue ) )
         {
-        // InternalLwMessage.g:966:6: ( ( ruleUnlimitedNaturalValue ) )
-        // InternalLwMessage.g:967:1: ( ruleUnlimitedNaturalValue )
+        // InternalLwMessage.g:992:6: ( ( ruleUnlimitedNaturalValue ) )
+        // InternalLwMessage.g:993:1: ( ruleUnlimitedNaturalValue )
         {
         if ( state.backtracking==0 ) {
            before(grammarAccess.getValueAccess().getUnlimitedNaturalValueParserRuleCall_2()); 
         }
-        // InternalLwMessage.g:968:1: ( ruleUnlimitedNaturalValue )
-        // InternalLwMessage.g:968:3: ruleUnlimitedNaturalValue
+        // InternalLwMessage.g:994:1: ( ruleUnlimitedNaturalValue )
+        // InternalLwMessage.g:994:3: ruleUnlimitedNaturalValue
         {
         pushFollow(FOLLOW_2);
         ruleUnlimitedNaturalValue();
@@ -8726,17 +9170,17 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
 
     // $ANTLR start synpred14_InternalLwMessage
     public final void synpred14_InternalLwMessage_fragment() throws RecognitionException {   
-        // InternalLwMessage.g:972:6: ( ( ( ruleRealValue ) ) )
-        // InternalLwMessage.g:972:6: ( ( ruleRealValue ) )
+        // InternalLwMessage.g:998:6: ( ( ( ruleRealValue ) ) )
+        // InternalLwMessage.g:998:6: ( ( ruleRealValue ) )
         {
-        // InternalLwMessage.g:972:6: ( ( ruleRealValue ) )
-        // InternalLwMessage.g:973:1: ( ruleRealValue )
+        // InternalLwMessage.g:998:6: ( ( ruleRealValue ) )
+        // InternalLwMessage.g:999:1: ( ruleRealValue )
         {
         if ( state.backtracking==0 ) {
            before(grammarAccess.getValueAccess().getRealValueParserRuleCall_3()); 
         }
-        // InternalLwMessage.g:974:1: ( ruleRealValue )
-        // InternalLwMessage.g:974:3: ruleRealValue
+        // InternalLwMessage.g:1000:1: ( ruleRealValue )
+        // InternalLwMessage.g:1000:3: ruleRealValue
         {
         pushFollow(FOLLOW_2);
         ruleRealValue();
@@ -8902,5 +9346,7 @@ public class InternalLwMessageParser extends AbstractInternalContentAssistParser
     public static final BitSet FOLLOW_14 = new BitSet(new long[]{0x0000000000400010L});
     public static final BitSet FOLLOW_15 = new BitSet(new long[]{0x0000000004000000L});
     public static final BitSet FOLLOW_16 = new BitSet(new long[]{0x0000000008000000L});
+    public static final BitSet FOLLOW_17 = new BitSet(new long[]{0x0000000010000000L});
+    public static final BitSet FOLLOW_18 = new BitSet(new long[]{0x0000000010000002L});
 
 }

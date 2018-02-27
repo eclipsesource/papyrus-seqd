@@ -33,6 +33,7 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.lwMessage.ReplyMessage;
 import org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.lwMessage.RequestMessage;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.NamedElementUtil;
 import org.eclipse.papyrus.uml.tools.utils.ICustomAppearance;
 import org.eclipse.papyrus.uml.tools.utils.OperationUtil;
 import org.eclipse.papyrus.uml.tools.utils.ParameterUtil;
@@ -203,7 +204,8 @@ public class LwMessageProposalProvider extends
 					ReplyMessage.class);
 			if (replyMessage != null) {
 				Stream<ConnectableElement> targets = MessageUtil.getAssignableTargets(message);
-				targets.filter(isPrefixed(prefix)).map(propose(context)).forEach(acceptor::accept);
+				targets.filter(isPrefixed(prefix)).map(proposeQualified(message, context))
+						.forEach(acceptor::accept);
 			}
 		}
 	}
@@ -266,6 +268,12 @@ public class LwMessageProposalProvider extends
 	private static Function<NamedElement, ICompletionProposal> propose(ContentAssistContext context) {
 		return element -> CompletionProposalUtils.createCompletionProposalWithReplacementOfPrefix(element,
 				element.getName(), label(element), context);
+	}
+
+	private static Function<NamedElement, ICompletionProposal> proposeQualified(NamedElement relativeTo,
+			ContentAssistContext context) {
+		return element -> CompletionProposalUtils.createCompletionProposalWithReplacementOfPrefix(element,
+				NamedElementUtil.getQualifiedName(element, relativeTo), label(element), context);
 	}
 
 	private static Predicate<NamedElement> isPrefixed(String prefix) {

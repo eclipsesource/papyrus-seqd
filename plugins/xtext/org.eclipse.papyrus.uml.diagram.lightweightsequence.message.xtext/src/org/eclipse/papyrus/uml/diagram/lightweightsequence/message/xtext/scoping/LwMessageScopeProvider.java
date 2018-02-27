@@ -6,6 +6,7 @@ package org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.scopin
 import static org.eclipse.uml2.common.util.UML2Util.isEmpty;
 
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
@@ -16,18 +17,23 @@ import org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.lwMessa
 import org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.lwMessage.ReplyMessage;
 import org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.lwMessage.RequestMessage;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.NamedElementUtil;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.OperationUtil;
 import org.eclipse.papyrus.uml.xtext.integration.core.ContextElementUtil;
 import org.eclipse.uml2.uml.ConnectableElement;
 import org.eclipse.uml2.uml.Message;
+import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.xtext.EcoreUtil2;
+import org.eclipse.xtext.naming.QualifiedName;
 import org.eclipse.xtext.scoping.IScope;
 import org.eclipse.xtext.scoping.Scopes;
 import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider;
+
+import com.google.common.base.Function;
 
 /**
  * This class contains custom scoping description.
@@ -140,7 +146,7 @@ public class LwMessageScopeProvider extends AbstractDeclarativeScopeProvider {
 			Message message = (Message) contextElement;
 			List<ConnectableElement> available = MessageUtil.getAssignableTargets(message)
 					.collect(Collectors.toList());
-			return Scopes.scopeFor(available);
+			return Scopes.scopeFor(available, nameQualifiedRelativeTo(message), IScope.NULLSCOPE);
 		}
 
 		return IScope.NULLSCOPE;
@@ -159,5 +165,22 @@ public class LwMessageScopeProvider extends AbstractDeclarativeScopeProvider {
 		}
 
 		return IScope.NULLSCOPE;
+	}
+
+	/**
+	 * Obtains a qualified name function that provides names qualified relative to
+	 * some {@code referring} element.
+	 *
+	 * @param referring
+	 *            the element relative to which names are to be qualified
+	 * @return the relative qualified name computation
+	 */
+	protected Function<NamedElement, QualifiedName> nameQualifiedRelativeTo(NamedElement referring) {
+		Pattern split = Pattern.compile(Pattern.quote(NamedElement.SEPARATOR));
+
+		return element -> {
+			String result = NamedElementUtil.getQualifiedName(element, referring);
+			return isEmpty(result) ? QualifiedName.EMPTY : QualifiedName.create(split.split(result));
+		};
 	}
 }

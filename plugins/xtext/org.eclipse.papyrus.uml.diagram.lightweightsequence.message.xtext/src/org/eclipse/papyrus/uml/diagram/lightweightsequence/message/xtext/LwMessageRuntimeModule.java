@@ -4,6 +4,8 @@
 package org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext;
 
 import org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.parser.antlr.LwMessageParser;
+import org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.scoping.UMLQualifiedNameConverter;
+import org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.scoping.UMLQualifiedNameProvider;
 import org.eclipse.xtext.parser.IParser;
 
 /**
@@ -45,6 +47,15 @@ public class LwMessageRuntimeModule extends
 		default:
 			return super.bindIParser();
 		}
+	}
+
+	@Override
+	public Class<? extends org.eclipse.xtext.naming.IQualifiedNameProvider> bindIQualifiedNameProvider() {
+		return UMLQualifiedNameProvider.class;
+	}
+
+	public Class<? extends org.eclipse.xtext.naming.IQualifiedNameConverter> bindIQualifiedNameConverter() {
+		return UMLQualifiedNameConverter.class;
 	}
 
 	//

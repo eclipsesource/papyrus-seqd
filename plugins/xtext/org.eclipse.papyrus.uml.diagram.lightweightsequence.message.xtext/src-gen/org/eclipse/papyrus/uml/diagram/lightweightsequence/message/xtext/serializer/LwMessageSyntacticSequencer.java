@@ -56,8 +56,8 @@ public class LwMessageSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     ('(' ')')?
 	 *
 	 * This ambiguous syntax occurs at:
-	 *     name=ID (ambiguity) (rule end)
-	 *     name=ID (ambiguity) value=OutputValue
+	 *     name=Name (ambiguity) (rule end)
+	 *     name=Name (ambiguity) value=OutputValue
 	 *     operation=[Operation|ID] (ambiguity) (rule end)
 	 *     operation=[Operation|ID] (ambiguity) value=OutputValue
 	 */
@@ -70,7 +70,7 @@ public class LwMessageSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     ('(' ')')?
 	 *
 	 * This ambiguous syntax occurs at:
-	 *     name=ID (ambiguity) (rule end)
+	 *     name=Name (ambiguity) (rule end)
 	 *     operation=[Operation|ID] (ambiguity) (rule end)
 	 *     signal=[Signal|ID] (ambiguity) (rule end)
 	 */

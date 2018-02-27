@@ -64,7 +64,7 @@ public class LwMessageGrammarAccess extends AbstractGrammarElementFinder {
 		private final Group cGroup = (Group)rule.eContents().get(1);
 		private final Alternatives cAlternatives_0 = (Alternatives)cGroup.eContents().get(0);
 		private final Assignment cNameAssignment_0_0 = (Assignment)cAlternatives_0.eContents().get(0);
-		private final RuleCall cNameIDTerminalRuleCall_0_0_0 = (RuleCall)cNameAssignment_0_0.eContents().get(0);
+		private final RuleCall cNameNameParserRuleCall_0_0_0 = (RuleCall)cNameAssignment_0_0.eContents().get(0);
 		private final Assignment cSignalAssignment_0_1 = (Assignment)cAlternatives_0.eContents().get(1);
 		private final CrossReference cSignalSignalCrossReference_0_1_0 = (CrossReference)cSignalAssignment_0_1.eContents().get(0);
 		private final RuleCall cSignalSignalIDTerminalRuleCall_0_1_0_1 = (RuleCall)cSignalSignalCrossReference_0_1_0.eContents().get(1);
@@ -77,27 +77,27 @@ public class LwMessageGrammarAccess extends AbstractGrammarElementFinder {
 		private final Keyword cRightParenthesisKeyword_1_2 = (Keyword)cGroup_1.eContents().get(2);
 		
 		//RequestMessage:
-		//	(=> name=ID |
+		//	(=> name=Name |
 		//	// These are only here to trigger content-assist for signal and operation signatures.
 		//	// They can never be matched because the name always will be.
 		//	=> signal=[uml::Signal] | => operation=[uml::Operation]) ('(' MessageRequestArguments? ')')?;
 		@Override public ParserRule getRule() { return rule; }
 
-		//(=> name=ID | // These are only here to trigger content-assist for signal and operation signatures.
+		//(=> name=Name | // These are only here to trigger content-assist for signal and operation signatures.
 		//// They can never be matched because the name always will be.
 		//=> signal=[uml::Signal] | => operation=[uml::Operation]) ('(' MessageRequestArguments? ')')?
 		public Group getGroup() { return cGroup; }
 
-		//=> name=ID | // These are only here to trigger content-assist for signal and operation signatures.
+		//=> name=Name | // These are only here to trigger content-assist for signal and operation signatures.
 		//// They can never be matched because the name always will be.
 		//=> signal=[uml::Signal] | => operation=[uml::Operation]
 		public Alternatives getAlternatives_0() { return cAlternatives_0; }
 
-		//=> name=ID
+		//=> name=Name
 		public Assignment getNameAssignment_0_0() { return cNameAssignment_0_0; }
 
-		//ID
-		public RuleCall getNameIDTerminalRuleCall_0_0_0() { return cNameIDTerminalRuleCall_0_0_0; }
+		//Name
+		public RuleCall getNameNameParserRuleCall_0_0_0() { return cNameNameParserRuleCall_0_0_0; }
 
 		//// These are only here to trigger content-assist for signal and operation signatures.
 		//// They can never be matched because the name always will be.
@@ -267,7 +267,7 @@ public class LwMessageGrammarAccess extends AbstractGrammarElementFinder {
 		private final Group cGroup = (Group)rule.eContents().get(1);
 		private final Alternatives cAlternatives_0 = (Alternatives)cGroup.eContents().get(0);
 		private final Assignment cNameAssignment_0_0 = (Assignment)cAlternatives_0.eContents().get(0);
-		private final RuleCall cNameIDTerminalRuleCall_0_0_0 = (RuleCall)cNameAssignment_0_0.eContents().get(0);
+		private final RuleCall cNameNameParserRuleCall_0_0_0 = (RuleCall)cNameAssignment_0_0.eContents().get(0);
 		private final Assignment cPropertyAssignment_0_1 = (Assignment)cAlternatives_0.eContents().get(1);
 		private final CrossReference cPropertyPropertyCrossReference_0_1_0 = (CrossReference)cPropertyAssignment_0_1.eContents().get(0);
 		private final RuleCall cPropertyPropertyIDTerminalRuleCall_0_1_0_1 = (RuleCall)cPropertyPropertyCrossReference_0_1_0.eContents().get(1);
@@ -278,30 +278,30 @@ public class LwMessageGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cMessageRequestValueParserRuleCall_2 = (RuleCall)cGroup.eContents().get(2);
 		
 		//MessageRequestNameAndValue MessageArgument:
-		//	(=> name=ID |
+		//	(=> name=Name |
 		//	// These are only here to trigger content-assist for the signal attributes
 		//	// and operation parameters.  They can never be matched because the name
 		//	// always will be.
 		//	=> property=[uml::Property] | => parameter=[uml::Parameter]) '=' MessageRequestValue;
 		@Override public ParserRule getRule() { return rule; }
 
-		//(=> name=ID | // These are only here to trigger content-assist for the signal attributes
+		//(=> name=Name | // These are only here to trigger content-assist for the signal attributes
 		//// and operation parameters.  They can never be matched because the name
 		//// always will be.
 		//=> property=[uml::Property] | => parameter=[uml::Parameter]) '=' MessageRequestValue
 		public Group getGroup() { return cGroup; }
 
-		//=> name=ID | // These are only here to trigger content-assist for the signal attributes
+		//=> name=Name | // These are only here to trigger content-assist for the signal attributes
 		//// and operation parameters.  They can never be matched because the name
 		//// always will be.
 		//=> property=[uml::Property] | => parameter=[uml::Parameter]
 		public Alternatives getAlternatives_0() { return cAlternatives_0; }
 
-		//=> name=ID
+		//=> name=Name
 		public Assignment getNameAssignment_0_0() { return cNameAssignment_0_0; }
 
-		//ID
-		public RuleCall getNameIDTerminalRuleCall_0_0_0() { return cNameIDTerminalRuleCall_0_0_0; }
+		//Name
+		public RuleCall getNameNameParserRuleCall_0_0_0() { return cNameNameParserRuleCall_0_0_0; }
 
 		//// These are only here to trigger content-assist for the signal attributes
 		//// and operation parameters.  They can never be matched because the name
@@ -353,7 +353,7 @@ public class LwMessageGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cAssignmentTargetParserRuleCall_0 = (RuleCall)cGroup.eContents().get(0);
 		private final Alternatives cAlternatives_1 = (Alternatives)cGroup.eContents().get(1);
 		private final Assignment cNameAssignment_1_0 = (Assignment)cAlternatives_1.eContents().get(0);
-		private final RuleCall cNameIDTerminalRuleCall_1_0_0 = (RuleCall)cNameAssignment_1_0.eContents().get(0);
+		private final RuleCall cNameNameParserRuleCall_1_0_0 = (RuleCall)cNameAssignment_1_0.eContents().get(0);
 		private final Assignment cOperationAssignment_1_1 = (Assignment)cAlternatives_1.eContents().get(1);
 		private final CrossReference cOperationOperationCrossReference_1_1_0 = (CrossReference)cOperationAssignment_1_1.eContents().get(0);
 		private final RuleCall cOperationOperationIDTerminalRuleCall_1_1_0_1 = (RuleCall)cOperationOperationCrossReference_1_1_0.eContents().get(1);
@@ -365,14 +365,14 @@ public class LwMessageGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cValueOutputValueParserRuleCall_3_0 = (RuleCall)cValueAssignment_3.eContents().get(0);
 		
 		//ReplyMessage:
-		//	AssignmentTarget? (=> name=ID |
+		//	AssignmentTarget? (=> name=Name |
 		//	// This is only here to trigger content-assist for operation signatures.
 		//	// It can never be matched because the name always will be.
 		//	=> operation=[uml::Operation]) ('(' MessageReplyOutputs? ')')?
 		//	value=OutputValue?;
 		@Override public ParserRule getRule() { return rule; }
 
-		//AssignmentTarget? (=> name=ID | // This is only here to trigger content-assist for operation signatures.
+		//AssignmentTarget? (=> name=Name | // This is only here to trigger content-assist for operation signatures.
 		//// It can never be matched because the name always will be.
 		//=> operation=[uml::Operation]) ('(' MessageReplyOutputs? ')')? value=OutputValue?
 		public Group getGroup() { return cGroup; }
@@ -380,16 +380,16 @@ public class LwMessageGrammarAccess extends AbstractGrammarElementFinder {
 		//AssignmentTarget?
 		public RuleCall getAssignmentTargetParserRuleCall_0() { return cAssignmentTargetParserRuleCall_0; }
 
-		//=> name=ID | // This is only here to trigger content-assist for operation signatures.
+		//=> name=Name | // This is only here to trigger content-assist for operation signatures.
 		//// It can never be matched because the name always will be.
 		//=> operation=[uml::Operation]
 		public Alternatives getAlternatives_1() { return cAlternatives_1; }
 
-		//=> name=ID
+		//=> name=Name
 		public Assignment getNameAssignment_1_0() { return cNameAssignment_1_0; }
 
-		//ID
-		public RuleCall getNameIDTerminalRuleCall_1_0_0() { return cNameIDTerminalRuleCall_1_0_0; }
+		//Name
+		public RuleCall getNameNameParserRuleCall_1_0_0() { return cNameNameParserRuleCall_1_0_0; }
 
 		//// This is only here to trigger content-assist for operation signatures.
 		//// It can never be matched because the name always will be.
@@ -426,24 +426,24 @@ public class LwMessageGrammarAccess extends AbstractGrammarElementFinder {
 		private final Group cGroup = (Group)rule.eContents().get(1);
 		private final Assignment cTargetAssignment_0 = (Assignment)cGroup.eContents().get(0);
 		private final CrossReference cTargetConnectableElementCrossReference_0_0 = (CrossReference)cTargetAssignment_0.eContents().get(0);
-		private final RuleCall cTargetConnectableElementIDTerminalRuleCall_0_0_1 = (RuleCall)cTargetConnectableElementCrossReference_0_0.eContents().get(1);
+		private final RuleCall cTargetConnectableElementQNameParserRuleCall_0_0_1 = (RuleCall)cTargetConnectableElementCrossReference_0_0.eContents().get(1);
 		private final Keyword cEqualsSignKeyword_1 = (Keyword)cGroup.eContents().get(1);
 		
 		//fragment AssignmentTarget:
-		//	=> target=[uml::ConnectableElement] '=';
+		//	=> target=[uml::ConnectableElement|QName] '=';
 		@Override public ParserRule getRule() { return rule; }
 
-		//=> target=[uml::ConnectableElement] '='
+		//=> target=[uml::ConnectableElement|QName] '='
 		public Group getGroup() { return cGroup; }
 
-		//=> target=[uml::ConnectableElement]
+		//=> target=[uml::ConnectableElement|QName]
 		public Assignment getTargetAssignment_0() { return cTargetAssignment_0; }
 
-		//[uml::ConnectableElement]
+		//[uml::ConnectableElement|QName]
 		public CrossReference getTargetConnectableElementCrossReference_0_0() { return cTargetConnectableElementCrossReference_0_0; }
 
-		//ID
-		public RuleCall getTargetConnectableElementIDTerminalRuleCall_0_0_1() { return cTargetConnectableElementIDTerminalRuleCall_0_0_1; }
+		//QName
+		public RuleCall getTargetConnectableElementQNameParserRuleCall_0_0_1() { return cTargetConnectableElementQNameParserRuleCall_0_0_1; }
 
 		//'='
 		public Keyword getEqualsSignKeyword_1() { return cEqualsSignKeyword_1; }
@@ -813,15 +813,15 @@ public class LwMessageGrammarAccess extends AbstractGrammarElementFinder {
 		public Keyword getFalseKeyword_1() { return cFalseKeyword_1; }
 	}
 
-	public class NameQNElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.LwMessage.NameQN");
+	public class QNameElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.LwMessage.QName");
 		private final Group cGroup = (Group)rule.eContents().get(1);
 		private final RuleCall cNameParserRuleCall_0 = (RuleCall)cGroup.eContents().get(0);
 		private final Group cGroup_1 = (Group)cGroup.eContents().get(1);
 		private final Keyword cColonColonKeyword_1_0 = (Keyword)cGroup_1.eContents().get(0);
 		private final RuleCall cNameParserRuleCall_1_1 = (RuleCall)cGroup_1.eContents().get(1);
 		
-		//NameQN:
+		//QName:
 		//	Name ('::' Name)*;
 		@Override public ParserRule getRule() { return rule; }
 
@@ -880,7 +880,7 @@ public class LwMessageGrammarAccess extends AbstractGrammarElementFinder {
 	private final UnlimitedNaturalElements pUnlimitedNatural;
 	private final IntegerElements pInteger;
 	private final BooleanElements pBoolean;
-	private final NameQNElements pNameQN;
+	private final QNameElements pQName;
 	private final NameElements pName;
 	private final TerminalRule tDIGITS;
 	private final TerminalRule tDIGIT;
@@ -929,7 +929,7 @@ public class LwMessageGrammarAccess extends AbstractGrammarElementFinder {
 		this.pUnlimitedNatural = new UnlimitedNaturalElements();
 		this.pInteger = new IntegerElements();
 		this.pBoolean = new BooleanElements();
-		this.pNameQN = new NameQNElements();
+		this.pQName = new QNameElements();
 		this.pName = new NameElements();
 		this.tDIGITS = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.LwMessage.DIGITS");
 		this.tDIGIT = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.LwMessage.DIGIT");
@@ -992,7 +992,7 @@ public class LwMessageGrammarAccess extends AbstractGrammarElementFinder {
 	}
 
 	//RequestMessage:
-	//	(=> name=ID |
+	//	(=> name=Name |
 	//	// These are only here to trigger content-assist for signal and operation signatures.
 	//	// They can never be matched because the name always will be.
 	//	=> signal=[uml::Signal] | => operation=[uml::Operation]) ('(' MessageRequestArguments? ')')?;
@@ -1046,7 +1046,7 @@ public class LwMessageGrammarAccess extends AbstractGrammarElementFinder {
 	}
 
 	//MessageRequestNameAndValue MessageArgument:
-	//	(=> name=ID |
+	//	(=> name=Name |
 	//	// These are only here to trigger content-assist for the signal attributes
 	//	// and operation parameters.  They can never be matched because the name
 	//	// always will be.
@@ -1070,7 +1070,7 @@ public class LwMessageGrammarAccess extends AbstractGrammarElementFinder {
 	}
 
 	//ReplyMessage:
-	//	AssignmentTarget? (=> name=ID |
+	//	AssignmentTarget? (=> name=Name |
 	//	// This is only here to trigger content-assist for operation signatures.
 	//	// It can never be matched because the name always will be.
 	//	=> operation=[uml::Operation]) ('(' MessageReplyOutputs? ')')?
@@ -1084,7 +1084,7 @@ public class LwMessageGrammarAccess extends AbstractGrammarElementFinder {
 	}
 
 	//fragment AssignmentTarget:
-	//	=> target=[uml::ConnectableElement] '=';
+	//	=> target=[uml::ConnectableElement|QName] '=';
 	public AssignmentTargetElements getAssignmentTargetAccess() {
 		return pAssignmentTarget;
 	}
@@ -1251,14 +1251,14 @@ public class LwMessageGrammarAccess extends AbstractGrammarElementFinder {
 		return getBooleanAccess().getRule();
 	}
 
-	//NameQN:
+	//QName:
 	//	Name ('::' Name)*;
-	public NameQNElements getNameQNAccess() {
-		return pNameQN;
+	public QNameElements getQNameAccess() {
+		return pQName;
 	}
 	
-	public ParserRule getNameQNRule() {
-		return getNameQNAccess().getRule();
+	public ParserRule getQNameRule() {
+		return getQNameAccess().getRule();
 	}
 
 	//Name:
