@@ -48,6 +48,8 @@
         name="org.eclipse.pde.api.tools.ee.feature.feature.group"/>
     <requirement
         name="org.eclipse.eclemma.feature.feature.group"/>
+    <requirement
+        name="org.eclipse.xtext.sdk.feature.group"/>
     <repository
         url="http://update.eclemma.org"/>
     <description>Install the tools needed in the IDE to work with the source code for ${scope.project.label}</description>

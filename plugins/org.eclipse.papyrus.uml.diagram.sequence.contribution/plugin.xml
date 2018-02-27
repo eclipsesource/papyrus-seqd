@@ -60,7 +60,8 @@
 
    <extension point="org.eclipse.gmf.runtime.common.ui.services.parserProviders" id="parser-provider">
 	      <ParserProvider class="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceParserProvider">
-	         <Priority name="Lowest"/>
+	         <!-- FIXME: This is not Lowest only because we are still using Papyrus Sequence Diagram. -->
+	         <Priority name="Low"/>
 	      </ParserProvider>
 	   </extension>
 

@@ -26,25 +26,35 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.VisualIDRegistry;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.parsers.MessageFormatParser;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.parsers.MessageParser;
 import org.eclipse.uml2.uml.UMLPackage;
 
 public class SequenceParserProvider extends AbstractProvider implements IParserProvider {
 
+	private final SequenceDiagramVisualIDQuarantine quarantine = new SequenceDiagramVisualIDQuarantine.Compatibility();
+
+	private IParser interaction_NameLabel_Parser;
+
+	private IParser message_NameLabel_Parser;
+
 	protected IParser getParser(String visualID) {
 		if (visualID != null) {
 			switch (visualID) {
-			case RepresentationKind.INTERACTION_NAME_ID:
-				return getInteraction_NameLabel_Parser();
+				case RepresentationKind.INTERACTION_NAME_ID:
+					return getInteraction_NameLabel_Parser();
+				default:
+					if (quarantine.isMessageLabel(visualID)) {
+						return getMessage_NameLabel_Parser();
+					}
+					return null;
 			}
 		}
 		return null;
 	}
 
-	private IParser interaction_NameLabel_Parser;
-
 	private IParser getInteraction_NameLabel_Parser() {
 		if (interaction_NameLabel_Parser == null) {
-			EAttribute[] features = new EAttribute[] { UMLPackage.eINSTANCE.getNamedElement_Name() };
+			EAttribute[] features = new EAttribute[] {UMLPackage.eINSTANCE.getNamedElement_Name() };
 			MessageFormatParser parser = new MessageFormatParser(features);
 			parser.setViewPattern("sd: {0}"); //$NON-NLS-1$
 			parser.setEditorPattern("{0}"); //$NON-NLS-1$
@@ -52,6 +62,13 @@ public class SequenceParserProvider extends AbstractProvider implements IParserP
 			interaction_NameLabel_Parser = parser;
 		}
 		return interaction_NameLabel_Parser;
+	}
+
+	private IParser getMessage_NameLabel_Parser() {
+		if (message_NameLabel_Parser == null) {
+			message_NameLabel_Parser = new MessageParser();
+		}
+		return message_NameLabel_Parser;
 	}
 
 	public static IParser getParser(IElementType type, EObject object, String parserHint) {
@@ -77,8 +94,8 @@ public class SequenceParserProvider extends AbstractProvider implements IParserP
 	@Override
 	public boolean provides(IOperation operation) {
 		if (operation instanceof GetParserOperation) {
-			IAdaptable hint = ((GetParserOperation) operation).getHint();
-			if (SequenceElementTypes.getElement(hint) == null) {
+			IAdaptable hint = ((GetParserOperation)operation).getHint();
+			if (!quarantine.isKnownVisualElement(hint)) {
 				return false;
 			}
 			return getParser(hint) != null;

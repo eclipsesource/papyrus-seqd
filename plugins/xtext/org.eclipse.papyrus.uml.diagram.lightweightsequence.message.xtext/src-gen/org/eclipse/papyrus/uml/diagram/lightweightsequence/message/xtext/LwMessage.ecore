@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="lwMessage" nsURI="http://www.eclipse.org/papyrus/uml/diagram/lightweightsequence/message/xtext/LwMessage"
+    nsPrefix="lwMessage">
+  <eClassifiers xsi:type="ecore:EClass" name="AbstractMessage"/>
+  <eClassifiers xsi:type="ecore:EClass" name="RequestMessage" eSuperTypes="#//AbstractMessage #//MessageRequestArguments">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="signal" eType="ecore:EClass platform:/resource/org.eclipse.uml2.uml/model/UML.ecore#//Signal"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operation" eType="ecore:EClass platform:/resource/org.eclipse.uml2.uml/model/UML.ecore#//Operation"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AnyMessage" eSuperTypes="#//AbstractMessage"/>
+  <eClassifiers xsi:type="ecore:EClass" name="MessageRequestArguments">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="arguments" upperBound="-1"
+        eType="#//MessageArgument" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MessageArgument">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="property" eType="ecore:EClass platform:/resource/org.eclipse.uml2.uml/model/UML.ecore#//Property"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" eType="ecore:EClass platform:/resource/org.eclipse.uml2.uml/model/UML.ecore#//Parameter"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//Value"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ReplyMessage" eSuperTypes="#//AbstractMessage #//AssignmentTarget #//MessageReplyOutputs">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operation" eType="ecore:EClass platform:/resource/org.eclipse.uml2.uml/model/UML.ecore#//Operation"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AssignmentTarget">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/org.eclipse.uml2.uml/model/UML.ecore#//ConnectableElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//MessageArgument"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MessageReplyOutputs">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="outputs" upperBound="-1"
+        eType="#//MessageReplyOutput" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MessageReplyOutput" eSuperTypes="#//AssignmentTarget">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" eType="ecore:EClass platform:/resource/org.eclipse.uml2.uml/model/UML.ecore#//Parameter"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Value"/>
+  <eClassifiers xsi:type="ecore:EClass" name="BooleanValue" eSuperTypes="#//Value">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EBoolean"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IntegerValue" eSuperTypes="#//Value">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="UnlimitedNaturalValue" eSuperTypes="#//Value">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EIntegerObject"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="RealValue" eSuperTypes="#//Value">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EDouble"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NullValue" eSuperTypes="#//Value"/>
+  <eClassifiers xsi:type="ecore:EClass" name="StringValue" eSuperTypes="#//Value">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="UndefinedRule">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="WildcardMessageArgument" eSuperTypes="#//MessageArgument"/>
+</ecore:EPackage>
