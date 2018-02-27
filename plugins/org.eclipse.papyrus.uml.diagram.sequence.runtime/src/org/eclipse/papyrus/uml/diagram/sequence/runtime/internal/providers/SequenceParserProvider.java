@@ -31,6 +31,8 @@ import org.eclipse.uml2.uml.UMLPackage;
 
 public class SequenceParserProvider extends AbstractProvider implements IParserProvider {
 
+	private final SequenceDiagramVisualIDQuarantine quarantine = new SequenceDiagramVisualIDQuarantine.Compatibility();
+
 	private IParser interaction_NameLabel_Parser;
 
 	private IParser message_NameLabel_Parser;
@@ -40,42 +42,14 @@ public class SequenceParserProvider extends AbstractProvider implements IParserP
 			switch (visualID) {
 				case RepresentationKind.INTERACTION_NAME_ID:
 					return getInteraction_NameLabel_Parser();
-				case RepresentationKind.ASYNC_MESSAGE_NAME_ID:
-					// FIXME: These are the Papyrus Sequence Diagram view types
-				case "Message_AsynchNameLabel":
-				case "Message_SynchNameLabel":
-				case "Message_LostNameLabel":
-				case "Message_FoundNameLabel":
-				case "Message_CreateNameLabel":
-				case "Message_DeleteNameLabel":
-				case "Message_ReplyNameLabel":
-					return getMessage_NameLabel_Parser();
+				default:
+					if (quarantine.isMessageLabel(visualID)) {
+						return getMessage_NameLabel_Parser();
+					}
+					return null;
 			}
 		}
 		return null;
-	}
-
-	// FIXME: Remove this when the lightweight sequence diagram can draw messages
-	private static boolean isTemporarilySupportedSequenceDiagramType(IAdaptable hint) {
-		String visualID = hint.getAdapter(String.class);
-
-		if (visualID == null) {
-			return false;
-		}
-
-		switch (visualID) {
-			case "Message_AsynchNameLabel":
-			case "Message_SynchNameLabel":
-			case "Message_LostNameLabel":
-			case "Message_FoundNameLabel":
-			case "Message_CreateNameLabel":
-			case "Message_DeleteNameLabel":
-			case "Message_ReplyNameLabel":
-				return true;
-			default:
-				return false;
-		}
-
 	}
 
 	private IParser getInteraction_NameLabel_Parser() {
@@ -121,11 +95,7 @@ public class SequenceParserProvider extends AbstractProvider implements IParserP
 	public boolean provides(IOperation operation) {
 		if (operation instanceof GetParserOperation) {
 			IAdaptable hint = ((GetParserOperation)operation).getHint();
-			// FIXME: Remove this when the lightweight sequence diagram can draw messages
-			if (isTemporarilySupportedSequenceDiagramType(hint)) {
-				return getParser(hint) != null;
-			}
-			if (SequenceElementTypes.getElement(hint) == null) {
+			if (!quarantine.isKnownVisualElement(hint)) {
 				return false;
 			}
 			return getParser(hint) != null;

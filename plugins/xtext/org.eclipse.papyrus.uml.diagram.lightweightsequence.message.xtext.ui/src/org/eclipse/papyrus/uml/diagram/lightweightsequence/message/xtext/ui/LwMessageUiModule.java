@@ -8,6 +8,7 @@ import java.util.Collection;
 import org.antlr.runtime.RecognitionException;
 import org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.MessageRule;
 import org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.ui.contentassist.antlr.LwMessageParser;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceDiagramVisualIDQuarantine;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.xtext.ui.editor.contentassist.antlr.FollowElement;
 import org.eclipse.xtext.ui.editor.contentassist.antlr.IContentAssistParser;
@@ -40,6 +41,10 @@ public class LwMessageUiModule extends
 		default:
 			return super.bindIContentAssistParser();
 		}
+	}
+
+	public Class<? extends SequenceDiagramVisualIDQuarantine> bindSequenceDiagramVisualIDQuarantine() {
+		return SequenceDiagramVisualIDQuarantine.Compatibility.class;
 	}
 
 	//

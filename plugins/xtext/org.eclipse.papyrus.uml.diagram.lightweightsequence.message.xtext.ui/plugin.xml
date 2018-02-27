@@ -80,6 +80,7 @@
     <extension
             point="org.eclipse.ui.preferencePages">
         <page
+            category="org.eclipse.papyrus.embeddededitors"
             class="org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.ui.LwMessageExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
             id="org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.LwMessage"
             name="LwMessage">
@@ -350,7 +351,7 @@
             icon="platform:/plugin/org.eclipse.uml2.uml.edit/icons/full/obj16/Message.gif"
             language="Lightweight Sequence Diagram Message Textual Editor"
             objectToEdit="org.eclipse.uml2.uml.Message"
-            additionalConstraint="org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.internal.ui.LwMessageXtextDirectEditorConstraint">
+            additionalConstraint="org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.ui.LwMessageExecutableExtensionFactory:org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.internal.ui.LwMessageXtextDirectEditorConstraint">
          <popupeditor
                editorConfiguration="org.eclipse.papyrus.uml.diagram.lightweightsequence.message.xtext.internal.ui.LwMessageXtextDirectEditorConfiguration">
          </popupeditor>
