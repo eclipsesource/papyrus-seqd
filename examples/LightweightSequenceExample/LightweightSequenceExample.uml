@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_L3CsABcXEeiRxNkcepMyOw" name="SeqD">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_MCypABcXEeiRxNkcepMyOw">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_0i6BsBcXEei2P4sLMpghJg" name="Interaction256+3">
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_VvBmABiREei4zKSr6_UU7A" name="Lifeline1" coveredBy="_WshJABiREei4zKSr6_UU7A"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_V1rAkBiREei4zKSr6_UU7A" name="Lifeline21" coveredBy="_WshJARiREei4zKSr6_UU7A _W9QTsBiREei4zKSr6_UU7A _hSzyQRiREei4zKSr6_UU7A _hgSNkBiREei4zKSr6_UU7A _hwcJcRiREei4zKSr6_UU7A"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_V6sDcBiREei4zKSr6_UU7A" name="Lifeliiiiiiiiiiiiiiiiiiiiine3" coveredBy="_gb8bsBiREei4zKSr6_UU7A"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_WClbMBiREei4zKSr6_UU7A" name="Lifeline4" coveredBy="_W9Q6wBiREei4zKSr6_UU7A _gb70oBiREei4zKSr6_UU7A _hE7uURiREei4zKSr6_UU7A _hSzyQBiREei4zKSr6_UU7A _hgSNkRiREei4zKSr6_UU7A _hwcJcBiREei4zKSr6_UU7A"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_WK4bkBiREei4zKSr6_UU7A" name="Lifeline512" coveredBy="_hE7uUBiREei4zKSr6_UU7A"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_WshJABiREei4zKSr6_UU7A" name="Message1SendEvent" covered="_VvBmABiREei4zKSr6_UU7A" message="_WsfT0BiREei4zKSr6_UU7A"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_WshJARiREei4zKSr6_UU7A" name="Message1ReceiveEvent" covered="_V1rAkBiREei4zKSr6_UU7A" message="_WsfT0BiREei4zKSr6_UU7A"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_W9QTsBiREei4zKSr6_UU7A" name="Message2SendEvent" covered="_V1rAkBiREei4zKSr6_UU7A" message="_W9N3cBiREei4zKSr6_UU7A"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_W9Q6wBiREei4zKSr6_UU7A" name="Message2ReceiveEvent" covered="_WClbMBiREei4zKSr6_UU7A" message="_W9N3cBiREei4zKSr6_UU7A"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_gb70oBiREei4zKSr6_UU7A" name="Message3SendEvent" covered="_WClbMBiREei4zKSr6_UU7A" message="_gb7NkBiREei4zKSr6_UU7A"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_gb8bsBiREei4zKSr6_UU7A" name="Message3ReceiveEvent" covered="_V6sDcBiREei4zKSr6_UU7A" message="_gb7NkBiREei4zKSr6_UU7A"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_hE7uUBiREei4zKSr6_UU7A" name="Message4SendEvent" covered="_WK4bkBiREei4zKSr6_UU7A" message="_hE7HQBiREei4zKSr6_UU7A"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_hE7uURiREei4zKSr6_UU7A" name="Message4ReceiveEvent" covered="_WClbMBiREei4zKSr6_UU7A" message="_hE7HQBiREei4zKSr6_UU7A"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_hSzyQBiREei4zKSr6_UU7A" name="Message5SendEvent" covered="_WClbMBiREei4zKSr6_UU7A" message="_hSzLMBiREei4zKSr6_UU7A"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_hSzyQRiREei4zKSr6_UU7A" name="Message5ReceiveEvent" covered="_V1rAkBiREei4zKSr6_UU7A" message="_hSzLMBiREei4zKSr6_UU7A"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_hgSNkBiREei4zKSr6_UU7A" name="Message6SendEvent" covered="_V1rAkBiREei4zKSr6_UU7A" message="_hgRmgBiREei4zKSr6_UU7A"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_hgSNkRiREei4zKSr6_UU7A" name="Message6ReceiveEvent" covered="_WClbMBiREei4zKSr6_UU7A" message="_hgRmgBiREei4zKSr6_UU7A"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_hwcJcBiREei4zKSr6_UU7A" name="Message7SendEvent" covered="_WClbMBiREei4zKSr6_UU7A" message="_hwbiYBiREei4zKSr6_UU7A"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_hwcJcRiREei4zKSr6_UU7A" name="Message7ReceiveEvent" covered="_V1rAkBiREei4zKSr6_UU7A" message="_hwbiYBiREei4zKSr6_UU7A"/>
+    <message xmi:type="uml:Message" xmi:id="_WsfT0BiREei4zKSr6_UU7A" name="Message1" messageSort="asynchCall" receiveEvent="_WshJARiREei4zKSr6_UU7A" sendEvent="_WshJABiREei4zKSr6_UU7A"/>
+    <message xmi:type="uml:Message" xmi:id="_W9N3cBiREei4zKSr6_UU7A" name="Message2" messageSort="asynchCall" receiveEvent="_W9Q6wBiREei4zKSr6_UU7A" sendEvent="_W9QTsBiREei4zKSr6_UU7A"/>
+    <message xmi:type="uml:Message" xmi:id="_gb7NkBiREei4zKSr6_UU7A" name="Message3" messageSort="asynchCall" receiveEvent="_gb8bsBiREei4zKSr6_UU7A" sendEvent="_gb70oBiREei4zKSr6_UU7A"/>
+    <message xmi:type="uml:Message" xmi:id="_hE7HQBiREei4zKSr6_UU7A" name="Message4" messageSort="asynchCall" receiveEvent="_hE7uURiREei4zKSr6_UU7A" sendEvent="_hE7uUBiREei4zKSr6_UU7A"/>
+    <message xmi:type="uml:Message" xmi:id="_hSzLMBiREei4zKSr6_UU7A" name="Message5" messageSort="asynchCall" receiveEvent="_hSzyQRiREei4zKSr6_UU7A" sendEvent="_hSzyQBiREei4zKSr6_UU7A"/>
+    <message xmi:type="uml:Message" xmi:id="_hgRmgBiREei4zKSr6_UU7A" name="Message6" messageSort="asynchCall" receiveEvent="_hgSNkRiREei4zKSr6_UU7A" sendEvent="_hgSNkBiREei4zKSr6_UU7A"/>
+    <message xmi:type="uml:Message" xmi:id="_hwbiYBiREei4zKSr6_UU7A" name="Message7" messageSort="asynchCall" receiveEvent="_hwcJcRiREei4zKSr6_UU7A" sendEvent="_hwcJcBiREei4zKSr6_UU7A"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_JkWbEBigEei4zKSr6_UU7A" name="RefedInteraction"/>
+  <packagedElement xmi:type="uml:Component" xmi:id="_abaAIBsDEeiYhMt5SU-vxA" name="Component1"/>
+  <packagedElement xmi:type="uml:Class" xmi:id="_am76sBsDEeiYhMt5SU-vxA" name="Class1"/>
+  <packagedElement xmi:type="uml:Component" xmi:id="_avxtoBsDEeiYhMt5SU-vxA" name="Component2"/>
+  <packagedElement xmi:type="uml:Class" xmi:id="_a5CXUBsDEeiYhMt5SU-vxA" name="Class2"/>
+  <packagedElement xmi:type="uml:Package" xmi:id="_bjbYIBsDEeiYhMt5SU-vxA" name="Package1">
+    <packagedElement xmi:type="uml:Package" xmi:id="_c4SSQBsDEeiYhMt5SU-vxA" name="Package1">
+      <packagedElement xmi:type="uml:Class" xmi:id="_cGjTUBsDEeiYhMt5SU-vxA" name="Class1"/>
+    </packagedElement>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_b3arIBsDEeiYhMt5SU-vxA" name="Class3"/>
+</uml:Model>
