@@ -24,7 +24,6 @@ import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.emf.ui.services.parser.ParserHintAdapter;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.VisualIDRegistry;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.parsers.MessageFormatParser;
 import org.eclipse.uml2.uml.UMLPackage;
 
@@ -33,8 +32,8 @@ public class SequenceParserProvider extends AbstractProvider implements IParserP
 	protected IParser getParser(String visualID) {
 		if (visualID != null) {
 			switch (visualID) {
-			case RepresentationKind.INTERACTION_NAME_ID:
-				return getInteraction_NameLabel_Parser();
+				case RepresentationKind.INTERACTION_NAME_ID:
+					return getInteraction_NameLabel_Parser();
 			}
 		}
 		return null;
@@ -44,7 +43,7 @@ public class SequenceParserProvider extends AbstractProvider implements IParserP
 
 	private IParser getInteraction_NameLabel_Parser() {
 		if (interaction_NameLabel_Parser == null) {
-			EAttribute[] features = new EAttribute[] { UMLPackage.eINSTANCE.getNamedElement_Name() };
+			EAttribute[] features = new EAttribute[] {UMLPackage.eINSTANCE.getNamedElement_Name() };
 			MessageFormatParser parser = new MessageFormatParser(features);
 			parser.setViewPattern("sd: {0}"); //$NON-NLS-1$
 			parser.setEditorPattern("{0}"); //$NON-NLS-1$
@@ -65,11 +64,11 @@ public class SequenceParserProvider extends AbstractProvider implements IParserP
 	public IParser getParser(IAdaptable hint) {
 		String vid = hint.getAdapter(String.class);
 		if (vid != null) {
-			return getParser(VisualIDRegistry.getVisualID(vid));
+			return getParser(SequenceGraphicalTypeRegistry.getVisualID(vid));
 		}
 		View view = hint.getAdapter(View.class);
 		if (view != null) {
-			return getParser(VisualIDRegistry.getVisualID(view));
+			return getParser(SequenceGraphicalTypeRegistry.getVisualID(view));
 		}
 		return null;
 	}
@@ -77,7 +76,7 @@ public class SequenceParserProvider extends AbstractProvider implements IParserP
 	@Override
 	public boolean provides(IOperation operation) {
 		if (operation instanceof GetParserOperation) {
-			IAdaptable hint = ((GetParserOperation) operation).getHint();
+			IAdaptable hint = ((GetParserOperation)operation).getHint();
 			if (SequenceElementTypes.getElement(hint) == null) {
 				return false;
 			}

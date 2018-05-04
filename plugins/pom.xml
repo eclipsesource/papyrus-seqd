@@ -11,8 +11,11 @@
 	<artifactId>org.eclipse.papyrus.uml.diagram.sequence.plugins</artifactId>
 
 	<modules>
+		<module>org.eclipse.papyrus.uml.interaction.graph</module>
+		<module>org.eclipse.papyrus.uml.interaction.model</module>
 		<module>org.eclipse.papyrus.uml.diagram.sequence.contribution</module>
 		<module>org.eclipse.papyrus.uml.diagram.sequence.runtime</module>
+		<module>org.eclipse.papyrus.uml.diagram.sequence.figure</module>
 	</modules>
 
 	<packaging>pom</packaging>

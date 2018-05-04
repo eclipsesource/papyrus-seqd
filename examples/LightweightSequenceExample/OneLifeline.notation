@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:style="http://www.eclipse.org/papyrus/infra/gmfdiag/style" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_5r84ECHsEeiIiO6KSag_9g" type="LightweightSequenceDiagram" name="OneLifeline" measurementUnit="Pixel">
+  <children xmi:type="notation:Shape" xmi:id="_JdxLYBrkEeiYhMt5SU-vxA" type="Shape_Interaction" transparency="0">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_r5QR0CzwEeiKWctClOfa9Q" source="PapyrusCSSForceValue">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_r5QR0SzwEeiKWctClOfa9Q" key="fillColor" value="true"/>
+    </eAnnotations>
+    <children xmi:type="notation:Compartment" xmi:id="__UL78B4HEeitPLJx3IQIqw" type="Interaction_Contents">
+      <children xmi:type="notation:Shape" xmi:id="shapeLifelineHeader" type="Shape_Lifeline_Header">
+        <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_W6CFEC0gEeioS8drLzm9hw" source="PapyrusCSSForceValue">
+          <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_W6DTMC0gEeioS8drLzm9hw" key="fillColor" value="true"/>
+        </eAnnotations>
+        <children xmi:type="notation:Shape" xmi:id="compartmentLifelineHeader" type="Compartment_Lifeline_Header">
+          <children xmi:type="notation:Shape" xmi:id="labelLifelineName" type="Label_Lifeline_Name"/>
+        </children>
+        <children xmi:type="notation:Shape" xmi:id="LifelineBody" type="Shape_Lifeline_Body"/>
+        <element xmi:type="uml:Lifeline" href="OneLifeline.uml#_iC56MCxgEeiebPiwxbU-wQ"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Zl99oSHtEeiIiO6KSag_9g" x="54" y="51" width="156" height="28"/>
+      </children>
+      <element xmi:type="uml:Interaction" href="OneLifeline.uml#_1YP7ECxcEeiebPiwxbU-wQ"/>
+    </children>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_lihkgB0yEeiGL75oFdNMfA" x="37" y="12" width="600" height="450"/>
+  </children>
+  <styles xmi:type="notation:StringValueStyle" xmi:id="_5r84ESHsEeiIiO6KSag_9g" name="diagram_compatibility_version" stringValue="1.4.0"/>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_5r84EiHsEeiIiO6KSag_9g"/>
+  <styles xmi:type="style:PapyrusDiagramStyle" xmi:id="_5r84EyHsEeiIiO6KSag_9g" diagramKindId="org.eclipse.papyrus.uml.diagram.lightweightsequence">
+    <owner xmi:type="uml:Interaction" href="OneLifeline.uml#_1YP7ECxcEeiebPiwxbU-wQ"/>
+  </styles>
+  <element xmi:type="uml:Interaction" href="OneLifeline.uml#_1YP7ECxcEeiebPiwxbU-wQ"/>
+</notation:Diagram>

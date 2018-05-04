@@ -11,8 +11,11 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal;
 
+import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gmf.runtime.diagram.core.preferences.PreferencesHint;
 import org.eclipse.papyrus.infra.core.log.LogHelper;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -58,5 +61,16 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static Activator getDefault() {
 		return instance;
+	}
+
+	/**
+	 * Obtains the layout helper for an editing domain.
+	 * 
+	 * @param editingDomain
+	 *            an editing domain
+	 * @return its layout helper
+	 */
+	public LayoutHelper getLayoutHelper(EditingDomain editingDomain) {
+		return LogicalModelPlugin.INSTANCE.getLayoutHelper(editingDomain);
 	}
 }

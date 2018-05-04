@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:style="http://www.eclipse.org/papyrus/infra/gmfdiag/style" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_5r84ECHsEeiIiO6KSag_9g" type="LightweightSequenceDiagram" name="TwoLifelines" measurementUnit="Pixel">
+  <children xmi:type="notation:Shape" xmi:id="_JdxLYBrkEeiYhMt5SU-vxA" type="Shape_Interaction" transparency="0">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_r5QR0CzwEeiKWctClOfa9Q" source="PapyrusCSSForceValue">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_r5QR0SzwEeiKWctClOfa9Q" key="fillColor" value="true"/>
+    </eAnnotations>
+    <children xmi:type="notation:Compartment" xmi:id="__UL78B4HEeitPLJx3IQIqw" type="Interaction_Contents">
+      <children xmi:type="notation:Shape" xmi:id="shapeLifelineHeader" type="Shape_Lifeline_Header">
+        <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_W6CFEC0gEeioS8drLzm9hw" source="PapyrusCSSForceValue">
+          <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_W6DTMC0gEeioS8drLzm9hw" key="fillColor" value="true"/>
+        </eAnnotations>
+        <children xmi:type="notation:Shape" xmi:id="compartmentLifelineHeader" type="Compartment_Lifeline_Header">
+          <children xmi:type="notation:Shape" xmi:id="labelLifelineName" type="Label_Lifeline_Name"/>
+        </children>
+        <children xmi:type="notation:Shape" xmi:id="id_LifelineBody" type="Shape_Lifeline_Body">
+        	 <layoutConstraint xmi:type="notation:Size" xmi:id="id_LifelineBody_size" width="2" height="200"/>
+        </children>
+        <element xmi:type="uml:Lifeline" href="TwoLifelinesWithCreateMessage.uml#id_lifeline1"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Zl99oSHtEeiIiO6KSag_9g" x="100" y="16" width="156" height="28"/>
+      </children>
+      <children xmi:type="notation:Shape" xmi:id="shapeLifelineHeader2" type="Shape_Lifeline_Header">
+        <children xmi:type="notation:Shape" xmi:id="compartmentLifelineHeader2" type="Compartment_Lifeline_Header">
+          <children xmi:type="notation:Shape" xmi:id="labelLifelineName" type="Label_Lifeline_Name">
+            <element xmi:type="uml:Lifeline" href="TwoLifelinesWithCreateMessage.uml#id_lifeline2"/>
+          </children>
+          <element xmi:type="uml:Lifeline" href="TwoLifelinesWithCreateMessage.uml#id_lifeline2"/>
+        </children>
+        <children xmi:type="notation:Shape" xmi:id="id_LifelineBody2" type="Shape_Lifeline_Body">
+           <layoutConstraint xmi:type="notation:Size" xmi:id="id_LifelineBody2_size" width="2" height="200"/>
+        </children>
+        <element xmi:type="uml:Lifeline" href="TwoLifelinesWithCreateMessage.uml#id_lifeline2"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Zl99oSHtEeiIiO6KSag_9g" x="240" y="81" width="156" height="168"/>
+      </children>
+      <children xmi:type="notation:Shape" xmi:id="shapeLifelineHeader3" type="Shape_Lifeline_Header">
+        <children xmi:type="notation:Shape" xmi:id="compartmentLifelineHeader3" type="Compartment_Lifeline_Header">
+          <children xmi:type="notation:Shape" xmi:id="labelLifelineName3" type="Label_Lifeline_Name">
+            <element xmi:type="uml:Lifeline" href="TwoLifelinesWithCreateMessage.uml#id_lifeline3"/>
+          </children>
+          <element xmi:type="uml:Lifeline" href="TwoLifelinesWithCreateMessage.uml#id_lifeline3"/>
+        </children>
+        <children xmi:type="notation:Shape" xmi:id="id_LifelineBody3" type="Shape_Lifeline_Body">
+         	<layoutConstraint xmi:type="notation:Size" xmi:id="id_LifelineBody3_size" width="2" height="200"/>
+        </children>
+        <element xmi:type="uml:Lifeline" href="TwoLifelinesWithCreateMessage.uml#id_lifeline2"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="id_constraint3" x="10" y="101" width="86" height="62"/>
+      </children>
+      <element xmi:type="uml:Interaction" href="TwoLifelinesWithCreateMessage.uml#_1YP7ECxcEeiebPiwxbU-wQ"/>
+    </children>
+    <element xmi:type="uml:Interaction" href="TwoLifelinesWithCreateMessage.uml#_1YP7ECxcEeiebPiwxbU-wQ"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_lihkgB0yEeiGL75oFdNMfA" x="37" y="12" width="600" height="450"/>
+  </children>
+  <styles xmi:type="notation:StringValueStyle" xmi:id="_5r84ESHsEeiIiO6KSag_9g" name="diagram_compatibility_version" stringValue="1.4.0"/>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_5r84EiHsEeiIiO6KSag_9g"/>
+  <styles xmi:type="style:PapyrusDiagramStyle" xmi:id="_5r84EyHsEeiIiO6KSag_9g" diagramKindId="org.eclipse.papyrus.uml.diagram.lightweightsequence">
+    <owner xmi:type="uml:Interaction" href="TwoLifelinesWithCreateMessage.uml#_1YP7ECxcEeiebPiwxbU-wQ"/>
+  </styles>
+  <element xmi:type="uml:Interaction" href="TwoLifelinesWithCreateMessage.uml#_1YP7ECxcEeiebPiwxbU-wQ"/>
+  <edges xmi:type="notation:Connector" xmi:id="id_message1" type="Edge_Message" source="id_LifelineBody" target="shapeLifelineHeader2">
+    <element xmi:type="uml:Message" href="TwoLifelinesWithCreateMessage.uml#id_createMessage1"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_zzyVYSHtEeiIiO6KSag_9g"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="id_sourceAnchor1" id="10"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="id_targetAnchor1" id="left;50"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="id_message2" type="Edge_Message" source="id_LifelineBody" target="shapeLifelineHeader3">
+    <element xmi:type="uml:Message" href="TwoLifelinesWithCreateMessage.uml#id_createMessage2"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_zzyVYSHtEeiIiO6KSag_9g"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="id_sourceAnchor2" id="30"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="id_targetAnchor2" id="right;10"/>
+  </edges>
+</notation:Diagram>

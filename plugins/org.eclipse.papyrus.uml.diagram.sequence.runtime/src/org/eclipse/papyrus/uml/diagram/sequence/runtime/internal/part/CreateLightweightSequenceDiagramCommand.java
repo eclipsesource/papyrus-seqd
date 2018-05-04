@@ -12,37 +12,31 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.part;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.diagram.core.preferences.PreferencesHint;
+import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.papyrus.infra.gmfdiag.common.utils.DiagramUtils;
 import org.eclipse.papyrus.uml.diagram.common.commands.CreateBehavioredClassifierDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind;
 import org.eclipse.uml2.uml.UMLPackage;
 
 /**
- * Define a command to create a new Sequence Diagram. This command is used by all UI (toolbar,
- * outline, creation wizards) to create a new Sequence Diagram.
+ * Define a command to create a new Sequence Diagram. This command is used by all UI (toolbar, outline,
+ * creation wizards) to create a new Sequence Diagram.
  */
 public class CreateLightweightSequenceDiagramCommand extends CreateBehavioredClassifierDiagramCommand {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected String getDiagramNotationID() {
 		return RepresentationKind.MODEL_ID;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected PreferencesHint getPreferenceHint() {
 		return Activator.DIAGRAM_PREFERENCES_HINT;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected String getDefaultDiagramName() {
 		return "LightweightSeq"; //$NON-NLS-1$
@@ -51,5 +45,16 @@ public class CreateLightweightSequenceDiagramCommand extends CreateBehavioredCla
 	@Override
 	protected EClass getBehaviorEClass() {
 		return UMLPackage.eINSTANCE.getInteraction();
+	}
+
+	@Override
+	protected void initializeDiagram(EObject object) {
+		super.initializeDiagram(object);
+
+		if (object instanceof Diagram) {
+			Diagram diagram = (Diagram)object;
+			// Make it "owned" by the interaction
+			DiagramUtils.setOwner(diagram, diagram.getElement());
+		}
 	}
 }

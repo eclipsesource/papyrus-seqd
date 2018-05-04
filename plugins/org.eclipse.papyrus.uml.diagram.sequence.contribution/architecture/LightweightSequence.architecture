@@ -35,6 +35,7 @@
         </newModelPath>
       </owningRules>
       <childRules xmi:id="_sn3UOBIpEeiAgaYa_vQKcA"/>
+      <palettes href="../palette/SequenceDiagram.paletteconfiguration#/"/>
     </representationKinds>
   </contexts>
 </architecture:ArchitectureDomain>

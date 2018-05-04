@@ -23,7 +23,6 @@ import org.eclipse.gmf.runtime.notation.Edge;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.common.providers.ValidationDecoratorProvider;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.VisualIDRegistry;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.part.LightweightSequenceDiagramEditor;
 
 /**
@@ -65,6 +64,7 @@ public class SequenceValidationDecoratorProvider extends ValidationDecoratorProv
 		}
 		IDecoratorTarget decoratorTarget = ((CreateDecoratorsOperation)operation).getDecoratorTarget();
 		View view = decoratorTarget.getAdapter(View.class);
-		return view != null && RepresentationKind.MODEL_ID.equals(VisualIDRegistry.getModelID(view));
+		return view != null
+				&& RepresentationKind.MODEL_ID.equals(SequenceGraphicalTypeRegistry.getModelID(view));
 	}
 }

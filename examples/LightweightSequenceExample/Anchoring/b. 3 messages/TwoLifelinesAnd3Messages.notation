@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:style="http://www.eclipse.org/papyrus/infra/gmfdiag/style" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_5r84ECHsEeiIiO6KSag_9g" type="LightweightSequenceDiagram" name="TwoLifelines" measurementUnit="Pixel">
+  <children xmi:type="notation:Shape" xmi:id="_JdxLYBrkEeiYhMt5SU-vxA" type="Shape_Interaction" transparency="0">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_r5QR0CzwEeiKWctClOfa9Q" source="PapyrusCSSForceValue">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_r5QR0SzwEeiKWctClOfa9Q" key="fillColor" value="true"/>
+    </eAnnotations>
+    <children xmi:type="notation:Compartment" xmi:id="__UL78B4HEeitPLJx3IQIqw" type="Interaction_Contents">
+      <children xmi:type="notation:Shape" xmi:id="shapeLifelineHeader" type="Shape_Lifeline_Header">
+        <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_W6CFEC0gEeioS8drLzm9hw" source="PapyrusCSSForceValue">
+          <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_W6DTMC0gEeioS8drLzm9hw" key="fillColor" value="true"/>
+        </eAnnotations>
+        <children xmi:type="notation:Shape" xmi:id="compartmentLifelineHeader" type="Compartment_Lifeline_Header">
+          <children xmi:type="notation:Shape" xmi:id="labelLifelineName" type="Label_Lifeline_Name">
+            <element xmi:type="uml:Lifeline" href="TwoLifelinesAnd3Messages.uml#id_lifeline1"/>
+          </children>
+          <element xmi:type="uml:Lifeline" href="TwoLifelinesAnd3Messages.uml#id_lifeline1"/>
+        </children>
+        <children xmi:type="notation:Shape" xmi:id="id_LifelineBody" type="Shape_Lifeline_Body">
+          <layoutConstraint xmi:type="notation:Size" xmi:id="id_LifelineBody_size" width="2" height="200"/>
+        </children>
+        <element xmi:type="uml:Lifeline" href="TwoLifelinesAnd3Messages.uml#id_lifeline1"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Zl99oSHtEeiIiO6KSag_9g" x="21" y="16" width="156" height="28"/>
+      </children>
+      <children xmi:type="notation:Shape" xmi:id="shapeLifelineHeader2" type="Shape_Lifeline_Header">
+        <children xmi:type="notation:Shape" xmi:id="compartmentLifelineHeader2" type="Compartment_Lifeline_Header">
+          <children xmi:type="notation:Shape" xmi:id="labelLifelineName" type="Label_Lifeline_Name">
+            <element xmi:type="uml:Lifeline" href="TwoLifelinesAnd3Messages.uml#id_lifeline2"/>
+          </children>
+          <element xmi:type="uml:Lifeline" href="TwoLifelinesAnd3Messages.uml#id_lifeline2"/>
+        </children>
+        <children xmi:type="notation:Shape" xmi:id="id_LifelineBody2" type="Shape_Lifeline_Body">
+           <layoutConstraint xmi:type="notation:Size" xmi:id="id_LifelineBody2_size" width="2" height="200"/>
+        </children>
+        <element xmi:type="uml:Lifeline" href="TwoLifelinesAnd3Messages.uml#id_lifeline2"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Zl99oSHtEeiIiO6KSag_9g" x="252" y="16" width="156" height="28"/>
+      </children>
+      <element xmi:type="uml:Interaction" href="TwoLifelinesAnd3Messages.uml#_1YP7ECxcEeiebPiwxbU-wQ"/>
+    </children>
+    <element xmi:type="uml:Interaction" href="TwoLifelinesAnd3Messages.uml#_1YP7ECxcEeiebPiwxbU-wQ"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_lihkgB0yEeiGL75oFdNMfA" x="37" y="12" width="600" height="450"/>
+  </children>
+  <styles xmi:type="notation:StringValueStyle" xmi:id="_5r84ESHsEeiIiO6KSag_9g" name="diagram_compatibility_version" stringValue="1.4.0"/>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_5r84EiHsEeiIiO6KSag_9g"/>
+  <styles xmi:type="style:PapyrusDiagramStyle" xmi:id="_5r84EyHsEeiIiO6KSag_9g" diagramKindId="org.eclipse.papyrus.uml.diagram.lightweightsequence">
+    <owner xmi:type="uml:Interaction" href="TwoLifelinesAnd3Messages.uml#_1YP7ECxcEeiebPiwxbU-wQ"/>
+  </styles>
+  <element xmi:type="uml:Interaction" href="TwoLifelinesAnd3Messages.uml#_1YP7ECxcEeiebPiwxbU-wQ"/>
+  <edges xmi:type="notation:Connector" xmi:id="id_message1" type="Edge_Message" source="id_LifelineBody" target="id_LifelineBody2">
+    <element xmi:type="uml:Message" href="TwoLifelinesAnd3Messages.uml#id_leftToRight"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_zzyVYSHtEeiIiO6KSag_9g"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="id_sourceAnchor1" id="20"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="id_targetAnchor1" id="20"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="id_message2" type="Edge_Message" source="id_LifelineBody2" target="id_LifelineBody">
+    <element xmi:type="uml:Message" href="TwoLifelinesAnd3Messages.uml#id_rightToLeft"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_zzyVYSHtEeiIiO6KSag_9h"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="id_sourceAnchor2" id="40"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="id_targetAnchor2" id="60"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="id_message3" type="Edge_Message" source="id_LifelineBody" target="id_LifelineBody2">
+    <element xmi:type="uml:Message" href="TwoLifelinesAnd3Messages.uml#id_leftToRight2"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_zzyVYSHtEeiIiO6KSag_9i"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="id_sourceAnchor3" id="80"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="id_targetAnchor3" id="80"/>
+  </edges>
+</notation:Diagram>

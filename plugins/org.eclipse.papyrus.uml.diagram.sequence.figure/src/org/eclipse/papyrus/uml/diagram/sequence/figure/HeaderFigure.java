@@ -21,20 +21,24 @@ import org.eclipse.swt.graphics.Image;
  * Frame that contains a label.
  */
 public class HeaderFigure extends ScalablePolygonShape {
+	public static final int DEFAULT_MARGIN_WIDTH = 5;
+
+	public static final int DEFAULT_MARGIN_HEIGHT = 5;
 
 	private GridLayout layout;
+
 	private WrappingLabel label;
 
 	public HeaderFigure() {
 		super();
 		layout = new GridLayout();
-		layout.marginHeight = 5;
-		layout.marginWidth= 5;
+		layout.marginHeight = DEFAULT_MARGIN_HEIGHT;
+		layout.marginWidth = DEFAULT_MARGIN_WIDTH;
 		setLayoutManager(layout);
 		label = new WrappingLabel();
 		add(label);
 	}
-	
+
 	public void setText(String text) {
 		label.setText(text);
 	}

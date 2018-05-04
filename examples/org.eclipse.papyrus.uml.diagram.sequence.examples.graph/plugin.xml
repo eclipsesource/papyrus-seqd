@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="org.eclipse.papyrus.uml.diagram.sequence.examples.graph.InteractionPropertyTester"
+            id="org.eclipse.papyrus.uml.diagram.sequence.examples.graph.interactionProperties"
+            namespace="examples.graph"
+            properties="isInInteraction"
+            type="org.eclipse.emf.ecore.EObject">
+      </propertyTester>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition
+            id="examples.graph.isInSequenceDiagram">
+         <with
+               variable="selection">
+            <count
+                  value="1"/>
+            <iterate
+                  ifEmpty="false"
+                  operator="and">
+               <and>
+                  <instanceof
+                        value="org.eclipse.gef.GraphicalEditPart">
+                  </instanceof>
+                  <adapt
+                        type="org.eclipse.emf.ecore.EObject">
+                     <test
+                           property="examples.graph.isInInteraction">
+                     </test>
+                  </adapt>
+               </and>
+            </iterate>
+         </with>
+      </definition>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="org.eclipse.papyrus.uml.diagram.sequence.examples.graph.InsertSpaceBelowHandler"
+            id="org.eclipse.papyrus.uml.diagram.sequence.examples.graph.insertSpaceBelow"
+            name="Insert Space Below">
+      </command>
+      <command
+            defaultHandler="org.eclipse.papyrus.uml.diagram.sequence.examples.graph.InsertExecutionBelowHandler"
+            id="org.eclipse.papyrus.uml.diagram.sequence.examples.graph.insertExecutionBelow"
+            name="Insert Execution Below">
+         <commandParameter
+               id="org.eclipse.papyrus.uml.diagram.sequence.examples.graph.count"
+               name="count">
+         </commandParameter>
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <command
+               commandId="org.eclipse.papyrus.uml.diagram.sequence.examples.graph.insertSpaceBelow"
+               label="Insert Space Below"
+               style="push">
+            <visibleWhen
+                  checkEnabled="true">
+               <reference
+                     definitionId="examples.graph.isInSequenceDiagram">
+               </reference>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="org.eclipse.papyrus.uml.diagram.sequence.examples.graph.insertExecutionBelow"
+               label="Insert Execution Below"
+               style="push">
+            <visibleWhen
+                  checkEnabled="true">
+               <reference
+                     definitionId="examples.graph.isInSequenceDiagram">
+               </reference>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="org.eclipse.papyrus.uml.diagram.sequence.examples.graph.insertExecutionBelow"
+               label="Insert Two Executions Below"
+               style="push">
+            <visibleWhen
+                  checkEnabled="true">
+               <reference
+                     definitionId="examples.graph.isInSequenceDiagram">
+               </reference>
+            </visibleWhen>
+            <parameter
+                  name="org.eclipse.papyrus.uml.diagram.sequence.examples.graph.count"
+                  value="2">
+            </parameter>
+         </command>
+      </menuContribution>
+   </extension>
+</plugin>
