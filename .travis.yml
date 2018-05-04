@@ -18,3 +18,13 @@ install: true
 
 script:
  - mvn -f releng/org.eclipse.papyrus.uml.diagram.sequence.releng/pom.xml -Poxygen clean verify -Dtycho.localArtifacts=ignore -Declipse.p2.mirrors=false
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUBTOKEN
+  keep-history: false
+  local-dir: releng/org.eclipse.papyrus.uml.diagram.sequence.updatesite/target/repository
+  on:
+    branch: master
+
