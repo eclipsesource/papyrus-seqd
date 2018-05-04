@@ -12,20 +12,16 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.part;
 
-import java.util.EventObject;
-
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.ui.URIEditorInput;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.Tool;
-import org.eclipse.gef.commands.CommandStackListener;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.gef.ui.palette.PaletteViewerProvider;
@@ -60,10 +56,8 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
@@ -145,9 +139,6 @@ public class LightweightSequenceDiagramEditor extends UmlGmfDiagramEditor implem
 		return Activator.PLUGIN_ID;
 	}
 
-	/**
-	
-	 */
 	@Override
 	protected final IDocumentProvider getDocumentProvider(IEditorInput input) {
 		return documentProvider;
@@ -173,17 +164,11 @@ public class LightweightSequenceDiagramEditor extends UmlGmfDiagramEditor implem
 		return true;
 	}
 
-	/**
-	
-	 */
 	@Override
 	public void doSaveAs() {
-		performSaveAs(new NullProgressMonitor());
+		// Nothing
 	}
 
-	/**
-	
-	 */
 	@Override
 	protected void performSaveAs(IProgressMonitor progressMonitor) {
 		// Nothing
@@ -208,28 +193,6 @@ public class LightweightSequenceDiagramEditor extends UmlGmfDiagramEditor implem
 	protected TransactionalEditingDomain createEditingDomain() {
 		// Already configured
 		return editingDomain;
-	}
-
-	@Override
-	protected void configureDiagramEditDomain() {
-		super.configureDiagramEditDomain();
-		getDiagramEditDomain().getDiagramCommandStack().addCommandStackListener(new CommandStackListener() {
-
-			@Override
-			public void commandStackChanged(EventObject event) {
-				if (Display.getCurrent() == null) {
-					Display.getDefault().asyncExec(new Runnable() {
-
-						@Override
-						public void run() {
-							firePropertyChange(IEditorPart.PROP_DIRTY);
-						}
-					});
-				} else {
-					firePropertyChange(IEditorPart.PROP_DIRTY);
-				}
-			}
-		});
 	}
 
 	@Override
@@ -551,7 +514,7 @@ public class LightweightSequenceDiagramEditor extends UmlGmfDiagramEditor implem
 	 */
 	@Override
 	public String getEditingDomainID() {
-		return "org.eclipse.papyrus.uml.diagram.sequence.EditingDomain"; //$NON-NLS-1$
+		return "org.eclipse.papyrus.uml.diagram.sequence.runtime.EditingDomain"; //$NON-NLS-1$
 	}
 
 }

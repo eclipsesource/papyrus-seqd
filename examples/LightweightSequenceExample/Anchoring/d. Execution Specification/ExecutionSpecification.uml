@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_1XshcCxcEeiebPiwxbU-wQ" name="ExecutionSpecification">
+  <packageImport xmi:id="_1eV8ACxcEeiebPiwxbU-wQ">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_1YP7ECxcEeiebPiwxbU-wQ" name="Interaction1">
+    <lifeline xmi:id="id_lifeline1" name="Lifeline1" coveredBy="id_req_send id_reply_rcv"/>
+    <lifeline xmi:id="id_lifeline2" name="Lifeline2" coveredBy="id_req_rcv id_action_exec_spec id_reply_send"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="id_req_send" name="request-send" covered="id_lifeline1" message="id_msg_request"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="id_req_rcv" name="request-recv" covered="id_lifeline2" message="id_msg_request"/>
+    <fragment xmi:type="uml:ActionExecutionSpecification" xmi:id="id_action_exec_spec" name="ActionExecutionSpecification1" covered="id_lifeline2" finish="id_reply_send" start="id_req_rcv"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="id_reply_send" name="reply-send" covered="id_lifeline2" message="id_msg_reply"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="id_reply_rcv" name="reply-recv" covered="id_lifeline1" message="id_msg_reply"/>
+    <message xmi:id="id_msg_request" name="request" messageSort="asynchCall" receiveEvent="id_req_rcv" sendEvent="id_req_send"/>
+    <message xmi:id="id_msg_reply" name="reply" messageSort="reply" receiveEvent="id_reply_rcv" sendEvent="id_reply_send"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_ZM_dQDGhEeitH8O626ScKw" name="Class1">
+    <ownedOperation xmi:id="_Z5O4MDGhEeitH8O626ScKw" name="op1"/>
+  </packagedElement>
+</uml:Model>

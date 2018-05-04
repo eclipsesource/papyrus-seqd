@@ -7,6 +7,8 @@ Bundle-Vendor: Eclipse Modeling Project
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Activator: org.eclipse.papyrus.uml.diagram.sequence.figure.internal.Activator
 Export-Package: org.eclipse.papyrus.uml.diagram.sequence.figure,
+ org.eclipse.papyrus.uml.diagram.sequence.figure.anchors,
+ org.eclipse.papyrus.uml.diagram.sequence.figure.border,
  org.eclipse.papyrus.uml.diagram.sequence.figure.internal;x-internal:=true
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.13.0,4.0.0)",
  org.eclipse.draw2d;bundle-version="[3.10.0,4.0.0)",

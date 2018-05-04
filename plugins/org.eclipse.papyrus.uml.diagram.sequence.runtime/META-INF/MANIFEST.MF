@@ -5,10 +5,16 @@ Bundle-SymbolicName: org.eclipse.papyrus.uml.diagram.sequence.runtime;singleton:
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator
 Bundle-Vendor: Eclipse Modeling Project
-Require-Bundle: org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.13.0,4.0.0)",
  org.eclipse.papyrus.uml.diagram.common;bundle-version="[3.1.0,4.0.0)",
  org.eclipse.papyrus.uml.internationalization.utils;bundle-version="[1.0.0,2.0.0)",
- org.eclipse.papyrus.infra.internationalization.utils
+ org.eclipse.uml2.uml;bundle-version="[5.3.0,6.0.0)";visibility:=reexport,
+ org.eclipse.gmf.runtime.notation;bundle-version="[1.8.0,2.0.0)";visibility:=reexport,
+ org.eclipse.papyrus.infra.internationalization.utils;bundle-version="[1.0.0,2.0.0)",
+ org.eclipse.papyrus.uml.diagram.sequence.figure;bundle-version="[1.0.0,2.0.0)",
+ org.eclipse.papyrus.uml.interaction.graph;bundle-version="[1.0.0,2.0.0)",
+ org.eclipse.papyrus.uml.interaction.model;bundle-version="[1.0.0,2.0.0)",
+ org.eclipse.papyrus.uml.service.types;bundle-version="[3.1.0,4.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
@@ -19,4 +25,5 @@ Export-Package: org.eclipse.papyrus.uml.diagram.sequence.runtime.internal;x-frie
  org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.layout;x-friends:="org.eclipse.papyrus.uml.diagram.sequence.contribution",
  org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.parsers;x-friends:="org.eclipse.papyrus.uml.diagram.sequence.contribution",
  org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.part;x-friends:="org.eclipse.papyrus.uml.diagram.sequence.contribution",
- org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers;x-friends:="org.eclipse.papyrus.uml.diagram.sequence.contribution"
+ org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers;x-friends:="org.eclipse.papyrus.uml.diagram.sequence.contribution",
+ org.eclipse.papyrus.uml.diagram.sequence.runtime.util

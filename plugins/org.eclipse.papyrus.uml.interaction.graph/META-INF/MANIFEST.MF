@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.eclipse.papyrus.uml.interaction.graph;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: %providerName
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.uml2.uml;bundle-version="[5.3.0,6.0.0)";visibility:=reexport,
+ org.eclipse.gmf.runtime.notation;bundle-version="[1.8.0,2.0.0)";visibility:=reexport
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Bundle-Localization: plugin
+Export-Package: org.eclipse.papyrus.uml.interaction.graph,
+ org.eclipse.papyrus.uml.interaction.graph.util,
+ org.eclipse.papyrus.uml.interaction.internal.graph;x-internal:=true

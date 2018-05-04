@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:style="http://www.eclipse.org/papyrus/infra/gmfdiag/style" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <notation:Diagram xmi:id="_lOHc8CIjEeiTbbnPsXimoQ" type="LightweightSequenceDiagram" name="StateInvariantsDiagram" measurementUnit="Pixel">
+    <children xmi:type="notation:Shape" xmi:id="_JdxLYBrkEeiYhMt5SU-vxA" type="Shape_Interaction">
+    <children xmi:type="notation:DecorationNode" type="Label_Interaction_Name"/>
+      <children xmi:type="notation:Compartment" xmi:id="__UL78B4HEeitPLJx3IQIqw" type="Interaction_Contents">
+        <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_uDhvsCIpEeiq7t69nHKFow" source="PapyrusCSSForceValue">
+          <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_uDjk4CIpEeiq7t69nHKFow" key="collapsed" value="true"/>
+        </eAnnotations>
+        <children xmi:type="notation:Shape" xmi:id="_Zl99oCHtEeiIiO6KSag_9g" type="Shape_Lifeline_Header">
+          <children xmi:type="notation:Shape" xmi:id="_goOTgEFqEei1zqUjbAwdJw" type="Compartment_Lifeline_Header">
+            <children xmi:type="notation:Shape" xmi:id="_goOTgUFqEei1zqUjbAwdJw" type="Label_Lifeline_Name"/>
+          </children>
+          <children xmi:type="notation:Shape" xmi:id="_8mYc8EFpEei1zqUjbAwdJw" type="Shape_Lifeline_Body">
+            <children xmi:type="notation:Shape" xmi:id="_k709oCIkEeiTbbnPsXimoQ" type="Shape_State_Invariant">
+              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_k709oSIkEeiTbbnPsXimoQ" y="55" width="65" height="30"/>
+            </children>
+            <layoutConstraint xmi:type="notation:Size" xmi:id="_S_O40EFrEei1zqUjbAwdJw" width="2" height="350"/>
+          </children>
+          <element xmi:type="uml:Lifeline" href="BorderItemsModel.uml#_gvRTECIjEeiTbbnPsXimoQ"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Zl99oSHtEeiIiO6KSag_9g" x="13" y="1" width="156" height="28"/>
+        </children>
+        <children xmi:type="notation:Shape" xmi:id="_Zl99oiHtEeiIiO6KSag_9g" type="Shape_Lifeline_Header">
+          <children xmi:type="notation:Shape" xmi:id="_goOTgkFqEei1zqUjbAwdJw" type="Compartment_Lifeline_Header">
+            <children xmi:type="notation:Shape" xmi:id="_goOTg0FqEei1zqUjbAwdJw" type="Label_Lifeline_Name"/>
+          </children>
+          <children xmi:type="notation:Shape" xmi:id="_8mYc8UFpEei1zqUjbAwdJw" type="Shape_Lifeline_Body">
+            <children xmi:type="notation:Shape" xmi:id="_k709oiIkEeiTbbnPsXimoQ" type="Shape_State_Invariant">
+              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_k709oyIkEeiTbbnPsXimoQ" x="17" width="42" height="13"/>
+            </children>
+            <layoutConstraint xmi:type="notation:Size" xmi:id="_S_O40UFrEei1zqUjbAwdJw" width="2" height="350"/>
+          </children>
+          <element xmi:type="uml:Lifeline" href="BorderItemsModel.uml#_hdzNACIjEeiTbbnPsXimoQ"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Zl99oyHtEeiIiO6KSag_9g" x="229" y="1" width="156" height="28"/>
+        </children>
+        <element xmi:type="uml:Interaction" href="BorderItemsModel.uml#_eytfwCIjEeiTbbnPsXimoQ"/>
+      </children>
+      <layoutConstraint xmi:type="notation:Bounds" xmi:id="_lihkgB0yEeiGL75oFdNMfA" x="10" y="10" width="600" height="450"/>
+    </children>
+    <styles xmi:type="notation:StringValueStyle" xmi:id="_lOHc8SIjEeiTbbnPsXimoQ" name="diagram_compatibility_version" stringValue="1.4.0"/>
+    <styles xmi:type="notation:DiagramStyle" xmi:id="_lOHc8iIjEeiTbbnPsXimoQ"/>
+    <styles xmi:type="style:PapyrusDiagramStyle" xmi:id="_lOHc8yIjEeiTbbnPsXimoQ" diagramKindId="org.eclipse.papyrus.uml.diagram.lightweightsequence">
+      <owner xmi:type="uml:Interaction" href="BorderItemsModel.uml#_eytfwCIjEeiTbbnPsXimoQ"/>
+    </styles>
+    <element xmi:type="uml:Interaction" href="BorderItemsModel.uml#_eytfwCIjEeiTbbnPsXimoQ"/>
+  </notation:Diagram>
+  <notation:Diagram xmi:id="_Rm3AsCKrEeiq7t69nHKFow" type="LightweightSequenceDiagram" name="ExecutionSpecificationDiagram" measurementUnit="Pixel">
+    <children xmi:type="notation:Shape" xmi:id="_Rm3AsSKrEeiq7t69nHKFow" type="Shape_Interaction">
+    <children xmi:type="notation:DecorationNode" type="Label_Interaction_Name"/>
+      <children xmi:type="notation:Compartment" xmi:id="_Rm3AsiKrEeiq7t69nHKFow" type="Interaction_Contents">
+        <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_Rm3AsyKrEeiq7t69nHKFow" source="PapyrusCSSForceValue">
+          <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_Rm3AtCKrEeiq7t69nHKFow" key="collapsed" value="true"/>
+        </eAnnotations>
+        <children xmi:type="notation:Shape" xmi:id="_Rm3AtSKrEeiq7t69nHKFow" type="Shape_Lifeline_Header">
+          <children xmi:type="notation:Shape" xmi:id="_goOThEFqEei1zqUjbAwdJw" type="Compartment_Lifeline_Header">
+            <children xmi:type="notation:Shape" xmi:id="_goOThUFqEei1zqUjbAwdJw" type="Label_Lifeline_Name"/>
+          </children>
+          <children xmi:type="notation:Shape" xmi:id="_8mYc8kFpEei1zqUjbAwdJw" type="Shape_Lifeline_Body">
+            <children xmi:type="notation:Shape" xmi:id="_Rm3AtiKrEeiq7t69nHKFow" type="Shape_Execution_Specification">
+              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Rm3AtyKrEeiq7t69nHKFow" x="25" y="13" width="15" height="245"/>
+            </children>
+            <layoutConstraint xmi:type="notation:Size" xmi:id="_S_O40kFrEei1zqUjbAwdJw" width="2" height="350"/>
+          </children>
+          <element xmi:type="uml:Lifeline" href="BorderItemsModel.uml#_RmyvQSKrEeiq7t69nHKFow"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Rm3AuCKrEeiq7t69nHKFow" x="13" y="2" width="116" height="28"/>
+        </children>
+        <children xmi:type="notation:Shape" xmi:id="_Rm3AuSKrEeiq7t69nHKFow" type="Shape_Lifeline_Header">
+          <children xmi:type="notation:Shape" xmi:id="_goOThkFqEei1zqUjbAwdJw" type="Compartment_Lifeline_Header">
+            <children xmi:type="notation:Shape" xmi:id="_goOTh0FqEei1zqUjbAwdJw" type="Label_Lifeline_Name"/>
+          </children>
+          <children xmi:type="notation:Shape" xmi:id="_8mYc80FpEei1zqUjbAwdJw" type="Shape_Lifeline_Body">
+            <children xmi:type="notation:Shape" xmi:id="_Rm3AuiKrEeiq7t69nHKFow" type="Shape_Execution_Specification">
+              <children xmi:type="notation:Shape" xmi:id="_Rm3AuiKrEeiq7t69nHKFow" type="Shape_Execution_Specification">
+                <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Rm3AuyKrEeiq7t69nHKFow" y="15" width="15" height="60"/>
+              </children>
+              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Rm3AuyKrEeiq7t69nHKFow" x="33" y="66" width="15" height="100"/>
+            </children>
+            <layoutConstraint xmi:type="notation:Size" xmi:id="_S_O400FrEei1zqUjbAwdJw" width="2" height="350"/>
+          </children>
+          <element xmi:type="uml:Lifeline" href="BorderItemsModel.uml#_RmyvQiKrEeiq7t69nHKFow"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Rm3AvCKrEeiq7t69nHKFow" x="171" y="2" width="105" height="28"/>
+        </children>
+        <children xmi:type="notation:Shape" xmi:id="_YgvFwCKvEeiGXfkE1bABUw" type="Shape_Lifeline_Header">
+          <children xmi:type="notation:Shape" xmi:id="_goOTiEFqEei1zqUjbAwdJw" type="Compartment_Lifeline_Header">
+            <children xmi:type="notation:Shape" xmi:id="_goOTiUFqEei1zqUjbAwdJw" type="Label_Lifeline_Name"/>
+          </children>
+          <children xmi:type="notation:Shape" xmi:id="_8mYc9EFpEei1zqUjbAwdJw" type="Shape_Lifeline_Body">
+            <children xmi:type="notation:Shape" xmi:id="_YgvFwSKvEeiGXfkE1bABUw" type="Shape_Execution_Specification">
+              <children xmi:type="notation:Shape" xmi:id="_YgvFwiKvEeiGXfkE1bABUw" type="Shape_Execution_Specification">
+                <children xmi:type="notation:Shape" xmi:id="_mnrLQCKvEeiGXfkE1bABUw" type="Shape_Execution_Specification">
+                  <layoutConstraint xmi:type="notation:Bounds" xmi:id="_mnrLQSKvEeiGXfkE1bABUw" y="15" width="15" height="80"/>
+                </children>
+                <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YgvFwyKvEeiGXfkE1bABUw" y="15" width="15" height="140"/>
+              </children>
+              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YgvFxCKvEeiGXfkE1bABUw" y="30" width="15" height="200"/>
+            </children>
+            <layoutConstraint xmi:type="notation:Size" xmi:id="_S_O41EFrEei1zqUjbAwdJw" width="2" height="350"/>
+          </children>
+          <element xmi:type="uml:Lifeline" href="BorderItemsModel.uml#_PP3-YCKvEeiGXfkE1bABUw"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YgvFxSKvEeiGXfkE1bABUw" x="346" y="2" width="107" height="28"/>
+        </children>
+        <element xmi:type="uml:Interaction" href="BorderItemsModel.uml#_RmyvQCKrEeiq7t69nHKFow"/>
+      </children>
+      <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Rm3AvSKrEeiq7t69nHKFow" x="10" y="10" width="600" height="450"/>
+    </children>
+    <styles xmi:type="notation:StringValueStyle" xmi:id="_Rm3AviKrEeiq7t69nHKFow" name="diagram_compatibility_version" stringValue="1.4.0"/>
+    <styles xmi:type="notation:DiagramStyle" xmi:id="_Rm3AvyKrEeiq7t69nHKFow"/>
+    <styles xmi:type="style:PapyrusDiagramStyle" xmi:id="_Rm3AwCKrEeiq7t69nHKFow" diagramKindId="org.eclipse.papyrus.uml.diagram.lightweightsequence">
+      <owner xmi:type="uml:Interaction" href="BorderItemsModel.uml#_RmyvQCKrEeiq7t69nHKFow"/>
+    </styles>
+    <element xmi:type="uml:Interaction" href="BorderItemsModel.uml#_RmyvQCKrEeiq7t69nHKFow"/>
+  </notation:Diagram>
+</xmi:XMI>

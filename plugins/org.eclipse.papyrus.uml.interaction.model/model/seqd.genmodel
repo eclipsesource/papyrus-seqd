@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="Copyright (c) 2018 Christian W. Damus and others.&#xA; &#xA;All rights reserved. This program and the accompanying materials&#xA;are made available under the terms of the Eclipse Public License v1.0&#xA;which accompanies this distribution, and is available at&#xA;http://www.eclipse.org/legal/epl-v10.html&#xA;&#xA;Contributors:&#xA;  Christian W. Damus - Initial API and implementation&#xA;"
+    modelDirectory="/org.eclipse.papyrus.uml.interaction.model/src-gen" modelPluginID="org.eclipse.papyrus.uml.interaction.model"
+    modelName="Seqd" nonNLSMarkers="true" rootExtendsInterface="org.eclipse.papyrus.uml.interaction.model.MObject"
+    rootExtendsClass="org.eclipse.papyrus.uml.interaction.internal.model.impl.MObjectImpl&lt;T>"
+    rootImplementsInterface="" suppressEMFTypes="true" codeFormatting="true" commentFormatting="true"
+    testsDirectory="/org.eclipse.papyrus.uml.interaction.model.tests/src-gen" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="8.0" copyrightFields="false" usedGenPackages="../../org.eclipse.emf.ecore/model/Ecore.genmodel#//ecore ../../org.eclipse.uml2.types/model/Types.genmodel#//types ../../org.eclipse.uml2.uml/model/UML.genmodel#//uml ../../org.eclipse.gmf.runtime.notation/model/notation.genmodel#//notation"
+    operationReflection="true" importOrganizing="true" cleanup="true">
+  <foreignModel>seqd.ecore</foreignModel>
+  <genPackages prefix="SequenceDiagram" basePackage="org.eclipse.papyrus.uml" disposableProviderFactory="true"
+      interfacePackageSuffix="model" metaDataPackageSuffix="internal.model" classPackageSuffix="internal.model.impl"
+      utilityPackageSuffix="model.util" providerPackageSuffix="model.provider" presentationPackageSuffix="model.presentation"
+      testsPackageSuffix="model.tests" generateExampleClass="false" ecorePackage="seqd.ecore#/"
+      publicationLocation="">
+    <genDataTypes ecoreDataType="seqd.ecore#//Optional">
+      <genTypeParameters ecoreTypeParameter="seqd.ecore#//Optional/T"/>
+    </genDataTypes>
+    <genDataTypes ecoreDataType="seqd.ecore#//OptionalInt"/>
+    <genDataTypes ecoreDataType="seqd.ecore#//Command"/>
+    <genDataTypes ecoreDataType="seqd.ecore#//CreationCommand">
+      <genTypeParameters ecoreTypeParameter="seqd.ecore#//CreationCommand/T"/>
+    </genDataTypes>
+    <genDataTypes ecoreDataType="seqd.ecore#//EObject"/>
+    <genClasses image="false" ecoreClass="seqd.ecore#//MElement">
+      <genTypeParameters ecoreTypeParameter="seqd.ecore#//MElement/T"/>
+      <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MElement/interaction"/>
+      <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MElement/element"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MElement/top"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MElement/bottom"/>
+      <genOperations ecoreOperation="seqd.ecore#//MElement/getOwner"/>
+      <genOperations ecoreOperation="seqd.ecore#//MElement/getDiagramView"/>
+      <genOperations ecoreOperation="seqd.ecore#//MElement/verticalDistance">
+        <genParameters ecoreParameter="seqd.ecore#//MElement/verticalDistance/other"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MElement/following"/>
+      <genOperations ecoreOperation="seqd.ecore#//MElement/nudge">
+        <genParameters ecoreParameter="seqd.ecore#//MElement/nudge/deltaY"/>
+      </genOperations>
+    </genClasses>
+    <genClasses ecoreClass="seqd.ecore#//MInteraction">
+      <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MInteraction/lifelines"/>
+      <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MInteraction/messages"/>
+      <genOperations ecoreOperation="seqd.ecore#//MInteraction/getDiagramView"/>
+      <genOperations ecoreOperation="seqd.ecore#//MInteraction/getElement">
+        <genParameters ecoreParameter="seqd.ecore#//MInteraction/getElement/element"/>
+        <genTypeParameters ecoreTypeParameter="seqd.ecore#//MInteraction/getElement/E"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MInteraction/getLifeline">
+        <genParameters ecoreParameter="seqd.ecore#//MInteraction/getLifeline/lifeline"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MInteraction/getMessage">
+        <genParameters ecoreParameter="seqd.ecore#//MInteraction/getMessage/message"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MInteraction/addLifeline">
+        <genParameters ecoreParameter="seqd.ecore#//MInteraction/addLifeline/xPosition"/>
+        <genParameters ecoreParameter="seqd.ecore#//MInteraction/addLifeline/height"/>
+      </genOperations>
+    </genClasses>
+    <genClasses ecoreClass="seqd.ecore#//MLifeline">
+      <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/executionOccurrences"/>
+      <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/executions"/>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/getOwner"/>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/getDiagramView"/>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/following">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/following/element"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/getExecutionOccurrence">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/getExecutionOccurrence/occurrence"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/getExecution">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/getExecution/execution"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/insertExecutionAfter">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertExecutionAfter/before"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertExecutionAfter/offset"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertExecutionAfter/height"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertExecutionAfter/specification"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/insertMessageAfter">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter/before"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter/offset"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter/receiver"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter/sort"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter/signature"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/elementAt">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/elementAt/offset"/>
+      </genOperations>
+    </genClasses>
+    <genClasses ecoreClass="seqd.ecore#//MExecution">
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MExecution/start"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MExecution/finish"/>
+      <genOperations ecoreOperation="seqd.ecore#//MExecution/getOwner"/>
+      <genOperations ecoreOperation="seqd.ecore#//MExecution/getDiagramView"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="seqd.ecore#//MOccurrence">
+      <genTypeParameters ecoreTypeParameter="seqd.ecore#//MOccurrence/T"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/covered"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/startedExecution"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/finishedExecution"/>
+    </genClasses>
+    <genClasses ecoreClass="seqd.ecore#//MExecutionOccurrence">
+      <genOperations ecoreOperation="seqd.ecore#//MExecutionOccurrence/getOwner"/>
+      <genOperations ecoreOperation="seqd.ecore#//MExecutionOccurrence/getDiagramView"/>
+    </genClasses>
+    <genClasses ecoreClass="seqd.ecore#//MMessageEnd">
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessageEnd/send"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessageEnd/receive"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessageEnd/otherEnd"/>
+      <genOperations ecoreOperation="seqd.ecore#//MMessageEnd/getOwner"/>
+      <genOperations ecoreOperation="seqd.ecore#//MMessageEnd/getDiagramView"/>
+    </genClasses>
+    <genClasses ecoreClass="seqd.ecore#//MMessage">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference seqd.ecore#//MMessage/sendEnd"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference seqd.ecore#//MMessage/receiveEnd"/>
+      <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/send"/>
+      <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/receive"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/sender"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/receiver"/>
+      <genOperations ecoreOperation="seqd.ecore#//MMessage/getOwner"/>
+      <genOperations ecoreOperation="seqd.ecore#//MMessage/getDiagramView"/>
+      <genOperations ecoreOperation="seqd.ecore#//MMessage/getEnd">
+        <genParameters ecoreParameter="seqd.ecore#//MMessage/getEnd/end"/>
+      </genOperations>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

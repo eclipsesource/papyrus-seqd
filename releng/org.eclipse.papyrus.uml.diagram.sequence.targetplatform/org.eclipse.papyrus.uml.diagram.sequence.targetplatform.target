@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Sequence Diagram" sequenceNumber="1518793825">
+<target name="Sequence Diagram" sequenceNumber="1525448365">
   <locations>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.platform.feature.group" version="4.7.2.v20171130-0510"/>
+      <unit id="org.eclipse.platform.feature.group" version="4.7.3.v20180330-0640"/>
       <unit id="org.eclipse.m2m.qvt.oml.sdk.feature.group" version="3.7.0.v20170604-1316"/>
       <unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.11.0.201706061339"/>
       <unit id="org.eclipse.xpand.sdk.feature.group" version="2.2.0.v201605260315"/>
@@ -12,7 +12,7 @@
       <unit id="org.eclipse.uml2.sdk.feature.group" version="5.3.0.v20170605-1616"/>
       <unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.11.0.201706061437"/>
       <unit id="org.eclipse.gmf.runtime.notation.sdk.feature.group" version="1.11.0.201706061354"/>
-      <unit id="org.eclipse.sdk.feature.group" version="4.7.2.v20171130-0906"/>
+      <unit id="org.eclipse.sdk.feature.group" version="4.7.3.v20180330-0919"/>
       <unit id="org.eclipse.xwt.feature.feature.group" version="1.3.1.I20171018-2059"/>
       <unit id="org.eclipse.xtext.sdk.feature.group" version="2.12.0.v20170519-1412"/>
       <unit id="org.eclipse.xtend.sdk.feature.group" version="2.12.0.v20170519-1412"/>
@@ -25,8 +25,8 @@
       <repository id="oxygen-release" location="http://download.eclipse.org/releases/oxygen"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.papyrus.sdk.feature.feature.group" version="3.2.0.201712060842"/>
-      <unit id="org.eclipse.papyrus.sdk.feature.source.feature.group" version="3.2.0.201712060842"/>
+      <unit id="org.eclipse.papyrus.sdk.feature.feature.group" version="3.3.0.201803070847"/>
+      <unit id="org.eclipse.papyrus.sdk.feature.source.feature.group" version="3.3.0.201803070847"/>
       <repository id="papyrus-oxygen" location="http://download.eclipse.org/modeling/mdt/papyrus/updates/releases/oxygen"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">

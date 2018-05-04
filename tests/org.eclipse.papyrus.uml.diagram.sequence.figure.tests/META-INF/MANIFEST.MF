@@ -23,5 +23,6 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.13.0,4.0.0)",
  org.eclipse.ui.ide,
  org.eclipse.draw2d;bundle-version="[3.10.0,4.0.0)",
  org.eclipse.gmf.runtime.draw2d.ui;bundle-version="[1.9.0,2.0.0)",
- org.eclipse.papyrus.uml.diagram.sequence.figure;bundle-version="[1.0.0,2.0.0)"
+ org.eclipse.papyrus.uml.diagram.sequence.figure;bundle-version="[1.0.0,2.0.0)",
+ org.eclipse.gmf.runtime.gef.ui;bundle-version="1.7.0"
 Bundle-Description: Tests of the figures specific to the sequence diagram.

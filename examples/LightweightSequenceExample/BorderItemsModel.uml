@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_b-MwwCIjEeiTbbnPsXimoQ" name="BorderItemsModel">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_cDhVoCIjEeiTbbnPsXimoQ">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_eytfwCIjEeiTbbnPsXimoQ" name="StateInvariants">
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_gvRTECIjEeiTbbnPsXimoQ" name="LeftLine"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_hdzNACIjEeiTbbnPsXimoQ" name="RightLine"/>
+    <fragment xmi:type="uml:StateInvariant" xmi:id="_6hEdMCIjEeiTbbnPsXimoQ" name="LeftStateInvariant"/>
+    <fragment xmi:type="uml:StateInvariant" xmi:id="_7Umy8CIjEeiTbbnPsXimoQ" name="RightStateInvariant"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_RmyvQCKrEeiq7t69nHKFow" name="ExecutionSpecification">
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_RmyvQSKrEeiq7t69nHKFow" name="LeftLine"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_RmyvQiKrEeiq7t69nHKFow" name="CenterLine"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_PP3-YCKvEeiGXfkE1bABUw" name="RightLine"/>
+  </packagedElement>
+</uml:Model>

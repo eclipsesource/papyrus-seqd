@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_O5YeMBKOEeiu4d_glA_Agg" name="codereview">
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_hvwEwBZTEei-ao020tUzog" name="submit_comments">
+    <ownedRule xmi:type="uml:DurationConstraint" xmi:id="_ln1CMBZWEei-ao020tUzog" name="duration">
+      <specification xmi:type="uml:DurationInterval" xmi:id="_ln1pQBZWEei-ao020tUzog" max="_ln2QUBZWEei-ao020tUzog" min="_ln1pQRZWEei-ao020tUzog"/>
+    </ownedRule>
+    <lifeline xmi:id="_pZp1YBZTEei-ao020tUzog" name="window" coveredBy="_xjbY4BZTEei-ao020tUzog _Lpe7wBZUEei-ao020tUzog _EFwEkBZUEei-ao020tUzog _ef0TIBZVEei-ao020tUzog _lhCTIBZVEei-ao020tUzog _lg2s8BZVEei-ao020tUzog _nLG2ABZaEei-ao020tUzog __PJiABZTEei-ao020tUzog _LrcqoBZUEei-ao020tUzog _t7q9IBZVEei-ao020tUzog _2JFqwCbNEeiCoKoQXk9_4A"/>
+    <lifeline xmi:id="_qkwWkBZTEei-ao020tUzog" name="comments" coveredBy="_LpjNMBZUEei-ao020tUzog _eTqi8BZUEei-ao020tUzog _oxkFMBZUEei-ao020tUzog _LrK90BZUEei-ao020tUzog _LrZAQBZUEei-ao020tUzog _t7q9IBZVEei-ao020tUzog"/>
+    <lifeline xmi:id="_W9F-ABZUEei-ao020tUzog" name="proxy" coveredBy="_eTwpkBZUEei-ao020tUzog _oxqL0BZUEei-ao020tUzog _EuOkYBZVEei-ao020tUzog _efrJMBZVEei-ao020tUzog _4nQLgBZUEei-ao020tUzog _nLEZwBZaEei-ao020tUzog _E2LmgBZVEei-ao020tUzog"/>
+    <lifeline xmi:id="__8GSIBZUEei-ao020tUzog" name="dwrServlet" coveredBy="_EuXHQBZVEei-ao020tUzog _E2DqsBZVEei-ao020tUzog _E1qpIBZVEei-ao020tUzog _nLEZwBZaEei-ao020tUzog _PPjw8BZcEei-ao020tUzog _25UxsCbJEeiBiInTMCdeTA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_xjbY4BZTEei-ao020tUzog" name="validate-recv" covered="_pZp1YBZTEei-ao020tUzog" message="_xjTdEBZTEei-ao020tUzog"/>
+    <fragment xmi:type="uml:BehaviorExecutionSpecification" xmi:id="__PJiABZTEei-ao020tUzog" name="validate-exec" covered="_pZp1YBZTEei-ao020tUzog" finish="_EFwEkBZUEei-ao020tUzog" start="_xjbY4BZTEei-ao020tUzog"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_Lpe7wBZUEei-ao020tUzog" name="post-send" covered="_pZp1YBZTEei-ao020tUzog" message="_LpaqUBZUEei-ao020tUzog"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_LpjNMBZUEei-ao020tUzog" name="post-recv" covered="_qkwWkBZTEei-ao020tUzog" message="_LpaqUBZUEei-ao020tUzog"/>
+    <fragment xmi:type="uml:BehaviorExecutionSpecification" xmi:id="_LrK90BZUEei-ao020tUzog" name="post-exec" covered="_qkwWkBZTEei-ao020tUzog" finish="_LrZAQBZUEei-ao020tUzog" start="_LpjNMBZUEei-ao020tUzog"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_eTqi8BZUEei-ao020tUzog" name="create-proxy-send" covered="_qkwWkBZTEei-ao020tUzog" message="_eTlDYBZUEei-ao020tUzog"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_eTwpkBZUEei-ao020tUzog" name="create-proxy-recv" covered="_W9F-ABZUEei-ao020tUzog" message="_eTlDYBZUEei-ao020tUzog"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_oxkFMBZUEei-ao020tUzog" name="async-send" covered="_qkwWkBZTEei-ao020tUzog" message="_oxd-kBZUEei-ao020tUzog"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_oxqL0BZUEei-ao020tUzog" name="async-recv" covered="_W9F-ABZUEei-ao020tUzog" message="_oxd-kBZUEei-ao020tUzog"/>
+    <fragment xmi:type="uml:BehaviorExecutionSpecification" xmi:id="_4nQLgBZUEei-ao020tUzog" name="async-exec" covered="_W9F-ABZUEei-ao020tUzog" finish="_efrJMBZVEei-ao020tUzog" start="_oxqL0BZUEei-ao020tUzog"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_LrZAQBZUEei-ao020tUzog" name="post-reply-send" covered="_qkwWkBZTEei-ao020tUzog" message="_LrUu0BZUEei-ao020tUzog"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_LrcqoBZUEei-ao020tUzog" name="post-reply-recv" covered="_pZp1YBZTEei-ao020tUzog" message="_LrUu0BZUEei-ao020tUzog"/>
+    <fragment xmi:type="uml:CombinedFragment" xmi:id="_nLEZwBZaEei-ao020tUzog" name="maybe-servlet" covered="_W9F-ABZUEei-ao020tUzog __8GSIBZUEei-ao020tUzog" interactionOperator="opt">
+      <cfragmentGate xmi:id="_sTNuoCbJEeiBiInTMCdeTA" name="servlet-out" message="_25TjkCbJEeiBiInTMCdeTA"/>
+      <operand xmi:id="_nLG2ABZaEei-ao020tUzog" name="maybe-servlet-opt" covered="_pZp1YBZTEei-ao020tUzog">
+        <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_EuOkYBZVEei-ao020tUzog" name="ajax-send" covered="_W9F-ABZUEei-ao020tUzog" message="_EuGokBZVEei-ao020tUzog"/>
+        <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_EuXHQBZVEei-ao020tUzog" name="ajax-recv" covered="__8GSIBZUEei-ao020tUzog" message="_EuGokBZVEei-ao020tUzog"/>
+        <fragment xmi:type="uml:BehaviorExecutionSpecification" xmi:id="_E1qpIBZVEei-ao020tUzog" name="ajax-exec" covered="__8GSIBZUEei-ao020tUzog" finish="_E2DqsBZVEei-ao020tUzog" start="_EuXHQBZVEei-ao020tUzog"/>
+        <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_25UxsCbJEeiBiInTMCdeTA" name="escape-send" covered="__8GSIBZUEei-ao020tUzog" message="_25TjkCbJEeiBiInTMCdeTA"/>
+        <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_E2DqsBZVEei-ao020tUzog" name="errors-send" covered="__8GSIBZUEei-ao020tUzog" message="_E17u4BZVEei-ao020tUzog"/>
+        <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_E2LmgBZVEei-ao020tUzog" name="errors-recv" covered="_W9F-ABZUEei-ao020tUzog" message="_E17u4BZVEei-ao020tUzog"/>
+        <guard xmi:id="_nLG2ARZaEei-ao020tUzog" name="guard">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_zGGoYBZaEei-ao020tUzog">
+            <language>Natural language</language>
+            <body>if necessary</body>
+          </specification>
+        </guard>
+      </operand>
+    </fragment>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_EFwEkBZUEei-ao020tUzog" name="validate-reply-send" covered="_pZp1YBZTEei-ao020tUzog" message="_EFrMEBZUEei-ao020tUzog"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_efrJMBZVEei-ao020tUzog" name="callback-send" covered="_W9F-ABZUEei-ao020tUzog" toAfter="_zgnekCbLEeiCoKoQXk9_4A" message="_efgxIBZVEei-ao020tUzog">
+      <generalOrdering xmi:id="_zgnekCbLEeiCoKoQXk9_4A" after="_PPjw8BZcEei-ao020tUzog" before="_efrJMBZVEei-ao020tUzog"/>
+    </fragment>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_ef0TIBZVEei-ao020tUzog" name="callback-recv" covered="_pZp1YBZTEei-ao020tUzog" message="_efgxIBZVEei-ao020tUzog"/>
+    <fragment xmi:type="uml:BehaviorExecutionSpecification" xmi:id="_lg2s8BZVEei-ao020tUzog" name="callback-exec" covered="_pZp1YBZTEei-ao020tUzog" finish="_lhCTIBZVEei-ao020tUzog" start="_ef0TIBZVEei-ao020tUzog"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_2JFqwCbNEeiCoKoQXk9_4A" name="handle-errors-send" covered="_pZp1YBZTEei-ao020tUzog" message="_nYsYkCbNEeiCoKoQXk9_4A"/>
+    <fragment xmi:type="uml:DestructionOccurrenceSpecification" xmi:id="_PPjw8BZcEei-ao020tUzog" name="servlet_destroyed" covered="__8GSIBZUEei-ao020tUzog" toBefore="_zgnekCbLEeiCoKoQXk9_4A"/>
+    <fragment xmi:type="uml:InteractionUse" xmi:id="_t7q9IBZVEei-ao020tUzog" name="handle_errors" covered="_qkwWkBZTEei-ao020tUzog _pZp1YBZTEei-ao020tUzog" refersTo="_2vjskBKPEeiu4d_glA_Agg">
+      <actualGate xmi:id="_cN1psCbNEeiCoKoQXk9_4A" name="errors" message="_nYsYkCbNEeiCoKoQXk9_4A"/>
+    </fragment>
+    <fragment xmi:type="uml:ExecutionOccurrenceSpecification" xmi:id="_lhCTIBZVEei-ao020tUzog" name="callback-exec-finish" covered="_pZp1YBZTEei-ao020tUzog" execution="_lg2s8BZVEei-ao020tUzog"/>
+    <formalGate xmi:id="_s2AngBZTEei-ao020tUzog" name="in" message="_xjTdEBZTEei-ao020tUzog"/>
+    <formalGate xmi:id="_8cjekBZTEei-ao020tUzog" name="out" message="_EFrMEBZUEei-ao020tUzog"/>
+    <message xmi:id="_xjTdEBZTEei-ao020tUzog" name="validate" receiveEvent="_xjbY4BZTEei-ao020tUzog" sendEvent="_s2AngBZTEei-ao020tUzog"/>
+    <message xmi:id="_EFrMEBZUEei-ao020tUzog" name="validate-reply" messageSort="reply" receiveEvent="_8cjekBZTEei-ao020tUzog" sendEvent="_EFwEkBZUEei-ao020tUzog"/>
+    <message xmi:id="_LpaqUBZUEei-ao020tUzog" name="post" receiveEvent="_LpjNMBZUEei-ao020tUzog" sendEvent="_Lpe7wBZUEei-ao020tUzog"/>
+    <message xmi:id="_LrUu0BZUEei-ao020tUzog" name="post-reply" messageSort="reply" receiveEvent="_LrcqoBZUEei-ao020tUzog" sendEvent="_LrZAQBZUEei-ao020tUzog"/>
+    <message xmi:id="_eTlDYBZUEei-ao020tUzog" name="create-proxy" messageSort="createMessage" receiveEvent="_eTwpkBZUEei-ao020tUzog" sendEvent="_eTqi8BZUEei-ao020tUzog"/>
+    <message xmi:id="_oxd-kBZUEei-ao020tUzog" name="async" messageSort="asynchCall" receiveEvent="_oxqL0BZUEei-ao020tUzog" sendEvent="_oxkFMBZUEei-ao020tUzog"/>
+    <message xmi:id="_EuGokBZVEei-ao020tUzog" name="ajax" receiveEvent="_EuXHQBZVEei-ao020tUzog" sendEvent="_EuOkYBZVEei-ao020tUzog"/>
+    <message xmi:id="_25TjkCbJEeiBiInTMCdeTA" name="escape" messageSort="asynchCall" receiveEvent="_sTNuoCbJEeiBiInTMCdeTA" sendEvent="_25UxsCbJEeiBiInTMCdeTA"/>
+    <message xmi:id="_E17u4BZVEei-ao020tUzog" name="errors" messageSort="reply" receiveEvent="_E2LmgBZVEei-ao020tUzog" sendEvent="_E2DqsBZVEei-ao020tUzog"/>
+    <message xmi:id="_efgxIBZVEei-ao020tUzog" name="callback" messageSort="reply" receiveEvent="_ef0TIBZVEei-ao020tUzog" sendEvent="_efrJMBZVEei-ao020tUzog"/>
+    <message xmi:id="_nYsYkCbNEeiCoKoQXk9_4A" name="handle-errors" messageSort="asynchCall" receiveEvent="_cN1psCbNEeiCoKoQXk9_4A" sendEvent="_2JFqwCbNEeiCoKoQXk9_4A"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Duration" xmi:id="_ln1pQRZWEei-ao020tUzog" name="MinDuration7">
+    <expr xmi:type="uml:LiteralInteger" xmi:id="_ln2QURZWEei-ao020tUzog"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Duration" xmi:id="_ln2QUBZWEei-ao020tUzog" name="MaxDuration7">
+    <expr xmi:type="uml:LiteralInteger" xmi:id="_ln2QUhZWEei-ao020tUzog" value="200"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_2vjskBKPEeiu4d_glA_Agg" name="handle_errors">
+    <formalGate xmi:id="_YftyICbNEeiCoKoQXk9_4A" name="errors"/>
+  </packagedElement>
+</uml:Model>

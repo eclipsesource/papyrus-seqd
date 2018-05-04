@@ -11,12 +11,12 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.factories;
 
-import org.eclipse.gmf.runtime.diagram.ui.view.factories.optimal.StandardDiagramViewFactory;
+import org.eclipse.gmf.runtime.diagram.ui.view.factories.DiagramViewFactory;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.MeasurementUnit;
 import org.eclipse.papyrus.infra.gmfdiag.common.reconciler.DiagramVersioningUtils;
 
-public class SequenceDiagramViewFactory extends StandardDiagramViewFactory {
+public class SequenceDiagramViewFactory extends DiagramViewFactory {
 
 	@Override
 	protected MeasurementUnit getMeasurementUnit() {
