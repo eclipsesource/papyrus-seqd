@@ -16,6 +16,7 @@ import java.util.OptionalInt;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.notation.Anchor;
 import org.eclipse.gmf.runtime.notation.Bounds;
 import org.eclipse.gmf.runtime.notation.Node;
@@ -141,7 +142,8 @@ public interface LayoutHelper {
 	/**
 	 * Returns the bounds for a new representation, given the proposed bounds.
 	 * 
-	 * @Param eClass the metaclass of the semantic object to be presented
+	 * @param eClass
+	 *            the metaclass of the semantic object to be presented
 	 * @param proposedBounds
 	 *            the bounds initially proposed for creation of the element
 	 * @param container
@@ -149,5 +151,18 @@ public interface LayoutHelper {
 	 * @return the bounds for a new representation
 	 */
 	Bounds getNewBounds(EClass eClass, Bounds proposedBounds, Node container);
+
+	/**
+	 * Computes the bounds for an existing representation, given the proposed bounds.
+	 * 
+	 * @param semanticObject
+	 *            the semantic object to be presented
+	 * @param view
+	 *            the visual representation of the semantic object
+	 * @param proposedBounds
+	 *            the bounds initially proposed for the representation (being moved/resized/etc.)
+	 * @return the adjusted bounds for the representation
+	 */
+	Bounds getAdjustedBounds(EObject semanticObject, Node view, Bounds proposedBounds);
 
 }

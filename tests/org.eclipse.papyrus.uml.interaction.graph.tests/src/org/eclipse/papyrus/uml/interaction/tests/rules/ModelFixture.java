@@ -14,32 +14,47 @@ package org.eclipse.papyrus.uml.interaction.tests.rules;
 
 import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.emf.common.EMFPlugin;
+import org.eclipse.emf.common.command.BasicCommandStack;
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.provider.EcoreItemProviderAdapterFactory;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain.EditingDomainProvider;
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
+import org.eclipse.emf.edit.provider.ReflectiveItemProviderAdapterFactory;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.NotationPackage;
+import org.eclipse.gmf.runtime.notation.provider.NotationItemProviderAdapterFactory;
 import org.eclipse.papyrus.uml.interaction.graph.Graph;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.uml2.common.util.CacheAdapter;
 import org.eclipse.uml2.common.util.UML2Util;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Interaction;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.edit.providers.UMLItemProviderAdapterFactory;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 import org.eclipse.uml2.uml.util.UMLUtil;
 import org.junit.ClassRule;
@@ -54,9 +69,10 @@ import org.junit.runners.model.Statement;
  */
 public class ModelFixture implements TestRule {
 
-	private static final String SEQUENCE_DIAGRAM_TYPE = "PapyrusUMLSequenceDiagram"; //$NON-NLS-1$
-	// private static final String SEQUENCE_DIAGRAM_TYPE =
-	// "LightweightSequenceDiagram"; //$NON-NLS-1$
+	private static final String SEQUENCE_DIAGRAM_TYPE = "LightweightSequenceDiagram"; //$NON-NLS-1$
+	private static final String PAPYRUS_SEQUENCE_DIAGRAM_TYPE = "PapyrusUMLSequenceDiagram"; //$NON-NLS-1$
+	private static final Set<String> SEQUENCE_DIAGRAM_TYPES = new HashSet<>(
+			Arrays.asList(SEQUENCE_DIAGRAM_TYPE, PAPYRUS_SEQUENCE_DIAGRAM_TYPE));
 
 	private final Class<?> testClass;
 	private final String path;
@@ -90,8 +106,7 @@ public class ModelFixture implements TestRule {
 	 * Initializes me.
 	 *
 	 * @param path
-	 *            the path relative to the {@code testClass} of the UML resource to
-	 *            load
+	 *            the path relative to the host class of the UML resource to load
 	 */
 	public ModelFixture(String path) {
 		this(null, path);
@@ -150,10 +165,7 @@ public class ModelFixture implements TestRule {
 			}
 
 			if (rset == null) {
-				rset = new ResourceSetImpl();
-				if (!EMFPlugin.IS_ECLIPSE_RUNNING) {
-					standaloneSetup(rset);
-				}
+				rset = createResourceSet();
 			}
 
 			Package package_ = UML2Util.load(rset, URI.createURI(resourceURL.toExternalForm(), true),
@@ -163,11 +175,12 @@ public class ModelFixture implements TestRule {
 			}
 		}
 
-		assertThat("No UML package found in " + path, model, notNullValue());
+		String where = String.join(", ", paths);
+		assertThat("No UML package found in " + where, model, notNullValue());
 
 		interaction = (Interaction) UML2Util.findEObject(model.eAllContents(),
 				UMLPackage.Literals.INTERACTION::isInstance);
-		assertThat("No UML interaction found in " + path, interaction, notNullValue());
+		assertThat("No UML interaction found in " + where, interaction, notNullValue());
 
 		// Look for a sequence diagram
 		sequenceDiagram = CacheAdapter.getCacheAdapter(interaction).getInverseReferences(interaction)
@@ -175,8 +188,16 @@ public class ModelFixture implements TestRule {
 				.filter(setting -> setting
 						.getEStructuralFeature() == NotationPackage.Literals.VIEW__ELEMENT)
 				.map(EStructuralFeature.Setting::getEObject).filter(Diagram.class::isInstance)
-				.map(Diagram.class::cast).filter(diagram -> SEQUENCE_DIAGRAM_TYPE.equals(diagram.getType()))
-				.findAny();
+				.map(Diagram.class::cast)
+				.filter(diagram -> SEQUENCE_DIAGRAM_TYPES.contains(diagram.getType())).findAny();
+	}
+
+	protected ResourceSet createResourceSet() {
+		ResourceSet result = new ResourceSetImpl();
+		if (!EMFPlugin.IS_ECLIPSE_RUNNING) {
+			standaloneSetup(result);
+		}
+		return result;
 	}
 
 	protected void finished(Description description) {
@@ -278,7 +299,18 @@ public class ModelFixture implements TestRule {
 	 * @return the element's vertex
 	 */
 	public Vertex vertex(String qualifiedName) {
-		return graph().vertex(getElement(qualifiedName));
+		return vertex(getElement(qualifiedName));
+	}
+
+	/**
+	 * Get the vertex for an element. Fails the test if the vertex is not found.
+	 *
+	 * @param element
+	 *            the element which vertex to get
+	 * @return the {@code element}'s vertex
+	 */
+	public Vertex vertex(Element element) {
+		return graph().vertex(element);
 	}
 
 	/**
@@ -295,5 +327,73 @@ public class ModelFixture implements TestRule {
 
 		rset.getResourceFactoryRegistry().getExtensionToFactoryMap().put("notation",
 				new XMIResourceFactoryImpl());
+	}
+
+	//
+	// Nested types
+	//
+
+	/**
+	 * A specialized {@link ModelFixture} that provides an {@link EditingDomain}
+	 * context for the test model.
+	 */
+	public static class Edit extends ModelFixture {
+		/**
+		 * Initializes me.
+		 */
+		public Edit() {
+			super();
+		}
+
+		/**
+		 * Initializes me.
+		 *
+		 * @param path
+		 *            the path relative to the host class of the UML resource to load
+		 */
+		public Edit(String path) {
+			super(path);
+		}
+
+		/**
+		 * Initializes me.
+		 *
+		 * @param testClass
+		 *            the test class in which context to load the resource. May be
+		 *            {@code null} for an ordinary {@code Rule} but required for a
+		 *            {@link ClassRule}
+		 * @param path
+		 *            the path relative to the {@code testClass} of the UML resource to
+		 *            load
+		 */
+		public Edit(Class<?> testClass, String path) {
+			super(testClass, path);
+		}
+
+		@Override
+		protected ResourceSet createResourceSet() {
+			ResourceSet result = super.createResourceSet();
+
+			ComposedAdapterFactory adapterFactory = new ComposedAdapterFactory();
+			adapterFactory.addAdapterFactory(new UMLItemProviderAdapterFactory());
+			adapterFactory.addAdapterFactory(new EcoreItemProviderAdapterFactory());
+			adapterFactory.addAdapterFactory(new NotationItemProviderAdapterFactory());
+			adapterFactory.addAdapterFactory(new ReflectiveItemProviderAdapterFactory());
+
+			EditingDomain editingDomain = new AdapterFactoryEditingDomain(adapterFactory,
+					new BasicCommandStack(), result);
+			result.eAdapters().add(new EditingDomainProvider(editingDomain));
+			return result;
+		}
+
+		public EditingDomain getEditingDomain() {
+			return AdapterFactoryEditingDomain.getEditingDomainFor(getModel());
+		}
+
+		public void execute(Command command) {
+			assertThat("no command to execute", command, notNullValue());
+			assertThat("command is not executable", command.canExecute(), is(true));
+			getEditingDomain().getCommandStack().execute(command);
+		}
 	}
 }

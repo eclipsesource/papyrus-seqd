@@ -21,12 +21,14 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.AbstractBorderedShapeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IBorderItemEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.figures.BorderItemLocator;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.LifelineHeaderFigure;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineHeaderResizeEditPolicy;
 import org.eclipse.papyrus.uml.tools.utils.UMLUtil;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Lifeline;
@@ -59,6 +61,14 @@ public class LifelineHeaderEditPart extends AbstractBorderedShapeEditPart {
 	@Override
 	public IFigure getContentPane() {
 		return super.getContentPane();
+	}
+
+	@Override
+	protected void createDefaultEditPolicies() {
+		super.createDefaultEditPolicies();
+
+		ResizableEditPolicy resizePolicy = new LifelineHeaderResizeEditPolicy();
+		installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, resizePolicy);
 	}
 
 	@Override

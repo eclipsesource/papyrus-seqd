@@ -12,7 +12,9 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal;
 
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.core.preferences.PreferencesHint;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.papyrus.infra.core.log.LogHelper;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
@@ -64,13 +66,33 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Obtains the layout helper for an editing domain.
+	 * Obtain the layout helper for an editing domain.
 	 * 
 	 * @param editingDomain
 	 *            an editing domain
 	 * @return its layout helper
 	 */
 	public LayoutHelper getLayoutHelper(EditingDomain editingDomain) {
+		return LogicalModelPlugin.INSTANCE.getLayoutHelper(editingDomain);
+	}
+
+	/**
+	 * Obtain the layout helper for an edit-part.
+	 * 
+	 * @param editPart
+	 *            an edit-part that can provide an editing domain
+	 * @return its layout helper
+	 * @throws IllegalArgumentException
+	 *             if the edit-part cannot provide an editing domain
+	 */
+	public LayoutHelper getLayoutHelper(EditPart editPart) {
+		EditingDomain editingDomain = null;
+		if (editPart instanceof IGraphicalEditPart) {
+			editingDomain = ((IGraphicalEditPart)editPart).getEditingDomain();
+		}
+		if (editingDomain == null) {
+			throw new IllegalArgumentException("editPart"); //$NON-NLS-1$
+		}
 		return LogicalModelPlugin.INSTANCE.getLayoutHelper(editingDomain);
 	}
 }

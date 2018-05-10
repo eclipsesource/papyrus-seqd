@@ -26,4 +26,5 @@ Export-Package: org.eclipse.papyrus.uml.diagram.sequence.runtime.internal;x-frie
  org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.parsers;x-friends:="org.eclipse.papyrus.uml.diagram.sequence.contribution",
  org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.part;x-friends:="org.eclipse.papyrus.uml.diagram.sequence.contribution",
  org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers;x-friends:="org.eclipse.papyrus.uml.diagram.sequence.contribution",
+ org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util;x-internal:=true,
  org.eclipse.papyrus.uml.diagram.sequence.runtime.util
