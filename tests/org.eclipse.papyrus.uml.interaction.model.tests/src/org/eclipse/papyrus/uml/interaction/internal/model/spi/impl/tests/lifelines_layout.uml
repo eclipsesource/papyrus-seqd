@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_3XpTICHsEeiIiO6KSag_9g" name="AnchorsModel">
+  <packageImport xmi:id="_3euykCHsEeiIiO6KSag_9g">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_Zqq4oCIHEei5e5kSMChtjA" name="LifelineHeaderAnchor">
+    <lifeline xmi:id="_Zqq4oSIHEei5e5kSMChtjA" name="LeftLine" coveredBy="_1oUqsSe3Eei33oLfoI_NYA"/>
+    <lifeline xmi:id="_Zqq4oiIHEei5e5kSMChtjA" name="RightLine" coveredBy="_1oUqsye3Eei33oLfoI_NYA"/>
+    <lifeline xmi:id="_jmWXQCIKEei5e5kSMChtjA" name="CenterLine" coveredBy="_1oUqsCe3Eei33oLfoI_NYA _1oUqsie3Eei33oLfoI_NYA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_1oUqsie3Eei33oLfoI_NYA" name="ctr-send1" covered="_jmWXQCIKEei5e5kSMChtjA" message="_1oUqtSe3Eei33oLfoI_NYA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_1oUqsye3Eei33oLfoI_NYA" name="right-recv" covered="_Zqq4oiIHEei5e5kSMChtjA" message="_1oUqtSe3Eei33oLfoI_NYA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_1oUqsCe3Eei33oLfoI_NYA" name="ctr-send2" covered="_jmWXQCIKEei5e5kSMChtjA" message="_1oUqtCe3Eei33oLfoI_NYA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_1oUqsSe3Eei33oLfoI_NYA" name="left-recv" covered="_Zqq4oSIHEei5e5kSMChtjA" message="_1oUqtCe3Eei33oLfoI_NYA"/>
+    <message xmi:id="_1oUqtSe3Eei33oLfoI_NYA" name="leftToRight" messageSort="createMessage" receiveEvent="_1oUqsye3Eei33oLfoI_NYA" sendEvent="_1oUqsie3Eei33oLfoI_NYA"/>
+    <message xmi:id="_1oUqtCe3Eei33oLfoI_NYA" name="rightToLeft" messageSort="createMessage" receiveEvent="_1oUqsSe3Eei33oLfoI_NYA" sendEvent="_1oUqsCe3Eei33oLfoI_NYA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_YKEb8D27EeiY7p28vqpoYg" name="Foo" classifierBehavior="_bJLRYD27EeiY7p28vqpoYg">
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="_bJLRYD27EeiY7p28vqpoYg" name="Lifecycle" node="_iKpwED27EeiY7p28vqpoYg">
+      <node xmi:type="uml:OpaqueAction" xmi:id="_iKpwED27EeiY7p28vqpoYg" name="doIt"/>
+    </ownedBehavior>
+    <ownedOperation xmi:id="_5rhUMD3NEeiY7p28vqpoYg" name="doIt"/>
+  </packagedElement>
+</uml:Model>

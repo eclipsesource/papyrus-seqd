@@ -13,6 +13,8 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.GeometryUtil.asBounds;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.GeometryUtil.asRectangle;
 import static org.eclipse.papyrus.uml.service.types.utils.ElementUtil.isTypeOf;
 
 import java.util.List;
@@ -24,9 +26,14 @@ import org.eclipse.draw2d.Shape;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.Request;
+import org.eclipse.gef.RequestConstants;
+import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
@@ -42,6 +49,7 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.InteractionUtil;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.service.types.element.UMLElementTypes;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Interaction;
@@ -135,6 +143,27 @@ public class InteractionLayoutEditPolicy extends XYLayoutEditPolicy {
 			removeFeedback(feedback);
 			feedback = null;
 		}
+	}
+
+	@Override
+	protected Command createChangeConstraintCommand(ChangeBoundsRequest request, EditPart child,
+			Object constraint) {
+
+		Object newConstraint = constraint;
+
+		if (RequestConstants.REQ_MOVE_CHILDREN.equals(request.getType())
+				&& (constraint instanceof Rectangle)) {
+			Node node = child.getAdapter(Node.class);
+			if (node != null) {
+				Rectangle rectangle = (Rectangle)constraint;
+				Bounds bounds = asBounds(rectangle);
+				LayoutHelper helper = Activator.getDefault().getLayoutHelper(getHost());
+				bounds = helper.getAdjustedBounds(child.getAdapter(EObject.class), node, bounds);
+				newConstraint = asRectangle(bounds);
+			}
+		}
+
+		return super.createChangeConstraintCommand(request, child, newConstraint);
 	}
 
 	protected Point getRelativeLocation(Point location) {

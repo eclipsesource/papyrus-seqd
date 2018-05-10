@@ -45,6 +45,7 @@ import org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.GeneralOrdering;
+import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
 import org.eclipse.uml2.uml.OccurrenceSpecification;
@@ -564,5 +565,40 @@ public class DefaultLayoutHelper implements LayoutHelper {
 		}
 
 		return result;
+	}
+
+	@Override
+	public Bounds getAdjustedBounds(EObject semanticObject, Node view, Bounds proposedBounds) {
+		return new UMLSwitch<Bounds>() {
+			@Override
+			public Bounds caseLifeline(Lifeline lifeline) {
+				// Moving or resizing lifeline heads is constrained to the horizontal dimension
+				Optional<Bounds> currentBounds = coerce(view.getLayoutConstraint(), Bounds.class);
+				return currentBounds.map(bounds -> {
+					Bounds result = EcoreUtil.copy(proposedBounds);
+					result.setY(bounds.getY());
+					result.setHeight(bounds.getHeight());
+					return result;
+				}).orElse(null);
+			}
+
+			@Override
+			public Bounds defaultCase(EObject object) {
+				return proposedBounds;
+			}
+		}.doSwitch(semanticObject);
+	}
+
+	/**
+	 * Attempt to cast an object as an instance of some other type.
+	 * 
+	 * @param object
+	 *            an object
+	 * @param type
+	 *            the desired type
+	 * @return the {@code object} as the requested {@code type}, if appropriate
+	 */
+	protected static <T> Optional<T> coerce(Object object, Class<T> type) {
+		return Optional.ofNullable(object).filter(type::isInstance).map(type::cast);
 	}
 }
