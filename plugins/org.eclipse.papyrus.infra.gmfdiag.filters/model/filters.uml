@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Ecore="http://www.eclipse.org/uml2/schemas/Ecore/5" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:standard="http://www.eclipse.org/uml2/5.0.0/UML/Profile/Standard" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http://www.eclipse.org/uml2/schemas/Ecore/5 pathmap://UML_PROFILES/Ecore.profile.uml#_z1OFcHjqEdy8S4Cr8Rc_NA">
+  <uml:Model xmi:id="_0" name="filters" URI="http://www.eclipse.org/Papyrus/2018/common/diagram/filters">
+    <elementImport xmi:id="_b5R7gFUbEei-a-s2soHAwg">
+      <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+    </elementImport>
+    <packagedElement xmi:type="uml:Class" xmi:id="InDiagram" name="InDiagram">
+      <ownedComment xmi:id="InDiagram-_ownedComment.0" annotatedElement="InDiagram">
+        <body>Filters the contextual diagram.  What that diagram is depends
+on the context in which the filter is used.</body>
+      </ownedComment>
+      <generalization xmi:id="__05Y0FUcEei-a-s2soHAwg">
+        <general xmi:type="uml:Interface" href="platform:/plugin/org.eclipse.papyrus.infra.filters/model/filters.uml#_ftlkkHBIEeSbg_BqWNBy6A"/>
+      </generalization>
+      <ownedAttribute xmi:id="InDiagram-filter" name="filter" aggregation="shared">
+        <ownedComment xmi:id="InDiagram-filter-_ownedComment.0" annotatedElement="InDiagram-filter">
+          <body>The filter to apply to the contextual diagram.  For example,
+a {@link ViewType} filter.</body>
+        </ownedComment>
+        <type xmi:type="uml:Interface" href="platform:/plugin/org.eclipse.papyrus.infra.filters/model/filters.uml#_ftlkkHBIEeSbg_BqWNBy6A"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="InDiagram-ownedFilter" name="ownedFilter" aggregation="composite" subsettedProperty="InDiagram-filter">
+        <ownedComment xmi:id="InDiagram-ownedFilter-_ownedComment.0" annotatedElement="InDiagram-ownedFilter">
+          <body>If the {@link #getFilter() filter} is not referenced, the owned
+filter to apply to the contextual diagram.</body>
+        </ownedComment>
+        <type xmi:type="uml:Interface" href="platform:/plugin/org.eclipse.papyrus.infra.filters/model/filters.uml#_ftlkkHBIEeSbg_BqWNBy6A"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="InDiagram-ownedFilter-_lowerValue"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="ViewType" name="ViewType">
+      <ownedComment xmi:id="ViewType-_ownedComment.0" annotatedElement="ViewType">
+        <body>Filters the contextual notation view object by type.  What that
+notation view is depends on the context in which the filter is used.</body>
+      </ownedComment>
+      <generalization xmi:id="_CG_XQFUdEei-a-s2soHAwg">
+        <general xmi:type="uml:Interface" href="platform:/plugin/org.eclipse.papyrus.infra.filters/model/filters.uml#_ftlkkHBIEeSbg_BqWNBy6A"/>
+      </generalization>
+      <ownedAttribute xmi:id="ViewType-type" name="type">
+        <ownedComment xmi:id="ViewType-type-_ownedComment.0" annotatedElement="ViewType-type">
+          <body>The notation view type to match.</body>
+        </ownedComment>
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+    </packagedElement>
+    <profileApplication xmi:id="_profileApplication.0">
+      <eAnnotations xmi:id="_profileApplication.0-_http2F2Fwww.eclipse.org2Fuml22F2.0.02FUML" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="http://www.eclipse.org/uml2/5.0.0/UML/Profile/Standard#/"/>
+      </eAnnotations>
+      <appliedProfile href="pathmap://UML_PROFILES/Standard.profile.uml#_0"/>
+    </profileApplication>
+    <profileApplication xmi:id="_3RVHMFUaEei-a-s2soHAwg">
+      <eAnnotations xmi:id="_3RVHMVUaEei-a-s2soHAwg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="pathmap://UML_PROFILES/Ecore.profile.uml#_z1OFcHjqEdy8S4Cr8Rc_NA"/>
+      </eAnnotations>
+      <appliedProfile href="pathmap://UML_PROFILES/Ecore.profile.uml#_0"/>
+    </profileApplication>
+  </uml:Model>
+  <standard:Metamodel xmi:id="_xzBEYFUaEei-a-s2soHAwg" base_Model="_0"/>
+  <standard:Metaclass xmi:id="_xzC5kFUaEei-a-s2soHAwg" base_Class="InDiagram"/>
+  <standard:Metaclass xmi:id="_xzDgoFUaEei-a-s2soHAwg" base_Class="ViewType"/>
+  <Ecore:EPackage xmi:id="_6LBRIFUaEei-a-s2soHAwg" base_Package="_0" nsPrefix="diagfilt" basePackage="org.eclipse.papyrus.infra.gmfdiag" prefix="DiagramFilters"/>
+</xmi:XMI>
