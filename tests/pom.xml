@@ -11,6 +11,7 @@
 	<artifactId>org.eclipse.papyrus.uml.diagram.sequence.tests</artifactId>
 	
 	<modules>
+		<module>org.eclipse.papyrus.infra.gmfdiag.filters.tests</module>
 		<module>org.eclipse.papyrus.uml.interaction.graph.tests</module>
 		<module>org.eclipse.papyrus.uml.interaction.model.tests</module>
 		<module>org.eclipse.papyrus.uml.diagram.sequence.runtime.tests</module>
