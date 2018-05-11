@@ -15,6 +15,7 @@ package org.eclipse.papyrus.uml.interaction.model;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
@@ -131,6 +132,17 @@ public interface MLifeline extends MElement<Lifeline> {
 	 */
 	CreationCommand<ExecutionSpecification> insertExecutionAfter(MElement<?> before, int offset, int height,
 			Element specification);
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.CreationCommand&lt;org.eclipse.uml2.uml.ExecutionSpecification&gt;"
+	 *        required="true" beforeRequired="true" offsetRequired="true" heightRequired="true"
+	 *        metaclassRequired="true"
+	 * @generated
+	 */
+	CreationCommand<ExecutionSpecification> insertExecutionAfter(MElement<?> before, int offset, int height,
+			EClass metaclass);
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->

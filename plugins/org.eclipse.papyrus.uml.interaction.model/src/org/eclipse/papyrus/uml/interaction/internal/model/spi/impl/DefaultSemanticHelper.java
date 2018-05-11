@@ -262,8 +262,12 @@ public class DefaultSemanticHelper implements SemanticHelper {
 		Supplier<ExecutionSpecification> exec;
 
 		if (specification == null) {
-			exec = UMLFactory.eINSTANCE::createBehaviorExecutionSpecification;
-			parameters.setEClass(UMLPackage.Literals.BEHAVIOR_EXECUTION_SPECIFICATION);
+			if (parameters.getEClass() == null) {
+				exec = UMLFactory.eINSTANCE::createBehaviorExecutionSpecification;
+				parameters.setEClass(UMLPackage.Literals.BEHAVIOR_EXECUTION_SPECIFICATION);
+			} else {
+				exec = () -> (ExecutionSpecification)UMLFactory.eINSTANCE.create(parameters.getEClass());
+			}
 		} else {
 			exec = new UMLSwitch<Supplier<ExecutionSpecification>>() {
 				@Override

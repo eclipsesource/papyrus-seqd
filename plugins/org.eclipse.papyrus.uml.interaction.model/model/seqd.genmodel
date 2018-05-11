@@ -78,6 +78,12 @@
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertExecutionAfter/height"/>
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertExecutionAfter/specification"/>
       </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/insertExecutionAfter.1">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertExecutionAfter.1/before"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertExecutionAfter.1/offset"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertExecutionAfter.1/height"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertExecutionAfter.1/metaclass"/>
+      </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/insertMessageAfter">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter/before"/>
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter/offset"/>

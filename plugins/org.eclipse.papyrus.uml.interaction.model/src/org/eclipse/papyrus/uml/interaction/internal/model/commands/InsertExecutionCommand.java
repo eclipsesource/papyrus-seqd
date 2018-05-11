@@ -20,6 +20,7 @@ import java.util.function.Function;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
@@ -53,6 +54,8 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 
 	private final Element specification;
 
+	private final EClass eClass;
+
 	private CreationCommand<ExecutionSpecification> resultCommand;
 
 	/**
@@ -84,6 +87,39 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 		this.offset = offset;
 		this.height = height;
 		this.specification = specification;
+		this.eClass = (specification instanceof Action) ? UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION
+				: UMLPackage.Literals.BEHAVIOR_EXECUTION_SPECIFICATION;
+	}
+
+	/**
+	 * Initializes me.
+	 * 
+	 * @param owner
+	 *            the lifeline on which to create the execution specification
+	 * @param before
+	 *            the element in the sequence after which to create the new execution specification
+	 * @param offset
+	 *            the offset from the reference element at which to create the execution specification
+	 * @param height
+	 *            the height of the execution specification
+	 * @param eClass
+	 *            the kind of execution specification to create
+	 */
+	public InsertExecutionCommand(MLifelineImpl owner, MElement<?> before, int offset, int height,
+			EClass eClass) {
+
+		super(owner);
+
+		checkInteraction(before);
+		if (!UMLPackage.Literals.EXECUTION_SPECIFICATION.isSuperTypeOf(eClass) || eClass.isAbstract()) {
+			throw new IllegalArgumentException("invalid execution specification type"); //$NON-NLS-1$
+		}
+
+		this.before = before;
+		this.offset = offset;
+		this.height = height;
+		this.specification = null;
+		this.eClass = eClass;
 	}
 
 	@Override
@@ -125,6 +161,7 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 
 		SemanticHelper semantics = semanticHelper();
 		CreationParameters execParams = paramsFactory.apply(insertionPoint.getElement());
+		execParams.setEClass(eClass);
 		resultCommand = semantics.createExecutionSpecification(specification, execParams);
 		CreationParameters startParams = CreationParameters.before(resultCommand);
 		CreationCommand<OccurrenceSpecification> start = semantics.createStart(resultCommand, startParams);

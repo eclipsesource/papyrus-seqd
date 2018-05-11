@@ -16,6 +16,8 @@ import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 
+import org.eclipse.gmf.runtime.emf.type.core.IElementType;
+import org.eclipse.gmf.runtime.emf.type.core.IHintedType;
 import org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Message;
@@ -67,4 +69,38 @@ public class MessageUtil {
 				.filter(msg -> CALL_SORTS.contains(msg.getMessageSort()));
 	}
 
+	public static MessageSort getSort(IElementType messageType) {
+		return new SequenceTypeSwitch<MessageSort>() {
+			@Override
+			public MessageSort caseAsyncMessage(IHintedType type) {
+				return MessageSort.ASYNCH_CALL_LITERAL;
+			}
+
+			@Override
+			public MessageSort caseSyncMessage(IHintedType type) {
+				return MessageSort.SYNCH_CALL_LITERAL;
+			}
+
+			@Override
+			public MessageSort caseReplyMessage(IHintedType type) {
+				return MessageSort.REPLY_LITERAL;
+			}
+
+			@Override
+			public MessageSort caseCreateMessage(IHintedType type) {
+				return MessageSort.CREATE_MESSAGE_LITERAL;
+			}
+
+			@Override
+			public MessageSort caseDeleteMessage(IHintedType type) {
+				return MessageSort.DELETE_MESSAGE_LITERAL;
+			}
+
+			@Override
+			public MessageSort caseMessage(IElementType type) {
+				// Useful default for other message kinds
+				return MessageSort.ASYNCH_CALL_LITERAL;
+			}
+		}.doSwitch(messageType);
+	}
 }

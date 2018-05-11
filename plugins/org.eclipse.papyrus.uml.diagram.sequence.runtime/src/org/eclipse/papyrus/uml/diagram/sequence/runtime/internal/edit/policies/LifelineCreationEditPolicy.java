@@ -19,17 +19,18 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
+import org.eclipse.gmf.runtime.emf.type.core.IHintedType;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.HeaderFigure;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.SequenceTypeSwitch;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MObject;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
-import org.eclipse.papyrus.uml.service.types.element.UMLElementTypes;
-import org.eclipse.papyrus.uml.service.types.utils.ElementUtil;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Lifeline;
 
@@ -45,41 +46,52 @@ public class LifelineCreationEditPolicy extends LogicalModelCreationEditPolicy {
 		Optional<MLifeline> mLifeline = interaction.getLifeline((Lifeline)parentElement);
 
 		// compute command for the given request
-		SequenceDiagramSwitch<Command> commandSwitch = new SequenceDiagramSwitch<Command>() {
+		class CommandSwitch extends SequenceDiagramSwitch<Command> {
 
 			@Override
+			@SuppressWarnings("hiding")
 			public Command caseMLifeline(MLifeline lifeline) {
-				if (ElementUtil.isTypeOf(type, UMLElementTypes.BEHAVIOR_EXECUTION_SPECIFICATION)) {
-					Optional<MElement<?>> before = lifeline.elementAt(location.y());
+				return new SequenceTypeSwitch<Command>() {
+					@Override
+					public Command caseExecutionSpecification(IElementType type) {
+						EClass eClass = type.getEClass();
+						Optional<MElement<?>> before = lifeline.elementAt(location.y());
 
-					int offset = location.y();
+						int offset = location.y();
 
-					// Account for the header's margin to ensure that the execution is placed
-					// exactly where the mouse cursor put it.
-					// FIXME: Locate where this margin actually is; don't assume the default
-					offset = offset - HeaderFigure.DEFAULT_MARGIN_HEIGHT;
+						// Account for the header's margin to ensure that the execution is placed
+						// exactly where the mouse cursor put it.
+						// FIXME: Locate where this margin actually is; don't assume the default
+						offset = offset - HeaderFigure.DEFAULT_MARGIN_HEIGHT;
 
-					if (before.isPresent()) {
-						// We know the top exists because that's how we found the 'before' element
-						offset = offset - before.get().getTop().getAsInt();
+						if (before.isPresent()) {
+							// We know the top exists because that's how we found the 'before' element
+							offset = offset - before.get().getTop().getAsInt();
+						}
+
+						return lifeline.insertExecutionAfter(before.orElse(lifeline), offset,
+								size != null ? size.height : 40, eClass);
 					}
 
-					return lifeline.insertExecutionAfter(before.orElse(lifeline), offset,
-							size != null ? size.height : 40,
-							// Creates a behavior execution by default when there's no specification
-							null);
-				}
-				return super.caseMLifeline(lifeline);
+					@Override
+					public Command caseAsyncMessage(IHintedType type) {
+						return null;
+					}
+
+					@Override
+					public Command defaultCase(Object object) {
+						return CommandSwitch.super.caseMLifeline(lifeline);
+					}
+				}.doSwitch(type);
 			}
 
 			@Override
 			public Command defaultCase(MObject object) {
 				return UnexecutableCommand.INSTANCE;
 			}
-		};
+		}
 
-		return mLifeline.map(commandSwitch::doSwitch);
-
+		return mLifeline.map(new CommandSwitch()::doSwitch);
 	}
 
 	@Override
@@ -92,5 +104,4 @@ public class LifelineCreationEditPolicy extends LogicalModelCreationEditPolicy {
 
 		return result;
 	}
-
 }

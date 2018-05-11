@@ -8,10 +8,24 @@
         <elementType xsi:type="elementtypesconfigurations:SpecializationTypeConfiguration" href="../../../plugin/org.eclipse.papyrus.uml.service.types/model/umldi.elementtypesconfigurations#org.eclipse.papyrus.umldi.Lifeline_Shape"/>
       </elementDescriptors>
     </ownedConfigurations>
-    <ownedConfigurations xsi:type="paletteconfiguration:ToolConfiguration" id="behaviorExecSpecCreationTool" label="Behavior Execution" description="Create a BehaviorExecutionSpecification">
+    <ownedConfigurations xsi:type="paletteconfiguration:StackConfiguration" id="executionSpecifications" label="Execution Specification" description="Create an ExecutionSpecification">
+      <ownedConfigurations xsi:type="paletteconfiguration:ToolConfiguration" id="actionExecSpecCreationTool" label="Action Execution" description="Create an ActionExecutionSpecification">
+        <icon pluginID="org.eclipse.uml2.uml.edit" iconPath="/icons/full/obj16/ActionExecutionSpecification.gif"/>
+        <elementDescriptors>
+          <elementType xsi:type="elementtypesconfigurations:SpecializationTypeConfiguration" href="../../../plugin/org.eclipse.papyrus.uml.service.types/model/umldi.elementtypesconfigurations#org.eclipse.papyrus.umldi.ActionExecutionSpecification_Shape"/>
+        </elementDescriptors>
+      </ownedConfigurations>
+      <ownedConfigurations xsi:type="paletteconfiguration:ToolConfiguration" id="behaviorExecSpecCreationTool" label="Behavior Execution" description="Create a BehaviorExecutionSpecification">
+        <icon pluginID="org.eclipse.uml2.uml.edit" iconPath="/icons/full/obj16/BehaviorExecutionSpecification.gif"/>
+        <elementDescriptors>
+          <elementType xsi:type="elementtypesconfigurations:SpecializationTypeConfiguration" href="../../../plugin/org.eclipse.papyrus.uml.service.types/model/umldi.elementtypesconfigurations#org.eclipse.papyrus.umldi.BehaviorExecutionSpecification_Shape"/>
+        </elementDescriptors>
+      </ownedConfigurations>
+    </ownedConfigurations>
+    <ownedConfigurations xsi:type="paletteconfiguration:ToolConfiguration" id="asyncMessageCreationTool" label="Async Message" description="Create an asynchronous Message" kind="ConnectionTool">
       <icon pluginID="org.eclipse.uml2.uml.edit" iconPath="/icons/full/obj16/BehaviorExecutionSpecification.gif"/>
       <elementDescriptors>
-        <elementType xsi:type="elementtypesconfigurations:SpecializationTypeConfiguration" href="../../../plugin/org.eclipse.papyrus.uml.service.types/model/umldi.elementtypesconfigurations#org.eclipse.papyrus.umldi.BehaviorExecutionSpecification_Shape"/>
+        <elementType xsi:type="elementtypesconfigurations:SpecializationTypeConfiguration" href="../../../plugin/org.eclipse.papyrus.uml.service.types/model/umldi.elementtypesconfigurations#org.eclipse.papyrus.umldi.Message_AsynchEdge"/>
       </elementDescriptors>
     </ownedConfigurations>
   </drawerConfigurations>

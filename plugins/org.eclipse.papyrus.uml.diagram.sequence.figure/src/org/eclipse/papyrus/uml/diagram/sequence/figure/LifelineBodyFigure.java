@@ -104,9 +104,12 @@ public class LifelineBodyFigure extends NodeFigure {
 		// The figure doesn't have enough info to find the right Anchor Kind.
 		// We need a method with additional parameters.
 
-		// Alternatively, we may return a generic anchor (Body + Header) and let the Edit Part decide whether
+		// For now, we return a generic anchor (Body + Header) and let the Edit Part decide whether
 		// the request is valid
-		throw new UnsupportedOperationException();
+		PrecisionPoint pp = new PrecisionPoint(p);
+		translateFromParent(pp);
+		translateToRelative(pp);
+		return createAnchor(pp);
 	}
 
 	@Override
@@ -115,9 +118,12 @@ public class LifelineBodyFigure extends NodeFigure {
 		// The figure doesn't have enough info to find the right Anchor Kind.
 		// We need a method with additional parameters.
 
-		// Alternatively, we may return a generic anchor (Body + Header) and let the Edit Part decide whether
+		// For now, we return a generic anchor (Body + Header) and let the Edit Part decide whether
 		// the request is valid
-		throw new UnsupportedOperationException();
+		PrecisionPoint pp = new PrecisionPoint(p);
+		translateFromParent(pp);
+		translateToRelative(pp);
+		return createAnchor(pp);
 	}
 
 	@Override

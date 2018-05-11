@@ -18,6 +18,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.Optional;
@@ -39,6 +40,7 @@ import org.eclipse.uml2.uml.MessageEnd;
 import org.eclipse.uml2.uml.MessageKind;
 import org.eclipse.uml2.uml.MessageSort;
 import org.eclipse.uml2.uml.Operation;
+import org.eclipse.uml2.uml.UMLPackage;
 import org.junit.Assume;
 
 import junit.textui.TestRunner;
@@ -60,6 +62,8 @@ import junit.textui.TestRunner;
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getExecution(org.eclipse.uml2.uml.ExecutionSpecification)
  * <em>Get Execution</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, int, org.eclipse.uml2.uml.Element)
+ * <em>Insert Execution After</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, int, org.eclipse.emf.ecore.EClass)
  * <em>Insert Execution After</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement)
  * <em>Insert Message After</em>}</li>
@@ -273,6 +277,33 @@ public class MLifelineTest extends MElementTest {
 		assertThat(exec.getBottom(), isPresent(290));
 		assertThat(exec.getElement(), instanceOf(ActionExecutionSpecification.class));
 		assertThat(((ActionExecutionSpecification) exec.getElement()).getAction(), is(action));
+	}
+
+	/**
+	 * Tests the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, int, org.eclipse.emf.ecore.EClass)
+	 * <em>Insert Execution After</em>}' operation. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 *
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#insertExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement,
+	 *      int, int, org.eclipse.emf.ecore.EClass)
+	 * @generated NOT
+	 */
+	public void testInsertExecutionAfter__MElement_int_int_EClass() {
+		MMessage reply = interaction.getMessages().get(1);
+		CreationCommand<ExecutionSpecification> command = getFixture().insertExecutionAfter(reply, 15, 50,
+				UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION);
+
+		assertThat(command, executable());
+		ExecutionSpecification execSpec = create(command);
+		MExecution exec = getFixture().getExecution(execSpec).get();
+
+		assertThat(exec.getTop(), isPresent(240));
+		assertThat(exec.getBottom(), isPresent(290));
+		assertThat(exec.getElement(), instanceOf(ActionExecutionSpecification.class));
+
+		// We didn't actually supply the action, as such
+		assertThat(((ActionExecutionSpecification) exec.getElement()).getAction(), nullValue());
 	}
 
 	/**

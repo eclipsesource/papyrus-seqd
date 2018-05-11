@@ -32,6 +32,7 @@ import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.spi.CreationCommandImpl;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
 import org.eclipse.uml2.uml.ExecutionSpecification;
+import org.eclipse.uml2.uml.UMLPackage;
 
 /**
  * Handler for the example "Insert Execution Below" command that uses the <em>Logical Model</em> to insert an
@@ -97,7 +98,8 @@ public class InsertExecutionBelowHandler extends AbstractSequenceDiagramHandler 
 				Optional<MLifeline> lifeline = end.flatMap(MMessageEnd::getCovered);
 
 				// The end could be a gate, which isn't on a lifeline. Or just not chosen
-				return lifeline.map(ll -> ll.insertExecutionAfter(end.get(), 15, 45, null)).orElse(null);
+				return lifeline.map(ll -> ll.insertExecutionAfter(end.get(), 15, 45,
+						UMLPackage.Literals.BEHAVIOR_EXECUTION_SPECIFICATION)).orElse(null);
 			}
 
 			@Override
@@ -105,7 +107,8 @@ public class InsertExecutionBelowHandler extends AbstractSequenceDiagramHandler 
 				// Easy
 				Optional<? extends MElement<?>> finish = execution.getFinish();
 				MElement<?> before = finish.isPresent() ? finish.get() : execution;
-				return execution.getOwner().insertExecutionAfter(before, 15, 45, null);
+				return execution.getOwner().insertExecutionAfter(before, 15, 45,
+						UMLPackage.Literals.BEHAVIOR_EXECUTION_SPECIFICATION);
 			}
 		};
 		return commandSwitch.doSwitch(element);

@@ -12,15 +12,16 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.gef.EditPolicy;
 import org.eclipse.draw2d.LayoutManager;
-import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
+import org.eclipse.gef.EditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ShapeCompartmentEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
 import org.eclipse.gmf.runtime.diagram.ui.layout.FreeFormLayoutEx;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.InteractionCreationEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.InteractionLayoutEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.InteractionSemanticEditPolicy;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.SequenceDiagramPopupBarEditPolicy;
 
 public class InteractionCompartmentEditPart extends ShapeCompartmentEditPart {
 
@@ -36,7 +37,7 @@ public class InteractionCompartmentEditPart extends ShapeCompartmentEditPart {
 		result.setBorder(null);
 		return result;
 	}
-	
+
 	@Override
 	protected void createDefaultEditPolicies() {
 		super.createDefaultEditPolicies();
@@ -44,6 +45,7 @@ public class InteractionCompartmentEditPart extends ShapeCompartmentEditPart {
 		installEditPolicy(EditPolicyRoles.CREATION_ROLE, new InteractionCreationEditPolicy());
 		installEditPolicy(EditPolicyRoles.SEMANTIC_ROLE, new InteractionSemanticEditPolicy());
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new InteractionLayoutEditPolicy());
+		installEditPolicy(EditPolicyRoles.POPUPBAR_ROLE, new SequenceDiagramPopupBarEditPolicy());
 	}
 
 	@Override

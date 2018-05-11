@@ -18,8 +18,6 @@ import java.util.Optional;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.emf.transaction.util.TransactionUtil;
-import org.eclipse.emf.workspace.EMFCommandOperation;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.commands.Command;
@@ -32,7 +30,6 @@ import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewRequest;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.papyrus.commands.wrappers.OperationToGEFCommandWrapper;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.InteractionUtil;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.uml2.uml.Element;
@@ -41,7 +38,7 @@ import org.eclipse.uml2.uml.Interaction;
 /**
  * {@link CreationEditPolicy} with delegation to the Logical model.
  */
-public abstract class LogicalModelCreationEditPolicy extends CreationEditPolicy {
+public abstract class LogicalModelCreationEditPolicy extends CreationEditPolicy implements ISequenceEditPolicy {
 
 	@Override
 	protected Command getCreateElementAndViewCommand(CreateViewAndElementRequest request) {
@@ -65,10 +62,7 @@ public abstract class LogicalModelCreationEditPolicy extends CreationEditPolicy 
 				(IElementType)request.getViewAndElementDescriptor().getCreateElementRequestAdapter()
 						.getAdapter(IElementType.class));
 
-		return result
-				.map(emf -> OperationToGEFCommandWrapper.wrap(
-						new EMFCommandOperation(TransactionUtil.getEditingDomain(interaction.get()), emf)))
-				.orElse(UnexecutableCommand.INSTANCE);
+		return result.map(this::wrap).orElse(UnexecutableCommand.INSTANCE);
 	}
 
 	protected abstract Optional<org.eclipse.emf.common.command.Command> getCreationCommand(
