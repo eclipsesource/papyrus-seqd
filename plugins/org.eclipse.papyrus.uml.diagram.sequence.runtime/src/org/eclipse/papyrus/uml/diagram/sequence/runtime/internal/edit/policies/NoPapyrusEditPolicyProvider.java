@@ -11,11 +11,14 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
-import java.lang.reflect.Field;
+import static java.util.Collections.emptyMap;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.editparts.AbstractEditPart;
 import org.eclipse.gmf.runtime.common.core.service.AbstractProvider;
 import org.eclipse.gmf.runtime.common.core.service.IOperation;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
@@ -39,6 +42,36 @@ public class NoPapyrusEditPolicyProvider extends AbstractProvider implements IEd
 
 	private static final String PAPYRUS_BUNDLE_PREFIX = "org.eclipse.papyrus"; //$NON-NLS-1$
 
+	private final Map<Class<? extends EditPart>, Map<String, Supplier<? extends EditPolicy>>> substitutions = new HashMap<>();
+
+	/**
+	 * Initializes me.
+	 */
+	public NoPapyrusEditPolicyProvider() {
+		super();
+
+		// Creation edit policies
+		substitute(LifelineBodyEditPart.class, EditPolicyRoles.CREATION_ROLE,
+				LifelineCreationEditPolicy::new);
+		substitute(InteractionCompartmentEditPart.class, EditPolicyRoles.CREATION_ROLE,
+				InteractionCreationEditPolicy::new);
+
+		// Diagram assistant edit policies
+		substitute(LifelineBodyEditPart.class, EditPolicyRoles.POPUPBAR_ROLE,
+				SequenceDiagramPopupBarEditPolicy::new);
+		substitute(InteractionCompartmentEditPart.class, EditPolicyRoles.POPUPBAR_ROLE,
+				SequenceDiagramPopupBarEditPolicy::new);
+		substitute(LifelineBodyEditPart.class, EditPolicyRoles.CONNECTION_HANDLES_ROLE,
+				SequenceDiagramConnectionHandleEditPolicy::new);
+	}
+
+	private void substitute(Class<? extends EditPart> editPartType, String role,
+			Supplier<? extends EditPolicy> editPolicySupplier) {
+		Map<String, Supplier<? extends EditPolicy>> policies = substitutions.computeIfAbsent(editPartType,
+				__ -> new HashMap<>());
+		policies.put(role, editPolicySupplier);
+	}
+
 	@Override
 	public boolean provides(IOperation operation) {
 		if (false == operation instanceof CreateEditPoliciesOperation) {
@@ -55,21 +88,8 @@ public class NoPapyrusEditPolicyProvider extends AbstractProvider implements IEd
 
 	@Override
 	public void createEditPolicies(EditPart editPart) {
-		uninstallPapyrusEditPolicies(editPart);
-		restoreCreationPolicy(editPart);
-	}
-
-	/*
-	 * Papyrus replaces the CreationEditPolicy with a CustomizableDragAndDropPolicy (Which then delegates to
-	 * the initial CreationEditPolicy when required). Since we uninstalled all Papyrus Policies, we need to
-	 * restore the original CreationEditPolicy
-	 */
-	private void restoreCreationPolicy(EditPart editPart) {
-		if (editPart instanceof LifelineBodyEditPart) {
-			editPart.installEditPolicy(EditPolicyRoles.CREATION_ROLE, new LifelineCreationEditPolicy());
-		} else if (editPart instanceof InteractionCompartmentEditPart) {
-			editPart.installEditPolicy(EditPolicyRoles.CREATION_ROLE, new InteractionCreationEditPolicy());
-		}
+		// We don't create edit policies, but remove or substitute those that came from Papyrus
+		substitutePapyrusEditPolicies(editPart);
 	}
 
 	/*
@@ -77,28 +97,25 @@ public class NoPapyrusEditPolicyProvider extends AbstractProvider implements IEd
 	 * policy iterator only provides the instance; not the role. This is not sufficient, because we can only
 	 * uninstall edit policies by role.
 	 */
-	private void uninstallPapyrusEditPolicies(EditPart editPart) {
-		if (editPart instanceof AbstractEditPart) {
-			Object[] policies;
-			try {
-				editPart.getClass().getDeclaredFields();
-				Field policiesField = AbstractEditPart.class.getDeclaredField("policies"); //$NON-NLS-1$
-				policiesField.setAccessible(true);
-				policies = (Object[])policiesField.get(editPart);
-			} catch (Exception ex) {
-				Activator.log.error(ex);
-				return;
-			}
-
-			for (int i = 0; i < policies.length; i++) {
-				if (policies[i] instanceof EditPolicy) {
-					EditPolicy policy = (EditPolicy)policies[i];
-					if (shouldRemovePolicy(policy)) {
-						policies[i] = null;
-					}
+	private void substitutePapyrusEditPolicies(EditPart editPart) {
+		for (EditPolicyIterator iter = EditPolicyIterator.of(editPart); iter.hasNext();) {
+			EditPolicy next = iter.next();
+			EditPolicy substitute = substitutions //
+					.getOrDefault(editPart.getClass(), emptyMap()) //
+					.getOrDefault(iter.getRole(), this::nothing) //
+					.get();
+			if (((next != null) && shouldRemovePolicy(next)) || (substitute != null)) {
+				if (substitute == null) {
+					iter.remove();
+				} else {
+					iter.set(substitute);
 				}
 			}
 		}
+	}
+
+	private <T> T nothing() {
+		return null;
 	}
 
 	private boolean shouldRemovePolicy(EditPolicy policy) {
@@ -111,5 +128,9 @@ public class NoPapyrusEditPolicyProvider extends AbstractProvider implements IEd
 		// Keep GEF/GMF and our own policies
 		return false;
 	}
+
+	//
+	// Nested types
+	//
 
 }

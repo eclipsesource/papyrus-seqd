@@ -184,6 +184,17 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 * @generated NOT
 	 */
 	@Override
+	public CreationCommand<ExecutionSpecification> insertExecutionAfter(MElement<?> before, int offset,
+			int height, EClass metaclass) {
+		return new InsertExecutionCommand(this, before, offset, height, metaclass);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
 	public CreationCommand<Message> insertMessageAfter(MElement<?> before, int offset, MLifeline receiver,
 			MessageSort sort, NamedElement signature) {
 
@@ -284,6 +295,9 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 			case SequenceDiagramPackage.MLIFELINE___INSERT_EXECUTION_AFTER__MELEMENT_INT_INT_ELEMENT:
 				return insertExecutionAfter((MElement<?>)arguments.get(0), (Integer)arguments.get(1),
 						(Integer)arguments.get(2), (Element)arguments.get(3));
+			case SequenceDiagramPackage.MLIFELINE___INSERT_EXECUTION_AFTER__MELEMENT_INT_INT_ECLASS:
+				return insertExecutionAfter((MElement<?>)arguments.get(0), (Integer)arguments.get(1),
+						(Integer)arguments.get(2), (EClass)arguments.get(3));
 			case SequenceDiagramPackage.MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MESSAGESORT_NAMEDELEMENT:
 				return insertMessageAfter((MElement<?>)arguments.get(0), (Integer)arguments.get(1),
 						(MLifeline)arguments.get(2), (MessageSort)arguments.get(3),

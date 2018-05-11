@@ -481,6 +481,15 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MLIFELINE___INSERT_EXECUTION_AFTER__MELEMENT_INT_INT_ELEMENT = MELEMENT_OPERATION_COUNT + 5;
 
 	/**
+	 * The operation id for the '<em>Insert Execution After</em>' operation. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___INSERT_EXECUTION_AFTER__MELEMENT_INT_INT_ECLASS = MELEMENT_OPERATION_COUNT + 6;
+
+	/**
 	 * The operation id for the '<em>Insert Message After</em>' operation. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
@@ -488,7 +497,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MESSAGESORT_NAMEDELEMENT = MELEMENT_OPERATION_COUNT
-			+ 6;
+			+ 7;
 
 	/**
 	 * The operation id for the '<em>Element At</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -496,7 +505,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE___ELEMENT_AT__INT = MELEMENT_OPERATION_COUNT + 7;
+	int MLIFELINE___ELEMENT_AT__INT = MELEMENT_OPERATION_COUNT + 8;
 
 	/**
 	 * The number of operations of the '<em>MLifeline</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
@@ -505,7 +514,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 8;
+	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 9;
 
 	/**
 	 * The meta object id for the
@@ -1569,6 +1578,18 @@ public interface SequenceDiagramPackage extends EPackage {
 
 	/**
 	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, int, org.eclipse.emf.ecore.EClass)
+	 * <em>Insert Execution After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Insert Execution After</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#insertExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement,
+	 *      int, int, org.eclipse.emf.ecore.EClass)
+	 * @generated
+	 */
+	EOperation getMLifeline__InsertExecutionAfter__MElement_int_int_EClass();
+
+	/**
+	 * Returns the meta object for the
 	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement)
 	 * <em>Insert Message After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2214,6 +2235,15 @@ public interface SequenceDiagramPackage extends EPackage {
 		 */
 		EOperation MLIFELINE___INSERT_EXECUTION_AFTER__MELEMENT_INT_INT_ELEMENT = eINSTANCE
 				.getMLifeline__InsertExecutionAfter__MElement_int_int_Element();
+
+		/**
+		 * The meta object literal for the '<em><b>Insert Execution After</b></em>' operation. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MLIFELINE___INSERT_EXECUTION_AFTER__MELEMENT_INT_INT_ECLASS = eINSTANCE
+				.getMLifeline__InsertExecutionAfter__MElement_int_int_EClass();
 
 		/**
 		 * The meta object literal for the '<em><b>Insert Message After</b></em>' operation. <!--

@@ -29,7 +29,10 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.LifelineBodyFigure;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.BodyResizeEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.InteractionSemanticEditPolicy;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineBodyGraphicalNodeEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineCreationEditPolicy;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.SequenceDiagramConnectionHandleEditPolicy;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.SequenceDiagramPopupBarEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.locators.OnLineBorderItemLocator;
 
 /**
@@ -117,6 +120,8 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart {
 
 		installEditPolicy(EditPolicyRoles.CREATION_ROLE, new LifelineCreationEditPolicy());
 		installEditPolicy(EditPolicyRoles.SEMANTIC_ROLE, new InteractionSemanticEditPolicy());
+		installEditPolicy(EditPolicyRoles.POPUPBAR_ROLE, new SequenceDiagramPopupBarEditPolicy());
+		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new LifelineBodyGraphicalNodeEditPolicy());
 
 		ResizableEditPolicy resizePolicy = new BodyResizeEditPolicy();
 		installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, resizePolicy);
