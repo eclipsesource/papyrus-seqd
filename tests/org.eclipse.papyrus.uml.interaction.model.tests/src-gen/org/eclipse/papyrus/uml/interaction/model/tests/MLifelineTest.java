@@ -12,6 +12,7 @@
  */
 package org.eclipse.papyrus.uml.interaction.model.tests;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -312,9 +313,14 @@ public class MLifelineTest extends MElementTest {
 		assertThat(recv.getMessage(), is(umlMessage));
 		assertThat(receiver.getElement().getCoveredBys(), hasItem((InteractionFragment) recv));
 
+		// The edge connects the lifeline bodies (not the heads)
 		Edge edge = message.getDiagramView().get();
-		assertThat(edge.getSource(), is(getFixture().getDiagramView().get()));
-		assertThat(edge.getTarget(), is(receiver.getDiagramView().get()));
+		assertThat(edge.getSource(), notNullValue());
+		assertThat(edge.getSource().getType(), containsString("Body"));
+		assertThat(edge.getSource().getElement(), is(getFixture().getElement()));
+		assertThat(edge.getTarget(), notNullValue());
+		assertThat(edge.getTarget().getType(), containsString("Body"));
+		assertThat(edge.getTarget().getElement(), is(receiver.getElement()));
 	}
 
 	/**

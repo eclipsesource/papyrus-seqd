@@ -12,6 +12,8 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.spi.impl;
 
+import static org.eclipse.papyrus.uml.interaction.graph.util.Suppliers.compose;
+
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
@@ -32,6 +34,7 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredCreateCommand;
+import org.eclipse.papyrus.uml.interaction.model.spi.DeferredSetCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
@@ -181,24 +184,33 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			result.setType("Edge_Message");
 			result.setElement(message.get());
 
-			result.setSource(source.get());
-			IdentityAnchor sourceAnchor = NotationFactory.eINSTANCE.createIdentityAnchor();
+			IdentityAnchor sourceAnchor = (IdentityAnchor)result
+					.createSourceAnchor(NotationPackage.Literals.IDENTITY_ANCHOR);
 			sourceAnchor
 					.setId(Integer.toString(sourceY.getAsInt() - layoutHelper().getTop((Shape)source.get())));
-			result.setSourceAnchor(sourceAnchor);
 
-			result.setTarget(target.get());
-			IdentityAnchor targetAnchor = NotationFactory.eINSTANCE.createIdentityAnchor();
+			IdentityAnchor targetAnchor = (IdentityAnchor)result
+					.createTargetAnchor(NotationPackage.Literals.IDENTITY_ANCHOR);
 			targetAnchor
 					.setId(Integer.toString(targetY.getAsInt() - layoutHelper().getTop((Shape)target.get())));
-			result.setTargetAnchor(targetAnchor);
+
+			result.createBendpoints(NotationPackage.Literals.RELATIVE_BENDPOINTS);
 
 			return result;
 		};
 
-		CreationParameters parameters = CreationParameters.in(() -> source.get().getDiagram(),
+		CreationParameters parameters = CreationParameters.in(compose(source, View::getDiagram),
 				NotationPackage.Literals.DIAGRAM__PERSISTED_EDGES);
-		return new DeferredCreateCommand<>(Connector.class, editingDomain, parameters, connector);
+		DeferredCreateCommand<Connector> createMessage = new DeferredCreateCommand<>(Connector.class,
+				editingDomain, parameters, connector);
+
+		// These must implemented as undoable commands because they have side-effects via opposites
+		DeferredSetCommand setSource = new DeferredSetCommand(editingDomain, createMessage,
+				NotationPackage.Literals.EDGE__SOURCE, source);
+		DeferredSetCommand setTarget = new DeferredSetCommand(editingDomain, createMessage,
+				NotationPackage.Literals.EDGE__TARGET, target);
+
+		return createMessage.chain(setSource).chain(setTarget);
 	}
 
 	protected final SemanticHelper semanticHelper() {
