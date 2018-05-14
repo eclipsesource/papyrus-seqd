@@ -13,12 +13,15 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import static java.lang.Math.max;
+import static org.eclipse.papyrus.uml.interaction.graph.util.Suppliers.compose;
 
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.function.Function;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
@@ -117,7 +120,11 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		MElement<? extends Element> insertionPoint = normalizeFragmentInsertionPoint(before);
 
 		SemanticHelper semantics = semanticHelper();
-		CreationParameters sendParams = CreationParameters.after(insertionPoint.getElement());
+		CreationParameters sendParams = insertionPoint instanceof MLifeline
+				// Just append to the fragments in that case
+				? CreationParameters.in(insertionPoint.getInteraction().getElement(),
+						UMLPackage.Literals.INTERACTION__FRAGMENT)
+				: CreationParameters.after(insertionPoint.getElement());
 		CreationCommand<MessageEnd> sendEvent = semantics.createMessageOccurrence(sendParams);
 		CreationParameters recvParams = CreationParameters.after(sendEvent);
 		CreationCommand<MessageEnd> recvEvent = semantics.createMessageOccurrence(recvParams);
@@ -135,9 +142,10 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				UMLPackage.Literals.LIFELINE__COVERED_BY, recvEvent));
 
 		// And the diagram visualization
+		Function<View, View> lifelineBody = diagramHelper()::getLifelineBodyShape;
 		result = result.chain(diagramHelper().createMessageConnector(resultCommand, //
-				sender::getDiagramView, () -> referenceY.getAsInt() + offset, //
-				receiver::getDiagramView, () -> referenceY.getAsInt() + offset));
+				compose(sender::getDiagramView, lifelineBody), () -> referenceY.getAsInt() + offset, //
+				compose(receiver::getDiagramView, lifelineBody), () -> referenceY.getAsInt() + offset));
 
 		// Now we have commands to add the message specification. But, first we must make
 		// room for it in the diagram. Nudge the element that will follow the new receive event
