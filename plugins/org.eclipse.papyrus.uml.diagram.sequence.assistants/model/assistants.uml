@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Ecore="http://www.eclipse.org/uml2/schemas/Ecore/5" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:standard="http://www.eclipse.org/uml2/5.0.0/UML/Profile/Standard" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http://www.eclipse.org/uml2/schemas/Ecore/5 pathmap://UML_PROFILES/Ecore.profile.uml#_z1OFcHjqEdy8S4Cr8Rc_NA">
+  <uml:Model xmi:id="_0" name="assistants" URI="http://www.eclipse.org/Papyrus/2018/uml/diagram/sequence/assistants">
+    <elementImport xmi:id="_elementImport.0">
+      <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+    </elementImport>
+    <packagedElement xmi:type="uml:Class" xmi:id="SequenceDiagramAssistantProvider" name="SequenceDiagramAssistantProvider">
+      <ownedComment xmi:id="SequenceDiagramAssistantProvider-_ownedComment.0" annotatedElement="SequenceDiagramAssistantProvider">
+        <body>Custom modeling assistant provider for the Lightweight Sequence Diagram.</body>
+      </ownedComment>
+      <generalization xmi:id="SequenceDiagramAssistantProvider-_generalization.0">
+        <general xmi:type="uml:Class" href="pathmap://PAPYRUS_MODELING_ASSISTANTS/assistant.merged.uml#ModelingAssistantProvider"/>
+      </generalization>
+      <ownedOperation xmi:id="SequenceDiagramAssistantProvider-getRelTypesOnSource" name="getRelTypesOnSource">
+        <ownedParameter xmi:id="SequenceDiagramAssistantProvider-getRelTypesOnSource-source" name="source" effect="read">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://PAPYRUS_MODELING_ASSISTANTS/assistant.merged.uml#IAdaptable"/>
+        </ownedParameter>
+        <ownedParameter xmi:id="SequenceDiagramAssistantProvider-getRelTypesOnSource-_ownedParameter.1" direction="return">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://PAPYRUS_MODELING_ASSISTANTS/assistant.merged.uml#ElementType"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SequenceDiagramAssistantProvider-getRelTypesOnSource-_ownedParameter.1-_lowerValue"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SequenceDiagramAssistantProvider-getRelTypesOnSource-_ownedParameter.1-_upperValue" value="*"/>
+        </ownedParameter>
+        <redefinedOperation href="pathmap://PAPYRUS_MODELING_ASSISTANTS/assistant.merged.uml#IModelingAssistantProvider-getRelTypesOnSource"/>
+      </ownedOperation>
+      <ownedOperation xmi:id="SequenceDiagramAssistantProvider-getRelTypesOnTarget" name="getRelTypesOnTarget">
+        <ownedParameter xmi:id="SequenceDiagramAssistantProvider-getRelTypesOnTarget-target" name="target" effect="read">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://PAPYRUS_MODELING_ASSISTANTS/assistant.merged.uml#IAdaptable"/>
+        </ownedParameter>
+        <ownedParameter xmi:id="SequenceDiagramAssistantProvider-getRelTypesOnTarget-_ownedParameter.1" direction="return">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://PAPYRUS_MODELING_ASSISTANTS/assistant.merged.uml#ElementType"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SequenceDiagramAssistantProvider-getRelTypesOnTarget-_ownedParameter.1-_lowerValue"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SequenceDiagramAssistantProvider-getRelTypesOnTarget-_ownedParameter.1-_upperValue" value="*"/>
+        </ownedParameter>
+        <redefinedOperation href="pathmap://PAPYRUS_MODELING_ASSISTANTS/assistant.merged.uml#IModelingAssistantProvider-getRelTypesOnTarget"/>
+      </ownedOperation>
+      <ownedOperation xmi:id="SequenceDiagramAssistantProvider-getRelTypesOnSourceAndTarget" name="getRelTypesOnSourceAndTarget">
+        <ownedParameter xmi:id="SequenceDiagramAssistantProvider-getRelTypesOnSourceAndTarget-source" name="source" effect="read">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://PAPYRUS_MODELING_ASSISTANTS/assistant.merged.uml#IAdaptable"/>
+        </ownedParameter>
+        <ownedParameter xmi:id="SequenceDiagramAssistantProvider-getRelTypesOnSourceAndTarget-target" name="target" effect="read">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://PAPYRUS_MODELING_ASSISTANTS/assistant.merged.uml#IAdaptable"/>
+        </ownedParameter>
+        <ownedParameter xmi:id="SequenceDiagramAssistantProvider-getRelTypesOnSourceAndTarget-_ownedParameter.2" direction="return">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://PAPYRUS_MODELING_ASSISTANTS/assistant.merged.uml#ElementType"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SequenceDiagramAssistantProvider-getRelTypesOnSourceAndTarget-_ownedParameter.2-_lowerValue"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SequenceDiagramAssistantProvider-getRelTypesOnSourceAndTarget-_ownedParameter.2-_upperValue" value="*"/>
+        </ownedParameter>
+        <redefinedOperation href="pathmap://PAPYRUS_MODELING_ASSISTANTS/assistant.merged.uml#IModelingAssistantProvider-getRelTypesOnSourceAndTarget"/>
+      </ownedOperation>
+    </packagedElement>
+    <profileApplication xmi:id="_profileApplication.0">
+      <eAnnotations xmi:id="_profileApplication.0-_http2F2Fwww.eclipse.org2Fuml22F2.0.02FUML" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="http://www.eclipse.org/uml2/5.0.0/UML/Profile/Standard#/"/>
+      </eAnnotations>
+      <appliedProfile href="pathmap://UML_PROFILES/Standard.profile.uml#_0"/>
+    </profileApplication>
+    <profileApplication xmi:id="_profileApplication.1">
+      <eAnnotations xmi:id="_profileApplication.1-_http2F2Fwww.eclipse.org2Fuml22F2.0.02FUML" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="pathmap://UML_PROFILES/Ecore.profile.uml#_z1OFcHjqEdy8S4Cr8Rc_NA"/>
+      </eAnnotations>
+      <appliedProfile href="pathmap://UML_PROFILES/Ecore.profile.uml#_0"/>
+    </profileApplication>
+  </uml:Model>
+  <standard:Metamodel xmi:id="_xzBEYFUaEei-a-s2soHAwg" base_Model="_0"/>
+  <standard:Metaclass xmi:id="_xzC5kFUaEei-a-s2soHAwg" base_Class="SequenceDiagramAssistantProvider"/>
+  <standard:Metaclass xmi:id="_xzDgoFUaEei-a-s2soHAwg"/>
+  <Ecore:EPackage xmi:id="_6LBRIFUaEei-a-s2soHAwg" base_Package="_0" nsPrefix="assist" basePackage="org.eclipse.papyrus.uml.diagram.sequence" prefix="DiagramAssistants"/>
+</xmi:XMI>
