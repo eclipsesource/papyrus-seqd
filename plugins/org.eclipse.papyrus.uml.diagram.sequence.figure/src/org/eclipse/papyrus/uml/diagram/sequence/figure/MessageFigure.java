@@ -18,7 +18,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.MessageSourceAnch
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.MessageTargetAnchor;
 
 /**
- * Figure specific for messages (with a by default
+ * Figure specific for messages.
  */
 public class MessageFigure extends PolylineConnectionEx {
 
