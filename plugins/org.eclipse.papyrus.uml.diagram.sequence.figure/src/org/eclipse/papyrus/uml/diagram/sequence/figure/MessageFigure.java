@@ -22,9 +22,9 @@ import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.MessageTargetAnch
  */
 public class MessageFigure extends PolylineConnectionEx {
 
-	public MessageFigure() {
-		setTargetDecoration(new RightArrowDecoration());
-	}
+	private static final String ANCHOR_START_TERMINAL = "start"; //$NON-NLS-1$
+
+	private static final String ANCHOR_END_TERMINAL = "end"; //$NON-NLS-1$
 
 	@Override
 	public ConnectionAnchor getConnectionAnchor(String terminal) {
@@ -33,9 +33,9 @@ public class MessageFigure extends PolylineConnectionEx {
 		}
 
 		switch (terminal) {
-			case "start":
+			case ANCHOR_START_TERMINAL:
 				return new MessageSourceAnchor(this);
-			case "end":
+			case ANCHOR_END_TERMINAL:
 				return new MessageTargetAnchor(this);
 		}
 
