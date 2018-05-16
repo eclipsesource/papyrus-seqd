@@ -103,5 +103,10 @@
        </Priority>
     </editpolicyProvider>
  </extension>
+ <extension
+       name="Lightweight Sequence Diagram" 
+       point="org.eclipse.papyrus.infra.properties.contexts">
+    <context appliedByDefault="true" contextModel="context/lightweight-seqd.contexts" isCustomizable="true"/>
+ </extension>
 
 </plugin>
