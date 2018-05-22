@@ -16,6 +16,7 @@ import java.util.function.Supplier;
 
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
@@ -38,6 +39,8 @@ public class SequenceDiagramPopupBarEditPolicy extends PapyrusPopupBarEditPolicy
 	static private int ACTION_WIDTH_HGT = 30; // As in the superclass
 
 	private Point activatedAt;
+
+	private boolean forceHideAfterDelay;
 
 	/**
 	 * Initializes me.
@@ -83,6 +86,27 @@ public class SequenceDiagramPopupBarEditPolicy extends PapyrusPopupBarEditPolicy
 
 	protected Point getActivatedAt() {
 		return activatedAt;
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent me) {
+		forceHideAfterDelay = getIsInstalledOnSurface();
+		try {
+			super.mouseMoved(me);
+		} finally {
+			forceHideAfterDelay = false;
+		}
+	}
+
+	@Override
+	protected void hideDiagramAssistant() {
+		if (forceHideAfterDelay) {
+			// The user has to move the mouse in order to reach the popup bar,
+			// so don't just hide it immediately.
+			hideDiagramAssistantAfterDelay(getAppearanceDelay());
+		} else {
+			super.hideDiagramAssistant();
+		}
 	}
 
 	@Override
