@@ -446,22 +446,6 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-checkstyle-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>checkstyle</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>checkstyle</goal>
-                </goals>
-                <configuration>
-                  <configLocation>${project.basedir}/../../org.eclipse.emf.compare-parent/codeStyle/EMFCompareCheckstyle5Configuration.xml</configLocation>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>findbugs-maven-plugin</artifactId>
             <configuration>
