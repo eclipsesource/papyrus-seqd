@@ -26,11 +26,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.gmf.runtime.notation.Location;
+import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.papyrus.uml.interaction.graph.GroupKind;
 import org.eclipse.papyrus.uml.interaction.graph.Tag;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
@@ -125,6 +128,40 @@ public class GraphComputer {
 		return (E)graph.vertex(element).tag(tag).getInteractionElement();
 	}
 
+	boolean hasDiagram() {
+		return graph.initial().getDiagramView() != null;
+	}
+
+	/**
+	 * Get a left-to-right visual ordering of lifelines, if we have a diagram available. Otherwise, just the
+	 * order in which they are defined in the interaction.
+	 * 
+	 * @return the lifeline ordering
+	 */
+	Comparator<Lifeline> lifelineOrdering() {
+		Comparator<Lifeline> result;
+
+		if (!hasDiagram()) {
+			List<Lifeline> lifelines = ((Interaction)graph.initial().getInteractionElement()).getLifelines();
+
+			result = (ll1, ll2) -> ll1 == ll2 ? 0 : lifelines.indexOf(ll1) - lifelines.indexOf(ll2);
+		} else {
+			// If we have a diagram, we can impose left-to-right ordering dependency on
+			// the lifelines to aid in layout computations such as lifeline insertion
+			final Map<Lifeline, Integer> positions = new HashMap<>();
+			@SuppressWarnings("boxing")
+			final Function<Lifeline, Integer> x = ll -> Optional.ofNullable(graph.vertex(ll).getDiagramView())
+					.filter(Node.class::isInstance).map(Node.class::cast) //
+					.map(Node::getLayoutConstraint) //
+					.filter(Location.class::isInstance).map(Location.class::cast) //
+					.map(Location::getX).orElse(-1);
+			Comparator<Lifeline> byPosition = Comparator.comparing(ll -> positions.computeIfAbsent(ll, x));
+			result = (ll1, ll2) -> ll1 == ll2 ? 0 : byPosition.compare(ll1, ll2);
+		}
+
+		return result;
+	}
+
 	//
 	// Nested types
 	//
@@ -137,7 +174,15 @@ public class GraphComputer {
 		@Override
 		public Void caseInteraction(Interaction interaction) {
 			edge(interaction, interaction.getFormalGates());
-			edge(interaction, interaction.getLifelines());
+
+			List<Lifeline> lifelines = interaction.getLifelines();
+			if (hasDiagram()) {
+				// If we have a diagram, we can impose left-to-right ordering dependency on
+				// the lifelines to aid in layout computations such as lifeline insertion
+				lifelines = new ArrayList<>(lifelines);
+				lifelines.sort(lifelineOrdering());
+			}
+			edge(interaction, lifelines);
 
 			return null;
 		}
@@ -493,6 +538,11 @@ public class GraphComputer {
 			}
 
 			return result;
+		}
+
+		private Lifeline getLifeline(Vertex vertex) {
+			Element result = vertex.getInteractionElement();
+			return (result instanceof Lifeline) ? (Lifeline)result : null;
 		}
 	}
 }

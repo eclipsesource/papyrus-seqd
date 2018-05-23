@@ -71,7 +71,11 @@ public class DefaultLayoutHelper implements LayoutHelper {
 
 	static final int DEFAULT_TOP = DEFAULT_Y;
 
-	static final int DEFAULT_BOTTOM = DEFAULT_HEIGHT;
+	static final int DEFAULT_BOTTOM = DEFAULT_TOP + DEFAULT_HEIGHT;
+
+	static final int DEFAULT_LEFT = DEFAULT_X;
+
+	static final int DEFAULT_RIGHT = DEFAULT_LEFT + DEFAULT_WIDTH;
 
 	private static final Pattern IDENTITY_ANCHOR_PATTERN = Pattern
 			.compile("(left;|right;|west;|east;)?(\\d+)"); //$NON-NLS-1$
@@ -142,7 +146,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 
 		// if the shape is located by a border item locator, we may only have access to the bounds on figure,
 		// no layout constraint on the shape (or at least not the location, only size)
-		if ("Shape_Lifeline_Body".equals(shape.getType())) { //$NON-NLS-1$
+		if (isLifelineBody(shape)) {
 			// then the top position relative to the parent (header) is the bottom center part of the parent
 			return getBottom((Shape)ViewUtil.getContainerView(shape));
 		} else {
@@ -164,6 +168,10 @@ public class DefaultLayoutHelper implements LayoutHelper {
 		}
 
 		return result;
+	}
+
+	private static boolean isLifelineBody(View view) {
+		return "Shape_Lifeline_Body".equals(view.getType()); //$NON-NLS-1$
 	}
 
 	@SuppressWarnings("boxing")
@@ -312,6 +320,114 @@ public class DefaultLayoutHelper implements LayoutHelper {
 		}
 	}
 
+	@Override
+	public OptionalInt getLeft(Vertex v) {
+		OptionalInt result = OptionalInt.empty();
+
+		View view = v.getDiagramView();
+		if (view instanceof Shape) {
+			int top = getLeft((Shape)view);
+			result = (top == DEFAULT_LEFT) ? OptionalInt.empty() : OptionalInt.of(top);
+		} // left and right are not interesting for edges and anchors as far as layout is concerned
+
+		return result;
+	}
+
+	@Override
+	public int getLeft(Shape shape) {
+		int result = DEFAULT_LEFT;
+
+		// if the shape is located by a border item locator, we may only have access to the bounds on figure,
+		// no layout constraint on the shape (or at least not the location, only size)
+		if (isLifelineBody(shape)) {
+			// then the left position relative to the parent (header) is the center of the width of the parent
+			Shape head = (Shape)ViewUtil.getContainerView(shape);
+			int headRight = getRight(head);
+			int headLeft = getLeft(head);
+			if ((headLeft != DEFAULT_LEFT) && (headRight != DEFAULT_RIGHT)) {
+				return (headRight - headLeft) / 2;
+			}
+		} else {
+			LayoutConstraint constraint = shape.getLayoutConstraint();
+			if (constraint != null) {
+				result = getLeftFunction().applyAsInt(constraint);
+			}
+		}
+
+		// And is this shape in a shape?
+		if (result != DEFAULT_LEFT && shape.eContainer() instanceof Shape) {
+			// Its position is relative to the containing shape
+			int relativeLeft = getLeft((Shape)shape.eContainer());
+			if (relativeLeft == DEFAULT_LEFT) {
+				result = DEFAULT_LEFT;
+			} else {
+				result = relativeLeft + result;
+			}
+		}
+
+		return result;
+	}
+
+	@Override
+	public OptionalInt getRight(Vertex v) {
+		OptionalInt result = OptionalInt.empty();
+
+		View view = v.getDiagramView();
+		if (view instanceof Shape) {
+			int right = getRight((Shape)view);
+			result = (right == DEFAULT_RIGHT) ? OptionalInt.empty() : OptionalInt.of(right);
+		} // left and right are not interesting for edges and anchors as far as layout is concerned
+
+		return result;
+	}
+
+	@Override
+	public int getRight(Shape shape) {
+		int result = DEFAULT_RIGHT;
+
+		if (isLifelineBody(shape)) {
+			// The lifeline body has no real width: its right is its left
+			result = getLeft(shape);
+		} else {
+			LayoutConstraint constraint = shape.getLayoutConstraint();
+			if (constraint != null) {
+				result = getRightFunction().applyAsInt(constraint);
+			}
+		}
+
+		// And is this shape in a shape?
+		if (result != DEFAULT_RIGHT && shape.eContainer() instanceof Shape) {
+			// Its position is relative to the containing shape
+			int relativeLeft = getLeft((Shape)shape.eContainer());
+			if (relativeLeft == DEFAULT_LEFT) {
+				result = DEFAULT_RIGHT;
+			} else {
+				result = relativeLeft + result;
+			}
+		}
+
+		return result;
+	}
+
+	@SuppressWarnings("boxing")
+	private ToIntFunction<EObject> getLeftFunction() {
+		NotationSwitch leftSwitch = new NotationSwitch() {
+			@Override
+			public Object caseLocation(Location location) {
+				return location.eIsSet(NotationPackage.Literals.LOCATION__X) ? location.getX() : DEFAULT_LEFT;
+			}
+
+			// left and right are not interesting for anchors as far as layout is concerned
+
+			@Override
+			public Object defaultCase(EObject object) {
+				return DEFAULT_LEFT;
+			}
+		};
+
+		return object -> (Integer)leftSwitch.doSwitch(object);
+	}
+
 	@SuppressWarnings("boxing")
 	private ToIntFunction<EObject> getBottomFunction() {
 		NotationSwitch bottomSwitch = new NotationSwitch() {
@@ -366,6 +482,34 @@ public class DefaultLayoutHelper implements LayoutHelper {
 		};
 
 		return object -> (Integer)bottomSwitch.doSwitch(object);
+	}
+
+	@SuppressWarnings("boxing")
+	private ToIntFunction<EObject> getRightFunction() {
+		NotationSwitch rightSwitch = new NotationSwitch() {
+			@Override
+			public Object caseLocation(Location location) {
+				return location.eIsSet(NotationPackage.Literals.LOCATION__X) ? location.getX()
+						: DEFAULT_RIGHT;
+			}
+
+			@Override
+			public Object caseBounds(Bounds bounds) {
+				return bounds.eIsSet(NotationPackage.Literals.LOCATION__X)
+						&& bounds.eIsSet(NotationPackage.Literals.SIZE__WIDTH)
+								? bounds.getX() + bounds.getWidth()
+								: DEFAULT_RIGHT;
+			}
+
+			// left and right are not interesting for anchors as far as layout is concerned
+
+			@Override
+			public Object defaultCase(EObject object) {
+				return DEFAULT_RIGHT;
+			}
+		};
+
+		return object -> (Integer)rightSwitch.doSwitch(object);
 	}
 
 	protected Anchor findAnchor(Vertex vertex) {
@@ -545,6 +689,32 @@ public class DefaultLayoutHelper implements LayoutHelper {
 			int top = getTop(shape);
 			result = SetCommand.create(editingDomain, shape.getLayoutConstraint(),
 					NotationPackage.Literals.SIZE__HEIGHT, yPosition - top);
+		}
+		return result;
+	}
+
+	@Override
+	public Command setLeft(Vertex v, int xPosition) {
+		Command result = UnexecutableCommand.INSTANCE;
+
+		View view = v.getDiagramView();
+		if (isLifelineBody(view)) {
+			// Cannot set the position of this independently of the head
+		} else if (view instanceof Shape) {
+			result = setLeft((Shape)view, xPosition);
+		} // left and right are not interesting for edges and anchors as far as layout is concerned
+
+		return result;
+	}
+
+	@Override
+	@SuppressWarnings("boxing")
+	public Command setLeft(Shape shape, int xPosition) {
+		Command result = UnexecutableCommand.INSTANCE;
+		if (shape.getLayoutConstraint() instanceof Location) {
+			int parentLeft = shape.eContainer() instanceof Shape ? getLeft((Shape)shape.eContainer()) : 0;
+			result = SetCommand.create(editingDomain, shape.getLayoutConstraint(),
+					NotationPackage.Literals.LOCATION__X, xPosition - parentLeft);
 		}
 		return result;
 	}

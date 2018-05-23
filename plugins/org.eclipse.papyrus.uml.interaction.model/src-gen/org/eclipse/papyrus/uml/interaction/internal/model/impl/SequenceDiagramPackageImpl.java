@@ -395,6 +395,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EOperation getMInteraction__GetLifelineAt__int() {
+		return mInteractionEClass.getEOperations().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EClass getMLifeline() {
 		return mLifelineEClass;
 	}
@@ -417,6 +427,26 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	@Override
 	public EReference getMLifeline_Executions() {
 		return (EReference)mLifelineEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EAttribute getMLifeline_Left() {
+		return (EAttribute)mLifelineEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EAttribute getMLifeline_Right() {
+		return (EAttribute)mLifelineEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -507,6 +537,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	@Override
 	public EOperation getMLifeline__ElementAt__int() {
 		return mLifelineEClass.getEOperations().get(8);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMLifeline__NudgeHorizontally__int() {
+		return mLifelineEClass.getEOperations().get(9);
 	}
 
 	/**
@@ -888,10 +928,13 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEOperation(mInteractionEClass, MINTERACTION___GET_LIFELINE__LIFELINE);
 		createEOperation(mInteractionEClass, MINTERACTION___GET_MESSAGE__MESSAGE);
 		createEOperation(mInteractionEClass, MINTERACTION___ADD_LIFELINE__INT_INT);
+		createEOperation(mInteractionEClass, MINTERACTION___GET_LIFELINE_AT__INT);
 
 		mLifelineEClass = createEClass(MLIFELINE);
 		createEReference(mLifelineEClass, MLIFELINE__EXECUTION_OCCURRENCES);
 		createEReference(mLifelineEClass, MLIFELINE__EXECUTIONS);
+		createEAttribute(mLifelineEClass, MLIFELINE__LEFT);
+		createEAttribute(mLifelineEClass, MLIFELINE__RIGHT);
 		createEOperation(mLifelineEClass, MLIFELINE___GET_OWNER);
 		createEOperation(mLifelineEClass, MLIFELINE___GET_DIAGRAM_VIEW);
 		createEOperation(mLifelineEClass, MLIFELINE___FOLLOWING__MELEMENT);
@@ -903,6 +946,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEOperation(mLifelineEClass,
 				MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MESSAGESORT_NAMEDELEMENT);
 		createEOperation(mLifelineEClass, MLIFELINE___ELEMENT_AT__INT);
+		createEOperation(mLifelineEClass, MLIFELINE___NUDGE_HORIZONTALLY__INT);
 
 		mExecutionEClass = createEClass(MEXECUTION);
 		createEAttribute(mExecutionEClass, MEXECUTION__START);
@@ -1131,6 +1175,14 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		g1.getETypeArguments().add(g2);
 		initEOperation(op, g1);
 
+		op = initEOperation(getMInteraction__GetLifelineAt__int(), null, "getLifelineAt", 1, 1, IS_UNIQUE, //$NON-NLS-1$
+				IS_ORDERED);
+		addEParameter(op, ecorePackage.getEInt(), "offset", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getOptional());
+		g2 = createEGenericType(this.getMLifeline());
+		g1.getETypeArguments().add(g2);
+		initEOperation(op, g1);
+
 		initEClass(mLifelineEClass, MLifeline.class, "MLifeline", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getMLifeline_ExecutionOccurrences(), this.getMExecutionOccurrence(), null,
@@ -1140,6 +1192,12 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		initEReference(getMLifeline_Executions(), this.getMExecution(), null, "executions", null, 0, -1, //$NON-NLS-1$
 				MLifeline.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, IS_COMPOSITE,
 				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getMLifeline_Left(), this.getOptionalInt(), "left", null, 1, 1, MLifeline.class, //$NON-NLS-1$
+				IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED,
+				IS_ORDERED);
+		initEAttribute(getMLifeline_Right(), this.getOptionalInt(), "right", null, 1, 1, MLifeline.class, //$NON-NLS-1$
+				IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED,
+				IS_ORDERED);
 
 		initEOperation(getMLifeline__GetOwner(), this.getMInteraction(), "getOwner", 0, 1, IS_UNIQUE, //$NON-NLS-1$
 				IS_ORDERED);
@@ -1240,6 +1298,10 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		g4 = createEGenericType(theUMLPackage.getElement());
 		g3.setEUpperBound(g4);
 		initEOperation(op, g1);
+
+		op = initEOperation(getMLifeline__NudgeHorizontally__int(), this.getCommand(), "nudgeHorizontally", 1, //$NON-NLS-1$
+				1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, ecorePackage.getEInt(), "deltaX", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(mExecutionEClass, MExecution.class, "MExecution", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);

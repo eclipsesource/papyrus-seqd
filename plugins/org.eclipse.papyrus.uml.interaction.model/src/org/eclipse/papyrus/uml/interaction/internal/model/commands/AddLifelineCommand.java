@@ -12,10 +12,13 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
+import java.util.Optional;
+
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
+import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -65,7 +68,13 @@ public class AddLifelineCommand extends ModelCommand<MInteractionImpl> implement
 		Command result = resultCommand.chain(diagramHelper().createLifelineShape(resultCommand,
 				getTarget().getDiagramView().get(), xOffset, height));
 
-		// TODO: If required for where the lifeline is being put, insert horizontal space
+		// Are we inserting this amongst existing lifelines?
+		Optional<MLifeline> existing = getTarget().getLifelineAt(xOffset);
+		if (existing.isPresent()) {
+			// Make room for it
+			int spaceRequired = 90; // FIXME: LayoutHelper should compute space needed
+			result = existing.get().nudgeHorizontally(spaceRequired).chain(result);
+		}
 
 		return result;
 	}

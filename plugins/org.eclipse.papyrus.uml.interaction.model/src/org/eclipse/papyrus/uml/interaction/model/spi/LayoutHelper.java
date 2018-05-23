@@ -80,6 +80,42 @@ public interface LayoutHelper {
 	int getYPosition(Anchor anchor, Shape onShape);
 
 	/**
+	 * Queries the left (x-coördinate) of the diagram visual element associated with a vertex in the graph.
+	 * 
+	 * @param v
+	 *            a vertex in the semantic dependency graph
+	 * @return its left position, if it has any
+	 */
+	OptionalInt getLeft(Vertex v);
+
+	/**
+	 * Queries the left (x-coördinate) of a {@code shape} in the sequence diagram.
+	 * 
+	 * @param shape
+	 *            a shape in the sequence diagram
+	 * @return its left position
+	 */
+	int getLeft(Shape shape);
+
+	/**
+	 * Queries the right (x-coördinate) of the diagram visual element associated with a vertex in the graph.
+	 * 
+	 * @param v
+	 *            a vertex in the semantic dependency graph
+	 * @return its right position, if it has any
+	 */
+	OptionalInt getRight(Vertex v);
+
+	/**
+	 * Queries the right (x-coördinate) of a {@code shape} in the sequence diagram.
+	 * 
+	 * @param shape
+	 *            a shape in the sequence diagram
+	 * @return its right position
+	 */
+	int getRight(Shape shape);
+
+	/**
 	 * Obtains a command that sets the top (y-coördinate) of the diagram visual element associated with a
 	 * vertex in the graph.
 	 * 
@@ -138,6 +174,29 @@ public interface LayoutHelper {
 	 * @return the command, which may not be executable but will not be {@code null}
 	 */
 	Command setYPosition(Anchor anchor, Shape onShape, int yPosition);
+
+	/**
+	 * Obtains a command that sets the left (x-coördinate) of the diagram visual element associated with a
+	 * vertex in the graph.
+	 * 
+	 * @param v
+	 *            a vertex in the semantic dependency graph
+	 * @param xPosition
+	 *            the new left position to set
+	 * @return the command, which may not be executable but will not be {@code null}
+	 */
+	Command setLeft(Vertex v, int xPosition);
+
+	/**
+	 * Obtains a command that sets the left (x-coördinate) of a {@code shape} in the sequence diagram.
+	 * 
+	 * @param shape
+	 *            a shape in the sequence diagram
+	 * @param xPosition
+	 *            the new left position to set
+	 * @return the command, which may not be executable but will not be {@code null}
+	 */
+	Command setLeft(Shape shape, int xPosition);
 
 	/**
 	 * Returns the bounds for a new representation, given the proposed bounds.

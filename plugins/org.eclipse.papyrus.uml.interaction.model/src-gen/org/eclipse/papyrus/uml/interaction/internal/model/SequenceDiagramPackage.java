@@ -322,13 +322,22 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MINTERACTION___ADD_LIFELINE__INT_INT = MELEMENT_OPERATION_COUNT + 4;
 
 	/**
+	 * The operation id for the '<em>Get Lifeline At</em>' operation. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MINTERACTION___GET_LIFELINE_AT__INT = MELEMENT_OPERATION_COUNT + 5;
+
+	/**
 	 * The number of operations of the '<em>MInteraction</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MINTERACTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 5;
+	int MINTERACTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 6;
 
 	/**
 	 * The meta object id for the
@@ -395,13 +404,29 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MLIFELINE__EXECUTIONS = MELEMENT_FEATURE_COUNT + 1;
 
 	/**
+	 * The feature id for the '<em><b>Left</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE__LEFT = MELEMENT_FEATURE_COUNT + 2;
+
+	/**
+	 * The feature id for the '<em><b>Right</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE__RIGHT = MELEMENT_FEATURE_COUNT + 3;
+
+	/**
 	 * The number of structural features of the '<em>MLifeline</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 2;
+	int MLIFELINE_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 4;
 
 	/**
 	 * The operation id for the '<em>Vertical Distance</em>' operation. <!-- begin-user-doc --> <!--
@@ -508,13 +533,22 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MLIFELINE___ELEMENT_AT__INT = MELEMENT_OPERATION_COUNT + 8;
 
 	/**
+	 * The operation id for the '<em>Nudge Horizontally</em>' operation. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___NUDGE_HORIZONTALLY__INT = MELEMENT_OPERATION_COUNT + 9;
+
+	/**
 	 * The number of operations of the '<em>MLifeline</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 9;
+	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 10;
 
 	/**
 	 * The meta object id for the
@@ -1477,6 +1511,17 @@ public interface SequenceDiagramPackage extends EPackage {
 	EOperation getMInteraction__AddLifeline__int_int();
 
 	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getLifelineAt(int) <em>Get Lifeline
+	 * At</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Get Lifeline At</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MInteraction#getLifelineAt(int)
+	 * @generated
+	 */
+	EOperation getMInteraction__GetLifelineAt__int();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline
 	 * <em>MLifeline</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -1509,6 +1554,30 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getMLifeline_Executions();
+
+	/**
+	 * Returns the meta object for the attribute
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getLeft <em>Left</em>}'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Left</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getLeft()
+	 * @see #getMLifeline()
+	 * @generated
+	 */
+	EAttribute getMLifeline_Left();
+
+	/**
+	 * Returns the meta object for the attribute
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getRight <em>Right</em>}'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Right</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getRight()
+	 * @see #getMLifeline()
+	 * @generated
+	 */
+	EAttribute getMLifeline_Right();
 
 	/**
 	 * Returns the meta object for the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOwner()
@@ -1611,6 +1680,17 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EOperation getMLifeline__ElementAt__int();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#nudgeHorizontally(int) <em>Nudge
+	 * Horizontally</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Nudge Horizontally</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#nudgeHorizontally(int)
+	 * @generated
+	 */
+	EOperation getMLifeline__NudgeHorizontally__int();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MExecution
@@ -2159,6 +2239,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		EOperation MINTERACTION___ADD_LIFELINE__INT_INT = eINSTANCE.getMInteraction__AddLifeline__int_int();
 
 		/**
+		 * The meta object literal for the '<em><b>Get Lifeline At</b></em>' operation. <!-- begin-user-doc
+		 * --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MINTERACTION___GET_LIFELINE_AT__INT = eINSTANCE.getMInteraction__GetLifelineAt__int();
+
+		/**
 		 * The meta object literal for the
 		 * '{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl <em>MLifeline</em>}'
 		 * class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2184,6 +2272,22 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EReference MLIFELINE__EXECUTIONS = eINSTANCE.getMLifeline_Executions();
+
+		/**
+		 * The meta object literal for the '<em><b>Left</b></em>' attribute feature. <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute MLIFELINE__LEFT = eINSTANCE.getMLifeline_Left();
+
+		/**
+		 * The meta object literal for the '<em><b>Right</b></em>' attribute feature. <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute MLIFELINE__RIGHT = eINSTANCE.getMLifeline_Right();
 
 		/**
 		 * The meta object literal for the '<em><b>Get Owner</b></em>' operation. <!-- begin-user-doc --> <!--
@@ -2261,6 +2365,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation MLIFELINE___ELEMENT_AT__INT = eINSTANCE.getMLifeline__ElementAt__int();
+
+		/**
+		 * The meta object literal for the '<em><b>Nudge Horizontally</b></em>' operation. <!-- begin-user-doc
+		 * --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MLIFELINE___NUDGE_HORIZONTALLY__INT = eINSTANCE.getMLifeline__NudgeHorizontally__int();
 
 		/**
 		 * The meta object literal for the

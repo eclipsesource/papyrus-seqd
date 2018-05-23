@@ -98,6 +98,19 @@
         </eAnnotations>
       </eParameters>
     </eOperations>
+    <eOperations name="getLifelineAt" lowerBound="1">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Queries the existing lifeline, if any, at or nearest to the left of a given x offset in the interaction."/>
+      </eAnnotations>
+      <eGenericType eClassifier="#//Optional">
+        <eTypeArguments eClassifier="#//MLifeline"/>
+      </eGenericType>
+      <eParameters name="offset" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="an x offset in the lifeline that is contained by or nearest to the right of the lifeline to be retrieved"/>
+        </eAnnotations>
+      </eParameters>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="lifelines" upperBound="-1"
         eType="#//MLifeline" changeable="false" containment="true" resolveProxies="false"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="messages" upperBound="-1"
@@ -217,10 +230,24 @@
         </eAnnotations>
       </eParameters>
     </eOperations>
+    <eOperations name="nudgeHorizontally" lowerBound="1" eType="#//Command">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Nudge the lifeline horizontally, along with all of the layout that depends on it."/>
+      </eAnnotations>
+      <eParameters name="deltaX" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="the distance by which to nudge the lifeline in the X axis (negative values nudging to the left, of course)"/>
+        </eAnnotations>
+      </eParameters>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="executionOccurrences" upperBound="-1"
         eType="#//MExecutionOccurrence" changeable="false" containment="true" resolveProxies="false"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="executions" upperBound="-1"
         eType="#//MExecution" changeable="false" containment="true" resolveProxies="false"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="left" lowerBound="1" eType="#//OptionalInt"
+        changeable="false" volatile="true" transient="true" derived="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="right" lowerBound="1" eType="#//OptionalInt"
+        changeable="false" volatile="true" transient="true" derived="true"/>
     <eGenericSuperTypes eClassifier="#//MElement">
       <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Lifeline"/>
     </eGenericSuperTypes>

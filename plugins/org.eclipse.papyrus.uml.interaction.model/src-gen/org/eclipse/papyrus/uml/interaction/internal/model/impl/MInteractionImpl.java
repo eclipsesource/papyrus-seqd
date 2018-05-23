@@ -15,9 +15,12 @@ package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 import static java.util.Collections.singleton;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -31,6 +34,7 @@ import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.provider.IDisposable;
 import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.graph.Graph;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.AddLifelineCommand;
@@ -40,6 +44,7 @@ import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MObject;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Interaction;
 import org.eclipse.uml2.uml.Lifeline;
@@ -265,6 +270,8 @@ public class MInteractionImpl extends MElementImpl<Interaction> implements MInte
 				return getMessage((Message)arguments.get(0));
 			case SequenceDiagramPackage.MINTERACTION___ADD_LIFELINE__INT_INT:
 				return addLifeline((Integer)arguments.get(0), (Integer)arguments.get(1));
+			case SequenceDiagramPackage.MINTERACTION___GET_LIFELINE_AT__INT:
+				return getLifelineAt((Integer)arguments.get(0));
 		}
 		return super.eInvoke(operationID, arguments);
 	}
@@ -312,6 +319,22 @@ public class MInteractionImpl extends MElementImpl<Interaction> implements MInte
 	@Override
 	public CreationCommand<Lifeline> addLifeline(int xPosition, int height) {
 		return new AddLifelineCommand(this, xPosition, height);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Optional<MLifeline> getLifelineAt(int offset) {
+		LayoutHelper layout = layoutHelper();
+		Function<MLifeline, Shape> shape = ll -> ll.getDiagramView().get();
+		Comparator<MLifeline> leftToRight = Comparator.comparing(shape,
+				Comparator.comparing(layout::getLeft));
+		Predicate<MLifeline> hit = ll -> offset <= layout.getRight(shape.apply(ll));
+
+		return getLifelines().stream().sorted(leftToRight).filter(hit).findFirst();
 	}
 
 } // MInteractionImpl

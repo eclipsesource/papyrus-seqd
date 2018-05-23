@@ -34,4 +34,21 @@ public interface Group<V extends Visitable<V>> extends Visitable<V> {
 	 * @return the group members
 	 */
 	Stream<V> members();
+
+	/**
+	 * Query the group kind of a {@code visitable} that may or may not be a {@link Group}.
+	 * 
+	 * @param visitable
+	 *            a visitable graph element
+	 * @return its kind, or {@link GroupKind#NONE} if it is not a {@link Group}
+	 */
+	static GroupKind kind(Visitable<?> visitable) {
+		GroupKind result = null;
+
+		if (visitable instanceof Group<?>) {
+			result = ((Group<?>)visitable).kind();
+		}
+
+		return result == null ? GroupKind.NONE : result;
+	}
 }

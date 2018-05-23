@@ -14,7 +14,9 @@ package org.eclipse.papyrus.uml.interaction.model;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.uml2.uml.Element;
@@ -74,6 +76,38 @@ public interface MLifeline extends MElement<Lifeline> {
 	 * @generated
 	 */
 	List<MExecution> getExecutions();
+
+	/**
+	 * Returns the value of the '<em><b>Left</b></em>' attribute. <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Left</em>' attribute isn't clear, there really should be more of a
+	 * description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Left</em>' attribute.
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMLifeline_Left()
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.OptionalInt" required="true"
+	 *        transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	OptionalInt getLeft();
+
+	/**
+	 * Returns the value of the '<em><b>Right</b></em>' attribute. <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Right</em>' attribute isn't clear, there really should be more of a
+	 * description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Right</em>' attribute.
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMLifeline_Right()
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.OptionalInt" required="true"
+	 *        transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	OptionalInt getRight();
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -180,5 +214,18 @@ public interface MLifeline extends MElement<Lifeline> {
 	 * @generated
 	 */
 	Optional<MElement<? extends Element>> elementAt(int offset);
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> Nudge the lifeline horizontally,
+	 * along with all of the layout that depends on it.
+	 * 
+	 * @param deltaX
+	 *            the distance by which to nudge the lifeline in the X axis (negative values nudging to the
+	 *            left, of course) <!-- end-model-doc -->
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Command" required="true"
+	 *        deltaXRequired="true"
+	 * @generated
+	 */
+	Command nudgeHorizontally(int deltaX);
 
 } // MLifeline

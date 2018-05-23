@@ -34,8 +34,8 @@ import org.junit.Test;
  *
  * @author Christian W. Damus
  */
-@SuppressWarnings("restriction")
-@ModelResource({ "lifelines_layout.uml", "lifelines_layout.notation" })
+@SuppressWarnings({"nls", "restriction" })
+@ModelResource({"lifelines_layout.uml", "lifelines_layout.notation" })
 public class DefaultLayoutHelperTest {
 
 	@Rule
@@ -52,8 +52,7 @@ public class DefaultLayoutHelperTest {
 
 	@Test
 	public void getAdjustedBounds_lifeline() {
-		Lifeline centre = model.getElement("AnchorsModel::LifelineHeaderAnchor::CenterLine",
-				Lifeline.class);
+		Lifeline centre = model.getElement("AnchorsModel::LifelineHeaderAnchor::CenterLine", Lifeline.class);
 		Node view = require(model.vertex(centre).getDiagramView(), Node.class);
 
 		Bounds current = bounds(view);

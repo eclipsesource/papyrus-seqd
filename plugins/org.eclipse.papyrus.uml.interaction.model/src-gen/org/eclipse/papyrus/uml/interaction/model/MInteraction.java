@@ -159,4 +159,17 @@ public interface MInteraction extends MElement<Interaction> {
 	 */
 	CreationCommand<Lifeline> addLifeline(int xPosition, int height);
 
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> Queries the existing lifeline,
+	 * if any, at or nearest to the left of a given x offset in the interaction.
+	 * 
+	 * @param offset
+	 *            an x offset in the lifeline that is contained by or nearest to the right of the lifeline to
+	 *            be retrieved <!-- end-model-doc -->
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Optional&lt;org.eclipse.papyrus.uml.interaction.model.MLifeline&gt;"
+	 *        required="true" offsetRequired="true"
+	 * @generated
+	 */
+	Optional<MLifeline> getLifelineAt(int offset);
+
 } // MInteraction

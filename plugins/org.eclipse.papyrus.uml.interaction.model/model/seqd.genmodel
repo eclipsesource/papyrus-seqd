@@ -57,10 +57,15 @@
         <genParameters ecoreParameter="seqd.ecore#//MInteraction/addLifeline/xPosition"/>
         <genParameters ecoreParameter="seqd.ecore#//MInteraction/addLifeline/height"/>
       </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MInteraction/getLifelineAt">
+        <genParameters ecoreParameter="seqd.ecore#//MInteraction/getLifelineAt/offset"/>
+      </genOperations>
     </genClasses>
     <genClasses ecoreClass="seqd.ecore#//MLifeline">
       <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/executionOccurrences"/>
       <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/executions"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/left"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/right"/>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/getOwner"/>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/getDiagramView"/>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/following">
@@ -93,6 +98,9 @@
       </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/elementAt">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/elementAt/offset"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/nudgeHorizontally">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/nudgeHorizontally/deltaX"/>
       </genOperations>
     </genClasses>
     <genClasses ecoreClass="seqd.ecore#//MExecution">
