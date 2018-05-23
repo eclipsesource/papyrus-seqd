@@ -23,6 +23,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Optional;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.gmf.runtime.notation.Edge;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
@@ -35,6 +36,7 @@ import org.eclipse.uml2.uml.ActionExecutionSpecification;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.InteractionFragment;
+import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
 import org.eclipse.uml2.uml.MessageKind;
@@ -46,15 +48,20 @@ import org.junit.Assume;
 import junit.textui.TestRunner;
 
 /**
- * <!-- begin-user-doc --> A test case for the model object
- * '<em><b>MLifeline</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A test case for the model object '<em><b>MLifeline</b></em>'. <!-- end-user-doc -->
+ * <p>
+ * The following features are tested:
+ * <ul>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getLeft() <em>Left</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getRight() <em>Right</em>}</li>
+ * </ul>
+ * </p>
  * <p>
  * The following operations are tested:
  * <ul>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOwner()
- * <em>Get Owner</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getDiagramView()
- * <em>Get Diagram View</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOwner() <em>Get Owner</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getDiagramView() <em>Get Diagram
+ * View</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#following(org.eclipse.papyrus.uml.interaction.model.MElement)
  * <em>Following</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getExecutionOccurrence(org.eclipse.uml2.uml.ExecutionOccurrenceSpecification)
@@ -67,18 +74,19 @@ import junit.textui.TestRunner;
  * <em>Insert Execution After</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement)
  * <em>Insert Message After</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#elementAt(int)
- * <em>Element At</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#elementAt(int) <em>Element At</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#nudgeHorizontally(int) <em>Nudge
+ * Horizontally</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @generated
  */
 public class MLifelineTest extends MElementTest {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	public static void main(String[] args) {
@@ -86,9 +94,8 @@ public class MLifelineTest extends MElementTest {
 	}
 
 	/**
-	 * Constructs a new MLifeline test case with the given name. <!-- begin-user-doc
-	 * --> <!-- end-user-doc -->
-	 *
+	 * Constructs a new MLifeline test case with the given name. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public MLifelineTest(String name) {
@@ -96,14 +103,13 @@ public class MLifelineTest extends MElementTest {
 	}
 
 	/**
-	 * Returns the fixture for this MLifeline test case. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
+	 * Returns the fixture for this MLifeline test case. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	protected MLifeline getFixture() {
-		return (MLifeline) fixture;
+		return (MLifeline)fixture;
 	}
 
 	/**
@@ -119,7 +125,16 @@ public class MLifelineTest extends MElementTest {
 
 	@Override
 	protected void initializeFixture() {
-		setFixture(interaction.getLifelines().get(1));
+		int which;
+		switch (getName()) {
+			case "testNudgeHorizontally__int":
+				which = 2; // The 'CenterLine' in this diagram
+			default:
+				which = 1; // The 'RightLine' in most diagrams
+				break;
+		}
+
+		setFixture(interaction.getLifelines().get(which));
 	}
 
 	/**
@@ -133,13 +148,37 @@ public class MLifelineTest extends MElementTest {
 		super.tearDown();
 	}
 
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getLeft() <em>Left</em>}' feature
+	 * getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getLeft()
+	 * @generated NOT
+	 */
+	public void testGetLeft() {
+		assertThat(getFixture().getLeft(), isPresent(173));
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getRight() <em>Right</em>}'
+	 * feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getRight()
+	 * @generated NOT
+	 */
+	public void testGetRight() {
+		assertThat(getFixture().getRight(), isPresent(257)); // 173 {left} + 88 {width}
+	}
+
 	@Override
 	protected String getInteractionName() {
 		switch (getName()) {
-		case "testGetExecutionOccurrence__ExecutionOccurrenceSpecification":
-			return "ExecutionSpecificationSideAnchors";
-		default:
-			return super.getInteractionName();
+			case "testGetExecutionOccurrence__ExecutionOccurrenceSpecification":
+				return "ExecutionSpecificationSideAnchors";
+			case "testNudgeHorizontally__int":
+				return "LifelineHeaderAnchor";
+			default:
+				return super.getInteractionName();
 		}
 	}
 
@@ -150,9 +189,8 @@ public class MLifelineTest extends MElementTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOwner()
-	 * <em>Get Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOwner() <em>Get Owner</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getOwner()
 	 * @generated NOT
@@ -187,10 +225,8 @@ public class MLifelineTest extends MElementTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getDiagramView()
-	 * <em>Get Diagram View</em>}' operation. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getDiagramView() <em>Get Diagram
+	 * View</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getDiagramView()
 	 * @generated NOT
@@ -215,8 +251,7 @@ public class MLifelineTest extends MElementTest {
 		Assume.assumeThat(end, isPresent());
 
 		Optional<MElement<?>> following = getFixture().following(end.get());
-		assertThat(following,
-				isPresent(wraps(umlInteraction.getFragment("ActionExecutionSpecification1"))));
+		assertThat(following, isPresent(wraps(umlInteraction.getFragment("ActionExecutionSpecification1"))));
 		following = getFixture().following(following.get());
 		assertThat(following, isPresent(wraps(umlInteraction.getFragment("reply-send"))));
 		following = getFixture().following(following.get());
@@ -226,14 +261,13 @@ public class MLifelineTest extends MElementTest {
 	/**
 	 * Tests the
 	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getExecutionOccurrence(org.eclipse.uml2.uml.ExecutionOccurrenceSpecification)
-	 * <em>Get Execution Occurrence</em>}' operation. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * <em>Get Execution Occurrence</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getExecutionOccurrence(org.eclipse.uml2.uml.ExecutionOccurrenceSpecification)
 	 * @generated NOT
 	 */
 	public void testGetExecutionOccurrence__ExecutionOccurrenceSpecification() {
-		ExecutionOccurrenceSpecification occurrence = (ExecutionOccurrenceSpecification) umlInteraction
+		ExecutionOccurrenceSpecification occurrence = (ExecutionOccurrenceSpecification)umlInteraction
 				.getFragment("ActionExecutionSpecification1Start");
 		assertThat(getFixture().getExecutionOccurrence(occurrence), isPresent(wraps(occurrence)));
 	}
@@ -241,14 +275,13 @@ public class MLifelineTest extends MElementTest {
 	/**
 	 * Tests the
 	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getExecution(org.eclipse.uml2.uml.ExecutionSpecification)
-	 * <em>Get Execution</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * <em>Get Execution</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getExecution(org.eclipse.uml2.uml.ExecutionSpecification)
 	 * @generated NOT
 	 */
 	public void testGetExecution__ExecutionSpecification() {
-		ExecutionSpecification exec = (ExecutionSpecification) umlInteraction
+		ExecutionSpecification exec = (ExecutionSpecification)umlInteraction
 				.getFragment("ActionExecutionSpecification1");
 		assertThat(getFixture().getExecution(exec), isPresent(wraps(exec)));
 	}
@@ -256,8 +289,7 @@ public class MLifelineTest extends MElementTest {
 	/**
 	 * Tests the
 	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, int, org.eclipse.uml2.uml.Element)
-	 * <em>Insert Execution After</em>}' operation. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * <em>Insert Execution After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#insertExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement,
 	 *      int, int, org.eclipse.uml2.uml.Element)
@@ -276,14 +308,13 @@ public class MLifelineTest extends MElementTest {
 		assertThat(exec.getTop(), isPresent(240));
 		assertThat(exec.getBottom(), isPresent(290));
 		assertThat(exec.getElement(), instanceOf(ActionExecutionSpecification.class));
-		assertThat(((ActionExecutionSpecification) exec.getElement()).getAction(), is(action));
+		assertThat(((ActionExecutionSpecification)exec.getElement()).getAction(), is(action));
 	}
 
 	/**
 	 * Tests the
 	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, int, org.eclipse.emf.ecore.EClass)
-	 * <em>Insert Execution After</em>}' operation. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * <em>Insert Execution After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#insertExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement,
 	 *      int, int, org.eclipse.emf.ecore.EClass)
@@ -303,18 +334,17 @@ public class MLifelineTest extends MElementTest {
 		assertThat(exec.getElement(), instanceOf(ActionExecutionSpecification.class));
 
 		// We didn't actually supply the action, as such
-		assertThat(((ActionExecutionSpecification) exec.getElement()).getAction(), nullValue());
+		assertThat(((ActionExecutionSpecification)exec.getElement()).getAction(), nullValue());
 	}
 
 	/**
 	 * Tests the
 	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement)
-	 * <em>Insert Message After</em>}' operation. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * <em>Insert Message After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement,
-	 *      int, org.eclipse.papyrus.uml.interaction.model.MLifeline,
-	 *      org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement)
+	 *      int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.uml2.uml.MessageSort,
+	 *      org.eclipse.uml2.uml.NamedElement)
 	 * @generated NOT
 	 */
 	public void testInsertMessageAfter__MElement_int_MLifeline_MessageSort_NamedElement() {
@@ -337,12 +367,12 @@ public class MLifelineTest extends MElementTest {
 		MessageEnd send = umlMessage.getSendEvent();
 		assertThat(send, notNullValue());
 		assertThat(send.getMessage(), is(umlMessage));
-		assertThat(getFixture().getElement().getCoveredBys(), hasItem((InteractionFragment) send));
+		assertThat(getFixture().getElement().getCoveredBys(), hasItem((InteractionFragment)send));
 
 		MessageEnd recv = umlMessage.getReceiveEvent();
 		assertThat(recv, notNullValue());
 		assertThat(recv.getMessage(), is(umlMessage));
-		assertThat(receiver.getElement().getCoveredBys(), hasItem((InteractionFragment) recv));
+		assertThat(receiver.getElement().getCoveredBys(), hasItem((InteractionFragment)recv));
 
 		// The edge connects the lifeline bodies (not the heads)
 		Edge edge = message.getDiagramView().get();
@@ -355,10 +385,8 @@ public class MLifelineTest extends MElementTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#elementAt(int)
-	 * <em>Element At</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#elementAt(int) <em>Element
+	 * At</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#elementAt(int)
 	 * @generated NOT
@@ -370,10 +398,40 @@ public class MLifelineTest extends MElementTest {
 
 		element = getFixture().elementAt(450);
 		assertThat(element, isPresent(instanceOf(MMessageEnd.class)));
-		assertThat(((MessageEnd) element.get().getElement()).getName(), is("reply-send"));
+		assertThat(((MessageEnd)element.get().getElement()).getName(), is("reply-send"));
 
 		element = getFixture().elementAt(5);
 		assertThat(element, not(isPresent()));
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#nudgeHorizontally(int) <em>Nudge
+	 * Horizontally</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#nudgeHorizontally(int)
+	 * @generated NOT
+	 */
+	@SuppressWarnings("boxing")
+	public void testNudgeHorizontally__int() {
+		final Lifeline left = interaction.getElement().getLifeline("LeftLine");
+		final Lifeline right = interaction.getElement().getLifeline("RightLine");
+		final Lifeline centre = getFixture().getElement();
+		final int leftX = interaction.getLifeline(left).get().getLeft().getAsInt();
+		final int rightX = interaction.getLifeline(right).get().getLeft().getAsInt();
+		final int centreX = interaction.getLifeline(centre).get().getLeft().getAsInt();
+
+		Command nudge = getFixture().nudgeHorizontally(90);
+		assertThat(nudge, executable());
+		execute(nudge);
+
+		// FIXME: API in the model for this
+		assertThat("Centre line not moved", interaction.getLifeline(centre).get().getLeft().getAsInt(),
+				is(centreX + 90));
+		assertThat("Right line not moved", interaction.getLifeline(right).get().getLeft().getAsInt(),
+				is(rightX + 90));
+		// but this one doesn't move. It's dependet on the centre line by creation message, but it's
+		// visually to the left, so isn't affected by the horizontal nudge (which has no semantics)
+		assertThat("Left line moved", interaction.getLifeline(left).get().getLeft().getAsInt(), is(leftX));
 	}
 
 } // MLifelineTest

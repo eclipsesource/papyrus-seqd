@@ -12,9 +12,7 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.IdentityCommand;
@@ -30,7 +28,6 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.graph.GroupKind;
 import org.eclipse.papyrus.uml.interaction.graph.Tag;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
-import org.eclipse.papyrus.uml.interaction.graph.Visitor;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Message;
@@ -90,12 +87,9 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 	 *
 	 * @author Christian W. Damus
 	 */
-	private class MoveDownVisitor implements Visitor<Vertex> {
-		private final Set<Vertex> visited = new HashSet<>();
+	private class MoveDownVisitor extends CommandBuildingVisitor<Vertex> {
 
 		private final int delta;
-
-		private Command result = null;
 
 		MoveDownVisitor(int delta) {
 			super();
@@ -103,20 +97,9 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 			this.delta = delta;
 		}
 
-		/**
-		 * Obtain the command that moves down elements in the diagram to make room.
-		 * 
-		 * @return the resulting command. It may be unexecutable, but never {@code null}
-		 */
-		public Command getResult() {
-			return result == null ? UnexecutableCommand.INSTANCE : result;
-		}
-
 		@SuppressWarnings("boxing")
 		@Override
-		public void visit(Vertex vertex) {
-			visited.add(vertex);
-
+		protected void process(Vertex vertex) {
 			Element element = vertex.getInteractionElement();
 			View view = vertex.getDiagramView();
 			if (view instanceof Shape) {
@@ -167,24 +150,6 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 				// Can't nudge the diagram, of course
 				chain(UnexecutableCommand.INSTANCE);
 			}
-		}
-
-		void chain(Command next) {
-			if (next != null) {
-				if (result == null) {
-					result = next;
-				} else {
-					result = result.chain(next);
-				}
-			}
-		}
-
-		boolean visited(Vertex v) {
-			return visited.contains(v);
-		}
-
-		boolean visited(Optional<Vertex> v) {
-			return v.filter(this::visited).isPresent();
 		}
 	}
 

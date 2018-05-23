@@ -17,8 +17,10 @@ import static org.eclipse.papyrus.uml.interaction.graph.GraphPredicates.covers;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.function.Predicate;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
@@ -31,6 +33,7 @@ import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.InsertExecutionCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.InsertMessageCommand;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.NudgeHorizontallyCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
@@ -56,6 +59,10 @@ import org.eclipse.uml2.uml.NamedElement;
  * <em>Execution Occurrences</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl#getExecutions
  * <em>Executions</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl#getLeft
+ * <em>Left</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl#getRight
+ * <em>Right</em>}</li>
  * </ul>
  *
  * @generated
@@ -80,6 +87,26 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 * @ordered
 	 */
 	protected EList<MExecution> executions;
+
+	/**
+	 * The default value of the '{@link #getLeft() <em>Left</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @see #getLeft()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final OptionalInt LEFT_EDEFAULT = null;
+
+	/**
+	 * The default value of the '{@link #getRight() <em>Right</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @see #getRight()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final OptionalInt RIGHT_EDEFAULT = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -130,6 +157,26 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 					SequenceDiagramPackage.MLIFELINE__EXECUTIONS);
 		}
 		return executions;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public OptionalInt getLeft() {
+		return getVertex().map(layoutHelper()::getLeft).orElseGet(OptionalInt::empty);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public OptionalInt getRight() {
+		return getVertex().map(layoutHelper()::getRight).orElseGet(OptionalInt::empty);
 	}
 
 	/**
@@ -228,6 +275,16 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Command nudgeHorizontally(int deltaX) {
+		return new NudgeHorizontallyCommand(this, deltaX);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -253,6 +310,10 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return getExecutionOccurrences();
 			case SequenceDiagramPackage.MLIFELINE__EXECUTIONS:
 				return getExecutions();
+			case SequenceDiagramPackage.MLIFELINE__LEFT:
+				return getLeft();
+			case SequenceDiagramPackage.MLIFELINE__RIGHT:
+				return getRight();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -269,6 +330,10 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return (executionOccurrences != null) && !executionOccurrences.isEmpty();
 			case SequenceDiagramPackage.MLIFELINE__EXECUTIONS:
 				return (executions != null) && !executions.isEmpty();
+			case SequenceDiagramPackage.MLIFELINE__LEFT:
+				return LEFT_EDEFAULT == null ? getLeft() != null : !LEFT_EDEFAULT.equals(getLeft());
+			case SequenceDiagramPackage.MLIFELINE__RIGHT:
+				return RIGHT_EDEFAULT == null ? getRight() != null : !RIGHT_EDEFAULT.equals(getRight());
 		}
 		return super.eIsSet(featureID);
 	}
@@ -304,6 +369,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 						(NamedElement)arguments.get(4));
 			case SequenceDiagramPackage.MLIFELINE___ELEMENT_AT__INT:
 				return elementAt((Integer)arguments.get(0));
+			case SequenceDiagramPackage.MLIFELINE___NUDGE_HORIZONTALLY__INT:
+				return nudgeHorizontally((Integer)arguments.get(0));
 		}
 		return super.eInvoke(operationID, arguments);
 	}

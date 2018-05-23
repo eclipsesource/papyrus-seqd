@@ -14,6 +14,7 @@ package org.eclipse.papyrus.uml.interaction.model.tests;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
@@ -33,31 +34,33 @@ import org.eclipse.uml2.uml.Message;
 import junit.textui.TestRunner;
 
 /**
- * <!-- begin-user-doc --> A test case for the model object
- * '<em><b>MInteraction</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A test case for the model object '<em><b>MInteraction</b></em>'. <!-- end-user-doc
+ * -->
  * <p>
  * The following operations are tested:
  * <ul>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getDiagramView()
- * <em>Get Diagram View</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getDiagramView() <em>Get Diagram
+ * View</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getElement(org.eclipse.uml2.uml.Element)
  * <em>Get Element</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getLifeline(org.eclipse.uml2.uml.Lifeline)
  * <em>Get Lifeline</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getMessage(org.eclipse.uml2.uml.Message)
  * <em>Get Message</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#addLifeline(int, int)
- * <em>Add Lifeline</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#addLifeline(int, int) <em>Add
+ * Lifeline</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getLifelineAt(int) <em>Get Lifeline
+ * At</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @generated
  */
 public class MInteractionTest extends MElementTest {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	public static void main(String[] args) {
@@ -65,8 +68,8 @@ public class MInteractionTest extends MElementTest {
 	}
 
 	/**
-	 * Constructs a new MInteraction test case with the given name. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * Constructs a new MInteraction test case with the given name. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 *
 	 * @generated
 	 */
@@ -75,14 +78,13 @@ public class MInteractionTest extends MElementTest {
 	}
 
 	/**
-	 * Returns the fixture for this MInteraction test case. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
+	 * Returns the fixture for this MInteraction test case. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	protected MInteraction getFixture() {
-		return (MInteraction) fixture;
+		return (MInteraction)fixture;
 	}
 
 	/**
@@ -148,10 +150,8 @@ public class MInteractionTest extends MElementTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getDiagramView()
-	 * <em>Get Diagram View</em>}' operation. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getDiagramView() <em>Get
+	 * Diagram View</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MInteraction#getDiagramView()
 	 * @generated NOT
@@ -165,8 +165,7 @@ public class MInteractionTest extends MElementTest {
 	/**
 	 * Tests the
 	 * '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getElement(org.eclipse.uml2.uml.Element)
-	 * <em>Get Element</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * <em>Get Element</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MInteraction#getElement(org.eclipse.uml2.uml.Element)
 	 * @generated NOT
@@ -189,8 +188,7 @@ public class MInteractionTest extends MElementTest {
 	/**
 	 * Tests the
 	 * '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getLifeline(org.eclipse.uml2.uml.Lifeline)
-	 * <em>Get Lifeline</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * <em>Get Lifeline</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MInteraction#getLifeline(org.eclipse.uml2.uml.Lifeline)
 	 * @generated NOT
@@ -203,8 +201,7 @@ public class MInteractionTest extends MElementTest {
 	/**
 	 * Tests the
 	 * '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getMessage(org.eclipse.uml2.uml.Message)
-	 * <em>Get Message</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * <em>Get Message</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MInteraction#getMessage(org.eclipse.uml2.uml.Message)
 	 * @generated NOT
@@ -215,13 +212,10 @@ public class MInteractionTest extends MElementTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#addLifeline(int, int)
-	 * <em>Add Lifeline</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#addLifeline(int, int) <em>Add
+	 * Lifeline</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
-	 * @see org.eclipse.papyrus.uml.interaction.model.MInteraction#addLifeline(int,
-	 *      int)
+	 * @see org.eclipse.papyrus.uml.interaction.model.MInteraction#addLifeline(int, int)
 	 * @generated NOT
 	 */
 	public void testAddLifeline__int_int() {
@@ -241,6 +235,24 @@ public class MInteractionTest extends MElementTest {
 		assertThat(bounds.getY(), is(reference.getY()));
 		assertThat(bounds.getWidth(), is(100));
 		assertThat(bounds.getHeight(), is(28));
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getLifelineAt(int) <em>Get
+	 * Lifeline At</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MInteraction#getLifelineAt(int)
+	 * @generated NOT
+	 */
+	public void testGetLifelineAt__int() {
+		MLifeline left = getFixture().getLifeline(umlInteraction.getLifeline("LeftLine")).get();
+		MLifeline right = getFixture().getLifeline(umlInteraction.getLifeline("RightLine")).get();
+
+		assertThat("Direct hit on right not found", getFixture().getLifelineAt(200), isPresent(is(right)));
+		assertThat("Between the lifelines not found", getFixture().getLifelineAt(160), isPresent(is(right)));
+		assertThat("Direct hit on left not found	", getFixture().getLifelineAt(100), isPresent(is(left)));
+		assertThat("Left of the leftmost not found", getFixture().getLifelineAt(15), isPresent(is(left)));
+		assertThat("Right of the righmost was found", getFixture().getLifelineAt(400), not(isPresent()));
 	}
 
 } // MInteractionTest
