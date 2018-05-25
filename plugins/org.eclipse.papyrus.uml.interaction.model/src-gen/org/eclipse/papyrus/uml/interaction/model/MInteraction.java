@@ -59,6 +59,18 @@ public interface MInteraction extends MElement<Interaction> {
 	}
 
 	/**
+	 * Obtains the logical representation of the semantics of a sequence diagram and the UML interaction that
+	 * it presents.
+	 * 
+	 * @param sequenceDiagram
+	 *            a sequence diagram visualizing it
+	 * @return the logical interaction model
+	 */
+	static MInteraction getInstance(Diagram sequenceDiagram) {
+		return getInstance((Interaction)sequenceDiagram.getElement(), sequenceDiagram);
+	}
+
+	/**
 	 * Obtains the logical representation of the semantics only of an UML {@code interaction}.
 	 * 
 	 * @param interaction

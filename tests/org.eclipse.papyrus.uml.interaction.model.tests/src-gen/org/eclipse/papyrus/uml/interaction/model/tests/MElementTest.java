@@ -16,6 +16,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
 
@@ -63,60 +64,54 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 import junit.framework.TestCase;
 
 /**
- * <!-- begin-user-doc --> A test case for the model object
- * '<em><b>MElement</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A test case for the model object '<em><b>MElement</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are tested:
  * <ul>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#getInteraction()
- * <em>Interaction</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#getElement()
- * <em>Element</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#getTop()
- * <em>Top</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#getBottom()
- * <em>Bottom</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#getInteraction() <em>Interaction</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#getElement() <em>Element</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#getTop() <em>Top</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#getBottom() <em>Bottom</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#getName() <em>Name</em>}</li>
  * </ul>
  * </p>
  * <p>
  * The following operations are tested:
  * <ul>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#getOwner()
- * <em>Get Owner</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#getDiagramView()
- * <em>Get Diagram View</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#getOwner() <em>Get Owner</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#getDiagramView() <em>Get Diagram
+ * View</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#verticalDistance(org.eclipse.papyrus.uml.interaction.model.MElement)
  * <em>Vertical Distance</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#following()
- * <em>Following</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#nudge(int)
- * <em>Nudge</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#following() <em>Following</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#nudge(int) <em>Nudge</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @generated
  */
 public abstract class MElementTest extends TestCase {
 
 	/**
-	 * The fixture for this MElement test case. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 *
+	 * The fixture for this MElement test case. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected MElement<?> fixture = null;
 
 	protected EditingDomain domain;
+
 	protected MInteraction interaction;
+
 	protected Interaction umlInteraction;
+
 	protected Diagram sequenceDiagram;
 
 	private ComposedAdapterFactory adapterFactory;
 
 	/**
-	 * Constructs a new MElement test case with the given name. <!-- begin-user-doc
-	 * --> <!-- end-user-doc -->
-	 *
+	 * Constructs a new MElement test case with the given name. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public MElementTest(String name) {
@@ -124,9 +119,8 @@ public abstract class MElementTest extends TestCase {
 	}
 
 	/**
-	 * Sets the fixture for this MElement test case. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 *
+	 * Sets the fixture for this MElement test case. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected void setFixture(MElement<?> fixture) {
@@ -134,9 +128,8 @@ public abstract class MElementTest extends TestCase {
 	}
 
 	/**
-	 * Returns the fixture for this MElement test case. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 *
+	 * Returns the fixture for this MElement test case. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected MElement<?> getFixture() {
@@ -171,8 +164,8 @@ public abstract class MElementTest extends TestCase {
 		Resource notation = resourceSet.getResource(uri.trimFileExtension().appendFileExtension("notation"),
 				true);
 		umlInteraction = findUMLElement("AnchorsModel::" + getInteractionName(), Interaction.class);
-		sequenceDiagram = (Diagram) UML2Util.findEObject(notation.getContents(),
-				o -> (o instanceof Diagram) && (((Diagram) o).getElement() == umlInteraction));
+		sequenceDiagram = (Diagram)UML2Util.findEObject(notation.getContents(),
+				o -> (o instanceof Diagram) && (((Diagram)o).getElement() == umlInteraction));
 		interaction = MInteraction.getInstance(umlInteraction, sequenceDiagram);
 
 		initializeFixture();
@@ -223,16 +216,16 @@ public abstract class MElementTest extends TestCase {
 		if (object == null) {
 			return "<null>";
 		}
-		IItemLabelProvider labels = (IItemLabelProvider) adapterFactory.adapt(object,
+		IItemLabelProvider labels = (IItemLabelProvider)adapterFactory.adapt(object,
 				IItemLabelProvider.class);
 		return labels == null ? object.eClass().getName() : labels.getText(object);
 	}
 
 	protected Bounds getBounds(MElement<?> element) {
 		assertThat(element.getDiagramView(), isPresent(instanceOf(Shape.class)));
-		Shape shape = (Shape) element.getDiagramView().get();
+		Shape shape = (Shape)element.getDiagramView().get();
 		assertThat(shape.getLayoutConstraint(), instanceOf(Bounds.class));
-		return (Bounds) shape.getLayoutConstraint();
+		return (Bounds)shape.getLayoutConstraint();
 	}
 
 	protected <T> Matcher<Optional<T>> isPresent() {
@@ -310,7 +303,7 @@ public abstract class MElementTest extends TestCase {
 		return new CustomTypeSafeMatcher<EObject>("view of " + label(element)) {
 			@Override
 			protected boolean matchesSafely(EObject item) {
-				return (item instanceof View) && (((View) item).getElement() == element);
+				return (item instanceof View) && (((View)item).getElement() == element);
 			}
 		};
 	}
@@ -319,7 +312,7 @@ public abstract class MElementTest extends TestCase {
 		return new CustomTypeSafeMatcher<Anchor>("is " + id) {
 			@Override
 			protected boolean matchesSafely(Anchor item) {
-				return (item instanceof IdentityAnchor) && id.equals(((IdentityAnchor) item).getId());
+				return (item instanceof IdentityAnchor) && id.equals(((IdentityAnchor)item).getId());
 			}
 		};
 	}
@@ -354,10 +347,8 @@ public abstract class MElementTest extends TestCase {
 	//
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MElement#getInteraction()
-	 * <em>Interaction</em>}' feature getter. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#getInteraction()
+	 * <em>Interaction</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#getInteraction()
 	 * @generated NOT
@@ -367,10 +358,8 @@ public abstract class MElementTest extends TestCase {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MElement#getElement()
-	 * <em>Element</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#getElement() <em>Element</em>}'
+	 * feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#getElement()
 	 * @generated NOT
@@ -380,8 +369,8 @@ public abstract class MElementTest extends TestCase {
 	}
 
 	/**
-	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#getTop()
-	 * <em>Top</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#getTop() <em>Top</em>}' feature
+	 * getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#getTop()
 	 * @generated NOT
@@ -391,10 +380,8 @@ public abstract class MElementTest extends TestCase {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MElement#getBottom()
-	 * <em>Bottom</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#getBottom() <em>Bottom</em>}'
+	 * feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#getBottom()
 	 * @generated NOT
@@ -404,9 +391,25 @@ public abstract class MElementTest extends TestCase {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MElement#getOwner() <em>Get
-	 * Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#getName() <em>Name</em>}' feature
+	 * getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#getName()
+	 * @generated NOT
+	 */
+	public void testGetName() {
+		Element element = getFixture().getElement();
+		NamedElement named = (element instanceof NamedElement) ? (NamedElement)element : null;
+		if ((named != null) && (named.getName() != null)) {
+			assertThat(getFixture().getName(), is(named.getName()));
+		} else {
+			assertThat(getFixture().getName(), nullValue());
+		}
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#getOwner() <em>Get Owner</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#getOwner()
 	 * @generated NOT
@@ -416,10 +419,8 @@ public abstract class MElementTest extends TestCase {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MElement#getDiagramView()
-	 * <em>Get Diagram View</em>}' operation. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#getDiagramView() <em>Get Diagram
+	 * View</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#getDiagramView()
 	 * @generated NOT
@@ -433,8 +434,7 @@ public abstract class MElementTest extends TestCase {
 	/**
 	 * Tests the
 	 * '{@link org.eclipse.papyrus.uml.interaction.model.MElement#verticalDistance(org.eclipse.papyrus.uml.interaction.model.MElement)
-	 * <em>Vertical Distance</em>}' operation. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * <em>Vertical Distance</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#verticalDistance(org.eclipse.papyrus.uml.interaction.model.MElement)
 	 * @generated NOT
@@ -444,9 +444,8 @@ public abstract class MElementTest extends TestCase {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MElement#following()
-	 * <em>Following</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#following() <em>Following</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#following()
 	 * @generated NOT
@@ -456,9 +455,8 @@ public abstract class MElementTest extends TestCase {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MElement#nudge(int)
-	 * <em>Nudge</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#nudge(int) <em>Nudge</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#nudge(int)
 	 * @generated NOT

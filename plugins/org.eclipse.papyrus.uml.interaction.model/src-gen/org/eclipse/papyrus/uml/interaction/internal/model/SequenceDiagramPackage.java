@@ -111,13 +111,21 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MELEMENT__BOTTOM = 3;
 
 	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MELEMENT__NAME = 4;
+
+	/**
 	 * The number of structural features of the '<em>MElement</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MELEMENT_FEATURE_COUNT = 4;
+	int MELEMENT_FEATURE_COUNT = 5;
 
 	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -215,6 +223,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MINTERACTION__BOTTOM = MELEMENT__BOTTOM;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MINTERACTION__NAME = MELEMENT__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Lifelines</b></em>' containment reference list. <!-- begin-user-doc -->
@@ -384,6 +400,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MLIFELINE__BOTTOM = MELEMENT__BOTTOM;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE__NAME = MELEMENT__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Execution Occurrences</b></em>' containment reference list. <!--
@@ -597,6 +621,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MEXECUTION__BOTTOM = MELEMENT__BOTTOM;
 
 	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION__NAME = MELEMENT__NAME;
+
+	/**
 	 * The feature id for the '<em><b>Start</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -718,6 +750,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MOCCURRENCE__BOTTOM = MELEMENT__BOTTOM;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MOCCURRENCE__NAME = MELEMENT__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Covered</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc
@@ -853,6 +893,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MEXECUTION_OCCURRENCE__BOTTOM = MOCCURRENCE__BOTTOM;
 
 	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION_OCCURRENCE__NAME = MOCCURRENCE__NAME;
+
+	/**
 	 * The feature id for the '<em><b>Covered</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
@@ -984,6 +1032,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MMESSAGE_END__BOTTOM = MOCCURRENCE__BOTTOM;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE_END__NAME = MOCCURRENCE__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Covered</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc
@@ -1142,6 +1198,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MMESSAGE__BOTTOM = MELEMENT__BOTTOM;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE__NAME = MELEMENT__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Send End</b></em>' containment reference. <!-- begin-user-doc --> <!--
@@ -1368,6 +1432,18 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getMElement_Bottom();
+
+	/**
+	 * Returns the meta object for the attribute
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MElement#getName <em>Name</em>}'. <!-- begin-user-doc
+	 * --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Name</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#getName()
+	 * @see #getMElement()
+	 * @generated
+	 */
+	EAttribute getMElement_Name();
 
 	/**
 	 * Returns the meta object for the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#getOwner()
@@ -2129,6 +2205,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute MELEMENT__BOTTOM = eINSTANCE.getMElement_Bottom();
+
+		/**
+		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature. <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute MELEMENT__NAME = eINSTANCE.getMElement_Name();
 
 		/**
 		 * The meta object literal for the '<em><b>Get Owner</b></em>' operation. <!-- begin-user-doc --> <!--

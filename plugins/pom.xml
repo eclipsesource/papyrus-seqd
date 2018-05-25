@@ -15,6 +15,8 @@
 		<module>org.eclipse.papyrus.infra.gmfdiag.filters.edit</module>
 		<module>org.eclipse.papyrus.uml.interaction.graph</module>
 		<module>org.eclipse.papyrus.uml.interaction.model</module>
+		<module>org.eclipse.papyrus.uml.interaction.model.edit</module>
+		<module>org.eclipse.papyrus.uml.interaction.model.view</module>
 		<module>org.eclipse.papyrus.uml.diagram.sequence.assistants</module>
 		<module>org.eclipse.papyrus.uml.diagram.sequence.assistants.edit</module>
 		<module>org.eclipse.papyrus.uml.diagram.sequence.contribution</module>

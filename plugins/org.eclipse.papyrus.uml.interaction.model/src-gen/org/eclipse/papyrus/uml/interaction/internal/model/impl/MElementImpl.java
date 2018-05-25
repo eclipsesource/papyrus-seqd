@@ -26,6 +26,7 @@ import org.eclipse.papyrus.uml.interaction.internal.model.commands.NudgeCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.NamedElement;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>MElement</b></em>'. <!-- end-user-doc
@@ -67,6 +68,16 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 	 * @ordered
 	 */
 	protected static final OptionalInt BOTTOM_EDEFAULT = null;
+
+	/**
+	 * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @see #getName()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String NAME_EDEFAULT = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -147,6 +158,20 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 	 * @generated NOT
 	 */
 	@Override
+	public String getName() {
+		Element element = getElement();
+		if (element instanceof NamedElement) {
+			return ((NamedElement)element).getName();
+		}
+		return null;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
 	public MElement<?> getOwner() {
 		return super.getOwner();
 	}
@@ -202,6 +227,8 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 				return getTop();
 			case SequenceDiagramPackage.MELEMENT__BOTTOM:
 				return getBottom();
+			case SequenceDiagramPackage.MELEMENT__NAME:
+				return getName();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -222,6 +249,8 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 				return TOP_EDEFAULT == null ? getTop() != null : !TOP_EDEFAULT.equals(getTop());
 			case SequenceDiagramPackage.MELEMENT__BOTTOM:
 				return BOTTOM_EDEFAULT == null ? getBottom() != null : !BOTTOM_EDEFAULT.equals(getBottom());
+			case SequenceDiagramPackage.MELEMENT__NAME:
+				return NAME_EDEFAULT == null ? getName() != null : !NAME_EDEFAULT.equals(getName());
 		}
 		return super.eIsSet(featureID);
 	}

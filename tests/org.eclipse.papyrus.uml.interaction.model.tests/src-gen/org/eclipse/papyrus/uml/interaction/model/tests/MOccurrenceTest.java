@@ -20,27 +20,26 @@ import org.eclipse.uml2.uml.InteractionFragment;
 import org.eclipse.uml2.uml.Lifeline;
 
 /**
- * <!-- begin-user-doc --> A test case for the model object
- * '<em><b>MOccurrence</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A test case for the model object '<em><b>MOccurrence</b></em>'. <!-- end-user-doc
+ * -->
  * <p>
  * The following features are tested:
  * <ul>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getCovered()
- * <em>Covered</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getStartedExecution()
- * <em>Started Execution</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getFinishedExecution()
- * <em>Finished Execution</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getCovered() <em>Covered</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getStartedExecution() <em>Started
+ * Execution</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getFinishedExecution() <em>Finished
+ * Execution</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @generated
  */
 public abstract class MOccurrenceTest extends MElementTest {
 
 	/**
-	 * Constructs a new MOccurrence test case with the given name. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * Constructs a new MOccurrence test case with the given name. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 *
 	 * @generated
 	 */
@@ -49,14 +48,13 @@ public abstract class MOccurrenceTest extends MElementTest {
 	}
 
 	/**
-	 * Returns the fixture for this MOccurrence test case. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
+	 * Returns the fixture for this MOccurrence test case. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	protected MOccurrence<?> getFixture() {
-		return (MOccurrence<?>) fixture;
+		return (MOccurrence<?>)fixture;
 	}
 
 	@Override
@@ -66,24 +64,20 @@ public abstract class MOccurrenceTest extends MElementTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getCovered()
-	 * <em>Covered</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getCovered() <em>Covered</em>}'
+	 * feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MOccurrence#getCovered()
 	 * @generated NOT
 	 */
 	public void testGetCovered() {
-		Lifeline covered = ((InteractionFragment) getFixture().getElement()).getCovereds().get(0);
+		Lifeline covered = ((InteractionFragment)getFixture().getElement()).getCovereds().get(0);
 		assertThat(getFixture().getCovered(), isPresent(wraps(covered)));
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getStartedExecution()
-	 * <em>Started Execution</em>}' feature getter. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getStartedExecution()
+	 * <em>Started Execution</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MOccurrence#getStartedExecution()
 	 * @generated NOT
@@ -93,10 +87,8 @@ public abstract class MOccurrenceTest extends MElementTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getFinishedExecution()
-	 * <em>Finished Execution</em>}' feature getter. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getFinishedExecution()
+	 * <em>Finished Execution</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MOccurrence#getFinishedExecution()
 	 * @generated NOT

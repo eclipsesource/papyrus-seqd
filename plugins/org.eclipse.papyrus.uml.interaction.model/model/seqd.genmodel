@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
     xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="Copyright (c) 2018 Christian W. Damus and others.&#xA; &#xA;All rights reserved. This program and the accompanying materials&#xA;are made available under the terms of the Eclipse Public License v1.0&#xA;which accompanies this distribution, and is available at&#xA;http://www.eclipse.org/legal/epl-v10.html&#xA;&#xA;Contributors:&#xA;  Christian W. Damus - Initial API and implementation&#xA;"
-    modelDirectory="/org.eclipse.papyrus.uml.interaction.model/src-gen" modelPluginID="org.eclipse.papyrus.uml.interaction.model"
+    modelDirectory="/org.eclipse.papyrus.uml.interaction.model/src-gen" editDirectory="/org.eclipse.papyrus.uml.interaction.model.edit/src-gen"
+    editorDirectory="/org.eclipse.papyrus.uml.interaction.model.editor/src-gen" modelPluginID="org.eclipse.papyrus.uml.interaction.model"
     modelName="Seqd" nonNLSMarkers="true" rootExtendsInterface="org.eclipse.papyrus.uml.interaction.model.MObject"
     rootExtendsClass="org.eclipse.papyrus.uml.interaction.internal.model.impl.MObjectImpl&lt;T>"
     rootImplementsInterface="" suppressEMFTypes="true" codeFormatting="true" commentFormatting="true"
@@ -12,8 +13,8 @@
   <genPackages prefix="SequenceDiagram" basePackage="org.eclipse.papyrus.uml" disposableProviderFactory="true"
       interfacePackageSuffix="model" metaDataPackageSuffix="internal.model" classPackageSuffix="internal.model.impl"
       utilityPackageSuffix="model.util" providerPackageSuffix="model.provider" presentationPackageSuffix="model.presentation"
-      testsPackageSuffix="model.tests" generateExampleClass="false" ecorePackage="seqd.ecore#/"
-      publicationLocation="">
+      testsPackageSuffix="model.tests" generateExampleClass="false" multipleEditorPages="false"
+      generateModelWizard="false" ecorePackage="seqd.ecore#/" publicationLocation="">
     <genDataTypes ecoreDataType="seqd.ecore#//Optional">
       <genTypeParameters ecoreTypeParameter="seqd.ecore#//Optional/T"/>
     </genDataTypes>
@@ -29,6 +30,7 @@
       <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MElement/element"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MElement/top"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MElement/bottom"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MElement/name"/>
       <genOperations ecoreOperation="seqd.ecore#//MElement/getOwner"/>
       <genOperations ecoreOperation="seqd.ecore#//MElement/getDiagramView"/>
       <genOperations ecoreOperation="seqd.ecore#//MElement/verticalDistance">
@@ -127,10 +129,10 @@
       <genOperations ecoreOperation="seqd.ecore#//MMessageEnd/getDiagramView"/>
     </genClasses>
     <genClasses ecoreClass="seqd.ecore#//MMessage">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference seqd.ecore#//MMessage/sendEnd"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference seqd.ecore#//MMessage/receiveEnd"/>
-      <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/send"/>
-      <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/receive"/>
+      <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MMessage/sendEnd"/>
+      <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MMessage/receiveEnd"/>
+      <genFeatures property="None" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/send"/>
+      <genFeatures property="None" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/receive"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/sender"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/receiver"/>
       <genOperations ecoreOperation="seqd.ecore#//MMessage/getOwner"/>
