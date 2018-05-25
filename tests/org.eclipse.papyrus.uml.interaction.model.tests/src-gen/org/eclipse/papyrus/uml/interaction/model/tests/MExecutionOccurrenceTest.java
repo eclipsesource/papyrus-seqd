@@ -27,25 +27,25 @@ import org.eclipse.uml2.uml.ExecutionSpecification;
 import junit.textui.TestRunner;
 
 /**
- * <!-- begin-user-doc --> A test case for the model object '<em><b>MExecution
- * Occurrence</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A test case for the model object '<em><b>MExecution Occurrence</b></em>'. <!--
+ * end-user-doc -->
  * <p>
  * The following operations are tested:
  * <ul>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence#getOwner()
- * <em>Get Owner</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence#getDiagramView()
- * <em>Get Diagram View</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence#getOwner() <em>Get
+ * Owner</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence#getDiagramView() <em>Get Diagram
+ * View</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @generated
  */
 public class MExecutionOccurrenceTest extends MOccurrenceTest {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	public static void main(String[] args) {
@@ -53,8 +53,8 @@ public class MExecutionOccurrenceTest extends MOccurrenceTest {
 	}
 
 	/**
-	 * Constructs a new MExecution Occurrence test case with the given name. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * Constructs a new MExecution Occurrence test case with the given name. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
 	 *
 	 * @generated
 	 */
@@ -63,14 +63,14 @@ public class MExecutionOccurrenceTest extends MOccurrenceTest {
 	}
 
 	/**
-	 * Returns the fixture for this MExecution Occurrence test case. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * Returns the fixture for this MExecution Occurrence test case. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 *
 	 * @generated
 	 */
 	@Override
 	protected MExecutionOccurrence getFixture() {
-		return (MExecutionOccurrence) fixture;
+		return (MExecutionOccurrence)fixture;
 	}
 
 	/**
@@ -113,9 +113,8 @@ public class MExecutionOccurrenceTest extends MOccurrenceTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence#getOwner()
-	 * <em>Get Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence#getOwner() <em>Get
+	 * Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence#getOwner()
 	 * @generated NOT
@@ -147,7 +146,7 @@ public class MExecutionOccurrenceTest extends MOccurrenceTest {
 
 	@Override
 	public void testGetStartedExecution() {
-		ExecutionSpecification exec = (ExecutionSpecification) umlInteraction
+		ExecutionSpecification exec = (ExecutionSpecification)umlInteraction
 				.getFragment("ActionExecutionSpecification1");
 		assertThat(getFixture().getStartedExecution(), isPresent(wraps(exec)));
 	}
@@ -159,16 +158,14 @@ public class MExecutionOccurrenceTest extends MOccurrenceTest {
 				.map(MExecutionOccurrence.class::cast);
 		assumeThat(finish, isPresent());
 
-		ExecutionSpecification exec = (ExecutionSpecification) umlInteraction
+		ExecutionSpecification exec = (ExecutionSpecification)umlInteraction
 				.getFragment("ActionExecutionSpecification1");
 		assertThat(finish.get().getFinishedExecution(), isPresent(wraps(exec)));
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence#getDiagramView()
-	 * <em>Get Diagram View</em>}' operation. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence#getDiagramView()
+	 * <em>Get Diagram View</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence#getDiagramView()
 	 * @generated NOT

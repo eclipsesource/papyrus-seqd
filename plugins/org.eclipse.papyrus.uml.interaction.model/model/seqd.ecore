@@ -49,6 +49,8 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="bottom" lowerBound="1"
         eType="#//OptionalInt" changeable="false" volatile="true" transient="true"
         derived="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        changeable="false" volatile="true" transient="true" derived="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="MInteraction">
     <eOperations name="getDiagramView" lowerBound="1">

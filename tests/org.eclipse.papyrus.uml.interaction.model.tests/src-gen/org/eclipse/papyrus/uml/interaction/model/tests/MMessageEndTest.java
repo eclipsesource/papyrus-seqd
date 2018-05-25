@@ -27,36 +27,32 @@ import org.eclipse.uml2.uml.Message;
 import junit.textui.TestRunner;
 
 /**
- * <!-- begin-user-doc --> A test case for the model object '<em><b>MMessage
- * End</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A test case for the model object '<em><b>MMessage End</b></em>'. <!-- end-user-doc
+ * -->
  * <p>
  * The following features are tested:
  * <ul>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#isSend()
- * <em>Send</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#isReceive()
- * <em>Receive</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getOtherEnd()
- * <em>Other End</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#isSend() <em>Send</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#isReceive() <em>Receive</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getOtherEnd() <em>Other End</em>}</li>
  * </ul>
  * </p>
  * <p>
  * The following operations are tested:
  * <ul>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getOwner()
- * <em>Get Owner</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getDiagramView()
- * <em>Get Diagram View</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getOwner() <em>Get Owner</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getDiagramView() <em>Get Diagram
+ * View</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @generated
  */
 public class MMessageEndTest extends MOccurrenceTest {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	public static void main(String[] args) {
@@ -64,8 +60,8 @@ public class MMessageEndTest extends MOccurrenceTest {
 	}
 
 	/**
-	 * Constructs a new MMessage End test case with the given name. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * Constructs a new MMessage End test case with the given name. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 *
 	 * @generated
 	 */
@@ -74,14 +70,13 @@ public class MMessageEndTest extends MOccurrenceTest {
 	}
 
 	/**
-	 * Returns the fixture for this MMessage End test case. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
+	 * Returns the fixture for this MMessage End test case. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	protected MMessageEnd getFixture() {
-		return (MMessageEnd) fixture;
+		return (MMessageEnd)fixture;
 	}
 
 	/**
@@ -137,7 +132,7 @@ public class MMessageEndTest extends MOccurrenceTest {
 
 	@Override
 	public void testGetStartedExecution() {
-		ExecutionSpecification exec = (ExecutionSpecification) umlInteraction
+		ExecutionSpecification exec = (ExecutionSpecification)umlInteraction
 				.getFragment("ActionExecutionSpecification1");
 		assertThat(getFixture().getStartedExecution(), isPresent(wraps(exec)));
 	}
@@ -146,15 +141,14 @@ public class MMessageEndTest extends MOccurrenceTest {
 	public void testGetFinishedExecution() {
 		Message reply = umlInteraction.getMessage("reply");
 		MMessageEnd replySend = interaction.getMessage(reply).get().getSend().get();
-		ExecutionSpecification exec = (ExecutionSpecification) umlInteraction
+		ExecutionSpecification exec = (ExecutionSpecification)umlInteraction
 				.getFragment("ActionExecutionSpecification1");
 		assertThat(replySend.getFinishedExecution(), isPresent(wraps(exec)));
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#isSend()
-	 * <em>Send</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#isSend() <em>Send</em>}'
+	 * feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MMessageEnd#isSend()
 	 * @generated NOT
@@ -168,10 +162,8 @@ public class MMessageEndTest extends MOccurrenceTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#isReceive()
-	 * <em>Receive</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#isReceive() <em>Receive</em>}'
+	 * feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MMessageEnd#isReceive()
 	 * @generated NOT
@@ -185,10 +177,8 @@ public class MMessageEndTest extends MOccurrenceTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getOtherEnd()
-	 * <em>Other End</em>}' feature getter. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getOtherEnd() <em>Other
+	 * End</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getOtherEnd()
 	 * @generated NOT
@@ -199,9 +189,8 @@ public class MMessageEndTest extends MOccurrenceTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getOwner()
-	 * <em>Get Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getOwner() <em>Get Owner</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getOwner()
 	 * @generated NOT
@@ -213,10 +202,8 @@ public class MMessageEndTest extends MOccurrenceTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getDiagramView()
-	 * <em>Get Diagram View</em>}' operation. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getDiagramView() <em>Get
+	 * Diagram View</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getDiagramView()
 	 * @generated NOT

@@ -20,34 +20,31 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import junit.textui.TestRunner;
 
 /**
- * <!-- begin-user-doc --> A test case for the model object
- * '<em><b>MExecution</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A test case for the model object '<em><b>MExecution</b></em>'. <!-- end-user-doc
+ * -->
  * <p>
  * The following features are tested:
  * <ul>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getStart()
- * <em>Start</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getFinish()
- * <em>Finish</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getStart() <em>Start</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getFinish() <em>Finish</em>}</li>
  * </ul>
  * </p>
  * <p>
  * The following operations are tested:
  * <ul>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getOwner()
- * <em>Get Owner</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getDiagramView()
- * <em>Get Diagram View</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getOwner() <em>Get Owner</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getDiagramView() <em>Get Diagram
+ * View</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @generated
  */
 public class MExecutionTest extends MElementTest {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	public static void main(String[] args) {
@@ -55,8 +52,8 @@ public class MExecutionTest extends MElementTest {
 	}
 
 	/**
-	 * Constructs a new MExecution test case with the given name. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * Constructs a new MExecution test case with the given name. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 *
 	 * @generated
 	 */
@@ -65,14 +62,13 @@ public class MExecutionTest extends MElementTest {
 	}
 
 	/**
-	 * Returns the fixture for this MExecution test case. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
+	 * Returns the fixture for this MExecution test case. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	protected MExecution getFixture() {
-		return (MExecution) fixture;
+		return (MExecution)fixture;
 	}
 
 	/**
@@ -134,10 +130,8 @@ public class MExecutionTest extends MElementTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getStart()
-	 * <em>Start</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getStart() <em>Start</em>}'
+	 * feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#getStart()
 	 * @generated NOT
@@ -147,10 +141,8 @@ public class MExecutionTest extends MElementTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getFinish()
-	 * <em>Finish</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getFinish() <em>Finish</em>}'
+	 * feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#getFinish()
 	 * @generated NOT
@@ -160,9 +152,8 @@ public class MExecutionTest extends MElementTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getOwner()
-	 * <em>Get Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getOwner() <em>Get Owner</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#getOwner()
 	 * @generated NOT
@@ -174,10 +165,8 @@ public class MExecutionTest extends MElementTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getDiagramView()
-	 * <em>Get Diagram View</em>}' operation. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getDiagramView() <em>Get Diagram
+	 * View</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#getDiagramView()
 	 * @generated NOT

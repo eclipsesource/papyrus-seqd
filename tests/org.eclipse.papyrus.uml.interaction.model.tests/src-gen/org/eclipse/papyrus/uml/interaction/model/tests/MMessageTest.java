@@ -21,40 +21,34 @@ import org.eclipse.uml2.uml.MessageEnd;
 import junit.textui.TestRunner;
 
 /**
- * <!-- begin-user-doc --> A test case for the model object
- * '<em><b>MMessage</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A test case for the model object '<em><b>MMessage</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are tested:
  * <ul>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getSend()
- * <em>Send</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getReceive()
- * <em>Receive</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getSender()
- * <em>Sender</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getReceiver()
- * <em>Receiver</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getSend() <em>Send</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getReceive() <em>Receive</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getSender() <em>Sender</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getReceiver() <em>Receiver</em>}</li>
  * </ul>
  * </p>
  * <p>
  * The following operations are tested:
  * <ul>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getOwner()
- * <em>Get Owner</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getDiagramView()
- * <em>Get Diagram View</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getOwner() <em>Get Owner</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getDiagramView() <em>Get Diagram
+ * View</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getEnd(org.eclipse.uml2.uml.MessageEnd)
  * <em>Get End</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @generated
  */
 public class MMessageTest extends MElementTest {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	public static void main(String[] args) {
@@ -62,9 +56,8 @@ public class MMessageTest extends MElementTest {
 	}
 
 	/**
-	 * Constructs a new MMessage test case with the given name. <!-- begin-user-doc
-	 * --> <!-- end-user-doc -->
-	 *
+	 * Constructs a new MMessage test case with the given name. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public MMessageTest(String name) {
@@ -72,14 +65,13 @@ public class MMessageTest extends MElementTest {
 	}
 
 	/**
-	 * Returns the fixture for this MMessage test case. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 *
+	 * Returns the fixture for this MMessage test case. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	protected MMessage getFixture() {
-		return (MMessage) fixture;
+		return (MMessage)fixture;
 	}
 
 	/**
@@ -138,37 +130,32 @@ public class MMessageTest extends MElementTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getSend()
-	 * <em>Send</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getSend() <em>Send</em>}' feature
+	 * getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MMessage#getSend()
 	 * @generated NOT
 	 */
 	public void testGetSend() {
 		assertThat(getFixture().getSend(),
-				isPresent(wraps((MessageEnd) umlInteraction.getFragment("request-send"))));
+				isPresent(wraps((MessageEnd)umlInteraction.getFragment("request-send"))));
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getReceive()
-	 * <em>Receive</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getReceive() <em>Receive</em>}'
+	 * feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MMessage#getReceive()
 	 * @generated NOT
 	 */
 	public void testGetReceive() {
 		assertThat(getFixture().getReceive(),
-				isPresent(wraps((MessageEnd) umlInteraction.getFragment("request-recv"))));
+				isPresent(wraps((MessageEnd)umlInteraction.getFragment("request-recv"))));
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getSender()
-	 * <em>Sender</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getSender() <em>Sender</em>}'
+	 * feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MMessage#getSender()
 	 * @generated NOT
@@ -178,10 +165,8 @@ public class MMessageTest extends MElementTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getReceiver()
-	 * <em>Receiver</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getReceiver() <em>Receiver</em>}'
+	 * feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MMessage#getReceiver()
 	 * @generated NOT
@@ -191,9 +176,8 @@ public class MMessageTest extends MElementTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getOwner() <em>Get
-	 * Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getOwner() <em>Get Owner</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MMessage#getOwner()
 	 * @generated NOT
@@ -205,10 +189,8 @@ public class MMessageTest extends MElementTest {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getDiagramView()
-	 * <em>Get Diagram View</em>}' operation. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getDiagramView() <em>Get Diagram
+	 * View</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.interaction.model.MMessage#getDiagramView()
 	 * @generated NOT
@@ -228,10 +210,10 @@ public class MMessageTest extends MElementTest {
 	 * @generated NOT
 	 */
 	public void testGetEnd__MessageEnd() {
-		MessageEnd send = (MessageEnd) umlInteraction.getFragment("request-send");
+		MessageEnd send = (MessageEnd)umlInteraction.getFragment("request-send");
 		assertThat(getFixture().getEnd(send), isPresent(wraps(send)));
 
-		MessageEnd recv = (MessageEnd) umlInteraction.getFragment("request-recv");
+		MessageEnd recv = (MessageEnd)umlInteraction.getFragment("request-recv");
 		assertThat(getFixture().getEnd(recv), isPresent(wraps(recv)));
 	}
 

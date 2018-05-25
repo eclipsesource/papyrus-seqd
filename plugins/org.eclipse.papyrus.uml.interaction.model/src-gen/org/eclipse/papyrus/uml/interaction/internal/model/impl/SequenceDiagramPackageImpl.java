@@ -265,6 +265,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EAttribute getMElement_Name() {
+		return (EAttribute)mElementEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EOperation getMElement__GetOwner() {
 		return mElementEClass.getEOperations().get(0);
 	}
@@ -914,6 +924,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEReference(mElementEClass, MELEMENT__ELEMENT);
 		createEAttribute(mElementEClass, MELEMENT__TOP);
 		createEAttribute(mElementEClass, MELEMENT__BOTTOM);
+		createEAttribute(mElementEClass, MELEMENT__NAME);
 		createEOperation(mElementEClass, MELEMENT___GET_OWNER);
 		createEOperation(mElementEClass, MELEMENT___GET_DIAGRAM_VIEW);
 		createEOperation(mElementEClass, MELEMENT___VERTICAL_DISTANCE__MELEMENT);
@@ -1078,6 +1089,9 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 				IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED,
 				IS_ORDERED);
 		initEAttribute(getMElement_Bottom(), this.getOptionalInt(), "bottom", null, 1, 1, MElement.class, //$NON-NLS-1$
+				IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED,
+				IS_ORDERED);
+		initEAttribute(getMElement_Name(), ecorePackage.getEString(), "name", null, 0, 1, MElement.class, //$NON-NLS-1$
 				IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED,
 				IS_ORDERED);
 
