@@ -34,6 +34,10 @@ public class AnchorParser {
 
 	public static final String WEST = "west;"; //$NON-NLS-1$
 
+	public static final String START_PREFIX = "start"; //$NON-NLS-1$
+
+	public static final String END_PREFIX = "end"; //$NON-NLS-1$
+
 	/**
 	 * Prefix for empty or null anchor terminal
 	 */
@@ -61,6 +65,10 @@ public class AnchorParser {
 		DISTANCE,
 		/** A fixed location Anchor (Which doesn't require any parameter) */
 		FIXED,
+		/** A fixed Anchor, representing the beginning of a Connection or Node */
+		START,
+		/** A fixed Anchor, representing the end of a Connection or Node */
+		END,
 		/** An Anchor that isn't handled by this parser */
 		UNKNOWN,
 	}
@@ -86,6 +94,10 @@ public class AnchorParser {
 			case EAST:
 			case WEST:
 				return AnchorKind.BORDER;
+			case START_PREFIX:
+				return AnchorKind.START;
+			case END_PREFIX:
+				return AnchorKind.END;
 		}
 
 		return AnchorKind.UNKNOWN;
@@ -124,6 +136,10 @@ public class AnchorParser {
 	private String getPrefix(String anchorTerminal) {
 		if (anchorTerminal == null || anchorTerminal.isEmpty()) {
 			return NO_PREFIX;
+		}
+
+		if (START_PREFIX.equals(anchorTerminal) || END_PREFIX.equals(anchorTerminal)) {
+			return anchorTerminal;
 		}
 
 		int prefixSeparatorIndex = anchorTerminal.indexOf(PREFIX_SEPARATOR);
