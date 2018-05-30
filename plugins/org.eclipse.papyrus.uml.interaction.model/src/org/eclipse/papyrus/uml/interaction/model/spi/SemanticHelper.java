@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
+import org.eclipse.papyrus.uml.interaction.model.RemovalCommand;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Element;
@@ -82,6 +83,15 @@ public interface SemanticHelper {
 	 * @return the command
 	 */
 	Command set(EObject owner, EStructuralFeature feature, Object value);
+
+	/**
+	 * Obtain a command that will remove an EObject from its container and any resource.
+	 * 
+	 * @param toDelete
+	 *            the object to delete
+	 * @return the command
+	 */
+	Command delete(EObject toDelete);
 
 	/**
 	 * Obtain a command that inserts {@code values} after some other in a {@code feature} of an {@code owner}
@@ -280,5 +290,32 @@ public interface SemanticHelper {
 	CreationCommand<Message> createMessage(Supplier<? extends MessageEnd> sendEvent,
 			Supplier<? extends MessageEnd> recvEvent, MessageSort sort, NamedElement signature,
 			CreationParameters messageParams);
+
+	/**
+	 * Deletes an existing message.
+	 * 
+	 * @param message
+	 *            the message to delete
+	 * @return the delete command
+	 */
+	RemovalCommand deleteMessage(Message message);
+
+	/**
+	 * Delete an existing execution specification.
+	 * 
+	 * @param execution
+	 *            the execution to delete
+	 * @return the delete command
+	 */
+	RemovalCommand deleteExecutionSpecification(ExecutionSpecification execution);
+
+	/**
+	 * Delete an existing lifeline.
+	 * 
+	 * @param lifeline
+	 *            the lifeline to delete
+	 * @return the delete command
+	 */
+	RemovalCommand deleteLifeline(Lifeline lifeline);
 
 }

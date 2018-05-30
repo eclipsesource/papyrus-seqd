@@ -25,6 +25,7 @@ import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.NudgeCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
+import org.eclipse.papyrus.uml.interaction.model.RemovalCommand;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.NamedElement;
 
@@ -214,6 +215,16 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public RemovalCommand remove() {
+		return RemovalCommand.UnexecutableRemovalCommand.INSTANCE;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -273,6 +284,8 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 				return following();
 			case SequenceDiagramPackage.MELEMENT___NUDGE__INT:
 				return nudge((Integer)arguments.get(0));
+			case SequenceDiagramPackage.MELEMENT___REMOVE:
+				return remove();
 		}
 		return super.eInvoke(operationID, arguments);
 	}

@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.common.command.Command;
@@ -92,6 +93,31 @@ public class CompoundModelCommand extends StrictCompoundCommand {
 		}
 
 		return new CompoundModelCommand(first, second);
+	}
+
+	/**
+	 * Compose multiple commands.
+	 *
+	 * @param editingDomain
+	 *            the editing domain context inwhich the composed command will be executed, which may inform
+	 *            the kind of composite that is created
+	 * @param commands
+	 *            the commands to compose
+	 * @param the
+	 *            resulting composite, which may be optimized in such a way that it isn't literally a
+	 *            {@link CompoundCommand} of any kind
+	 */
+	public static Command compose(EditingDomain editingDomain, List<Command> commands) {
+		if (commands.size() == 1) {
+			return commands.get(0);
+		} else if (commands.size() > 1) {
+			Command result = CompoundModelCommand.compose(editingDomain, commands.get(0), commands.get(1));
+			for (int i = 2; i < commands.size(); i++) {
+				result = result.chain(commands.get(i));
+			}
+			return result;
+		}
+		return UnexecutableCommand.INSTANCE;
 	}
 
 	@Override

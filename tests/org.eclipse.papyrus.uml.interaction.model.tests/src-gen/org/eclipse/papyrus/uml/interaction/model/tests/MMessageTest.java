@@ -15,6 +15,7 @@ package org.eclipse.papyrus.uml.interaction.model.tests;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.uml2.uml.MessageEnd;
 
@@ -87,7 +88,11 @@ public class MMessageTest extends MElementTest {
 
 	@Override
 	protected void initializeFixture() {
-		setFixture(interaction.getMessages().get(0));
+		if (interaction.getMessages().isEmpty()) {
+			setFixture(null);
+		} else {
+			setFixture(interaction.getMessages().get(0));
+		}
 	}
 
 	/**
@@ -215,6 +220,41 @@ public class MMessageTest extends MElementTest {
 
 		MessageEnd recv = (MessageEnd)umlInteraction.getFragment("request-recv");
 		assertThat(getFixture().getEnd(recv), isPresent(wraps(recv)));
+	}
+
+	public void testRemove() {
+		MMessage requestMessage = getFixture();
+
+		/* assert semantic preconditions */
+		assertEquals(2, umlInteraction.getMessages().size());
+		assertNotNull(umlInteraction.getMessage("request"));
+		assertEquals(5, umlInteraction.getFragments().size());
+		assertNotNull(umlInteraction.getFragment("request-send"));
+		assertNotNull(umlInteraction.getFragment("request-recv"));
+		assertEquals(2, umlInteraction.getLifelines().size());
+		assertEquals(2, umlInteraction.getLifelines().get(0).getCoveredBys().size());
+		assertEquals(3, umlInteraction.getLifelines().get(1).getCoveredBys().size());
+
+		/* assert diagram preconditions */
+		assertEquals(2, sequenceDiagram.getEdges().size());
+
+		/* act */
+		Command command = requestMessage.remove();
+		assertThat(command, executable());
+		execute(command);
+
+		/* assert logical representation */
+		assertEquals(0, interaction.getMessages().size());
+
+		/* assert semantic representation */
+		assertEquals(0, umlInteraction.getMessages().size());
+		assertEquals(0, umlInteraction.getFragments().size());
+		assertEquals(2, umlInteraction.getLifelines().size());
+		assertEquals(0, umlInteraction.getLifelines().get(0).getCoveredBys().size());
+		assertEquals(0, umlInteraction.getLifelines().get(1).getCoveredBys().size());
+
+		/* assert diagram representation */
+		assertEquals(0, sequenceDiagram.getEdges().size());
 	}
 
 } // MMessageTest

@@ -13,7 +13,6 @@
 package org.eclipse.papyrus.uml.interaction.model;
 
 import java.util.Optional;
-
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;

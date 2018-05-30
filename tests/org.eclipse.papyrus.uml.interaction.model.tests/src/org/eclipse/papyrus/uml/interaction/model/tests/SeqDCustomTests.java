@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.interaction.model.tests;
 
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.tests.DefaultLayoutHelperTest;
+import org.eclipse.papyrus.uml.interaction.model.tests.deletion.BasicDeletionTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -26,6 +27,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ //
 		DefaultLayoutHelperTest.class, //
+		BasicDeletionTest.class, //
 })
 public class SeqDCustomTests {
 

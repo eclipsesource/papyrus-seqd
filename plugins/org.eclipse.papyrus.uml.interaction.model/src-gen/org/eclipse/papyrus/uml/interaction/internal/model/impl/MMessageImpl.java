@@ -23,11 +23,13 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.RemoveMessageCommand;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.RemovalCommand;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
 
@@ -400,6 +402,16 @@ public class MMessageImpl extends MElementImpl<Message> implements MMessage {
 	@Override
 	public Optional<MMessageEnd> getEnd(MessageEnd end) {
 		return getElement(end, getSend(), getReceive());
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public RemovalCommand remove() {
+		return new RemoveMessageCommand(this, true);
 	}
 
 } // MMessageImpl

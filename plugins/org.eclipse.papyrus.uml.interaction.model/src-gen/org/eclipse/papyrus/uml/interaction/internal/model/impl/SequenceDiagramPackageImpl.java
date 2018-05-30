@@ -39,6 +39,7 @@ import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.RemovalCommand;
 import org.eclipse.uml2.types.TypesPackage;
 import org.eclipse.uml2.uml.UMLPackage;
 
@@ -138,6 +139,13 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	private EDataType eObjectEDataType = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	private EDataType removalCommandEDataType = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -317,6 +325,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	@Override
 	public EOperation getMElement__Nudge__int() {
 		return mElementEClass.getEOperations().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMElement__Remove() {
+		return mElementEClass.getEOperations().get(5);
 	}
 
 	/**
@@ -895,6 +913,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EDataType getRemovalCommand() {
+		return removalCommandEDataType;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public SequenceDiagramFactory getSequenceDiagramFactory() {
 		return (SequenceDiagramFactory)getEFactoryInstance();
 	}
@@ -930,6 +958,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEOperation(mElementEClass, MELEMENT___VERTICAL_DISTANCE__MELEMENT);
 		createEOperation(mElementEClass, MELEMENT___FOLLOWING);
 		createEOperation(mElementEClass, MELEMENT___NUDGE__INT);
+		createEOperation(mElementEClass, MELEMENT___REMOVE);
 
 		mInteractionEClass = createEClass(MINTERACTION);
 		createEReference(mInteractionEClass, MINTERACTION__LIFELINES);
@@ -998,6 +1027,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		commandEDataType = createEDataType(COMMAND);
 		creationCommandEDataType = createEDataType(CREATION_COMMAND);
 		eObjectEDataType = createEDataType(EOBJECT);
+		removalCommandEDataType = createEDataType(REMOVAL_COMMAND);
 	}
 
 	/**
@@ -1131,6 +1161,9 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		op = initEOperation(getMElement__Nudge__int(), this.getCommand(), "nudge", 1, 1, IS_UNIQUE, //$NON-NLS-1$
 				IS_ORDERED);
 		addEParameter(op, ecorePackage.getEInt(), "deltaY", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		initEOperation(getMElement__Remove(), this.getRemovalCommand(), "remove", 1, 1, IS_UNIQUE, //$NON-NLS-1$
+				IS_ORDERED);
 
 		initEClass(mInteractionEClass, MInteraction.class, "MInteraction", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);
@@ -1457,6 +1490,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		initEDataType(creationCommandEDataType, CreationCommand.class, "CreationCommand", !IS_SERIALIZABLE, //$NON-NLS-1$
 				!IS_GENERATED_INSTANCE_CLASS);
 		initEDataType(eObjectEDataType, EObject.class, "EObject", !IS_SERIALIZABLE, //$NON-NLS-1$
+				!IS_GENERATED_INSTANCE_CLASS);
+		initEDataType(removalCommandEDataType, RemovalCommand.class, "RemovalCommand", !IS_SERIALIZABLE, //$NON-NLS-1$
 				!IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource

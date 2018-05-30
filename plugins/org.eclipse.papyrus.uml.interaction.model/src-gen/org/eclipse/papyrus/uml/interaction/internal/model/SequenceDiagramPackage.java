@@ -170,13 +170,21 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MELEMENT___NUDGE__INT = 4;
 
 	/**
+	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MELEMENT___REMOVE = 5;
+
+	/**
 	 * The number of operations of the '<em>MElement</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MELEMENT_OPERATION_COUNT = 5;
+	int MELEMENT_OPERATION_COUNT = 6;
 
 	/**
 	 * The meta object id for the
@@ -291,6 +299,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MINTERACTION___NUDGE__INT = MELEMENT___NUDGE__INT;
+
+	/**
+	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MINTERACTION___REMOVE = MELEMENT___REMOVE;
 
 	/**
 	 * The operation id for the '<em>Get Diagram View</em>' operation. <!-- begin-user-doc --> <!--
@@ -476,6 +492,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MLIFELINE___NUDGE__INT = MELEMENT___NUDGE__INT;
+
+	/**
+	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___REMOVE = MELEMENT___REMOVE;
 
 	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -680,6 +704,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MEXECUTION___NUDGE__INT = MELEMENT___NUDGE__INT;
 
 	/**
+	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION___REMOVE = MELEMENT___REMOVE;
+
+	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -838,6 +870,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MOCCURRENCE___NUDGE__INT = MELEMENT___NUDGE__INT;
 
 	/**
+	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MOCCURRENCE___REMOVE = MELEMENT___REMOVE;
+
+	/**
 	 * The number of operations of the '<em>MOccurrence</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
@@ -960,6 +1000,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MEXECUTION_OCCURRENCE___NUDGE__INT = MOCCURRENCE___NUDGE__INT;
+
+	/**
+	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION_OCCURRENCE___REMOVE = MOCCURRENCE___REMOVE;
 
 	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1129,6 +1177,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MMESSAGE_END___NUDGE__INT = MOCCURRENCE___NUDGE__INT;
 
 	/**
+	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE_END___REMOVE = MOCCURRENCE___REMOVE;
+
+	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -1295,6 +1351,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MMESSAGE___NUDGE__INT = MELEMENT___NUDGE__INT;
 
 	/**
+	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE___REMOVE = MELEMENT___REMOVE;
+
+	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -1374,6 +1438,16 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	int EOBJECT = 12;
+
+	/**
+	 * The meta object id for the '<em>Removal Command</em>' data type. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.RemovalCommand
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getRemovalCommand()
+	 * @generated
+	 */
+	int REMOVAL_COMMAND = 13;
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MElement
@@ -1496,6 +1570,16 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EOperation getMElement__Nudge__int();
+
+	/**
+	 * Returns the meta object for the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#remove()
+	 * <em>Remove</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Remove</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#remove()
+	 * @generated
+	 */
+	EOperation getMElement__Remove();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction
@@ -2141,6 +2225,17 @@ public interface SequenceDiagramPackage extends EPackage {
 	EDataType getEObject();
 
 	/**
+	 * Returns the meta object for data type '{@link org.eclipse.papyrus.uml.interaction.model.RemovalCommand
+	 * <em>Removal Command</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for data type '<em>Removal Command</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.RemovalCommand
+	 * @model instanceClass="org.eclipse.papyrus.uml.interaction.model.RemovalCommand" serializeable="false"
+	 * @generated
+	 */
+	EDataType getRemovalCommand();
+
+	/**
 	 * Returns the factory that creates the instances of the model. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
@@ -2254,6 +2349,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation MELEMENT___NUDGE__INT = eINSTANCE.getMElement__Nudge__int();
+
+		/**
+		 * The meta object literal for the '<em><b>Remove</b></em>' operation. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MELEMENT___REMOVE = eINSTANCE.getMElement__Remove();
 
 		/**
 		 * The meta object literal for the
@@ -2747,6 +2850,16 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EDataType EOBJECT = eINSTANCE.getEObject();
+
+		/**
+		 * The meta object literal for the '<em>Removal Command</em>' data type. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @see org.eclipse.papyrus.uml.interaction.model.RemovalCommand
+		 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getRemovalCommand()
+		 * @generated
+		 */
+		EDataType REMOVAL_COMMAND = eINSTANCE.getRemovalCommand();
 
 	}
 

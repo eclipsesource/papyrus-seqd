@@ -34,12 +34,14 @@ import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.InsertExecutionCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.InsertMessageCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.NudgeHorizontallyCommand;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.RemoveLifelineCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.RemovalCommand;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
@@ -280,6 +282,16 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	@Override
 	public Command nudgeHorizontally(int deltaX) {
 		return new NudgeHorizontallyCommand(this, deltaX);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public RemovalCommand remove() {
+		return new RemoveLifelineCommand(this, true);
 	}
 
 	/**
