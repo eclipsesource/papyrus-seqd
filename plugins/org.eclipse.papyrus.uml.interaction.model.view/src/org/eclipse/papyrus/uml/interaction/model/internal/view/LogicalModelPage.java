@@ -13,11 +13,17 @@
 package org.eclipse.papyrus.uml.interaction.model.internal.view;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.ui.viewer.IViewerProvider;
 import org.eclipse.emf.common.util.EList;
@@ -32,37 +38,36 @@ import org.eclipse.emf.edit.ui.celleditor.AdapterFactoryTreeEditor;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.emf.edit.ui.view.ExtendedPropertySheetPage;
-import org.eclipse.emf.transaction.ResourceSetChangeEvent;
-import org.eclipse.emf.transaction.ResourceSetListener;
-import org.eclipse.emf.transaction.ResourceSetListenerImpl;
-import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.emf.transaction.util.TransactionUtil;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.parts.IDiagramGraphicalViewer;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.papyrus.infra.core.utils.JobBasedFuture;
 import org.eclipse.papyrus.infra.core.utils.TransactionHelper;
+import org.eclipse.papyrus.infra.gmfdiag.common.utils.DiagramEditPartsUtil;
 import org.eclipse.papyrus.uml.diagram.common.part.UmlGmfDiagramEditor;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
+import org.eclipse.papyrus.uml.interaction.model.util.LogicalModelAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.part.IPageBookViewPage;
 import org.eclipse.ui.part.Page;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
-
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
+import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Interaction;
 
 /**
  * A page in the {@link LogicalModelView}, which presents the logical model of a
@@ -76,11 +81,18 @@ public class LogicalModelPage extends Page implements IPageBookViewPage, IEditin
 	private final TransactionalEditingDomain editingDomain;
 	private final AdapterFactory adapterFactory;
 	private final Diagram sequenceDiagram;
-	private final ResourceSetListener modelListener;
+	private final IDiagramGraphicalViewer diagramViewer;
+
+	private final LogicalModelAdapter<MInteraction> logicalModelAdapter;
+	private final ISelectionChangedListener diagramSelectionListener = this::diagramSelectionChanged;
+	private final ISelectionChangedListener modelSelectionListener = this::modelSelectionChanged;
 
 	private PropertySheetPage propertySheetPage;
 
 	private TreeViewer selectionViewer;
+
+	private boolean selectionLock; // lock out selection updates to prevent feedback
+	private final AtomicReference<Job> interactionComputation = new AtomicReference<>();
 
 	/**
 	 * Initializes me.
@@ -92,8 +104,10 @@ public class LogicalModelPage extends Page implements IPageBookViewPage, IEditin
 		editingDomain = editor.getEditingDomain();
 		adapterFactory = ((AdapterFactoryEditingDomain) editingDomain).getAdapterFactory();
 		sequenceDiagram = editor.getDiagram();
-		modelListener = new ModelListener();
-		editingDomain.addResourceSetListener(modelListener);
+		diagramViewer = editor.getDiagramGraphicalViewer();
+		diagramViewer.addSelectionChangedListener(diagramSelectionListener);
+		logicalModelAdapter = new LogicalModelAdapter<>((Interaction) sequenceDiagram.getElement(),
+				MInteraction.class);
 	}
 
 	@Override
@@ -114,18 +128,23 @@ public class LogicalModelPage extends Page implements IPageBookViewPage, IEditin
 				return contents;
 			}
 		};
+		logicalModelAdapter.onLogicalModelCreated(model -> setInput(resource, model));
+		logicalModelAdapter.onLogicalModelDisposed(__ -> setInput());
+
 		selectionViewer.setInput(resource);
 		setInput();
 
 		new AdapterFactoryTreeEditor(selectionViewer.getTree(), adapterFactory);
 
 		getSite().setSelectionProvider(selectionViewer);
+		selectionViewer.addSelectionChangedListener(modelSelectionListener);
 	}
 
 	@Override
 	public void dispose() {
 		try {
-			editingDomain.removeResourceSetListener(modelListener);
+			selectionViewer.removeSelectionChangedListener(modelSelectionListener);
+			diagramViewer.removeSelectionChangedListener(diagramSelectionListener);
 
 			if (propertySheetPage != null) {
 				propertySheetPage.dispose();
@@ -135,69 +154,51 @@ public class LogicalModelPage extends Page implements IPageBookViewPage, IEditin
 		}
 	}
 
-	private ListenableFuture<MInteraction> computeInteraction() {
-		if (TransactionHelper.isDisposed(editingDomain)) {
-			return Futures.immediateCancelledFuture();
-		}
+	private void setInput() {
+		Job computation = new Job("Computing logical model") {
+			{
+				setSystem(true);
+			}
 
-		JobBasedFuture<MInteraction> result = new JobBasedFuture<MInteraction>("Computing logical model") {
 			@Override
-			protected MInteraction compute(IProgressMonitor monitor) throws Exception {
-				if (TransactionHelper.isDisposed(editingDomain)) {
-					cancel(true);
-					return null;
+			protected IStatus run(IProgressMonitor monitor) {
+				if (!TransactionHelper.isDisposed(editingDomain)
+						&& interactionComputation.compareAndSet(this, null)) {
+					// I'm the last one standing. Compute the logical model. The adapter
+					// will be notified if it's actually computed anew, to update the UI
+					try {
+						editingDomain.runExclusive(() -> MInteraction.getInstance(sequenceDiagram));
+					} catch (InterruptedException e) {
+						return Status.CANCEL_STATUS;
+					}
+					return Status.OK_STATUS;
+				} else {
+					return Status.CANCEL_STATUS;
 				}
-
-				return TransactionUtil.runExclusive(editingDomain,
-						new RunnableWithResult.Impl<MInteraction>() {
-							@Override
-							public void run() {
-								setResult(MInteraction.getInstance(sequenceDiagram));
-							}
-						});
 			}
 		};
-		result.schedule();
-		return result;
+		interactionComputation.set(computation);
+		computation.schedule();
 	}
 
-	private void setInput() {
-		ListenableFuture<MInteraction> interaction = computeInteraction();
-		Futures.addCallback(interaction, new FutureCallback<MInteraction>() {
-			@Override
-			public void onSuccess(MInteraction result) {
-				Resource resource = (Resource) selectionViewer.getInput();
-				resource.getContents().clear();
-
-				if (result == null) {
-					// Cancelled, but not calling onFailure(...). Okay
-					return;
-				}
-
-				resource.getContents().add((EObject) result);
-
-				if (!selectionViewer.getControl().isDisposed()) {
-					// Preserve selection
-					MElement<?> selected = getSelectedElement();
-					if (selected != null) {
-						// Get the one in the new interaction
-						selected = result.getElement(selected.getElement()).orElse(null);
-					}
-					if (selected == null) {
-						selected = result;
-					}
+	private void setInput(Resource input, MInteraction model) {
+		Control control = selectionViewer.getControl();
+		if (!control.isDisposed()) {
+			control.getDisplay().asyncExec(() -> {
+				if (!control.isDisposed()) {
+					Resource resource = (Resource) selectionViewer.getInput();
+					resource.getContents().clear();
+					resource.getContents().add((EObject) model);
 
 					selectionViewer.refresh();
-					selectionViewer.setSelection(new StructuredSelection(selected), true);
 					selectionViewer.expandToLevel(2);
-				}
-			}
 
-			@Override
-			public void onFailure(Throwable t) {
-				// TODO
-			}
-		}, getSite().getShell().getDisplay()::asyncExec);
+					// Push selection from diagram
+					diagramSelectionChanged(
+							new SelectionChangedEvent(diagramViewer, diagramViewer.getSelection()));
+				}
+			});
+		}
 	}
 
 	MElement<?> getSelectedElement() {
@@ -266,9 +267,13 @@ public class LogicalModelPage extends Page implements IPageBookViewPage, IEditin
 	}
 
 	protected void setSelectionToViewer(Collection<?> collection) {
-		if ((collection != null) && !collection.isEmpty()) {
-			getSite().getShell().getDisplay()
-					.asyncExec(() -> setSelection(new StructuredSelection(collection.toArray())));
+		if (collection != null) {
+			Display display = getSite().getShell().getDisplay();
+			if (display != Display.getCurrent()) {
+				display.asyncExec(() -> setSelection(new StructuredSelection(collection.toArray())));
+			} else {
+				setSelection(new StructuredSelection(collection.toArray()));
+			}
 		}
 	}
 
@@ -288,20 +293,54 @@ public class LogicalModelPage extends Page implements IPageBookViewPage, IEditin
 		return propertySheetPage;
 	}
 
-	//
-	// Nested types
-	//
+	private void diagramSelectionChanged(SelectionChangedEvent event) {
+		withSelectionLock(() -> {
+			// Get the selected edit part
+			Optional<IGraphicalEditPart> editPart = Optional
+					.ofNullable(event.getStructuredSelection().getFirstElement())
+					.filter(IGraphicalEditPart.class::isInstance).map(IGraphicalEditPart.class::cast);
 
-	private class ModelListener extends ResourceSetListenerImpl {
+			// And the current logical model
+			Optional<MInteraction> model = ((Resource) selectionViewer.getInput()).getContents().stream()
+					.filter(MInteraction.class::isInstance).map(MInteraction.class::cast).findAny();
 
-		@Override
-		public boolean isPostcommitOnly() {
-			return true;
+			// Find the logical model element
+			Optional<Element> semantic = editPart.map(IGraphicalEditPart::resolveSemanticElement)
+					.filter(Element.class::isInstance).map(Element.class::cast);
+			Optional<MElement<?>> element = model
+					.<MElement<?>>flatMap(m -> semantic.flatMap(m::getElement));
+
+			setSelectionToViewer(element.map(Collections::singleton).orElse(Collections.emptySet()));
+		});
+	}
+
+	private void modelSelectionChanged(SelectionChangedEvent event) {
+		withSelectionLock(() -> {
+			// Get the selected model element
+			Optional<MElement<?>> element = Optional
+					.ofNullable((MElement<?>) event.getStructuredSelection().getFirstElement());
+			Optional<Element> uml = element.map(MElement::getElement);
+
+			// Find the edit part
+			ISelection selection = uml.map(StructuredSelection::new).orElse(StructuredSelection.EMPTY);
+			Optional<EditPart> editPart = DiagramEditPartsUtil
+					.getEditPartsFromSelection(selection, diagramViewer).stream().findFirst();
+
+			editPart.ifPresent(diagramViewer::select);
+		});
+	}
+
+	private void withSelectionLock(Runnable action) {
+		if (selectionLock) {
+			return;
 		}
 
-		@Override
-		public void resourceSetChanged(ResourceSetChangeEvent event) {
-			setInput();
+		selectionLock = true;
+		try {
+			action.run();
+		} finally {
+			selectionLock = false;
 		}
 	}
+
 }
