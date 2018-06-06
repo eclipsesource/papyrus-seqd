@@ -98,6 +98,12 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			proposedBounds.setHeight(height);
 			bounds = layoutHelper().getNewBounds(UMLPackage.Literals.LIFELINE, proposedBounds, compartment);
 
+			// Adjust for insets. Always relative to parent
+			bounds.setX(layoutHelper().toRelativeX(result,
+					bounds.getX() - layoutHelper().getConstraints().getLeftInset(result)));
+			bounds.setY(layoutHelper().toRelativeY(result,
+					bounds.getY() - layoutHelper().getConstraints().getTopInset(result)));
+
 			result.setLayoutConstraint(bounds);
 
 			// create compartment for name
@@ -158,8 +164,8 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			result.setElement(execution.get());
 
 			Bounds bounds = NotationFactory.eINSTANCE.createBounds();
-			bounds.setX((width - execWidth) / 2);
-			bounds.setY(yPosition - layoutHelper().getTop(lifelineBody)); // Always relative to parent
+			bounds.setX((width - execWidth) / 2); // Relative to the parent
+			bounds.setY(layoutHelper().toRelativeY(result, yPosition)); // Always relative to parent
 			bounds.setWidth(execWidth);
 			bounds.setHeight(height);
 			result.setLayoutConstraint(bounds);

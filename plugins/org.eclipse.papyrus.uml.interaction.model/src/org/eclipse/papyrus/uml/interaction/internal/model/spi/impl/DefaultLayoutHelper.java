@@ -16,9 +16,12 @@ import static org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil.
 
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.inject.Inject;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
@@ -30,6 +33,7 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.notation.Anchor;
 import org.eclipse.gmf.runtime.notation.Bounds;
+import org.eclipse.gmf.runtime.notation.Compartment;
 import org.eclipse.gmf.runtime.notation.Edge;
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.gmf.runtime.notation.LayoutConstraint;
@@ -42,6 +46,8 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.gmf.runtime.notation.util.NotationSwitch;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil;
+import org.eclipse.papyrus.uml.interaction.graph.util.Suppliers;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.GeneralOrdering;
@@ -82,18 +88,24 @@ public class DefaultLayoutHelper implements LayoutHelper {
 
 	private static final Pattern EXEC_START_FINISH_ANCHOR_PATTERN = Pattern.compile("(start)|(end)"); //$NON-NLS-1$
 
+	private final Supplier<LayoutConstraints> layoutConstraints;
+
 	private final EditingDomain editingDomain;
 
 	/**
-	 * Initializes me with my contextual editing domain.
+	 * Initializes me with my constraints and contextual editing domain.
 	 * 
 	 * @param editingDomain
 	 *            my editing domain
+	 * @param layoutConstraints
+	 *            my constraints supplier
 	 */
-	public DefaultLayoutHelper(EditingDomain editingDomain) {
+	@Inject
+	public DefaultLayoutHelper(EditingDomain editingDomain, Supplier<LayoutConstraints> layoutConstraints) {
 		super();
 
 		this.editingDomain = editingDomain;
+		this.layoutConstraints = Suppliers.memoize(layoutConstraints);
 	}
 
 	@Override
@@ -153,18 +165,99 @@ public class DefaultLayoutHelper implements LayoutHelper {
 			LayoutConstraint constraint = shape.getLayoutConstraint();
 			if (constraint != null) {
 				result = getTopFunction().applyAsInt(constraint);
+				if (result != DEFAULT_TOP) {
+					result = result - getConstraints().getTopInset(shape);
+				}
 			}
 		}
 
-		// And is this shape in a shape?
-		if (result != DEFAULT_TOP && shape.eContainer() instanceof Shape) {
+		if (result != DEFAULT_TOP) {
 			// Its position is relative to the containing shape
-			int relativeTop = getTop((Shape)shape.eContainer());
-			if (relativeTop == DEFAULT_TOP) {
-				result = DEFAULT_TOP;
-			} else {
-				result = relativeTop + result;
-			}
+			result = toAbsoluteY(shape, result);
+		}
+
+		return result;
+	}
+
+	@Override
+	public int toAbsoluteX(Shape shape, int x) {
+		EObject containerView = shape.eContainer();
+		int compartmentX = 0;
+		if (containerView instanceof Compartment) {
+			// It's in a shape compartment. Where is it in the parent shape?
+			Compartment compartment = (Compartment)containerView;
+			compartmentX = getConstraints().getXOffset(compartment);
+			containerView = compartment.eContainer();
+		}
+
+		int result = x;
+
+		if (containerView instanceof Shape) {
+			int relativeLeft = getLeft((Shape)containerView);
+			result = relativeLeft == DEFAULT_LEFT ? DEFAULT_LEFT : relativeLeft + compartmentX + result;
+		}
+
+		return result;
+	}
+
+	@Override
+	public int toRelativeX(Shape shape, int x) {
+		EObject containerView = shape.eContainer();
+		int compartmentX = 0;
+		if (containerView instanceof Compartment) {
+			// It's in a shape compartment. Where is it in the parent shape?
+			Compartment compartment = (Compartment)containerView;
+			compartmentX = getConstraints().getXOffset(compartment);
+			containerView = compartment.eContainer();
+		}
+
+		int result = x;
+
+		if (containerView instanceof Shape) {
+			int relativeLeft = getLeft((Shape)containerView);
+			result = relativeLeft == DEFAULT_LEFT ? DEFAULT_LEFT : result - compartmentX - relativeLeft;
+		}
+
+		return result;
+	}
+
+	@Override
+	public int toAbsoluteY(Shape shape, int y) {
+		EObject containerView = shape.eContainer();
+		int compartmentY = 0;
+		if (containerView instanceof Compartment) {
+			// It's in a shape compartment. Where is it in the parent shape?
+			Compartment compartment = (Compartment)containerView;
+			compartmentY = getConstraints().getYOffset(compartment);
+			containerView = compartment.eContainer();
+		}
+
+		int result = y;
+
+		if (containerView instanceof Shape) {
+			int relativeTop = getTop((Shape)containerView);
+			result = relativeTop == DEFAULT_TOP ? DEFAULT_TOP : relativeTop + compartmentY + result;
+		}
+
+		return result;
+	}
+
+	@Override
+	public int toRelativeY(Shape shape, int y) {
+		EObject containerView = shape.eContainer();
+		int compartmentY = 0;
+		if (containerView instanceof Compartment) {
+			// It's in a shape compartment. Where is it in the parent shape?
+			Compartment compartment = (Compartment)containerView;
+			compartmentY = getConstraints().getYOffset(compartment);
+			containerView = compartment.eContainer();
+		}
+
+		int result = y;
+
+		if (containerView instanceof Shape) {
+			int relativeTop = getTop((Shape)containerView);
+			result = relativeTop == DEFAULT_TOP ? DEFAULT_TOP : result - compartmentY - relativeTop;
 		}
 
 		return result;
@@ -288,17 +381,16 @@ public class DefaultLayoutHelper implements LayoutHelper {
 		LayoutConstraint constraint = shape.getLayoutConstraint();
 		if (constraint != null) {
 			result = getBottomFunction().applyAsInt(constraint);
+			if (result != DEFAULT_BOTTOM) {
+				// Account for both Y insets
+				result = result - getConstraints().getTopInset(shape)
+						- getConstraints().getBottomInset(shape);
+			}
 		}
 
-		// And is this shape in a shape?
-		if (result != DEFAULT_BOTTOM && shape.eContainer() instanceof Shape) {
+		if (result != DEFAULT_BOTTOM) {
 			// Its position is relative to the containing shape
-			int relativeTop = getTop((Shape)shape.eContainer());
-			if (relativeTop == DEFAULT_TOP) {
-				result = DEFAULT_BOTTOM;
-			} else {
-				result = relativeTop + result;
-			}
+			result = toAbsoluteY(shape, result);
 		}
 
 		return result;
@@ -351,18 +443,15 @@ public class DefaultLayoutHelper implements LayoutHelper {
 			LayoutConstraint constraint = shape.getLayoutConstraint();
 			if (constraint != null) {
 				result = getLeftFunction().applyAsInt(constraint);
+				if (result != DEFAULT_LEFT) {
+					result = result - getConstraints().getLeftInset(shape);
+				}
 			}
 		}
 
-		// And is this shape in a shape?
-		if (result != DEFAULT_LEFT && shape.eContainer() instanceof Shape) {
+		if (result != DEFAULT_LEFT) {
 			// Its position is relative to the containing shape
-			int relativeLeft = getLeft((Shape)shape.eContainer());
-			if (relativeLeft == DEFAULT_LEFT) {
-				result = DEFAULT_LEFT;
-			} else {
-				result = relativeLeft + result;
-			}
+			result = toAbsoluteX(shape, result);
 		}
 
 		return result;
@@ -392,18 +481,17 @@ public class DefaultLayoutHelper implements LayoutHelper {
 			LayoutConstraint constraint = shape.getLayoutConstraint();
 			if (constraint != null) {
 				result = getRightFunction().applyAsInt(constraint);
+				if (result != DEFAULT_RIGHT) {
+					// Account for both X insets
+					result = result - getConstraints().getLeftInset(shape)
+							- getConstraints().getRightInset(shape);
+				}
 			}
 		}
 
-		// And is this shape in a shape?
-		if (result != DEFAULT_RIGHT && shape.eContainer() instanceof Shape) {
+		if (result != DEFAULT_RIGHT) {
 			// Its position is relative to the containing shape
-			int relativeLeft = getLeft((Shape)shape.eContainer());
-			if (relativeLeft == DEFAULT_LEFT) {
-				result = DEFAULT_RIGHT;
-			} else {
-				result = relativeLeft + result;
-			}
+			result = toAbsoluteX(shape, result);
 		}
 
 		return result;
@@ -618,9 +706,10 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	public Command setTop(Shape shape, int yPosition) {
 		Command result = UnexecutableCommand.INSTANCE;
 		if (shape.getLayoutConstraint() instanceof Location) {
-			int parentTop = shape.eContainer() instanceof Shape ? getTop((Shape)shape.eContainer()) : 0;
+			// Account for insets
+			int adjustedY = toRelativeY(shape, yPosition) - getConstraints().getTopInset(shape);
 			result = SetCommand.create(editingDomain, shape.getLayoutConstraint(),
-					NotationPackage.Literals.LOCATION__Y, yPosition - parentTop);
+					NotationPackage.Literals.LOCATION__Y, adjustedY);
 		}
 		return result;
 	}
@@ -712,9 +801,10 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	public Command setLeft(Shape shape, int xPosition) {
 		Command result = UnexecutableCommand.INSTANCE;
 		if (shape.getLayoutConstraint() instanceof Location) {
-			int parentLeft = shape.eContainer() instanceof Shape ? getLeft((Shape)shape.eContainer()) : 0;
+			// Account for insets
+			int adjustedX = toRelativeX(shape, xPosition) - getConstraints().getLeftInset(shape);
 			result = SetCommand.create(editingDomain, shape.getLayoutConstraint(),
-					NotationPackage.Literals.LOCATION__X, xPosition - parentLeft);
+					NotationPackage.Literals.LOCATION__X, adjustedX);
 		}
 		return result;
 	}
@@ -770,5 +860,10 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	 */
 	protected static <T> Optional<T> coerce(Object object, Class<T> type) {
 		return Optional.ofNullable(object).filter(type::isInstance).map(type::cast);
+	}
+
+	@Override
+	public LayoutConstraints getConstraints() {
+		return layoutConstraints.get();
 	}
 }
