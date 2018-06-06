@@ -12,6 +12,7 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -23,8 +24,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MMessageImpl;
-import org.eclipse.papyrus.uml.interaction.model.RemovalCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
+import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommandImpl;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.eclipse.uml2.uml.MessageOccurrenceSpecification;
@@ -96,7 +97,7 @@ public class RemoveLifelineCommand extends ModelCommand<MLifelineImpl> implement
 	}
 
 	@Override
-	public Set<EObject> getElementsToRemove() {
+	public Collection<EObject> getElementsToRemove() {
 		if (delegate == null) {
 			return Collections.emptySet();
 		}

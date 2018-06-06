@@ -35,11 +35,11 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.CompoundModelCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
-import org.eclipse.papyrus.uml.interaction.model.RemovalCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredAddCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredCreateCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredDeleteCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredSetCommand;
+import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommandImpl;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.eclipse.uml2.uml.Action;
@@ -472,8 +472,8 @@ public class DefaultSemanticHelper implements SemanticHelper {
 	@Override
 	public RemovalCommand deleteExecutionSpecification(ExecutionSpecification execution) {
 		List<RemovalCommand> commands = new ArrayList<>(3);
-		commands.add(deferredRemovalCommand(() -> execution.getStart()));
-		commands.add(deferredRemovalCommand(() -> execution.getFinish()));
+		commands.add(deferredRemovalCommand(execution::getStart));
+		commands.add(deferredRemovalCommand(execution::getFinish));
 		commands.add(removalCommand(execution));
 		return new RemovalCommandImpl(editingDomain, commands);
 	}

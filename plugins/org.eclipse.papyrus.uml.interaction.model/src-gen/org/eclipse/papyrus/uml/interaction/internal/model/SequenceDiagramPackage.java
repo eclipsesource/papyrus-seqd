@@ -1440,16 +1440,6 @@ public interface SequenceDiagramPackage extends EPackage {
 	int EOBJECT = 12;
 
 	/**
-	 * The meta object id for the '<em>Removal Command</em>' data type. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 * 
-	 * @see org.eclipse.papyrus.uml.interaction.model.RemovalCommand
-	 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getRemovalCommand()
-	 * @generated
-	 */
-	int REMOVAL_COMMAND = 13;
-
-	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MElement
 	 * <em>MElement</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2225,17 +2215,6 @@ public interface SequenceDiagramPackage extends EPackage {
 	EDataType getEObject();
 
 	/**
-	 * Returns the meta object for data type '{@link org.eclipse.papyrus.uml.interaction.model.RemovalCommand
-	 * <em>Removal Command</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @return the meta object for data type '<em>Removal Command</em>'.
-	 * @see org.eclipse.papyrus.uml.interaction.model.RemovalCommand
-	 * @model instanceClass="org.eclipse.papyrus.uml.interaction.model.RemovalCommand" serializeable="false"
-	 * @generated
-	 */
-	EDataType getRemovalCommand();
-
-	/**
 	 * Returns the factory that creates the instances of the model. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
@@ -2850,16 +2829,6 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EDataType EOBJECT = eINSTANCE.getEObject();
-
-		/**
-		 * The meta object literal for the '<em>Removal Command</em>' data type. <!-- begin-user-doc --> <!--
-		 * end-user-doc -->
-		 * 
-		 * @see org.eclipse.papyrus.uml.interaction.model.RemovalCommand
-		 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getRemovalCommand()
-		 * @generated
-		 */
-		EDataType REMOVAL_COMMAND = eINSTANCE.getRemovalCommand();
 
 	}
 

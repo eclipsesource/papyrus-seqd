@@ -41,7 +41,6 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
-import org.eclipse.papyrus.uml.interaction.model.RemovalCommand;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
@@ -290,7 +289,7 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 * @generated NOT
 	 */
 	@Override
-	public RemovalCommand remove() {
+	public Command remove() {
 		return new RemoveLifelineCommand(this, true);
 	}
 

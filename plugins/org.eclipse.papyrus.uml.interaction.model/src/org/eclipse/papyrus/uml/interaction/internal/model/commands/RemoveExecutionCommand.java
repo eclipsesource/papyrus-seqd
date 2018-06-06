@@ -12,10 +12,10 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
@@ -23,8 +23,8 @@ import org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MMessageImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
-import org.eclipse.papyrus.uml.interaction.model.RemovalCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
+import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommandImpl;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 
@@ -85,7 +85,7 @@ public class RemoveExecutionCommand extends ModelCommand<MExecutionImpl> impleme
 	}
 
 	@Override
-	public Set<EObject> getElementsToRemove() {
+	public Collection<EObject> getElementsToRemove() {
 		if (delegate == null) {
 			return Collections.emptySet();
 		}

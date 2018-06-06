@@ -10,52 +10,28 @@
  *   Johannes Faltermeier - Initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.papyrus.uml.interaction.model;
+package org.eclipse.papyrus.uml.interaction.model.spi;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.Collection;
 import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.CommandWrapper;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.ecore.EObject;
 
 /**
  * Command which is supposed to delete model element. It offers methods to access the elements marked for
  * deletion.
  */
-public interface RemovalCommand extends Command, Supplier<Set<EObject>> {
+public interface RemovalCommand extends Command, Supplier<Collection<EObject>> {
 
 	/**
 	 * @return the elements which are marked for removal when this command was created.
 	 */
-	Set<EObject> getElementsToRemove();
+	Collection<EObject> getElementsToRemove();
 
 	@Override
-	default Set<EObject> get() {
+	default Collection<EObject> get() {
 		return getElementsToRemove();
-	}
-
-	/**
-	 * Unexecutable command which implements {@link RemovalCommand}.
-	 */
-	static class UnexecutableRemovalCommand extends CommandWrapper implements RemovalCommand {
-
-		/**
-		 * The singleton instance.
-		 */
-		public static final RemovalCommand INSTANCE = new UnexecutableRemovalCommand();
-
-		private UnexecutableRemovalCommand() {
-			super(UnexecutableCommand.INSTANCE);
-		}
-
-		@Override
-		public Set<EObject> getElementsToRemove() {
-			return Collections.emptySet();
-		}
-
 	}
 
 }

@@ -24,7 +24,6 @@
       <genTypeParameters ecoreTypeParameter="seqd.ecore#//CreationCommand/T"/>
     </genDataTypes>
     <genDataTypes ecoreDataType="seqd.ecore#//EObject"/>
-    <genDataTypes ecoreDataType="seqd.ecore#//RemovalCommand"/>
     <genClasses image="false" ecoreClass="seqd.ecore#//MElement">
       <genTypeParameters ecoreTypeParameter="seqd.ecore#//MElement/T"/>
       <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MElement/interaction"/>

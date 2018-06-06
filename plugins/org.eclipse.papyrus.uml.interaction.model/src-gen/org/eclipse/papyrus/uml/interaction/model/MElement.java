@@ -170,9 +170,9 @@ public interface MElement<T extends Element> extends MObject {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.RemovalCommand" required="true"
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Command" required="true"
 	 * @generated
 	 */
-	RemovalCommand remove();
+	Command remove();
 
 } // MElement

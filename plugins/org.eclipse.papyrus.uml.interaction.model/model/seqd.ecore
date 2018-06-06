@@ -37,7 +37,7 @@
     <eOperations name="nudge" lowerBound="1" eType="#//Command">
       <eParameters name="deltaY" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     </eOperations>
-    <eOperations name="remove" lowerBound="1" eType="#//RemovalCommand"/>
+    <eOperations name="remove" lowerBound="1" eType="#//Command"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="interaction" lowerBound="1"
         eType="#//MInteraction" changeable="false" volatile="true" transient="true"
         derived="true" resolveProxies="false"/>
@@ -411,7 +411,5 @@
     </eTypeParameters>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="EObject" instanceClassName="org.eclipse.emf.ecore.EObject"
-      serializable="false"/>
-  <eClassifiers xsi:type="ecore:EDataType" name="RemovalCommand" instanceClassName="org.eclipse.papyrus.uml.interaction.model.RemovalCommand"
       serializable="false"/>
 </ecore:EPackage>

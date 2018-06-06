@@ -11,18 +11,19 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Set;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MMessageImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
-import org.eclipse.papyrus.uml.interaction.model.RemovalCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
+import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 
 /**
@@ -77,7 +78,7 @@ public class RemoveMessageCommand extends ModelCommand<MMessageImpl> implements 
 		if (receive.isPresent()) {
 			Optional<MExecution> startedExecution = receive.get().getStartedExecution();
 			if (startedExecution.isPresent() && startedExecution.get() != trigger) {
-				delegate = startedExecution.get().remove();
+				delegate = new RemoveExecutionCommand((MExecutionImpl)startedExecution.get(), nudge);
 				return delegate;
 			}
 		}
@@ -95,7 +96,7 @@ public class RemoveMessageCommand extends ModelCommand<MMessageImpl> implements 
 	}
 
 	@Override
-	public Set<EObject> getElementsToRemove() {
+	public Collection<EObject> getElementsToRemove() {
 		if (delegate == null) {
 			return Collections.emptySet();
 		}

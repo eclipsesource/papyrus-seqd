@@ -12,6 +12,7 @@
 package org.eclipse.papyrus.uml.interaction.model.spi;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -23,7 +24,6 @@ import org.eclipse.emf.common.command.CommandWrapper;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.CompoundModelCommand;
-import org.eclipse.papyrus.uml.interaction.model.RemovalCommand;
 
 /**
  * Basic implementation of a {@link RemovalCommand}.
@@ -64,7 +64,7 @@ public class RemovalCommandImpl extends CommandWrapper implements RemovalCommand
 	}
 
 	@Override
-	public Set<EObject> getElementsToRemove() {
+	public Collection<EObject> getElementsToRemove() {
 		return Collections.unmodifiableSet(toRemove);
 	}
 

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -14,7 +15,7 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
-import org.eclipse.papyrus.uml.interaction.model.RemovalCommand;
+import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelFixture;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.junit.Rule;
@@ -42,7 +43,7 @@ public class BasicDeletionTest {
 		/* make sure no duplicates */
 		Set<MElement<?>> exepcted = new LinkedHashSet<MElement<?>>(
 				Arrays.asList(expectedElementsToBeRemoved));
-		Set<EObject> elementsToRemove = remove.getElementsToRemove();
+		Collection<EObject> elementsToRemove = remove.getElementsToRemove();
 		assertEquals(exepcted.size(), elementsToRemove.size());
 		for (MElement<?> mElement : exepcted) {
 			assertTrue(elementsToRemove.contains(mElement.getElement()));
@@ -58,7 +59,7 @@ public class BasicDeletionTest {
 	public void message_notTriggeringExecution() {
 		/* act */
 		MMessage message = interaction().getMessages().get(1);
-		executeAndAssertRemoval(message.remove(), //
+		executeAndAssertRemoval((RemovalCommand)message.remove(), //
 				message, message.getSend().get(), message.getReceive().get());
 
 		/* assert: only message should be deleted with its ends */
@@ -79,7 +80,7 @@ public class BasicDeletionTest {
 		/* act */
 		MMessage message1 = interaction().getMessages().get(0);
 		MExecution execution2 = interaction().getLifelines().get(1).getExecutions().get(0);
-		executeAndAssertRemoval(message1.remove(), //
+		executeAndAssertRemoval((RemovalCommand)message1.remove(), //
 				message1, //
 				execution2, execution2.getStart().get(), execution2.getFinish().get());
 
@@ -105,7 +106,7 @@ public class BasicDeletionTest {
 		MExecution execution1 = interaction().getLifelines().get(0).getExecutions().get(0);
 		MMessage message1 = interaction().getMessages().get(0);
 		MExecution execution2 = interaction().getLifelines().get(1).getExecutions().get(0);
-		executeAndAssertRemoval(execution1.remove(), //
+		executeAndAssertRemoval((RemovalCommand)execution1.remove(), //
 				execution1, execution1.getStart().get(), execution1.getFinish().get(), //
 				message1, //
 				execution2, execution2.getStart().get(), execution2.getFinish().get());
@@ -131,7 +132,7 @@ public class BasicDeletionTest {
 		/* act */
 		MExecution execution2 = interaction().getLifelines().get(1).getExecutions().get(0);
 		MMessage message1 = interaction().getMessages().get(0);
-		executeAndAssertRemoval(execution2.remove(), //
+		executeAndAssertRemoval((RemovalCommand)execution2.remove(), //
 				execution2, execution2.getStart().get(), execution2.getFinish().get(), //
 				message1);
 
@@ -154,7 +155,7 @@ public class BasicDeletionTest {
 	public void execution_isolated() {
 		/* act */
 		MExecution execution3 = interaction().getLifelines().get(2).getExecutions().get(0);
-		executeAndAssertRemoval(execution3.remove(), //
+		executeAndAssertRemoval((RemovalCommand)execution3.remove(), //
 				execution3, execution3.getStart().get(), execution3.getFinish().get());
 
 		/*
@@ -181,7 +182,7 @@ public class BasicDeletionTest {
 		MMessage message1 = interaction().getMessages().get(0);
 		MMessage message2 = interaction().getMessages().get(1);
 
-		executeAndAssertRemoval(lifeline1.remove(), //
+		executeAndAssertRemoval((RemovalCommand)lifeline1.remove(), //
 				lifeline1, //
 				execution1, execution1.getStart().get(), execution1.getFinish().get(), //
 				execution2, execution2.getStart().get(), execution2.getFinish().get(), //
@@ -215,7 +216,7 @@ public class BasicDeletionTest {
 		MMessage message1 = interaction().getMessages().get(0);
 		MMessage message2 = interaction().getMessages().get(1);
 
-		executeAndAssertRemoval(lifeline2.remove(), //
+		executeAndAssertRemoval((RemovalCommand)lifeline2.remove(), //
 				lifeline2, //
 				execution2, execution2.getStart().get(), execution2.getFinish().get(), //
 				execution4, execution4.getStart().get(), execution4.getFinish().get(), //

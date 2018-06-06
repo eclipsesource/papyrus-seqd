@@ -39,7 +39,6 @@ import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
-import org.eclipse.papyrus.uml.interaction.model.RemovalCommand;
 import org.eclipse.uml2.types.TypesPackage;
 import org.eclipse.uml2.uml.UMLPackage;
 
@@ -139,13 +138,6 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	private EDataType eObjectEDataType = null;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	private EDataType removalCommandEDataType = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -913,16 +905,6 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
-	public EDataType getRemovalCommand() {
-		return removalCommandEDataType;
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
 	public SequenceDiagramFactory getSequenceDiagramFactory() {
 		return (SequenceDiagramFactory)getEFactoryInstance();
 	}
@@ -1027,7 +1009,6 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		commandEDataType = createEDataType(COMMAND);
 		creationCommandEDataType = createEDataType(CREATION_COMMAND);
 		eObjectEDataType = createEDataType(EOBJECT);
-		removalCommandEDataType = createEDataType(REMOVAL_COMMAND);
 	}
 
 	/**
@@ -1162,8 +1143,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 				IS_ORDERED);
 		addEParameter(op, ecorePackage.getEInt(), "deltaY", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
-		initEOperation(getMElement__Remove(), this.getRemovalCommand(), "remove", 1, 1, IS_UNIQUE, //$NON-NLS-1$
-				IS_ORDERED);
+		initEOperation(getMElement__Remove(), this.getCommand(), "remove", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(mInteractionEClass, MInteraction.class, "MInteraction", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);
@@ -1490,8 +1470,6 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		initEDataType(creationCommandEDataType, CreationCommand.class, "CreationCommand", !IS_SERIALIZABLE, //$NON-NLS-1$
 				!IS_GENERATED_INSTANCE_CLASS);
 		initEDataType(eObjectEDataType, EObject.class, "EObject", !IS_SERIALIZABLE, //$NON-NLS-1$
-				!IS_GENERATED_INSTANCE_CLASS);
-		initEDataType(removalCommandEDataType, RemovalCommand.class, "RemovalCommand", !IS_SERIALIZABLE, //$NON-NLS-1$
 				!IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource
