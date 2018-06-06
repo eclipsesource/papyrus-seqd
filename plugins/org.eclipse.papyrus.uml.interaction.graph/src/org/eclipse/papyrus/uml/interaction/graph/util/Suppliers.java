@@ -12,6 +12,7 @@
 
 package org.eclipse.papyrus.uml.interaction.graph.util;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -41,4 +42,26 @@ public class Suppliers {
 		return () -> function.apply(supplier.get());
 	}
 
+	/**
+	 * Memoize a {@code supplier} so that it is only accessed once and that result cached, with best-effort
+	 * support for concurrent access.
+	 * 
+	 * @param supplier
+	 *            a supplier
+	 * @return a memoizing wrapper for the {@code supplier}
+	 */
+	public static <V> Supplier<V> memoize(Supplier<V> supplier) {
+		final AtomicReference<V> memo = new AtomicReference<V>();
+		return () -> {
+			V result = memo.get();
+			if (result == null) {
+				result = supplier.get();
+				if (!memo.compareAndSet(null, result)) {
+					// Somebody else set it
+					result = memo.get();
+				}
+			}
+			return result;
+		};
+	}
 }

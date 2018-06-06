@@ -224,4 +224,60 @@ public interface LayoutHelper {
 	 */
 	Bounds getAdjustedBounds(EObject semanticObject, Node view, Bounds proposedBounds);
 
+	/**
+	 * Obtain an {@code x} coördinate in absolute space from one that is relative to the parent of a
+	 * {@code shape}, if it has one.
+	 * 
+	 * @param shape
+	 *            a shape
+	 * @param x
+	 *            an X position in relative coördinate space of the {@code shape}'s parent
+	 * @return the corresponding position in absolute coördinate space, or the relative {@code x} if none
+	 */
+	int toAbsoluteX(Shape shape, int x);
+
+	/**
+	 * Obtain an {@code x} coördinate in the space of the parent of a {@code shape}, if it has one, from one
+	 * that is in absolute space.
+	 * 
+	 * @param shape
+	 *            a shape
+	 * @param x
+	 *            an X position in absolute coördinate space
+	 * @return the corresponding position in the {@code shape}'s parent's space, or the absolute {@code x} if
+	 *         none
+	 */
+	int toRelativeX(Shape shape, int x);
+
+	/**
+	 * Obtain a {@code y} coördinate in absolute space from one that is relative to the parent of a
+	 * {@code shape}, if it has one.
+	 * 
+	 * @param shape
+	 *            a shape
+	 * @param y
+	 *            a Y position in relative coördinate space of the {@code shape}'s parent
+	 * @return the corresponding position in absolute coördinate space, or the relative {@code y} if none
+	 */
+	int toAbsoluteY(Shape shape, int y);
+
+	/**
+	 * Obtain a {@code y} coördinate in the space of the parent of a {@code shape}, if it has one, from one
+	 * that is in absolute space.
+	 * 
+	 * @param shape
+	 *            a shape
+	 * @param y
+	 *            a Y position in absolute coördinate space
+	 * @return the corresponding position in the {@code shape}'s parent's space, or the absolute {@code y} if
+	 *         none
+	 */
+	int toRelativeY(Shape shape, int y);
+
+	/**
+	 * Obtain the layout constraints.
+	 * 
+	 * @return the pluggable layout constraints
+	 */
+	LayoutConstraints getConstraints();
 }
