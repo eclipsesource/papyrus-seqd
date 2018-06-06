@@ -49,6 +49,15 @@ public final class SequenceElementTypes {
 	public static final IElementType Lifeline_Shape = getElementTypeByUniqueId(
 			"org.eclipse.papyrus.umldi.Lifeline_Shape"); //$NON-NLS-1$
 
+	public static final IElementType Action_Execution_Shape = getElementTypeByUniqueId(
+			"org.eclipse.papyrus.umldi.ActionExecutionSpecification_Shape"); //$NON-NLS-1$
+
+	public static final IElementType Behavior_Execution_Shape = getElementTypeByUniqueId(
+			"org.eclipse.papyrus.umldi.BehaviorExecutionSpecification_Shape"); //$NON-NLS-1$
+
+	public static final IElementType Async_Message_Edge = getElementTypeByUniqueId(
+			"org.eclipse.papyrus.umldi.Message_AsynchEdge"); //$NON-NLS-1$
+
 	public static ImageDescriptor getImageDescriptor(ENamedElement element) {
 		return elementTypeImages.getImageDescriptor(element);
 	}
@@ -104,10 +113,10 @@ public final class SequenceElementTypes {
 	public static IElementType getElementType(String visualID) {
 		if (visualID != null) {
 			switch (visualID) {
-			case RepresentationKind.DIAGRAM_ID:
-				return Package_SequenceDiagram;
-			case RepresentationKind.INTERACTION_ID:
-				return Interaction_Shape;
+				case RepresentationKind.DIAGRAM_ID:
+					return Package_SequenceDiagram;
+				case RepresentationKind.INTERACTION_ID:
+					return Interaction_Shape;
 			}
 		}
 		return null;
