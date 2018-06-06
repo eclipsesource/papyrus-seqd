@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -149,17 +150,9 @@ public class ModelFixture implements TestRule {
 	}
 
 	protected void starting(Description description) {
-		Class<?> context = testClass;
-		if (context == null) {
-			context = description.getTestClass();
-			if (context == null) {
-				fail("Explicit test class required for @ClassRule");
-			}
-		}
-
 		final String[] paths = getPaths(description);
 		for (String path : paths) {
-			URL resourceURL = context.getResource(path);
+			URL resourceURL = getResourceURL(description, path);
 			if (resourceURL == null) {
 				fail("Resource not found: " + path);
 			}
@@ -192,6 +185,18 @@ public class ModelFixture implements TestRule {
 				.filter(diagram -> SEQUENCE_DIAGRAM_TYPES.contains(diagram.getType())).findAny();
 	}
 
+	protected URL getResourceURL(Description description, String path) {
+		Class<?> context = testClass;
+		if (context == null) {
+			context = description.getTestClass();
+			if (context == null) {
+				fail("Explicit test class required for @ClassRule");
+			}
+		}
+
+		return context.getResource(path);
+	}
+
 	protected ResourceSet createResourceSet() {
 		ResourceSet result = new ResourceSetImpl();
 		if (!EMFPlugin.IS_ECLIPSE_RUNNING) {
@@ -216,17 +221,28 @@ public class ModelFixture implements TestRule {
 		if (path != null) {
 			result = new String[] { path };
 		} else {
-			ModelResource resource = description.getAnnotation(ModelResource.class);
-			if ((resource == null) && (description.getTestClass() != null)) {
-				resource = description.getTestClass().getAnnotation(ModelResource.class);
-			}
-			if (resource == null) {
-				fail("Required @ModelResource annotation is missing for " + description);
-			}
-			result = resource.value();
+			result = requireAnnotation(description, ModelResource.class).value();
 		}
 
 		return result;
+	}
+
+	protected final <A extends Annotation> Optional<A> getAnnotation(Description description,
+			Class<A> type) {
+		A result = description.getAnnotation(type);
+		if ((result == null) && (description.getTestClass() != null)) {
+			result = description.getTestClass().getAnnotation(type);
+		}
+		return Optional.ofNullable(result);
+	}
+
+	protected final <A extends Annotation> A requireAnnotation(Description description, Class<A> type) {
+		Optional<A> result = getAnnotation(description, type);
+		if (!result.isPresent()) {
+			fail(String.format("Required @%s annotation is missing for %s", type.getSimpleName(),
+					description));
+		}
+		return result.get();
 	}
 
 	/**
