@@ -30,6 +30,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.NotifyingInternalEListImpl;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
@@ -43,10 +44,12 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.IDiagramGraphicalViewer;
 import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -56,6 +59,7 @@ import org.eclipse.papyrus.infra.gmfdiag.common.utils.DiagramEditPartsUtil;
 import org.eclipse.papyrus.uml.diagram.common.part.UmlGmfDiagramEditor;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
+import org.eclipse.papyrus.uml.interaction.model.MObject;
 import org.eclipse.papyrus.uml.interaction.model.util.LogicalModelAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -116,7 +120,7 @@ public class LogicalModelPage extends Page implements IPageBookViewPage, IEditin
 		selectionViewer = new TreeViewer(tree);
 
 		selectionViewer.setUseHashlookup(true);
-		selectionViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
+		selectionViewer.setContentProvider(createContentProvider(adapterFactory));
 		selectionViewer.setLabelProvider(new AdapterFactoryLabelProvider(adapterFactory));
 
 		// Create a fake resource to expose the interaction in the UI
@@ -152,6 +156,32 @@ public class LogicalModelPage extends Page implements IPageBookViewPage, IEditin
 		} finally {
 			super.dispose();
 		}
+	}
+
+	private ITreeContentProvider createContentProvider(AdapterFactory adapterFactory) {
+		return new AdapterFactoryContentProvider(adapterFactory) {
+
+			@Override
+			public Object getParent(Object object) {
+				if (object instanceof View) {
+					View view = (View) object;
+					EObject semantic = view.getElement();
+					if (semantic != null) {
+						MElement<?> element = (MElement<?>) EcoreUtil.getExistingAdapter(semantic,
+								MObject.class);
+						if ((element != null)
+								&& element.getDiagramView().filter(view::equals).isPresent()) {
+							// That's the parent
+							return element;
+						}
+						// The containing view, then
+						return view.eContainer();
+					}
+				}
+				return super.getParent(object);
+			}
+
+		};
 	}
 
 	private void setInput() {
@@ -300,33 +330,50 @@ public class LogicalModelPage extends Page implements IPageBookViewPage, IEditin
 					.ofNullable(event.getStructuredSelection().getFirstElement())
 					.filter(IGraphicalEditPart.class::isInstance).map(IGraphicalEditPart.class::cast);
 
-			// And the current logical model
-			Optional<MInteraction> model = ((Resource) selectionViewer.getInput()).getContents().stream()
-					.filter(MInteraction.class::isInstance).map(MInteraction.class::cast).findAny();
+			// And its view
+			Optional<View> view = editPart.map(IGraphicalEditPart::getNotationView);
 
-			// Find the logical model element
-			Optional<Element> semantic = editPart.map(IGraphicalEditPart::resolveSemanticElement)
-					.filter(Element.class::isInstance).map(Element.class::cast);
-			Optional<MElement<?>> element = model
-					.<MElement<?>>flatMap(m -> semantic.flatMap(m::getElement));
-
-			setSelectionToViewer(element.map(Collections::singleton).orElse(Collections.emptySet()));
+			setSelectionToViewer(view.map(Collections::singleton).orElse(Collections.emptySet()));
 		});
 	}
 
 	private void modelSelectionChanged(SelectionChangedEvent event) {
 		withSelectionLock(() -> {
-			// Get the selected model element
-			Optional<MElement<?>> element = Optional
-					.ofNullable((MElement<?>) event.getStructuredSelection().getFirstElement());
-			Optional<Element> uml = element.map(MElement::getElement);
+			// Get the selected model element or view
+			Optional<?> first = Optional.ofNullable(event.getStructuredSelection().getFirstElement());
+			Optional<MElement<?>> element = first.filter(MElement.class::isInstance)
+					.map(MElement.class::cast);
+			Optional<Element> uml = element.isPresent()
+					? element.map(MElement::getElement)
+					: first.filter(Element.class::isInstance).map(Element.class::cast);
+			Optional<View> view = element.isPresent()
+					? element.flatMap(MElement::getDiagramView).filter(View.class::isInstance)
+							.map(View.class::cast)
+					: first.filter(View.class::isInstance).map(View.class::cast);
 
 			// Find the edit part
-			ISelection selection = uml.map(StructuredSelection::new).orElse(StructuredSelection.EMPTY);
-			Optional<EditPart> editPart = DiagramEditPartsUtil
-					.getEditPartsFromSelection(selection, diagramViewer).stream().findFirst();
+			Optional<EditPart> editPart = Optional.empty();
+			if (view.isPresent()) {
+				// Only attempt to select a selectable edit-part
+				editPart = Optional.ofNullable(DiagramEditPartsUtil.getEditPartFromView(view.get(),
+						diagramViewer.getRootEditPart())).filter(EditPart::isSelectable);
+			} else if (uml.isPresent()) {
+				Optional<IGraphicalEditPart> selected = ((List<?>) diagramViewer.getSelectedEditParts())
+						.stream().filter(IGraphicalEditPart.class::isInstance)
+						.map(IGraphicalEditPart.class::cast).findFirst();
+				// Don't change the selection in the diagram if it represents the same element
+				if (!selected.isPresent() || (selected.get().resolveSemanticElement() != uml.get())) {
+					ISelection selection = uml.map(StructuredSelection::new).get();
+					editPart = DiagramEditPartsUtil.getEditPartsFromSelection(selection, diagramViewer)
+							.stream().findFirst();
+				}
+			}
 
-			editPart.ifPresent(diagramViewer::select);
+			editPart.ifPresent(ep -> {
+				diagramViewer.select(ep);
+				// Flush for synchronous selection update to prevent feed-back
+				diagramViewer.flush();
+			});
 		});
 	}
 
