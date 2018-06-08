@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.emf.common.command.StrictCompoundCommand;
 import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
@@ -117,7 +118,8 @@ public class CompoundModelCommand extends StrictCompoundCommand {
 			}
 			return result;
 		}
-		return UnexecutableCommand.INSTANCE;
+		/* if list is empty, simply do nothing but still allow execution */
+		return IdentityCommand.INSTANCE;
 	}
 
 	@Override

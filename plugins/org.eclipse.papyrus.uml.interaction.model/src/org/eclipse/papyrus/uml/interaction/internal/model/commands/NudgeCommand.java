@@ -42,6 +42,8 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 
 	private final int deltaY;
 
+	private boolean following;
+
 	/**
 	 * Initializes me.
 	 * 
@@ -51,8 +53,23 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 	 *            the distance by which to nudge the {@code element}
 	 */
 	public NudgeCommand(MElementImpl<? extends Element> element, int deltaY) {
-		super(element);
+		this(element, deltaY, true);
+	}
 
+	/**
+	 * Initializes me.
+	 * 
+	 * @param element
+	 *            the element to be nudged up or down
+	 * @param deltaY
+	 *            the distance by which to nudge the {@code element}
+	 * @param nudgeFollowing
+	 *            <code>true</code> if following elements should be nudged as well, <code>false</code> if only
+	 *            the given elements should be moved
+	 */
+	public NudgeCommand(MElementImpl<? extends Element> element, int deltaY, boolean nudgeFollowing) {
+		super(element);
+		this.following = nudgeFollowing;
 		this.deltaY = deltaY;
 	}
 
@@ -70,8 +87,10 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 			// Visit this vertex
 			vertex.accept(moveDown);
 
-			// And all following
-			getGraph().walkAfter(vertex, moveDown);
+			if (following) {
+				// And all following
+				getGraph().walkAfter(vertex, moveDown);
+			}
 		}
 
 		return moveDown.getResult();

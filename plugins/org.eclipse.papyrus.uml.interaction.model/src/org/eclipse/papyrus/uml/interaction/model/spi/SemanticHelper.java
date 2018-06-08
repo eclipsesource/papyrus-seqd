@@ -297,7 +297,7 @@ public interface SemanticHelper {
 	 *            the message to delete
 	 * @return the delete command
 	 */
-	RemovalCommand deleteMessage(Message message);
+	RemovalCommand<Element> deleteMessage(Message message);
 
 	/**
 	 * Delete an existing execution specification.
@@ -306,7 +306,7 @@ public interface SemanticHelper {
 	 *            the execution to delete
 	 * @return the delete command
 	 */
-	RemovalCommand deleteExecutionSpecification(ExecutionSpecification execution);
+	RemovalCommand<Element> deleteExecutionSpecification(ExecutionSpecification execution);
 
 	/**
 	 * Delete an existing lifeline.
@@ -315,6 +315,6 @@ public interface SemanticHelper {
 	 *            the lifeline to delete
 	 * @return the delete command
 	 */
-	RemovalCommand deleteLifeline(Lifeline lifeline);
+	RemovalCommand<Element> deleteLifeline(Lifeline lifeline);
 
 }

@@ -40,7 +40,7 @@ import org.eclipse.papyrus.uml.interaction.model.spi.DeferredCreateCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredDeleteCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredSetCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
-import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommandImpl;
+import org.eclipse.papyrus.uml.interaction.model.spi.ElementRemovalCommandImpl;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ActionExecutionSpecification;
@@ -119,12 +119,12 @@ public class DefaultSemanticHelper implements SemanticHelper {
 		return DeleteCommand.create(editingDomain, toDelete);
 	}
 
-	private RemovalCommand removalCommand(EObject toDelete) {
-		return new RemovalCommandImpl(editingDomain, delete(toDelete), toDelete);
+	private RemovalCommand<Element> removalCommand(Element toDelete) {
+		return new ElementRemovalCommandImpl(editingDomain, delete(toDelete), toDelete);
 	}
 
-	private RemovalCommand deferredRemovalCommand(Supplier<? extends EObject> toDelete) {
-		return new RemovalCommandImpl(editingDomain, new DeferredDeleteCommand(editingDomain, toDelete),
+	private RemovalCommand<Element> deferredRemovalCommand(Supplier<? extends Element> toDelete) {
+		return new ElementRemovalCommandImpl(editingDomain, new DeferredDeleteCommand(editingDomain, toDelete),
 				toDelete.get());
 	}
 
@@ -412,15 +412,15 @@ public class DefaultSemanticHelper implements SemanticHelper {
 	}
 
 	@Override
-	public RemovalCommand deleteMessage(Message message) {
-		List<RemovalCommand> commands = new ArrayList<>(3);
+	public RemovalCommand<Element> deleteMessage(Message message) {
+		List<RemovalCommand<Element>> commands = new ArrayList<>(3);
 		commands.add(removalCommand(message));
 		deleteMessageEnd(message.getReceiveEvent()).ifPresent(c -> commands.add(c));
 		deleteMessageEnd(message.getSendEvent()).ifPresent(c -> commands.add(c));
-		return new RemovalCommandImpl(editingDomain, commands);
+		return new ElementRemovalCommandImpl(editingDomain, commands);
 	}
 
-	private Optional<RemovalCommand> deleteMessageEnd(MessageEnd messageEnd) {
+	private Optional<RemovalCommand<Element>> deleteMessageEnd(MessageEnd messageEnd) {
 		if (messageEnd == null) {
 			return Optional.empty();
 		}
@@ -462,7 +462,7 @@ public class DefaultSemanticHelper implements SemanticHelper {
 				es.getCovereds().stream().findFirst().ifPresent(l -> commandList.add(
 						new DeferredAddCommand(l, UMLPackage.Literals.LIFELINE__COVERED_BY, creationAndSet)));
 			});
-			return Optional.of(new RemovalCommandImpl(editingDomain,
+			return Optional.of(new ElementRemovalCommandImpl(editingDomain,
 					CompoundModelCommand.compose(editingDomain, commandList)));
 		}
 
@@ -470,16 +470,16 @@ public class DefaultSemanticHelper implements SemanticHelper {
 	}
 
 	@Override
-	public RemovalCommand deleteExecutionSpecification(ExecutionSpecification execution) {
-		List<RemovalCommand> commands = new ArrayList<>(3);
+	public RemovalCommand<Element> deleteExecutionSpecification(ExecutionSpecification execution) {
+		List<RemovalCommand<Element>> commands = new ArrayList<>(3);
 		commands.add(deferredRemovalCommand(execution::getStart));
 		commands.add(deferredRemovalCommand(execution::getFinish));
 		commands.add(removalCommand(execution));
-		return new RemovalCommandImpl(editingDomain, commands);
+		return new ElementRemovalCommandImpl(editingDomain, commands);
 	}
 
 	@Override
-	public RemovalCommand deleteLifeline(Lifeline lifeline) {
+	public RemovalCommand<Element> deleteLifeline(Lifeline lifeline) {
 		return removalCommand(lifeline);
 	}
 

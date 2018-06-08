@@ -11,12 +11,13 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MMessageImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
@@ -25,15 +26,16 @@ import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
+import org.eclipse.uml2.uml.Element;
 
 /**
  * A message removal operation.
  *
  * @author Johannes Faltermeier
  */
-public class RemoveMessageCommand extends ModelCommand<MMessageImpl> implements RemovalCommand {
+public class RemoveMessageCommand extends ModelCommand<MMessageImpl> implements RemovalCommand<Element> {
 
-	private RemovalCommand delegate;
+	private RemovalCommand<Element> delegate;
 
 	private MElement<?> trigger;
 
@@ -91,12 +93,22 @@ public class RemoveMessageCommand extends ModelCommand<MMessageImpl> implements 
 		DiagramHelper diagrams = diagramHelper();
 		Command diagramsResultCommand = diagrams.deleteView(getTarget().getDiagramView().get());
 
+		List<Command> allCommands = new ArrayList<>();
+		/* nudge */
+		if (nudge) {
+			/* nudge before deletion, because otherwise we would have to recreate MInteraction */
+			allCommands.add(new NudgeOnRemovalCommand(getEditingDomain(), getTarget().getInteraction(),
+					getElementsToRemove()));
+		}
+		allCommands.add(delegate);
+		allCommands.add(diagramsResultCommand);
+
 		/* chain */
-		return delegate.chain(diagramsResultCommand);
+		return CompoundModelCommand.compose(getEditingDomain(), allCommands);
 	}
 
 	@Override
-	public Collection<EObject> getElementsToRemove() {
+	public Collection<Element> getElementsToRemove() {
 		if (delegate == null) {
 			return Collections.emptySet();
 		}

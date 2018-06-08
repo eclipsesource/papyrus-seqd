@@ -18,24 +18,24 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MMessageImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
-import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommandImpl;
+import org.eclipse.papyrus.uml.interaction.model.spi.ElementRemovalCommandImpl;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
+import org.eclipse.uml2.uml.Element;
 
 /**
  * An execution removal operation.
  *
  * @author Johannes Faltermeier
  */
-public class RemoveExecutionCommand extends ModelCommand<MExecutionImpl> implements RemovalCommand {
+public class RemoveExecutionCommand extends ModelCommand<MExecutionImpl> implements RemovalCommand<Element> {
 
-	private RemovalCommand delegate;
+	private RemovalCommand<Element> delegate;
 
 	private boolean nudge;
 
@@ -56,25 +56,35 @@ public class RemoveExecutionCommand extends ModelCommand<MExecutionImpl> impleme
 		MExecutionImpl execution = getTarget();
 
 		/* remove messages */
-		List<RemovalCommand> allCommands = new ArrayList<>(3);
-		removeMessageIfPresent(execution.getStart()).ifPresent(c -> allCommands.add(c));
-		removeMessageIfPresent(execution.getFinish()).ifPresent(c -> allCommands.add(c));
+		List<RemovalCommand<Element>> removalCommands = new ArrayList<>(3);
+		removeMessageIfPresent(execution.getStart()).ifPresent(c -> removalCommands.add(c));
+		removeMessageIfPresent(execution.getFinish()).ifPresent(c -> removalCommands.add(c));
 
 		/* semantics */
 		SemanticHelper semantics = semanticHelper();
-		allCommands.add(semantics.deleteExecutionSpecification(execution.getElement()));
+		removalCommands.add(semantics.deleteExecutionSpecification(execution.getElement()));
 
-		delegate = new RemovalCommandImpl(getEditingDomain(), allCommands);
+		delegate = new ElementRemovalCommandImpl(getEditingDomain(), removalCommands);
 
 		/* diagram */
 		DiagramHelper diagrams = diagramHelper();
 		Command diagramsResultCommand = diagrams.deleteView(execution.getDiagramView().get());
 
+		List<Command> allCommands = new ArrayList<>();
+		/* nudge */
+		if (nudge) {
+			/* nudge before deletion, because otherwise we would have to recreate MInteraction */
+			allCommands.add(new NudgeOnRemovalCommand(getEditingDomain(), getTarget().getInteraction(),
+					getElementsToRemove()));
+		}
+		allCommands.add(delegate);
+		allCommands.add(diagramsResultCommand);
+
 		/* chain */
-		return CompoundModelCommand.compose(getEditingDomain(), delegate, diagramsResultCommand);
+		return CompoundModelCommand.compose(getEditingDomain(), allCommands);
 	}
 
-	private Optional<RemovalCommand> removeMessageIfPresent(Optional<MOccurrence<?>> occurrence) {
+	private Optional<RemovalCommand<Element>> removeMessageIfPresent(Optional<MOccurrence<?>> occurrence) {
 		if (occurrence.isPresent()) {
 			MElement<?> owner = occurrence.get().getOwner();
 			if (MMessageImpl.class.isInstance(owner)) {
@@ -85,7 +95,7 @@ public class RemoveExecutionCommand extends ModelCommand<MExecutionImpl> impleme
 	}
 
 	@Override
-	public Collection<EObject> getElementsToRemove() {
+	public Collection<Element> getElementsToRemove() {
 		if (delegate == null) {
 			return Collections.emptySet();
 		}
