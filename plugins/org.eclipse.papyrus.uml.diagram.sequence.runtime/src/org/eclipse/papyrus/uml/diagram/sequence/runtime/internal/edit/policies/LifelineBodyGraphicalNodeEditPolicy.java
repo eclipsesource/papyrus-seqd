@@ -16,6 +16,7 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil.
 
 import java.util.Optional;
 
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.CreateConnectionRequest;
@@ -65,7 +66,13 @@ public class LifelineBodyGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy
 				Point location = request.getLocation();
 				Optional<MElement<?>> before = mLifeline.elementAt(location.y());
 
-				int offset = location.y();
+				IFigure lifelineBodyFigure = getHostFigure();
+
+				Point locationToBody = location.getCopy();
+				lifelineBodyFigure.translateToRelative(locationToBody);
+				locationToBody.translate(lifelineBodyFigure.getBounds().getTop().getNegated());
+
+				int offset = locationToBody.y();
 
 				if (before.isPresent()) {
 					// We know the top exists because that's how we found the 'before' element
