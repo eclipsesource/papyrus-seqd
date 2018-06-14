@@ -52,7 +52,7 @@ public class LifelineBodyGraphicalNodeEditPolicyUITest extends AbstractGraphical
 		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge,
 				at(LIFELINE_1_BODY_X, 115), at(LIFELINE_2_BODY_X, 115));
 
-		assertThat(messageEP, runs(x(LIFELINE_1_BODY_X), y(115), x(LIFELINE_2_BODY_X), y(115), 2));
+		assertThat(messageEP, runs(LIFELINE_1_BODY_X, 115, LIFELINE_2_BODY_X, 115, 2));
 	}
 
 }

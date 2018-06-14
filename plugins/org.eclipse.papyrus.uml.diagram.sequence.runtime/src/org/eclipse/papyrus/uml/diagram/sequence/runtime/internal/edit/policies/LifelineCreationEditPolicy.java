@@ -20,7 +20,6 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.emf.type.core.IHintedType;
 import org.eclipse.gmf.runtime.notation.View;
@@ -88,14 +87,4 @@ public class LifelineCreationEditPolicy extends LogicalModelCreationEditPolicy {
 		return mLifeline.map(new CommandSwitch()::doSwitch);
 	}
 
-	@Override
-	protected Point getRelativeLocation(Point location) {
-		Point result = super.getRelativeLocation(location);
-
-		// And adjust for the lifeline header
-		GraphicalEditPart header = (GraphicalEditPart)getHost().getParent();
-		result.translate(0, -header.getFigure().getBounds().height());
-
-		return result;
-	}
 }

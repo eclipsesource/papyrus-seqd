@@ -50,7 +50,7 @@ public class LifelineCreationEditPolicyUITest extends AbstractGraphicalEditPolic
 				at(LIFELINE_2_BODY_X, 115), DEFAULT_SIZE);
 
 		// The 10-unit-wide shape is centred on the lifeline body
-		assertThat(executionEP, isAt(x(LIFELINE_2_BODY_X) - 5, y(115), 2));
+		assertThat(executionEP, isAt(LIFELINE_2_BODY_X - 5, 115, 2));
 	}
 
 	@Test
@@ -59,7 +59,7 @@ public class LifelineCreationEditPolicyUITest extends AbstractGraphicalEditPolic
 				at(LIFELINE_2_BODY_X, 115), DEFAULT_SIZE);
 
 		// The 10-unit-wide shape is centred on the lifeline body
-		assertThat(executionEP, isAt(x(LIFELINE_2_BODY_X) - 5, y(115), 2));
+		assertThat(executionEP, isAt(LIFELINE_2_BODY_X - 5, 115, 2));
 	}
 
 }

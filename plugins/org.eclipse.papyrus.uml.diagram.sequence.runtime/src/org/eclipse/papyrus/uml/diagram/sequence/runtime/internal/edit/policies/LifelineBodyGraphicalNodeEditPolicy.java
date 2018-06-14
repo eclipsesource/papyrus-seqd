@@ -62,18 +62,18 @@ public class LifelineBodyGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy
 
 				IElementType messageType = request.getConnectionViewDescriptor().getElementAdapter()
 						.getAdapter(IElementType.class);
-				Point location = request.getLocation();
-				Optional<MElement<?>> before = mLifeline.elementAt(location.y());
 
+				Point location = getRelativeLocation(request.getLocation());
 				int offset = location.y();
+
+				Optional<MElement<?>> before = mLifeline.elementAt(offset);
 
 				if (before.isPresent()) {
 					// We know the top exists because that's how we found the 'before' element
-					offset = offset - before.get().getTop().getAsInt();
-				} else {
-					// It will be relative to the lifeline head
-					offset = offset - getLayoutHelper().getBottom(mLifeline.getDiagramView().get());
-				}
+					int relativeTopOfBefore = before.get().getTop().getAsInt()
+							- getLayoutHelper().getBottom(mLifeline.getDiagramView().get());
+					offset = offset - relativeTopOfBefore;
+				} // else it will be relative to the top of the lifeline body line
 
 				Command result = new StartMessageCommand(mLifeline, before, offset, getSort(messageType));
 				request.setStartCommand(result);
