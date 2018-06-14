@@ -21,6 +21,7 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.notation.Bounds;
+import org.eclipse.gmf.runtime.notation.Compartment;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
@@ -78,14 +79,34 @@ public class DefaultDiagramHelper implements DiagramHelper {
 	}
 
 	@Override
+	public Shape getInteractionFrame(Diagram diagram) {
+		return (Shape)ViewUtil.getChildBySemanticHint(diagram, "Shape_Interaction");
+	}
+
+	@Override
+	public Compartment getShapeCompartment(Shape shape) {
+		Compartment result;
+
+		switch (shape.getType()) {
+			case "Shape_Interaction":
+				result = (Compartment)ViewUtil.getChildBySemanticHint(shape, "Interaction_Contents");
+				break;
+			default:
+				result = null;
+				break;
+		}
+
+		return result;
+	}
+
+	@Override
 	public CreationCommand<Shape> createLifelineShape(Supplier<? extends Lifeline> lifeline, Diagram diagram,
 			int xPosition, int height) {
 
 		// TODO: The Logical Model is required to have no dependencies on the diagram editor,
 		// but this is usually the responsibility of a View Provider. That should be okay ...
 
-		Node frame = (Node)ViewUtil.getChildBySemanticHint(diagram, "Shape_Interaction");
-		Node compartment = (Node)ViewUtil.getChildBySemanticHint(frame, "Interaction_Contents");
+		Node compartment = getShapeCompartment(getInteractionFrame(diagram));
 
 		Supplier<Shape> shape = () -> {
 			Shape result = NotationFactory.eINSTANCE.createShape();
@@ -94,15 +115,9 @@ public class DefaultDiagramHelper implements DiagramHelper {
 
 			Bounds bounds = NotationFactory.eINSTANCE.createBounds();
 			Bounds proposedBounds = NotationFactory.eINSTANCE.createBounds();
-			proposedBounds.setX(xPosition);
+			proposedBounds.setX(layoutHelper().toRelativeX(result, compartment, xPosition));
 			proposedBounds.setHeight(height);
 			bounds = layoutHelper().getNewBounds(UMLPackage.Literals.LIFELINE, proposedBounds, compartment);
-
-			// Adjust for insets. Always relative to parent
-			bounds.setX(layoutHelper().toRelativeX(result,
-					bounds.getX() - layoutHelper().getConstraints().getLeftInset(result)));
-			bounds.setY(layoutHelper().toRelativeY(result,
-					bounds.getY() - layoutHelper().getConstraints().getTopInset(result)));
 
 			result.setLayoutConstraint(bounds);
 
@@ -165,7 +180,7 @@ public class DefaultDiagramHelper implements DiagramHelper {
 
 			Bounds bounds = NotationFactory.eINSTANCE.createBounds();
 			bounds.setX((width - execWidth) / 2); // Relative to the parent
-			bounds.setY(layoutHelper().toRelativeY(result, yPosition)); // Always relative to parent
+			bounds.setY(layoutHelper().toRelativeY(result, lifelineBody, yPosition)); // Relative to parent
 			bounds.setWidth(execWidth);
 			bounds.setHeight(height);
 			result.setLayoutConstraint(bounds);

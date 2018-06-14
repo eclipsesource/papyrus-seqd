@@ -248,11 +248,11 @@ public class MInteractionTest extends MElementTest {
 		MLifeline left = getFixture().getLifeline(umlInteraction.getLifeline("LeftLine")).get();
 		MLifeline right = getFixture().getLifeline(umlInteraction.getLifeline("RightLine")).get();
 
-		assertThat("Direct hit on right not found", getFixture().getLifelineAt(200), isPresent(is(right)));
-		assertThat("Between the lifelines not found", getFixture().getLifelineAt(160), isPresent(is(right)));
-		assertThat("Direct hit on left not found	", getFixture().getLifelineAt(100), isPresent(is(left)));
-		assertThat("Left of the leftmost not found", getFixture().getLifelineAt(15), isPresent(is(left)));
-		assertThat("Right of the righmost was found", getFixture().getLifelineAt(400), not(isPresent()));
+		assertThat("Direct hit on right not found", getFixture().getLifelineAt(237), isPresent(is(right)));
+		assertThat("Between the lifelines not found", getFixture().getLifelineAt(197), isPresent(is(right)));
+		assertThat("Direct hit on left not found	", getFixture().getLifelineAt(137), isPresent(is(left)));
+		assertThat("Left of the leftmost not found", getFixture().getLifelineAt(52), isPresent(is(left)));
+		assertThat("Right of the righmost was found", getFixture().getLifelineAt(437), not(isPresent()));
 	}
 
 } // MInteractionTest

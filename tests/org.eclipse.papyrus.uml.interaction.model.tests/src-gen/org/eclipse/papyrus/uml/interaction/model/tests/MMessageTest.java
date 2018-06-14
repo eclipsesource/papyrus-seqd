@@ -116,12 +116,14 @@ public class MMessageTest extends MElementTest {
 
 	@Override
 	public void testGetTop() {
-		assertThat(getFixture().getTop(), isPresent(75));
+		// 12 {frame} + 30 {title} + 25 {lifeline} + 25 {head} + 25 {anchor}
+		assertThat(getFixture().getTop(), isPresent(117));
 	}
 
 	@Override
 	public void testGetBottom() {
-		assertThat(getFixture().getBottom(), isPresent(75));
+		// 12 {frame} + 30 {title} + 25 {lifeline} + 25 {head} + 25 {anchor}
+		assertThat(getFixture().getBottom(), isPresent(117));
 	}
 
 	@Override

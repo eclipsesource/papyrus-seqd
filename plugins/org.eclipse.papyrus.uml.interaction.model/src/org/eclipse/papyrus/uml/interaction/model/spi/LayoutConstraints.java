@@ -13,7 +13,6 @@
 package org.eclipse.papyrus.uml.interaction.model.spi;
 
 import org.eclipse.gmf.runtime.notation.Compartment;
-import org.eclipse.gmf.runtime.notation.Shape;
 
 /**
  * Encoding of the layout constraints for shapes, compartments, etc.
@@ -41,41 +40,5 @@ public interface LayoutConstraints {
 	 * @return its Y offset within the parent shape
 	 */
 	int getYOffset(Compartment shapeCompartment);
-
-	/**
-	 * Queries the left inset of a {@code shape}.
-	 * 
-	 * @param shape
-	 *            a shape in the diagram
-	 * @return its left inset
-	 */
-	int getLeftInset(Shape shape);
-
-	/**
-	 * Queries the top inset of a {@code shape}.
-	 * 
-	 * @param shape
-	 *            a shape in the diagram
-	 * @return its top inset
-	 */
-	int getTopInset(Shape shape);
-
-	/**
-	 * Queries the right inset of a {@code shape}.
-	 * 
-	 * @param shape
-	 *            a shape in the diagram
-	 * @return its right inset
-	 */
-	int getRightInset(Shape shape);
-
-	/**
-	 * Queries the bottom inset of a {@code shape}.
-	 * 
-	 * @param shape
-	 *            a shape in the diagram
-	 * @return its bottom inset
-	 */
-	int getBottomInset(Shape shape);
 
 }

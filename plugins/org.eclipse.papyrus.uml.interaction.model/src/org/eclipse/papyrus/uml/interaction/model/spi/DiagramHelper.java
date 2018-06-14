@@ -16,6 +16,7 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.gmf.runtime.notation.Compartment;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
@@ -32,6 +33,24 @@ import org.eclipse.uml2.uml.Message;
  * @author Christian W. Damus
  */
 public interface DiagramHelper {
+
+	/**
+	 * Get the interaction frame of a sequence {@code diagram}.
+	 * 
+	 * @param diagram
+	 *            a sequence diagram
+	 * @return its interaction frame
+	 */
+	Shape getInteractionFrame(Diagram diagram);
+
+	/**
+	 * Get the shape compartment of a {@code shape}.
+	 * 
+	 * @param shape
+	 *            a shape view
+	 * @return its shape compartment
+	 */
+	Compartment getShapeCompartment(Shape shape);
 
 	/**
 	 * Obtain a command to create a shape for the given {@code lifeline} as a child of an {@link interaction}

@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.gmf.runtime.notation.Compartment;
-import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 
 /**
@@ -31,14 +30,6 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 
 	private final Map<String, Integer> standardYOffsets;
 
-	private final Map<String, Integer> standardLeftInsets;
-
-	private final Map<String, Integer> standardTopInsets;
-
-	private final Map<String, Integer> standardRightInsets;
-
-	private final Map<String, Integer> standardBottomInsets;
-
 	/**
 	 * Initializes me.
 	 */
@@ -47,11 +38,6 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 
 		standardXOffsets = loadXOffsets();
 		standardYOffsets = loadYOffsets();
-
-		standardLeftInsets = loadLeftInsets();
-		standardTopInsets = loadTopInsets();
-		standardRightInsets = loadRightInsets();
-		standardBottomInsets = loadBottomInsets();
 	}
 
 	@Override
@@ -64,28 +50,12 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 		return standardYOffsets.getOrDefault(shapeCompartment.getType(), ZERO).intValue();
 	}
 
-	@Override
-	public int getLeftInset(Shape shape) {
-		return standardLeftInsets.getOrDefault(shape.getType(), ZERO).intValue();
-	}
-
-	@Override
-	public int getTopInset(Shape shape) {
-		return standardTopInsets.getOrDefault(shape.getType(), ZERO).intValue();
-	}
-
-	@Override
-	public int getRightInset(Shape shape) {
-		return standardRightInsets.getOrDefault(shape.getType(), ZERO).intValue();
-	}
-
-	@Override
-	public int getBottomInset(Shape shape) {
-		return standardBottomInsets.getOrDefault(shape.getType(), ZERO).intValue();
-	}
-
 	private static Map<String, Integer> loadXOffsets() {
 		Map<String, Integer> result = new HashMap<>();
+
+		// Inset of the viewpoint figure
+		result.put("Interaction_Contents", 5);
+
 		return result;
 	}
 
@@ -95,36 +65,6 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 
 		// The size of the interaction frame's pentagon label
 		result.put("Interaction_Contents", 30);
-
-		return result;
-	}
-
-	private static Map<String, Integer> loadLeftInsets() {
-		Map<String, Integer> result = new HashMap<>();
-
-		return result;
-	}
-
-	@SuppressWarnings("boxing")
-	private static Map<String, Integer> loadTopInsets() {
-		Map<String, Integer> result = new HashMap<>();
-
-		result.put("Shape_Lifeline_Header", 5);
-
-		return result;
-	}
-
-	private static Map<String, Integer> loadRightInsets() {
-		Map<String, Integer> result = new HashMap<>();
-
-		return result;
-	}
-
-	@SuppressWarnings("boxing")
-	private static Map<String, Integer> loadBottomInsets() {
-		Map<String, Integer> result = new HashMap<>();
-
-		result.put("Shape_Lifeline_Header", 5);
 
 		return result;
 	}

@@ -114,17 +114,18 @@ public class MExecutionTest extends MElementTest {
 
 	@Override
 	public void testGetTop() {
-		assertThat(getFixture().getTop(), isPresent(75));
+		// 12 {frame} + 30 {title} + 25 {lifeline} + 25 {head} + 25 {y}
+		assertThat(getFixture().getTop(), isPresent(117));
 	}
 
 	@Override
 	public void testGetBottom() {
-		assertThat(getFixture().getBottom(), isPresent(225));
+		assertThat(getFixture().getBottom(), isPresent(267)); // 117 {top} + 150 {height}
 	}
 
 	@Override
 	public void testVerticalDistance__MElement() {
-		// The lifeline header has a specified height
+		// Distance from the bottom of the lifeline header is just the y position in the notation
 		assertThat(getFixture().verticalDistance(getFixture().getOwner()), isPresent(25));
 		assertThat(getFixture().verticalDistance(getFixture().getStart().get()), isPresent(0));
 	}

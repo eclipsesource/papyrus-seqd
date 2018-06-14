@@ -162,9 +162,6 @@ public class DefaultLayoutHelper implements LayoutHelper {
 			LayoutConstraint constraint = shape.getLayoutConstraint();
 			if (constraint != null) {
 				result = getTopFunction().applyAsInt(constraint);
-				if (result != DEFAULT_TOP) {
-					result = result - getConstraints().getTopInset(shape);
-				}
 			}
 		}
 
@@ -177,8 +174,8 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	}
 
 	@Override
-	public int toAbsoluteX(Shape shape, int x) {
-		EObject containerView = shape.eContainer();
+	public int toAbsoluteX(Shape shape, View parent, int x) {
+		EObject containerView = parent;
 		int compartmentX = 0;
 		if (containerView instanceof Compartment) {
 			// It's in a shape compartment. Where is it in the parent shape?
@@ -198,8 +195,8 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	}
 
 	@Override
-	public int toRelativeX(Shape shape, int x) {
-		EObject containerView = shape.eContainer();
+	public int toRelativeX(Shape shape, View parent, int x) {
+		EObject containerView = parent;
 		int compartmentX = 0;
 		if (containerView instanceof Compartment) {
 			// It's in a shape compartment. Where is it in the parent shape?
@@ -219,8 +216,8 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	}
 
 	@Override
-	public int toAbsoluteY(Shape shape, int y) {
-		EObject containerView = shape.eContainer();
+	public int toAbsoluteY(Shape shape, View parent, int y) {
+		EObject containerView = parent;
 		int compartmentY = 0;
 		if (containerView instanceof Compartment) {
 			// It's in a shape compartment. Where is it in the parent shape?
@@ -240,8 +237,8 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	}
 
 	@Override
-	public int toRelativeY(Shape shape, int y) {
-		EObject containerView = shape.eContainer();
+	public int toRelativeY(Shape shape, View parent, int y) {
+		EObject containerView = parent;
 		int compartmentY = 0;
 		if (containerView instanceof Compartment) {
 			// It's in a shape compartment. Where is it in the parent shape?
@@ -378,11 +375,6 @@ public class DefaultLayoutHelper implements LayoutHelper {
 		LayoutConstraint constraint = shape.getLayoutConstraint();
 		if (constraint != null) {
 			result = getBottomFunction().applyAsInt(constraint);
-			if (result != DEFAULT_BOTTOM) {
-				// Account for both Y insets
-				result = result - getConstraints().getTopInset(shape)
-						- getConstraints().getBottomInset(shape);
-			}
 		}
 
 		if (result != DEFAULT_BOTTOM) {
@@ -440,9 +432,6 @@ public class DefaultLayoutHelper implements LayoutHelper {
 			LayoutConstraint constraint = shape.getLayoutConstraint();
 			if (constraint != null) {
 				result = getLeftFunction().applyAsInt(constraint);
-				if (result != DEFAULT_LEFT) {
-					result = result - getConstraints().getLeftInset(shape);
-				}
 			}
 		}
 
@@ -478,11 +467,6 @@ public class DefaultLayoutHelper implements LayoutHelper {
 			LayoutConstraint constraint = shape.getLayoutConstraint();
 			if (constraint != null) {
 				result = getRightFunction().applyAsInt(constraint);
-				if (result != DEFAULT_RIGHT) {
-					// Account for both X insets
-					result = result - getConstraints().getLeftInset(shape)
-							- getConstraints().getRightInset(shape);
-				}
 			}
 		}
 
@@ -703,10 +687,10 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	public Command setTop(Shape shape, int yPosition) {
 		Command result = UnexecutableCommand.INSTANCE;
 		if (shape.getLayoutConstraint() instanceof Location) {
-			// Account for insets
-			int adjustedY = toRelativeY(shape, yPosition) - getConstraints().getTopInset(shape);
+			// Compute relative position
+			int relativeY = toRelativeY(shape, yPosition);
 			result = SetCommand.create(editingDomain, shape.getLayoutConstraint(),
-					NotationPackage.Literals.LOCATION__Y, adjustedY);
+					NotationPackage.Literals.LOCATION__Y, relativeY);
 		}
 		return result;
 	}
@@ -798,10 +782,10 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	public Command setLeft(Shape shape, int xPosition) {
 		Command result = UnexecutableCommand.INSTANCE;
 		if (shape.getLayoutConstraint() instanceof Location) {
-			// Account for insets
-			int adjustedX = toRelativeX(shape, xPosition) - getConstraints().getLeftInset(shape);
+			// Compute relative position
+			int relativeX = toRelativeX(shape, xPosition);
 			result = SetCommand.create(editingDomain, shape.getLayoutConstraint(),
-					NotationPackage.Literals.LOCATION__X, adjustedX);
+					NotationPackage.Literals.LOCATION__X, relativeX);
 		}
 		return result;
 	}

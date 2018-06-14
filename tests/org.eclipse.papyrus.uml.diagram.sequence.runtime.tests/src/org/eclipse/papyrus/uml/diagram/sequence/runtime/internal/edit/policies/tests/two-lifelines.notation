@@ -12,7 +12,7 @@
           <layoutConstraint xmi:type="notation:Size" xmi:id="_FTODxGpHEeiIJqtZNCF3Dw" width="2" height="150"/>
         </children>
         <element xmi:type="uml:Lifeline" href="two-lifelines.uml#_FMyroGpHEeiIJqtZNCF3Dw"/>
-        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FTODxWpHEeiIJqtZNCF3Dw" x="30" y="20" width="100" height="28"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FTODxWpHEeiIJqtZNCF3Dw" x="30" y="25" width="100" height="28"/>
       </children>
       <children xmi:type="notation:Shape" xmi:id="_F8jUoGpHEeiIJqtZNCF3Dw" type="Shape_Lifeline_Header">
         <children xmi:type="notation:Shape" xmi:id="_F8jUoWpHEeiIJqtZNCF3Dw" type="Compartment_Lifeline_Header"/>
@@ -21,7 +21,7 @@
           <layoutConstraint xmi:type="notation:Size" xmi:id="_F8jUpGpHEeiIJqtZNCF3Dw" width="2" height="150"/>
         </children>
         <element xmi:type="uml:Lifeline" href="two-lifelines.uml#_F4rhQGpHEeiIJqtZNCF3Dw"/>
-        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_F8jUpWpHEeiIJqtZNCF3Dw" x="190" y="20" width="100" height="28"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_F8jUpWpHEeiIJqtZNCF3Dw" x="190" y="25" width="100" height="28"/>
       </children>
       <element xmi:type="uml:Interaction" href="two-lifelines.uml#_R_u1oEppEeiB_O7ig5LXPg"/>
     </children>

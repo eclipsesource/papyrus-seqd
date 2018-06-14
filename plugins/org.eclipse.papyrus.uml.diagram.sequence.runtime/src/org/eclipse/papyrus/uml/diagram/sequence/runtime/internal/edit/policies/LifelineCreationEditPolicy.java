@@ -14,6 +14,7 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
 import java.util.Optional;
+import java.util.OptionalInt;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
@@ -22,6 +23,7 @@ import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.emf.type.core.IHintedType;
+import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.SequenceTypeSwitch;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
@@ -58,8 +60,16 @@ public class LifelineCreationEditPolicy extends LogicalModelCreationEditPolicy {
 						int offset = location.y();
 
 						if (before.isPresent()) {
-							// We know the top exists because that's how we found the 'before' element
-							offset = offset - before.get().getTop().getAsInt();
+							// Get the bottom of the before element
+							OptionalInt bottom = before.get().getBottom();
+							if (bottom.isPresent()) {
+								int relativeBottom = bottom.getAsInt()
+										- getLayoutHelper().getTop((Shape)parentView);
+								offset = offset - relativeBottom;
+							} else {
+								// If it doesn't have a bottom, then ignore it
+								before = Optional.empty();
+							}
 						}
 
 						return lifeline.insertExecutionAfter(before.orElse(lifeline), offset,
