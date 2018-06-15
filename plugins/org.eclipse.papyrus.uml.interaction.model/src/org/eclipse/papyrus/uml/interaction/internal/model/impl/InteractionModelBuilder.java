@@ -76,18 +76,17 @@ public class InteractionModelBuilder {
 	public MInteraction build() {
 		// The initial vertex is the interaction
 		Interaction interaction = (Interaction)graph.initial().getInteractionElement();
-		Diagram diagram = (Diagram)graph.initial().getDiagramView();
 
-		MInteractionImpl result = new MInteractionImpl(interaction).withGraph(graph);
-		result.dispose();
+		MInteractionImpl result = new MInteractionImpl().withGraph(graph);
+		build(result, interaction);
 
-		build(result);
+		// Now make the association for LogicalModelAdapters to discover it
+		result.setElement(interaction);
+
 		return result;
 	}
 
-	void build(MInteractionImpl interaction) {
-		Interaction uml = interaction.getElement();
-
+	void build(MInteractionImpl interaction, Interaction uml) {
 		uml.getLifelines().forEach(lifelineBuilder(interaction));
 		uml.getMessages().forEach(messageBuilder(interaction));
 
