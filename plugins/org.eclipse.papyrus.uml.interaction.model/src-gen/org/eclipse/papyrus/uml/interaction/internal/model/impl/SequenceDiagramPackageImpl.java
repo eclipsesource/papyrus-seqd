@@ -325,6 +325,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EOperation getMElement__Remove() {
+		return mElementEClass.getEOperations().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EClass getMInteraction() {
 		return mInteractionEClass;
 	}
@@ -930,6 +940,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEOperation(mElementEClass, MELEMENT___VERTICAL_DISTANCE__MELEMENT);
 		createEOperation(mElementEClass, MELEMENT___FOLLOWING);
 		createEOperation(mElementEClass, MELEMENT___NUDGE__INT);
+		createEOperation(mElementEClass, MELEMENT___REMOVE);
 
 		mInteractionEClass = createEClass(MINTERACTION);
 		createEReference(mInteractionEClass, MINTERACTION__LIFELINES);
@@ -1131,6 +1142,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		op = initEOperation(getMElement__Nudge__int(), this.getCommand(), "nudge", 1, 1, IS_UNIQUE, //$NON-NLS-1$
 				IS_ORDERED);
 		addEParameter(op, ecorePackage.getEInt(), "deltaY", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		initEOperation(getMElement__Remove(), this.getCommand(), "remove", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(mInteractionEClass, MInteraction.class, "MInteraction", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);

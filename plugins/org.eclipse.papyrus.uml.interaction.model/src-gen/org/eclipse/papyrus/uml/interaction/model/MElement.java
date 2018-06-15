@@ -167,4 +167,12 @@ public interface MElement<T extends Element> extends MObject {
 	 */
 	Command nudge(int deltaY);
 
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Command" required="true"
+	 * @generated
+	 */
+	Command remove();
+
 } // MElement

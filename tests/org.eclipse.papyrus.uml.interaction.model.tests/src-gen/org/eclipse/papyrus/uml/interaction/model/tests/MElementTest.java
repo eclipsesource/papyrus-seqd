@@ -27,6 +27,7 @@ import java.util.OptionalInt;
 import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -183,6 +184,36 @@ public abstract class MElementTest extends TestCase {
 		assertThat(String.format("No element %s of type %s", qualifiedName, type.getSimpleName()), result,
 				isPresent());
 		return result.get();
+	}
+	
+	protected Optional<View> findTypeInChildren(View shape, String type) {
+		TreeIterator<EObject> contents = shape.eAllContents();
+		while(contents.hasNext()) {
+			EObject next = contents.next();
+			if(View.class.isInstance(next)) {
+				View view = View.class.cast(next);
+				if(type.equals(view.getType())) {
+					return Optional.of(view);
+				}
+			}
+		}
+		return Optional.empty();
+	}
+	
+
+	protected int countTypesInChildren(View shape, String type) {
+		int found = 0;
+		TreeIterator<EObject> contents = shape.eAllContents();
+		while(contents.hasNext()) {
+			EObject next = contents.next();
+			if(View.class.isInstance(next)) {
+				View view = View.class.cast(next);
+				if(type.equals(view.getType())) {
+					found++;
+				}
+			}
+		}
+		return found;
 	}
 
 	@Override

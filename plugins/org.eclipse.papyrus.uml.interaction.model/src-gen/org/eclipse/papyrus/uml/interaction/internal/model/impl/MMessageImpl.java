@@ -15,6 +15,7 @@ package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
@@ -23,6 +24,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.RemoveMessageCommand;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
@@ -400,6 +402,16 @@ public class MMessageImpl extends MElementImpl<Message> implements MMessage {
 	@Override
 	public Optional<MMessageEnd> getEnd(MessageEnd end) {
 		return getElement(end, getSend(), getReceive());
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Command remove() {
+		return new RemoveMessageCommand(this, true);
 	}
 
 } // MMessageImpl

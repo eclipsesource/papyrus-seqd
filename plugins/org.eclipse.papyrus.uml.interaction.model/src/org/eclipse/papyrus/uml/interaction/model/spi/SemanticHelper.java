@@ -84,6 +84,15 @@ public interface SemanticHelper {
 	Command set(EObject owner, EStructuralFeature feature, Object value);
 
 	/**
+	 * Obtain a command that will remove an EObject from its container and any resource.
+	 * 
+	 * @param toDelete
+	 *            the object to delete
+	 * @return the command
+	 */
+	Command delete(EObject toDelete);
+
+	/**
 	 * Obtain a command that inserts {@code values} after some other in a {@code feature} of an {@code owner}
 	 * object. If the {@code feature} does not actually have this reference element, then the new elements are
 	 * just appended.
@@ -280,5 +289,32 @@ public interface SemanticHelper {
 	CreationCommand<Message> createMessage(Supplier<? extends MessageEnd> sendEvent,
 			Supplier<? extends MessageEnd> recvEvent, MessageSort sort, NamedElement signature,
 			CreationParameters messageParams);
+
+	/**
+	 * Deletes an existing message.
+	 * 
+	 * @param message
+	 *            the message to delete
+	 * @return the delete command
+	 */
+	RemovalCommand deleteMessage(Message message);
+
+	/**
+	 * Delete an existing execution specification.
+	 * 
+	 * @param execution
+	 *            the execution to delete
+	 * @return the delete command
+	 */
+	RemovalCommand deleteExecutionSpecification(ExecutionSpecification execution);
+
+	/**
+	 * Delete an existing lifeline.
+	 * 
+	 * @param lifeline
+	 *            the lifeline to delete
+	 * @return the delete command
+	 */
+	RemovalCommand deleteLifeline(Lifeline lifeline);
 
 }
