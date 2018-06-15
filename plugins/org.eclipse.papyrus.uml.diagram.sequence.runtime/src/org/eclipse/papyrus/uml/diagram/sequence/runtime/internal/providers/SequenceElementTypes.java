@@ -58,6 +58,18 @@ public final class SequenceElementTypes {
 	public static final IElementType Async_Message_Edge = getElementTypeByUniqueId(
 			"org.eclipse.papyrus.umldi.Message_AsynchEdge"); //$NON-NLS-1$
 
+	public static final IElementType Sync_Message_Edge = getElementTypeByUniqueId(
+			"org.eclipse.papyrus.umldi.Message_SynchEdge"); //$NON-NLS-1$
+
+	public static final IElementType Reply_Message_Edge = getElementTypeByUniqueId(
+			"org.eclipse.papyrus.umldi.Message_ReplyEdge"); //$NON-NLS-1$
+
+	public static final IElementType Create_Message_Edge = getElementTypeByUniqueId(
+			"org.eclipse.papyrus.umldi.Message_CreateEdge"); //$NON-NLS-1$
+
+	public static final IElementType Delete_Message_Edge = getElementTypeByUniqueId(
+			"org.eclipse.papyrus.umldi.Message_DeleteEdge"); //$NON-NLS-1$
+
 	public static ImageDescriptor getImageDescriptor(ENamedElement element) {
 		return elementTypeImages.getImageDescriptor(element);
 	}

@@ -63,23 +63,31 @@ public class LifelineBodyGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy
 				IElementType messageType = request.getConnectionViewDescriptor().getElementAdapter()
 						.getAdapter(IElementType.class);
 
-				Point location = getRelativeLocation(request.getLocation());
-				int offset = location.y();
+				Point mouse = request.getLocation();
+				Point location = getRelativeLocation(mouse);
 
-				Optional<MElement<?>> before = mLifeline.elementAt(offset);
+				Optional<MElement<?>> before = mLifeline.elementAt(location.y());
+				int offset = getOffsetFrom(location, mLifeline, before);
 
-				if (before.isPresent()) {
-					// We know the top exists because that's how we found the 'before' element
-					int relativeTopOfBefore = before.get().getTop().getAsInt()
-							- getLayoutHelper().getBottom(mLifeline.getDiagramView().get());
-					offset = offset - relativeTopOfBefore;
-				} // else it will be relative to the top of the lifeline body line
-
-				Command result = new StartMessageCommand(mLifeline, before, offset, getSort(messageType));
+				Command result = new StartMessageCommand(mLifeline, mouse, before, offset,
+						getSort(messageType));
 				request.setStartCommand(result);
 				return result;
 			}
 		}.doSwitch(request);
+	}
+
+	private int getOffsetFrom(Point relativeMouse, MLifeline lifeline, Optional<MElement<?>> before) {
+		int result = relativeMouse.y();
+
+		if (before.isPresent()) {
+			// We know the top exists because that's how we found the 'before' element
+			int relativeTopOfBefore = before.get().getTop().getAsInt()
+					- getLayoutHelper().getBottom(lifeline.getDiagramView().get());
+			result = result - relativeTopOfBefore;
+		} // else it will be relative to the top of the lifeline body line
+
+		return result;
 	}
 
 	@Override
@@ -89,12 +97,42 @@ public class LifelineBodyGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy
 			@Override
 			public Command caseCreateConnectionViewRequest(CreateConnectionViewRequest request) {
 				StartMessageCommand start = (StartMessageCommand)request.getStartCommand();
+				CreationCommand<Message> result;
+
 				MLifeline sender = start.sender;
 				MInteraction interaction = sender.getInteraction();
 				MLifeline receiver = interaction.getLifeline(getHost().getAdapter(Lifeline.class)).get();
 
-				CreationCommand<Message> result = sender.insertMessageAfter(start.before.orElse(sender),
-						start.offset, receiver, start.sort, null);
+				switch (start.sort) {
+					case ASYNCH_CALL_LITERAL:
+					case ASYNCH_SIGNAL_LITERAL:
+						// These can slope down
+						Point location = request.getLocation();
+						int absoluteY = location.y();
+						Point startLocation = start.location;
+						// but don't require such pointer exactitude of the user
+						if ((absoluteY < startLocation.y())
+								|| !getLayoutConstraints().isAsyncMessageSlope(startLocation.preciseX(),
+										startLocation.preciseY(), location.preciseX(), location.preciseY())) {
+
+							absoluteY = startLocation.y();
+							location.setY(absoluteY);
+						}
+
+						location = getRelativeLocation(location);
+
+						Optional<MElement<?>> before = receiver.elementAt(location.y());
+						int offset = getOffsetFrom(location, receiver, before);
+
+						result = sender.insertMessageAfter(start.before.orElse(sender), start.offset,
+								receiver, before.orElse(receiver), offset, start.sort, null);
+						break;
+					default:
+						// Enforce a horizontal layout
+						result = sender.insertMessageAfter(start.before.orElse(sender), start.offset,
+								receiver, start.sort, null);
+						break;
+				}
 
 				return wrap(result);
 			}
@@ -108,6 +146,8 @@ public class LifelineBodyGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy
 	private static class StartMessageCommand extends Command {
 		private final MLifeline sender;
 
+		private final Point location;
+
 		private final Optional<MElement<?>> before;
 
 		private final int offset;
@@ -117,10 +157,12 @@ public class LifelineBodyGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy
 		/**
 		 * Initializes me.
 		 */
-		StartMessageCommand(MLifeline sender, Optional<MElement<?>> before, int offset, MessageSort sort) {
+		StartMessageCommand(MLifeline sender, Point absoluteMouse, Optional<MElement<?>> before, int offset,
+				MessageSort sort) {
 			super();
 
 			this.sender = sender;
+			this.location = absoluteMouse;
 			this.before = before;
 			this.offset = offset;
 			this.sort = sort;
