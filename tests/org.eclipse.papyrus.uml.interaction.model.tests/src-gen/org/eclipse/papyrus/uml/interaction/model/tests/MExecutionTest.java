@@ -15,7 +15,13 @@ package org.eclipse.papyrus.uml.interaction.model.tests;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
+import org.eclipse.uml2.uml.InteractionFragment;
 
 import junit.textui.TestRunner;
 
@@ -84,7 +90,13 @@ public class MExecutionTest extends MElementTest {
 
 	@Override
 	protected void initializeFixture() {
-		setFixture(interaction.getLifelines().get(1).getExecutions().get(0));
+		/* remove test may remove execution -> avoid NPE */
+		List<MExecution> executions = interaction.getLifelines().get(1).getExecutions();
+		if(executions.isEmpty()) {
+			setFixture(null);
+		}else {
+			setFixture(executions.get(0));
+		}
 	}
 
 	/**
@@ -176,6 +188,33 @@ public class MExecutionTest extends MElementTest {
 	public void testGetDiagramView() {
 		super.testGetDiagramView();
 		assertThat(getFixture().getDiagramView().get().getType(), is("Shape_Execution_Specification"));
+	}
+	
+	public void testRemove() {
+		MExecution execution = getFixture();
+		
+		/* act */
+		Command command = execution.remove();
+		assertThat(command, executable());
+		execute(command);
+		
+		/* assert execution with messages removed */
+		/* assert logical representation */
+		assertEquals(2, interaction.getLifelines().size());
+		assertTrue(interaction.getLifelines().get(1).getExecutions().isEmpty());
+		assertTrue(interaction.getMessages().isEmpty());
+		
+		/* assert semantics */
+		assertEquals(2, umlInteraction.getLifelines().size());
+		assertTrue(umlInteraction.getLifelines().get(1).getCoveredBys().isEmpty());
+		assertTrue(umlInteraction.getFragments().isEmpty());
+		assertTrue(umlInteraction.getMessages().isEmpty());
+		
+		/* assert diagram */
+		assertTrue(sequenceDiagram.getEdges().isEmpty());
+		Optional<Shape> lifeLineView = interaction.getLifelines().get(1).getDiagramView();
+		assertTrue(lifeLineView.isPresent());
+		assertFalse(findTypeInChildren(lifeLineView.get(),"Shape_Execution_Specification").isPresent());
 	}
 
 } // MExecutionTest

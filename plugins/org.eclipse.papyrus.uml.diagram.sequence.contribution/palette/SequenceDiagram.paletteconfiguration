@@ -22,11 +22,52 @@
         </elementDescriptors>
       </ownedConfigurations>
     </ownedConfigurations>
-    <ownedConfigurations xsi:type="paletteconfiguration:ToolConfiguration" id="asyncMessageCreationTool" label="Async Message" description="Create an asynchronous Message" kind="ConnectionTool">
-      <icon pluginID="org.eclipse.uml2.uml.edit" iconPath="/icons/full/obj16/BehaviorExecutionSpecification.gif"/>
-      <elementDescriptors>
-        <elementType xsi:type="elementtypesconfigurations:SpecializationTypeConfiguration" href="../../../plugin/org.eclipse.papyrus.uml.service.types/model/umldi.elementtypesconfigurations#org.eclipse.papyrus.umldi.Message_AsynchEdge"/>
-      </elementDescriptors>
+  </drawerConfigurations>
+  <drawerConfigurations id="createEdgesGroup" label="Edges" description="">
+    <icon pluginID="org.eclipse.gmf.runtime.diagram.ui" iconPath="/icons/group.gif"/>
+    <ownedConfigurations xsi:type="paletteconfiguration:StackConfiguration" id="messages" label="Messages" description="Create a message">
+      <ownedConfigurations xsi:type="paletteconfiguration:ToolConfiguration" id="asyncMessageCreationTool" label="Async Message" description="Create an asynchronous Message" kind="ConnectionTool">
+        <icon pluginID="org.eclipse.uml2.uml.edit" iconPath="/icons/full/obj16/Message_asynchCall.gif"/>
+        <elementDescriptors>
+          <elementType xsi:type="elementtypesconfigurations:SpecializationTypeConfiguration" href="../../../plugin/org.eclipse.papyrus.uml.service.types/model/umldi.elementtypesconfigurations#org.eclipse.papyrus.umldi.Message_AsynchEdge"/>
+        </elementDescriptors>
+      </ownedConfigurations>
+      <ownedConfigurations xsi:type="paletteconfiguration:ToolConfiguration" id="syncMessageCreationTool" label="Sync Message" description="Create a synchronous Message" kind="ConnectionTool">
+        <icon pluginID="org.eclipse.uml2.uml.edit" iconPath="/icons/full/obj16/Message_synchCall.gif"/>
+        <elementDescriptors>
+          <elementType xsi:type="elementtypesconfigurations:SpecializationTypeConfiguration" href="../../../plugin/org.eclipse.papyrus.uml.service.types/model/umldi.elementtypesconfigurations#org.eclipse.papyrus.umldi.Message_SynchEdge"/>
+        </elementDescriptors>
+      </ownedConfigurations>
+      <ownedConfigurations xsi:type="paletteconfiguration:ToolConfiguration" id="replyMessageCreationTool" label="Reply Message" description="Create a reply Message" kind="ConnectionTool">
+        <icon pluginID="org.eclipse.uml2.uml.edit" iconPath="/icons/full/obj16/Message_reply.gif"/>
+        <elementDescriptors>
+          <elementType xsi:type="elementtypesconfigurations:SpecializationTypeConfiguration" href="../../../plugin/org.eclipse.papyrus.uml.service.types/model/umldi.elementtypesconfigurations#org.eclipse.papyrus.umldi.Message_ReplyEdge"/>
+        </elementDescriptors>
+      </ownedConfigurations>
+      <ownedConfigurations xsi:type="paletteconfiguration:ToolConfiguration" id="createMessageCreationTool" label="Create Message" description="Create a Create Message" kind="ConnectionTool">
+        <icon pluginID="org.eclipse.uml2.uml.edit" iconPath="/icons/full/obj16/Message_createMessage.gif"/>
+        <elementDescriptors>
+          <elementType xsi:type="elementtypesconfigurations:SpecializationTypeConfiguration" href="../../../plugin/org.eclipse.papyrus.uml.service.types/model/umldi.elementtypesconfigurations#org.eclipse.papyrus.umldi.Message_CreateEdge"/>
+        </elementDescriptors>
+      </ownedConfigurations>
+      <ownedConfigurations xsi:type="paletteconfiguration:ToolConfiguration" id="deleteMessageCreationTool" label="Delete Message" description="Create a Delete Message" kind="ConnectionTool">
+        <icon pluginID="org.eclipse.uml2.uml.edit" iconPath="/icons/full/obj16/Message_deleteMessage.gif"/>
+        <elementDescriptors>
+          <elementType xsi:type="elementtypesconfigurations:SpecializationTypeConfiguration" href="../../../plugin/org.eclipse.papyrus.uml.service.types/model/umldi.elementtypesconfigurations#org.eclipse.papyrus.umldi.Message_DeleteEdge"/>
+        </elementDescriptors>
+      </ownedConfigurations>
+      <ownedConfigurations xsi:type="paletteconfiguration:ToolConfiguration" id="foundMessageCreationTool" label="Found Message" description="Create a Found Message" kind="ConnectionTool">
+        <icon pluginID="org.eclipse.uml2.uml.edit" iconPath="/icons/full/obj16/Message.gif"/>
+        <elementDescriptors>
+          <elementType xsi:type="elementtypesconfigurations:SpecializationTypeConfiguration" href="../../../plugin/org.eclipse.papyrus.uml.service.types/model/umldi.elementtypesconfigurations#org.eclipse.papyrus.umldi.Message_FoundEdge"/>
+        </elementDescriptors>
+      </ownedConfigurations>
+      <ownedConfigurations xsi:type="paletteconfiguration:ToolConfiguration" id="lostMessageCreationTool" label="Lost Message" description="Create a Lost Message" kind="ConnectionTool">
+        <icon pluginID="org.eclipse.uml2.uml.edit" iconPath="/icons/full/obj16/Message.gif"/>
+        <elementDescriptors>
+          <elementType xsi:type="elementtypesconfigurations:SpecializationTypeConfiguration" href="../../../plugin/org.eclipse.papyrus.uml.service.types/model/umldi.elementtypesconfigurations#org.eclipse.papyrus.umldi.Message_LostEdge"/>
+        </elementDescriptors>
+      </ownedConfigurations>
     </ownedConfigurations>
   </drawerConfigurations>
 </paletteconfiguration:PaletteConfiguration>

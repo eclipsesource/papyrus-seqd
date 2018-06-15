@@ -24,6 +24,7 @@ import static org.junit.Assert.assertThat;
 import java.util.Optional;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Edge;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
@@ -134,7 +135,11 @@ public class MLifelineTest extends MElementTest {
 				break;
 		}
 
-		setFixture(interaction.getLifelines().get(which));
+		if (which < interaction.getLifelines().size()) {
+			setFixture(interaction.getLifelines().get(which));
+		} else {
+			setFixture(null);
+		}
 	}
 
 	/**
@@ -385,6 +390,31 @@ public class MLifelineTest extends MElementTest {
 		assertThat(edge.getTarget(), notNullValue());
 		assertThat(edge.getTarget().getType(), containsString("Body"));
 		assertThat(edge.getTarget().getElement(), is(receiver.getElement()));
+	}
+
+	public void testRemove() {
+		MLifeline lifeline = getFixture();
+
+		/* act */
+		Command command = lifeline.remove();
+		assertThat(command, executable());
+		execute(command);
+
+		/* assert lifeline with executions and messages removed */
+		/* assert logical representation */
+		assertEquals(1, interaction.getLifelines().size());
+		assertTrue(interaction.getMessages().isEmpty());
+
+		/* assert semantics */
+		assertEquals(1, umlInteraction.getLifelines().size());
+		assertTrue(umlInteraction.getFragments().isEmpty());
+		assertTrue(umlInteraction.getMessages().isEmpty());
+
+		/* assert diagram */
+		assertTrue(sequenceDiagram.getEdges().isEmpty());
+		Optional<Diagram> diagramView = interaction.getDiagramView();
+		assertTrue(diagramView.isPresent());
+		assertEquals(1, countTypesInChildren(diagramView.get(), "Shape_Lifeline_Header"));
 	}
 
 	/**

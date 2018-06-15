@@ -13,9 +13,11 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.CompartmentEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.ConstrainedToolbarLayout;
 import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LogicalModelElementSemanticEditPolicy;
 
 public class LifelineHeaderCompartmentEditPart extends CompartmentEditPart {
 
@@ -31,6 +33,12 @@ public class LifelineHeaderCompartmentEditPart extends CompartmentEditPart {
 		layout.setStretchMinorAxis(true);
 		nodeFigure.setLayoutManager(layout);
 		return nodeFigure;
+	}
+
+	@Override
+	protected void createDefaultEditPolicies() {
+		super.createDefaultEditPolicies();
+		installEditPolicy(EditPolicyRoles.SEMANTIC_ROLE, new LogicalModelElementSemanticEditPolicy());
 	}
 
 }

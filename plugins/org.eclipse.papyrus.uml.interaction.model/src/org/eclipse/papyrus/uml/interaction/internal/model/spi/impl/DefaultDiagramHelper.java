@@ -18,6 +18,8 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.command.DeleteCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.notation.Bounds;
@@ -234,6 +236,11 @@ public class DefaultDiagramHelper implements DiagramHelper {
 		return createMessage.chain(setSource).chain(setTarget);
 	}
 
+	@Override
+	public Command deleteView(EObject diagramView) {
+		return DeleteCommand.create(editingDomain, diagramView);
+	}
+
 	protected final SemanticHelper semanticHelper() {
 		return semanticHelper.get();
 	}
@@ -241,4 +248,5 @@ public class DefaultDiagramHelper implements DiagramHelper {
 	protected final LayoutHelper layoutHelper() {
 		return layoutHelper.get();
 	}
+
 }
