@@ -41,6 +41,7 @@
       <genOperations ecoreOperation="seqd.ecore#//MElement/nudge">
         <genParameters ecoreParameter="seqd.ecore#//MElement/nudge/deltaY"/>
       </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MElement/remove"/>
     </genClasses>
     <genClasses ecoreClass="seqd.ecore#//MInteraction">
       <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MInteraction/lifelines"/>

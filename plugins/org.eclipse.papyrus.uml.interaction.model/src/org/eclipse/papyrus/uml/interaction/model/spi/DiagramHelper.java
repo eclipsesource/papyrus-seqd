@@ -16,6 +16,7 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
@@ -95,5 +96,14 @@ public interface DiagramHelper {
 	Command createMessageConnector(Supplier<Message> message, //
 			Supplier<? extends View> source, IntSupplier sourceY, //
 			Supplier<? extends View> target, IntSupplier targetY);
+
+	/**
+	 * Obtain a command to delete a given {@code connector}.
+	 * 
+	 * @param diagramView
+	 *            the connector to delete
+	 * @return the deletion command
+	 */
+	Command deleteView(EObject diagramView);
 
 }

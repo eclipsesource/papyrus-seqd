@@ -15,10 +15,12 @@ package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.RemoveExecutionCommand;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
@@ -151,6 +153,14 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 				return getDiagramView();
 		}
 		return super.eInvoke(operationID, arguments);
+	}
+
+	/**
+	 * @generated NOT
+	 */
+	@Override
+	public Command remove() {
+		return new RemoveExecutionCommand(this, true);
 	}
 
 } // MExecutionImpl

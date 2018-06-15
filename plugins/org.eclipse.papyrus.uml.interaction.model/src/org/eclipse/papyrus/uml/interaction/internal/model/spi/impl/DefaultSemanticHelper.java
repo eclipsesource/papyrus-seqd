@@ -14,9 +14,12 @@ package org.eclipse.papyrus.uml.interaction.internal.model.spi.impl;
 
 import static java.util.Collections.singleton;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
@@ -26,12 +29,18 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.emf.edit.command.DeleteCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.CompoundModelCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
+import org.eclipse.papyrus.uml.interaction.model.spi.DeferredAddCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredCreateCommand;
+import org.eclipse.papyrus.uml.interaction.model.spi.DeferredDeleteCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredSetCommand;
+import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
+import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommandImpl;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ActionExecutionSpecification;
@@ -40,10 +49,12 @@ import org.eclipse.uml2.uml.BehaviorExecutionSpecification;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
+import org.eclipse.uml2.uml.Gate;
 import org.eclipse.uml2.uml.Interaction;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
+import org.eclipse.uml2.uml.MessageOccurrenceSpecification;
 import org.eclipse.uml2.uml.MessageSort;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OccurrenceSpecification;
@@ -101,6 +112,20 @@ public class DefaultSemanticHelper implements SemanticHelper {
 	@Override
 	public Command set(EObject owner, EStructuralFeature feature, Object value) {
 		return SetCommand.create(editingDomain, owner, feature, value);
+	}
+
+	@Override
+	public Command delete(EObject toDelete) {
+		return DeleteCommand.create(editingDomain, toDelete);
+	}
+
+	private RemovalCommand removalCommand(EObject toDelete) {
+		return new RemovalCommandImpl(editingDomain, delete(toDelete), toDelete);
+	}
+
+	private RemovalCommand deferredRemovalCommand(Supplier<? extends EObject> toDelete) {
+		return new RemovalCommandImpl(editingDomain, new DeferredDeleteCommand(editingDomain, toDelete),
+				toDelete.get());
 	}
 
 	@Override
@@ -384,6 +409,78 @@ public class DefaultSemanticHelper implements SemanticHelper {
 				UMLPackage.Literals.MESSAGE_END__MESSAGE, result);
 
 		return result.andThen(editingDomain, sendSetMessage).andThen(editingDomain, recvSetMessage);
+	}
+
+	@Override
+	public RemovalCommand deleteMessage(Message message) {
+		List<RemovalCommand> commands = new ArrayList<>(3);
+		commands.add(removalCommand(message));
+		deleteMessageEnd(message.getReceiveEvent()).ifPresent(c -> commands.add(c));
+		deleteMessageEnd(message.getSendEvent()).ifPresent(c -> commands.add(c));
+		return new RemovalCommandImpl(editingDomain, commands);
+	}
+
+	private Optional<RemovalCommand> deleteMessageEnd(MessageEnd messageEnd) {
+		if (messageEnd == null) {
+			return Optional.empty();
+		}
+
+		if (Gate.class.isInstance(messageEnd)) {
+			// TODO JF according to req docs message ends should be deleted. it does not state an exception
+			// for gates
+			return Optional.empty();
+		}
+
+		if (MessageOccurrenceSpecification.class.isInstance(messageEnd) && messageEnd.getMessage() != null) {
+			/* find ExecutionSpecifications where this end is start or finish */
+			Interaction interaction = messageEnd.getMessage().getInteraction();
+			List<ExecutionSpecification> executionSpecifications = interaction.getFragments().stream()
+					.filter(f -> ExecutionSpecification.class.isInstance(f))
+					.map(f -> ExecutionSpecification.class.cast(f))
+					.filter(es -> es.getStart() == messageEnd || es.getFinish() == messageEnd)
+					.collect(Collectors.toList());
+
+			/* if this end is neither start nor finish -> simply delete it */
+			if (executionSpecifications.isEmpty()) {
+				return Optional.of(removalCommand(messageEnd));
+			}
+
+			/*
+			 * if this end is a start or finish is has to be replaced by an ExecutionOccurrenceSpecification
+			 */
+			List<Command> commandList = new ArrayList<Command>(executionSpecifications.size() + 1);
+			commandList.add(delete(messageEnd));
+			executionSpecifications.forEach(es -> {
+				boolean isStart = es.getStart() == messageEnd;
+				CreationParameters parameters = isStart ? CreationParameters.before(es)
+						: CreationParameters.after(es);
+				CreationCommand<OccurrenceSpecification> creationAndSet = isStart
+						? createStart(() -> es, parameters)
+						: createFinish(() -> es, parameters);
+				commandList.add(creationAndSet);
+				/* also add to lifeline */
+				es.getCovereds().stream().findFirst().ifPresent(l -> commandList.add(
+						new DeferredAddCommand(l, UMLPackage.Literals.LIFELINE__COVERED_BY, creationAndSet)));
+			});
+			return Optional.of(new RemovalCommandImpl(editingDomain,
+					CompoundModelCommand.compose(editingDomain, commandList)));
+		}
+
+		return Optional.of(removalCommand(messageEnd));
+	}
+
+	@Override
+	public RemovalCommand deleteExecutionSpecification(ExecutionSpecification execution) {
+		List<RemovalCommand> commands = new ArrayList<>(3);
+		commands.add(deferredRemovalCommand(execution::getStart));
+		commands.add(deferredRemovalCommand(execution::getFinish));
+		commands.add(removalCommand(execution));
+		return new RemovalCommandImpl(editingDomain, commands);
+	}
+
+	@Override
+	public RemovalCommand deleteLifeline(Lifeline lifeline) {
+		return removalCommand(lifeline);
 	}
 
 	//

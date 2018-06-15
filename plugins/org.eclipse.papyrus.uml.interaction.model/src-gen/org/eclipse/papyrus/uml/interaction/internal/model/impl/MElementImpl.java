@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -214,6 +215,16 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Command remove() {
+		return UnexecutableCommand.INSTANCE;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -273,6 +284,8 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 				return following();
 			case SequenceDiagramPackage.MELEMENT___NUDGE__INT:
 				return nudge((Integer)arguments.get(0));
+			case SequenceDiagramPackage.MELEMENT___REMOVE:
+				return remove();
 		}
 		return super.eInvoke(operationID, arguments);
 	}
