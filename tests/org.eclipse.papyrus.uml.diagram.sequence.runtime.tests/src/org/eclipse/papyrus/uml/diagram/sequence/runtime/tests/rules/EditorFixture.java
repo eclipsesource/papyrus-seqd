@@ -35,8 +35,10 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
+import org.eclipse.gef.tools.SelectionTool;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramEditor;
+import org.eclipse.gmf.runtime.diagram.ui.services.palette.SelectionToolEx;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.infra.core.sasheditor.di.contentprovider.utils.IPageUtils;
@@ -396,6 +398,72 @@ public class EditorFixture extends ModelFixture {
 
 		return newEditParts.stream().findFirst()
 				.orElseGet(failOnAbsence("New connection edit-part not found"));
+	}
+
+	/**
+	 * Select an object in the diagram and drag it to another location.
+	 *
+	 * @param start
+	 *            the location (mouse pointer) at which to start dragging the
+	 *            selection
+	 * @param finish
+	 *            the location (mouse pointer) at which to finish dragging the
+	 *            selection
+	 */
+	public void moveSelection(Point start, Point finish) {
+		DiagramEditPart diagram = getDiagramEditPart();
+		EditPartViewer viewer = diagram.getViewer();
+
+		SelectionTool tool = new SelectionToolEx();
+
+		Event mouse = new Event();
+		mouse.display = editor.getSite().getShell().getDisplay();
+		mouse.widget = viewer.getControl();
+		mouse.x = start.x();
+		mouse.y = start.y();
+
+		viewer.getEditDomain().setActiveTool(tool);
+		tool.setViewer(viewer);
+
+		// Move the mouse to the start location
+		mouse.type = SWT.MouseMove;
+		tool.mouseMove(new MouseEvent(mouse), viewer);
+
+		// Click to select
+		mouse.button = 1;
+		mouse.type = SWT.MouseDown;
+		tool.mouseDown(new MouseEvent(mouse), viewer);
+		mouse.type = SWT.MouseUp;
+		tool.mouseUp(new MouseEvent(mouse), viewer);
+
+		flushDisplayEvents();
+
+		viewer.getEditDomain().setActiveTool(tool);
+		tool.setViewer(viewer);
+
+		// Mouse down to start dragging
+		mouse.type = SWT.MouseDown;
+		// button is still 1
+		tool.mouseDown(new MouseEvent(mouse), viewer);
+
+		flushDisplayEvents();
+
+		// Drag
+		mouse.type = SWT.MouseMove;
+		// button is still 1
+		mouse.x = finish.x();
+		mouse.y = finish.y();
+		tool.mouseDrag(new MouseEvent(mouse), viewer);
+
+		flushDisplayEvents();
+
+		// Release
+		mouse.type = SWT.MouseDown;
+		// button is still 1
+		mouse.type = SWT.MouseUp;
+		tool.mouseUp(new MouseEvent(mouse), viewer);
+
+		flushDisplayEvents();
 	}
 
 	//

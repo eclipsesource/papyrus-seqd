@@ -77,6 +77,14 @@ public class LifelineBodyFigure extends NodeFigure {
 	}
 
 	@Override
+	public String getConnectionAnchorTerminal(ConnectionAnchor c) {
+		if (c instanceof LifelineBodyAnchor) {
+			return ((LifelineBodyAnchor)c).getTerminal();
+		}
+		return super.getConnectionAnchorTerminal(c);
+	}
+
+	@Override
 	protected ConnectionAnchor createDefaultAnchor() {
 		return new LifelineBodyAnchor(this);
 	}
