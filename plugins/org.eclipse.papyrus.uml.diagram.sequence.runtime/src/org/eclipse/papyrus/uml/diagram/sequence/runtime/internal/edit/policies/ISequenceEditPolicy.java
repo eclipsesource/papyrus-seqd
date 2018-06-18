@@ -12,11 +12,15 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.emf.workspace.EMFCommandOperation;
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gmf.runtime.notation.View;
@@ -52,5 +56,30 @@ public interface ISequenceEditPolicy extends EditPolicy {
 	static TransactionalEditingDomain __getEditingDomain(ISequenceEditPolicy __this) {
 		EObject view = __this.getHost().getAdapter(View.class);
 		return (view == null) ? null : TransactionUtil.getEditingDomain(view);
+	}
+
+	// This should be a private 'getHostFigure' method in Java 9
+	static IFigure __getHostFigure(ISequenceEditPolicy __this) {
+		EditPart host = __this.getHost();
+		return (host instanceof GraphicalEditPart) ? ((GraphicalEditPart)host).getFigure() : null;
+	}
+
+	/**
+	 * Compute a {@code location} relative in my host figure's coördinate space.
+	 * 
+	 * @param location
+	 *            an absolute location in the diagram viewer coördinates
+	 * @return the {@code location} in my host figure's coördinate space
+	 */
+	default Point getRelativeLocation(Point location) {
+		Point result = location.getCopy();
+
+		IFigure figure = __getHostFigure(this);
+		if (figure != null) {
+			figure.translateToRelative(result);
+			result.translate(figure.getBounds().getLocation().getNegated());
+		}
+
+		return result;
 	}
 }

@@ -20,6 +20,7 @@ import org.eclipse.gmf.runtime.notation.Bounds;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.NotationFactory;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.DefaultLayoutConstraints;
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.DefaultLayoutHelper;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelFixture;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
@@ -66,7 +67,7 @@ public class DefaultLayoutHelperTest {
 
 	@Before
 	public void createSUT() {
-		helper = new DefaultLayoutHelper(model.getEditingDomain());
+		helper = new DefaultLayoutHelper(model.getEditingDomain(), DefaultLayoutConstraints::new);
 	}
 
 	@After

@@ -161,7 +161,7 @@ public class MLifelineTest extends MElementTest {
 	 * @generated NOT
 	 */
 	public void testGetLeft() {
-		assertThat(getFixture().getLeft(), isPresent(173));
+		assertThat(getFixture().getLeft(), isPresent(215)); // 37 {frame} + 5 {viewport} + 173 {x}
 	}
 
 	/**
@@ -172,7 +172,7 @@ public class MLifelineTest extends MElementTest {
 	 * @generated NOT
 	 */
 	public void testGetRight() {
-		assertThat(getFixture().getRight(), isPresent(257)); // 173 {left} + 88 {width}
+		assertThat(getFixture().getRight(), isPresent(299)); // 215 {left} + 84 {width}
 	}
 
 	@Override
@@ -215,13 +215,13 @@ public class MLifelineTest extends MElementTest {
 
 	@Override
 	public void testGetTop() {
-		assertThat(getFixture().getTop(), isPresent(25));
+		assertThat(getFixture().getTop(), isPresent(67)); // 12 {frame} + 30 {title} + {25} y
 	}
 
 	@Override
 	public void testGetBottom() {
 		// The lifeline header has a specified height
-		assertThat(getFixture().getBottom(), isPresent(50));
+		assertThat(getFixture().getBottom(), isPresent(92)); // 67 {top} + 25 {height}
 	}
 
 	@Override
@@ -310,8 +310,9 @@ public class MLifelineTest extends MElementTest {
 		ExecutionSpecification execSpec = create(command);
 		MExecution exec = getFixture().getExecution(execSpec).get();
 
-		assertThat(exec.getTop(), isPresent(240));
-		assertThat(exec.getBottom(), isPresent(290));
+		// 267 {message} + 15 {offset}
+		assertThat(exec.getTop(), isPresent(282));
+		assertThat(exec.getBottom(), isPresent(332));
 		assertThat(exec.getElement(), instanceOf(ActionExecutionSpecification.class));
 		assertThat(((ActionExecutionSpecification)exec.getElement()).getAction(), is(action));
 	}
@@ -334,8 +335,9 @@ public class MLifelineTest extends MElementTest {
 		ExecutionSpecification execSpec = create(command);
 		MExecution exec = getFixture().getExecution(execSpec).get();
 
-		assertThat(exec.getTop(), isPresent(240));
-		assertThat(exec.getBottom(), isPresent(290));
+		// 267 {message} + 15 {offset}
+		assertThat(exec.getTop(), isPresent(282));
+		assertThat(exec.getBottom(), isPresent(332));
 		assertThat(exec.getElement(), instanceOf(ActionExecutionSpecification.class));
 
 		// We didn't actually supply the action, as such
@@ -363,8 +365,9 @@ public class MLifelineTest extends MElementTest {
 		Message umlMessage = create(command);
 		MMessage message = interaction.getMessage(umlMessage).get();
 
-		assertThat(message.getTop(), isPresent(240));
-		assertThat(message.getBottom(), isPresent(240));
+		// 267 {message} + 15 {offset}
+		assertThat(message.getTop(), isPresent(282));
+		assertThat(message.getBottom(), isPresent(282));
 		assertThat(umlMessage.getSignature(), is(operation));
 		assertThat(umlMessage.getMessageSort(), is(MessageSort.ASYNCH_CALL_LITERAL));
 		assertThat(umlMessage.getMessageKind(), is(MessageKind.COMPLETE_LITERAL));

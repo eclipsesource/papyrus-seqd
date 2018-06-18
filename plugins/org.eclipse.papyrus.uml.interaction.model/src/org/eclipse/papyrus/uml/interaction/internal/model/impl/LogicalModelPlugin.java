@@ -20,6 +20,7 @@ import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.util.ResourceLocator;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.DefaultDiagramHelper;
+import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.DefaultLayoutConstraints;
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.DefaultLayoutHelper;
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.DefaultSemanticHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
@@ -76,7 +77,8 @@ public class LogicalModelPlugin extends EMFPlugin {
 	 * @return its layout helper
 	 */
 	public LayoutHelper getLayoutHelper(EditingDomain editingDomain) {
-		return layoutHelpers.computeIfAbsent(editingDomain, DefaultLayoutHelper::new);
+		return layoutHelpers.computeIfAbsent(editingDomain, //
+				domain -> new DefaultLayoutHelper(domain, DefaultLayoutConstraints::new));
 	}
 
 	/**

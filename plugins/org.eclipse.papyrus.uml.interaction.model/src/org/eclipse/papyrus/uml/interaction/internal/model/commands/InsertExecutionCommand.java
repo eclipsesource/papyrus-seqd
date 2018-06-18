@@ -137,7 +137,8 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 		OptionalInt referenceY;
 		if (before instanceof MLifeline) {
 			// The reference is to the lifeline *head*
-			referenceY = OptionalInt.of(0);
+			Shape lifelineHead = ((MLifeline)before).getDiagramView().get();
+			referenceY = OptionalInt.of(layoutHelper().getBottom(lifelineHead));
 		} else {
 			referenceY = layoutHelper().getBottom(reference);
 		}

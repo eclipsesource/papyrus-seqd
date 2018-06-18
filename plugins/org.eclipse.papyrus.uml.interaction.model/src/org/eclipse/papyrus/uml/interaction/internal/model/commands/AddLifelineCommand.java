@@ -15,6 +15,8 @@ package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 import java.util.Optional;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.gmf.runtime.notation.Compartment;
+import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
@@ -65,11 +67,16 @@ public class AddLifelineCommand extends ModelCommand<MInteractionImpl> implement
 				UMLPackage.Literals.INTERACTION__LIFELINE);
 		resultCommand = semantics.createLifeline(params);
 
+		Shape frame = diagramHelper().getInteractionFrame(getTarget().getDiagramView().get());
+		Compartment compartment = diagramHelper().getShapeCompartment(frame);
+
+		int absoluteX = layoutHelper().toAbsoluteX(null, compartment, xOffset);
+
 		Command result = resultCommand.chain(diagramHelper().createLifelineShape(resultCommand,
-				getTarget().getDiagramView().get(), xOffset, height));
+				getTarget().getDiagramView().get(), absoluteX, height));
 
 		// Are we inserting this amongst existing lifelines?
-		Optional<MLifeline> existing = getTarget().getLifelineAt(xOffset);
+		Optional<MLifeline> existing = getTarget().getLifelineAt(absoluteX);
 		if (existing.isPresent()) {
 			// Make room for it
 			int spaceRequired = 90; // FIXME: LayoutHelper should compute space needed

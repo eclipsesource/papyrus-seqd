@@ -135,7 +135,8 @@ public class MExecutionOccurrenceTest extends MOccurrenceTest {
 
 	@Override
 	public void testGetTop() {
-		assertThat(getFixture().getTop(), isPresent(75));
+		// 12 {frame} + 30 {title} + 25 {lifeline} + 25 {head} + 25 {execution y}
+		assertThat(getFixture().getTop(), isPresent(117));
 	}
 
 	@Override

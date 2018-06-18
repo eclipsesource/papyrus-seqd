@@ -17,13 +17,9 @@ import java.util.Optional;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.EditPart;
-import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.CreationEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewAndElementRequest;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewRequest;
@@ -68,20 +64,6 @@ public abstract class LogicalModelCreationEditPolicy extends CreationEditPolicy 
 	protected abstract Optional<org.eclipse.emf.common.command.Command> getCreationCommand(
 			MInteraction interaction, Element parentElement, View parentView, Point location, Dimension size,
 			IElementType type);
-
-	protected Point getRelativeLocation(Point location) {
-		Point result = location.getCopy();
-
-		for (EditPart parent = getHost().getParent(); (parent instanceof GraphicalEditPart)
-				&& !(parent instanceof DiagramEditPart); parent = parent.getParent()) {
-
-			GraphicalEditPart graphicalParent = (GraphicalEditPart)parent;
-			Rectangle parentBounds = graphicalParent.getFigure().getBounds();
-			result = result.translate(parentBounds.getLocation().getNegated());
-		}
-
-		return result;
-	}
 
 	@Override
 	protected Command getCreateCommand(CreateViewRequest request) {

@@ -72,5 +72,48 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
+	<profiles>
+		<profile>
+			<id>with-papyrus</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>target-platform-configuration</artifactId>
+						<version>${tycho-version}</version>
+						<configuration>
+							<dependency-resolution>
+								<!--  Testing the diagram editor needs the Papyrus SDK
+								      and the LW SeqD contributions to GMF and Papyrus
+								      extension points of various kinds. -->
+								<extraRequirements>
+									<requirement>
+										<type>eclipse-feature</type>
+										<id>org.eclipse.papyrus.sdk.feature</id>
+										<versionRange>0.0.0</versionRange>
+									</requirement>
+									<requirement>
+										<type>eclipse-feature</type>
+										<id>org.eclipse.papyrus.uml.diagram.sequence.contribution.feature</id>
+										<versionRange>0.0.0</versionRange>
+									</requirement>
+									<requirement>
+										<type>eclipse-feature</type>
+										<id>org.eclipse.papyrus.uml.diagram.lightweightsequence.feature</id>
+										<versionRange>0.0.0</versionRange>
+									</requirement>
+								</extraRequirements>
+							</dependency-resolution>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	
 	<packaging>pom</packaging>
 </project>

@@ -21,6 +21,7 @@ import org.eclipse.gmf.runtime.notation.Anchor;
 import org.eclipse.gmf.runtime.notation.Bounds;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.Shape;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 
 /**
@@ -224,4 +225,130 @@ public interface LayoutHelper {
 	 */
 	Bounds getAdjustedBounds(EObject semanticObject, Node view, Bounds proposedBounds);
 
+	/**
+	 * Obtain an {@code x} coördinate in absolute space from one that is relative to the {@code parent} of a
+	 * {@code shape}.
+	 * 
+	 * @param shape
+	 *            a shape
+	 * @param parent
+	 *            its parent view (shape or compartment, usually)
+	 * @param x
+	 *            an X position in relative coördinate space of the {@code parent}
+	 * @return the corresponding position in absolute coördinate space
+	 */
+	int toAbsoluteX(Shape shape, View parent, int x);
+
+	/**
+	 * Obtain an {@code x} coördinate in absolute space from one that is relative to the parent of a
+	 * {@code shape}, if it has one.
+	 * 
+	 * @param shape
+	 *            a shape
+	 * @param x
+	 *            an X position in relative coördinate space of the {@code shape}'s parent
+	 * @return the corresponding position in absolute coördinate space, or the relative {@code x} if none
+	 */
+	default int toAbsoluteX(Shape shape, int x) {
+		EObject container = shape.eContainer();
+		return (container instanceof View) ? toAbsoluteX(shape, (View)container, x) : x;
+	}
+
+	/**
+	 * Obtain an {@code x} coördinate in the space of the parent of a {@code shape}, from one that is in
+	 * absolute space.
+	 * 
+	 * @param shape
+	 *            a shape
+	 * @param parent
+	 *            its parent view (shape or compartment, usually)
+	 * @param x
+	 *            an X position in absolute coördinate space
+	 * @return the corresponding position in the {@code parent}'s space
+	 */
+	int toRelativeX(Shape shape, View parent, int x);
+
+	/**
+	 * Obtain an {@code x} coördinate in the space of the parent of a {@code shape}, if it has one, from one
+	 * that is in absolute space.
+	 * 
+	 * @param shape
+	 *            a shape
+	 * @param x
+	 *            an X position in absolute coördinate space
+	 * @return the corresponding position in the {@code shape}'s parent's space, or the absolute {@code x} if
+	 *         none
+	 * @see #toRelativeX(Shape, View, int)
+	 */
+	default int toRelativeX(Shape shape, int x) {
+		EObject container = shape.eContainer();
+		return (container instanceof View) ? toRelativeX(shape, (View)container, x) : x;
+	}
+
+	/**
+	 * Obtain a {@code y} coördinate in absolute space from one that is relative to the {@code parent} of a
+	 * {@code shape}.
+	 * 
+	 * @param shape
+	 *            a shape
+	 * @param parent
+	 *            its parent view (shape or compartment, usually)
+	 * @param y
+	 *            a Y position in relative coördinate space of the {@code parent}
+	 * @return the corresponding position in absolute coördinate space
+	 */
+	int toAbsoluteY(Shape shape, View parent, int y);
+
+	/**
+	 * Obtain a {@code y} coördinate in absolute space from one that is relative to the parent of a
+	 * {@code shape}, if it has one.
+	 * 
+	 * @param shape
+	 *            a shape
+	 * @param x
+	 *            a Y position in relative coördinate space of the {@code shape}'s parent
+	 * @return the corresponding position in absolute coördinate space, or the relative {@code x} if none
+	 */
+	default int toAbsoluteY(Shape shape, int y) {
+		EObject container = shape.eContainer();
+		return (container instanceof View) ? toAbsoluteY(shape, (View)container, y) : y;
+	}
+
+	/**
+	 * Obtain a {@code y} coördinate in the space of the {@code parent} of a {@code shape}, from one that is
+	 * in absolute space.
+	 * 
+	 * @param shape
+	 *            a shape
+	 * @param parent
+	 *            its parent view (shape or compartment, usually)
+	 * @param y
+	 *            a Y position in absolute coördinate space
+	 * @return the corresponding position in the {@code parent}'s space
+	 */
+	int toRelativeY(Shape shape, View parent, int y);
+
+	/**
+	 * Obtain a {@code y} coördinate in the space of the parent of a {@code shape}, if it has one, from one
+	 * that is in absolute space.
+	 * 
+	 * @param shape
+	 *            a shape
+	 * @param y
+	 *            a Y position in absolute coördinate space
+	 * @return the corresponding position in the {@code shape}'s parent's space, or the absolute {@code y} if
+	 *         none
+	 * @see #toRelativeY(Shape, View, int)
+	 */
+	default int toRelativeY(Shape shape, int y) {
+		EObject container = shape.eContainer();
+		return (container instanceof View) ? toRelativeY(shape, (View)container, y) : y;
+	}
+
+	/**
+	 * Obtain the layout constraints.
+	 * 
+	 * @return the pluggable layout constraints
+	 */
+	LayoutConstraints getConstraints();
 }

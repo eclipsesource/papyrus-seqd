@@ -121,7 +121,8 @@ public class MMessageEndTest extends MOccurrenceTest {
 
 	@Override
 	public void testGetTop() {
-		assertThat(getFixture().getTop(), isPresent(75));
+		// 12 {frame} + 30 {title} + 25 {lifeline} + 25 {head} + 25 {anchor}
+		assertThat(getFixture().getTop(), isPresent(117));
 	}
 
 	@Override
