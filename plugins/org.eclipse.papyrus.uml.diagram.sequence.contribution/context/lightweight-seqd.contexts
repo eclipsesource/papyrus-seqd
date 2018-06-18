@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<contexts:Context xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:constraints="http://www.eclipse.org/papyrus/constraints/0.9" xmlns:contexts="http://www.eclipse.org/papyrus/properties/contexts/0.9" xmi:id="_70QJkKDJEeSZxfCXzZz3-w" name="Lightweight Sequence Diagram" label="Sequence Diagram">
+  <tabs xmi:id="_70QJkaDJEeSZxfCXzZz3-w" label="Sequence Diagram" id="lw-seqd" category="org.eclipse.papyrus.seqd" image="" priority="8">
+    <!-- if it shouldn't replace the UML tab, don't use the same section names as in UML.ctx; I postfixed them with 1 -->
+    <sections xmi:id="_70QJkqDJEeSZxfCXzZz3-w" name="SingleMessage1" sectionFile="ui/SingleMessage.xwt">
+      <widget href="ui/SingleMessage.xwt#/"/>
+    </sections>
+    <sections xmi:id="_70QJk6DJEeSZxfCXzZz3-w" name="MultipleMessage1" sectionFile="ui/MultipleMessage.xwt">
+      <widget href="ui/MultipleMessage.xwt#/"/>
+    </sections>
+    <sections xmi:id="_70QJkqDJEeSZxfCXzZz3-l" name="SingleLifeline1" sectionFile="ui/SingleLifeline.xwt">
+      <widget href="ui/SingleLifeline.xwt#/"/>
+    </sections>
+  </tabs>
+  <views xmi:id="_70idvaDJEeSZxfCXzZz3-w" name="SingleMessage" sections="_70QJkqDJEeSZxfCXzZz3-w" automaticContext="true">
+    <constraints xsi:type="constraints:SimpleConstraint" xmi:id="_70idvqDJEeSZxfCXzZz3-w" name="isSingleMessage">
+      <constraintType href="ppe:/environment/org.eclipse.papyrus.uml.properties/Model/Environment.xmi#//@constraintTypes.0"/>
+      <properties xsi:type="constraints:ValueProperty" xmi:id="_70idv6DJEeSZxfCXzZz3-w" name="umlClassName" value="Message"/>
+    </constraints>
+  </views>
+  <views xmi:id="_70idwKDJEeSZxfCXzZz3-w" elementMultiplicity="-1" name="MultipleMessage" sections="_70QJk6DJEeSZxfCXzZz3-w" automaticContext="true">
+    <constraints xsi:type="constraints:SimpleConstraint" xmi:id="_70idwaDJEeSZxfCXzZz3-w" name="isMultipleMessage">
+      <constraintType href="ppe:/environment/org.eclipse.papyrus.uml.properties/Model/Environment.xmi#//@constraintTypes.0"/>
+      <properties xsi:type="constraints:ValueProperty" xmi:id="_70idwqDJEeSZxfCXzZz3-w" name="umlClassName" value="Message"/>
+    </constraints>
+  </views>
+  <views xmi:id="_70idvaDJEeSZxfCXzZz3-l" name="SingleLifeline" sections="_70QJkqDJEeSZxfCXzZz3-l" automaticContext="true">
+    <constraints xsi:type="constraints:SimpleConstraint" xmi:id="_70idvqDJEeSZxfCXzZz3-l" name="isSingleLifeline">
+      <constraintType href="ppe:/environment/org.eclipse.papyrus.uml.properties/Model/Environment.xmi#//@constraintTypes.0"/>
+      <properties xsi:type="constraints:ValueProperty" xmi:id="_70idv6DJEeSZxfCXzZz3-l" name="umlClassName" value="Lifeline"/>
+    </constraints>
+  </views>
+  <dataContexts xmi:id="_700xgaDJEeSZxfCXzZz3-w" name="LWSequenceDiagram" label="Sequence Diagram">
+    <elements xmi:id="_700zkKDJEeSZxfCXzZz3-w" name="Message">
+      <properties xmi:id="_700xlKDJEeSZxfCXzZz3-w" name="name" description="The name of the NamedElement."/>
+      <properties xmi:id="_700zkaDJEeSZxfCXzZz3-w" name="messageKind" type="Enumeration" description="The derived kind of the Message (complete, lost, found or unknown)"/>
+      <properties xmi:id="_700zkqDJEeSZxfCXzZz3-w" name="messageSort" type="Enumeration" description="The sort of communication reflected by the Message"/>
+      <properties xmi:id="_700zk6DJEeSZxfCXzZz3-w" name="receiveEvent" type="Reference" description="References the Receiving of the Message"/>
+      <properties xmi:id="_700zlKDJEeSZxfCXzZz3-w" name="sendEvent" type="Reference" description="References the Sending of the Message."/>
+      <properties xmi:id="_700zlaDJEeSZxfCXzZz3-w" name="connector" type="Reference" description="The Connector on which this Message is sent."/>
+      <properties xmi:id="_700zlqDJEeSZxfCXzZz3-w" name="interaction" type="Reference" description="The enclosing Interaction owning the Message"/>
+      <properties xmi:id="_700zl6DJEeSZxfCXzZz3-w" name="argument" type="Reference" description="The arguments of the Message"/>
+      <properties xmi:id="_700zmKDJEeSZxfCXzZz3-w" name="signature" type="Reference" description="The definition of the type or signature of the Message (depending on its kind). The associated named element is derived from the message end that constitutes the sending or receiving message event. If both a sending event and a receiving message event are present, the signature is obtained from the sending event."/>
+      <supertypes href="ppe:/context/org.eclipse.papyrus.uml.properties/Model/UML/UML.ctx#_690xk6DJEeSZxfCXzZz3-w"/>
+    </elements>
+    <elements xmi:id="_700zkKDJEeSZxfCXzZz3-l" name="Lifeline">
+      <properties xmi:id="_700xlKDJEeSZxfCXzZz3-l" name="name" description="The name of the NamedElement."/>
+      <properties xmi:id="_700zkaDJEeSZxfCXzZz3-l" name="visibility" type="Enumeration" description="Determines where the lifeline appears within different Namespaces within the overall model, and its accessibility."/>
+      <properties xmi:id="_700zkqDJEeSZxfCXzZz3-l" name="represents" type="Reference" description="References the ConnectableElement within the classifier that contains the enclosing interaction."/>
+      <properties xmi:id="_700zk6DJEeSZxfCXzZz3-l" name="selector" type="Reference" description="If the referenced ConnectableElement is multivalued, then this specifies the specific individual part within that set."/>
+      <supertypes href="ppe:/context/org.eclipse.papyrus.uml.properties/Model/UML/UML.ctx#_690xk6DJEeSZxfCXzZz3-w"/>
+    </elements>
+    <modelElementFactory href="ppe:/environment/org.eclipse.papyrus.uml.properties/Model/Environment.xmi#//@modelElementFactories.1"/>
+  </dataContexts>
+</contexts:Context>
