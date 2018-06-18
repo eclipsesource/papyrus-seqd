@@ -18,7 +18,6 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.BorderedBorderItemEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IBorderItemEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
@@ -27,11 +26,10 @@ import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
 import org.eclipse.gmf.runtime.notation.NotationPackage;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.LifelineBodyFigure;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.BodyResizeEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.InteractionSemanticEditPolicy;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineBodyDisallowMoveAndResizeEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineBodyGraphicalNodeEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineCreationEditPolicy;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.SequenceDiagramConnectionHandleEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.SequenceDiagramPopupBarEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.locators.OnLineBorderItemLocator;
 
@@ -122,9 +120,7 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart {
 		installEditPolicy(EditPolicyRoles.SEMANTIC_ROLE, new InteractionSemanticEditPolicy());
 		installEditPolicy(EditPolicyRoles.POPUPBAR_ROLE, new SequenceDiagramPopupBarEditPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new LifelineBodyGraphicalNodeEditPolicy());
-
-		ResizableEditPolicy resizePolicy = new BodyResizeEditPolicy();
-		installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, resizePolicy);
+		installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, new LifelineBodyDisallowMoveAndResizeEditPolicy());
 	}
 
 	@Override
