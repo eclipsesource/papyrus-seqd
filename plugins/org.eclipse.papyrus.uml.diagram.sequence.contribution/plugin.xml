@@ -121,6 +121,7 @@
  <extension
        name="Lightweight Sequence Diagram" 
        point="org.eclipse.papyrus.infra.properties.contexts">
+    <!-- when integrated with Papyrus, we should avoid applying this context by default -->   
     <context appliedByDefault="true" contextModel="context/lightweight-seqd.contexts" isCustomizable="true"/>
  </extension>
 </plugin>

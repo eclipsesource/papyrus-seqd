@@ -33,6 +33,7 @@
 			<ppel:PropertiesLayout numColumns="2"></ppel:PropertiesLayout>
 		</Composite.layout>
 		<ppe:MultiReference input="{Binding}" property="LWSequenceDiagram:Message:argument"></ppe:MultiReference>
+		<!-- prevent previous control to span two columns by adding an empty label-->
 		<ppe:StringLabel />
 	</Composite>
 </Composite>
