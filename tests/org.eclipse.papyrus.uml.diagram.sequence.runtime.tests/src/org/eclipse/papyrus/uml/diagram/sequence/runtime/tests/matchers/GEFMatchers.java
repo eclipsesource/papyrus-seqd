@@ -33,6 +33,8 @@ import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.LayerConstants;
+import org.eclipse.gef.editparts.LayerManager;
 import org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers;
 import org.hamcrest.Description;
 import org.hamcrest.FeatureMatcher;
@@ -567,6 +569,19 @@ public class GEFMatchers {
 		};
 	}
 
+	static Function<GraphicalEditPart, IFigure> feedback() {
+		return ep -> {
+			IFigure feedbackLayer = ((LayerManager) ep.getRoot()).getLayer(LayerConstants.FEEDBACK_LAYER);
+			// We anticipate only a single active feedback figure
+			return ((List<?>) feedbackLayer.getChildren()).stream().filter(IFigure.class::isInstance)
+					.map(IFigure.class::cast).findAny().orElse(null);
+		};
+	}
+
+	static Function<EditPart, IFigure> editPartFeedback() {
+		return feedback().compose(graphical());
+	}
+
 	static Function<GraphicalEditPart, IFigure> figure() {
 		return GraphicalEditPart::getFigure;
 	}
@@ -702,6 +717,24 @@ public class GEFMatchers {
 
 		private EditParts() {
 			super();
+		}
+
+		public static Matcher<EditPart> figureThat(Matcher<? super IFigure> figureMatcher) {
+			return new FeatureMatcher<EditPart, IFigure>(figureMatcher, "figure", "figure") {
+				@Override
+				protected IFigure featureValueOf(EditPart actual) {
+					return editPartFigure().apply(actual);
+				}
+			};
+		}
+
+		public static Matcher<EditPart> feedbackThat(Matcher<? super IFigure> figureMatcher) {
+			return new FeatureMatcher<EditPart, IFigure>(figureMatcher, "feedback", "feedback") {
+				@Override
+				protected IFigure featureValueOf(EditPart actual) {
+					return editPartFeedback().apply(actual);
+				}
+			};
 		}
 
 		public static Matcher<EditPart> isAt(Matcher<? super Point> where) {

@@ -50,6 +50,7 @@ import org.eclipse.papyrus.infra.gmfdiag.common.service.palette.AspectUnspecifie
 import org.eclipse.papyrus.infra.gmfdiag.common.service.palette.AspectUnspecifiedTypeCreationTool;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelFixture;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -339,12 +340,29 @@ public class EditorFixture extends ModelFixture {
 	 * @return the newly created connection edit-part
 	 */
 	public EditPart createConnection(IElementType type, Point start, Point finish) {
-		DiagramEditPart diagram = getDiagramEditPart();
-		EditPartViewer viewer = diagram.getViewer();
+		EditPartViewer viewer = getDiagramEditPart().getViewer();
 
 		@SuppressWarnings("unchecked")
 		Set<EditPart> originalEditParts = new HashSet<EditPart>(viewer.getEditPartRegistry().values());
 
+		drawConnection(type, start, finish, true);
+
+		// Find the new edit-part
+		@SuppressWarnings("unchecked")
+		Set<EditPart> newEditParts = new HashSet<EditPart>(viewer.getEditPartRegistry().values());
+		newEditParts.removeAll(originalEditParts);
+		while (newEditParts.removeIf(ep -> !(ep instanceof ConnectionEditPart))) {
+			// Keep only the topmost new edit-parts (that aren't nested in other new
+			// edit-parts)
+		}
+
+		return newEditParts.stream().findFirst()
+				.orElseGet(failOnAbsence("New connection edit-part not found"));
+	}
+
+	private void drawConnection(IElementType type, Point start, Point finish, boolean complete) {
+		DiagramEditPart diagram = getDiagramEditPart();
+		EditPartViewer viewer = diagram.getViewer();
 		AspectUnspecifiedTypeConnectionTool tool = new AspectUnspecifiedTypeConnectionTool(
 				singletonList(type));
 
@@ -370,7 +388,7 @@ public class EditorFixture extends ModelFixture {
 
 		flushDisplayEvents();
 
-		// Move and click again
+		// Move and, if completing, click again
 		mouse.type = SWT.MouseMove;
 		mouse.button = 0;
 		mouse.x = finish.x();
@@ -379,25 +397,56 @@ public class EditorFixture extends ModelFixture {
 
 		flushDisplayEvents();
 
-		mouse.button = 1;
-		mouse.type = SWT.MouseDown;
-		tool.mouseDown(new MouseEvent(mouse), viewer);
-		mouse.type = SWT.MouseUp;
-		tool.mouseUp(new MouseEvent(mouse), viewer);
+		if (complete) {
+			mouse.button = 1;
+			mouse.type = SWT.MouseDown;
+			tool.mouseDown(new MouseEvent(mouse), viewer);
+			mouse.type = SWT.MouseUp;
+			tool.mouseUp(new MouseEvent(mouse), viewer);
+
+			flushDisplayEvents();
+		}
+	}
+
+	/**
+	 * Operate the mouse pointer as though to create a new connection in the current
+	 * diagram, but do not click to complete it.
+	 *
+	 * @param type
+	 *            the type of shape to create
+	 * @param start
+	 *            the location (mouse pointer) at which to start drawing the
+	 *            connection
+	 * @param finish
+	 *            the location (mouse pointer) at which to hover the end of the
+	 *            connection
+	 */
+	public void hoverConnection(IElementType type, Point start, Point finish) {
+		drawConnection(type, start, finish, false);
+	}
+
+	/**
+	 * Type the escape key in the selection tool on the current diagram.
+	 */
+	public void escape() {
+		DiagramEditPart diagram = getDiagramEditPart();
+		EditPartViewer viewer = diagram.getViewer();
+		SelectionTool tool = new SelectionToolEx();
+
+		Event key = new Event();
+		key.display = editor.getSite().getShell().getDisplay();
+		key.widget = viewer.getControl();
+		key.character = SWT.ESC;
+
+		viewer.getEditDomain().setActiveTool(tool);
+		tool.setViewer(viewer);
+
+		// Type the key
+		key.type = SWT.KeyDown;
+		tool.keyDown(new KeyEvent(key), viewer);
+		tool.keyUp(new KeyEvent(key), viewer);
 
 		flushDisplayEvents();
-
-		// Find the new edit-part
-		@SuppressWarnings("unchecked")
-		Set<EditPart> newEditParts = new HashSet<EditPart>(viewer.getEditPartRegistry().values());
-		newEditParts.removeAll(originalEditParts);
-		while (newEditParts.removeIf(ep -> !(ep instanceof ConnectionEditPart))) {
-			// Keep only the topmost new edit-parts (that aren't nested in other new
-			// edit-parts)
-		}
-
-		return newEditParts.stream().findFirst()
-				.orElseGet(failOnAbsence("New connection edit-part not found"));
 	}
 
 	/**

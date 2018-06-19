@@ -14,21 +14,31 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil.getSort;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.draw2d.ConnectionAnchor;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.editpolicies.FeedbackHelper;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewRequest;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateUnspecifiedTypeConnectionRequest;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
+import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.LifelineBodyAnchor;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.CreateRequestSwitch;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.service.types.element.UMLElementTypes;
+import org.eclipse.papyrus.uml.service.types.utils.ElementUtil;
 import org.eclipse.uml2.uml.Interaction;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
@@ -139,6 +149,48 @@ public class LifelineBodyGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy
 		}.doSwitch(request);
 	}
 
+	/**
+	 * Message connections may never slope upwards (backwards in time).
+	 */
+	@Override
+	protected FeedbackHelper getFeedbackHelper(CreateConnectionRequest request) {
+		if (!isMessageConnection(request)) {
+			return super.getFeedbackHelper(request);
+		}
+
+		if (feedbackHelper == null) {
+			feedbackHelper = new MessageFeedbackHelper();
+			Point p = request.getLocation();
+			connectionFeedback = createDummyConnection(request);
+			connectionFeedback.setConnectionRouter(getDummyConnectionRouter(request));
+			connectionFeedback.setSourceAnchor(getSourceConnectionAnchor(request));
+			feedbackHelper.setConnection(connectionFeedback);
+			addFeedback(connectionFeedback);
+			feedbackHelper.update(null, p);
+		}
+
+		return feedbackHelper;
+	}
+
+	boolean isMessageConnection(CreateConnectionRequest request) {
+		boolean result = false;
+
+		if (request instanceof CreateUnspecifiedTypeConnectionRequest) {
+			CreateUnspecifiedTypeConnectionRequest unspecified = (CreateUnspecifiedTypeConnectionRequest)request;
+			result = ((List<?>)unspecified.getAllRequests()).stream()
+					.filter(CreateConnectionRequest.class::isInstance)
+					.map(CreateConnectionRequest.class::cast).anyMatch(this::isMessageConnection);
+		} else if (request instanceof CreateConnectionViewRequest) {
+			CreateConnectionViewRequest specified = (CreateConnectionViewRequest)request;
+			Optional<IAdaptable> elementAdapter = Optional
+					.ofNullable(specified.getConnectionViewDescriptor().getElementAdapter());
+			return elementAdapter.map(a -> a.getAdapter(IElementType.class))
+					.filter(type -> ElementUtil.isTypeOf(type, UMLElementTypes.MESSAGE)).isPresent();
+		}
+
+		return result;
+	}
+
 	//
 	// Nested types
 	//
@@ -168,5 +220,36 @@ public class LifelineBodyGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy
 			this.sort = sort;
 		}
 
+	}
+
+	// Feedback helper for messages that does not allow them to slope upwards
+	private static class MessageFeedbackHelper extends FeedbackHelper {
+		MessageFeedbackHelper() {
+			super();
+		}
+
+		@Override
+		public void update(ConnectionAnchor _anchor, Point p) {
+			ConnectionAnchor anchor = _anchor;
+			ConnectionAnchor src = getConnection().getSourceAnchor();
+
+			if ((src instanceof LifelineBodyAnchor) && (anchor instanceof LifelineBodyAnchor)) {
+				LifelineBodyAnchor sourceAnchor = (LifelineBodyAnchor)src;
+				LifelineBodyAnchor targetAnchor = (LifelineBodyAnchor)anchor;
+
+				IFigure source = sourceAnchor.getOwner();
+				Point sourceOrigin = source.getBounds().getLocation();
+				source.getParent().translateToAbsolute(sourceOrigin);
+				Point sourceLocation = sourceAnchor.getLocation(sourceOrigin);
+				int delta = p.y() - sourceLocation.y();
+				if (delta < 0) {
+					// Force it horizontal
+					p.setY(sourceLocation.y());
+					anchor = ((NodeFigure)targetAnchor.getOwner()).getTargetConnectionAnchorAt(p);
+				}
+			}
+
+			super.update(anchor, p);
+		}
 	}
 }

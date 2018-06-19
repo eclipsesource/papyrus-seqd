@@ -12,6 +12,7 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.tests;
 
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.feedbackThat;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.isHorizontal;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.runs;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.at;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import org.eclipse.gef.EditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineBodyGraphicalNodeEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.Figures;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.junit.Test;
@@ -117,6 +119,30 @@ public class LifelineBodyGraphicalNodeEditPolicyUITest extends AbstractGraphical
 				at(recvX, 119));
 
 		assertThat("Message should be horizontal", messageEP, isHorizontal());
+	}
+
+	@Test
+	public void forwardSlopeFeedback() {
+		editor.hoverConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 115), at(recvX, 130));
+
+		try {
+			assertThat("Connection feedback should be horizontal", editor.getDiagramEditPart(),
+					feedbackThat(Figures.runs(sendX, 115, recvX, 130)));
+		} finally {
+			editor.escape();
+		}
+	}
+
+	@Test
+	public void backwardSlopeFeedback() {
+		editor.hoverConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 130), at(recvX, 115));
+
+		try {
+			assertThat("Connection feedback should be horizontal", editor.getDiagramEditPart(),
+					feedbackThat(Figures.isHorizontal()));
+		} finally {
+			editor.escape();
+		}
 	}
 
 	//
