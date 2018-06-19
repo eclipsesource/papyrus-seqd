@@ -85,92 +85,75 @@ public class SequenceDiagramSwitch<T1> extends Switch<T1> {
 			case SequenceDiagramPackage.MELEMENT: {
 				MElement<?> mElement = (MElement<?>)theEObject;
 				T1 result = caseMElement(mElement);
-				if (result == null) {
+				if (result == null)
 					result = defaultCase(theEObject);
-				}
 				return result;
 			}
 			case SequenceDiagramPackage.MINTERACTION: {
 				MInteraction mInteraction = (MInteraction)theEObject;
 				T1 result = caseMInteraction(mInteraction);
-				if (result == null) {
+				if (result == null)
 					result = caseMElement(mInteraction);
-				}
-				if (result == null) {
+				if (result == null)
 					result = defaultCase(theEObject);
-				}
 				return result;
 			}
 			case SequenceDiagramPackage.MLIFELINE: {
 				MLifeline mLifeline = (MLifeline)theEObject;
 				T1 result = caseMLifeline(mLifeline);
-				if (result == null) {
+				if (result == null)
 					result = caseMElement(mLifeline);
-				}
-				if (result == null) {
+				if (result == null)
 					result = defaultCase(theEObject);
-				}
 				return result;
 			}
 			case SequenceDiagramPackage.MEXECUTION: {
 				MExecution mExecution = (MExecution)theEObject;
 				T1 result = caseMExecution(mExecution);
-				if (result == null) {
+				if (result == null)
 					result = caseMElement(mExecution);
-				}
-				if (result == null) {
+				if (result == null)
 					result = defaultCase(theEObject);
-				}
 				return result;
 			}
 			case SequenceDiagramPackage.MOCCURRENCE: {
 				MOccurrence<?> mOccurrence = (MOccurrence<?>)theEObject;
 				T1 result = caseMOccurrence(mOccurrence);
-				if (result == null) {
+				if (result == null)
 					result = caseMElement(mOccurrence);
-				}
-				if (result == null) {
+				if (result == null)
 					result = defaultCase(theEObject);
-				}
 				return result;
 			}
 			case SequenceDiagramPackage.MEXECUTION_OCCURRENCE: {
 				MExecutionOccurrence mExecutionOccurrence = (MExecutionOccurrence)theEObject;
 				T1 result = caseMExecutionOccurrence(mExecutionOccurrence);
-				if (result == null) {
+				if (result == null)
 					result = caseMOccurrence(mExecutionOccurrence);
-				}
-				if (result == null) {
+				if (result == null)
 					result = caseMElement(mExecutionOccurrence);
-				}
-				if (result == null) {
+				if (result == null)
 					result = defaultCase(theEObject);
-				}
 				return result;
 			}
 			case SequenceDiagramPackage.MMESSAGE_END: {
 				MMessageEnd mMessageEnd = (MMessageEnd)theEObject;
 				T1 result = caseMMessageEnd(mMessageEnd);
-				if (result == null) {
+				if (result == null)
 					result = caseMOccurrence(mMessageEnd);
-				}
-				if (result == null) {
+				if (result == null)
 					result = caseMElement(mMessageEnd);
-				}
-				if (result == null) {
+				if (result == null)
 					result = defaultCase(theEObject);
-				}
 				return result;
 			}
 			case SequenceDiagramPackage.MMESSAGE: {
 				MMessage mMessage = (MMessage)theEObject;
 				T1 result = caseMMessage(mMessage);
-				if (result == null) {
+				if (result == null)
 					result = caseMElement(mMessage);
-				}
-				if (result == null) {
+				if (result == null)
 					result = defaultCase(theEObject);
-				}
 				return result;
 			}
 			default:

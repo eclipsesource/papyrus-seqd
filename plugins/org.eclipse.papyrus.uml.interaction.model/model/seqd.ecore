@@ -114,6 +114,20 @@
         </eAnnotations>
       </eParameters>
     </eOperations>
+    <eOperations name="getBottomMostElement" lowerBound="1">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Returns the bottommost element, such as a message end, contained by this interaction."/>
+      </eAnnotations>
+      <eGenericType eClassifier="#//Optional">
+        <eTypeArguments>
+          <eUpperBound eClassifier="#//MElement">
+            <eTypeArguments>
+              <eUpperBound eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
+            </eTypeArguments>
+          </eUpperBound>
+        </eTypeArguments>
+      </eGenericType>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="lifelines" upperBound="-1"
         eType="#//MLifeline" changeable="false" containment="true" resolveProxies="false"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="messages" upperBound="-1"
@@ -181,7 +195,7 @@
       </eParameters>
       <eParameters name="offset" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
       <eParameters name="height" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
-      <eParameters name="metaclass" lowerBound="1" eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EClass"/>
+      <eParameters name="metaclass" lowerBound="1" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EClass"/>
     </eOperations>
     <eOperations name="insertMessageAfter" lowerBound="1">
       <eGenericType eClassifier="#//CreationCommand">

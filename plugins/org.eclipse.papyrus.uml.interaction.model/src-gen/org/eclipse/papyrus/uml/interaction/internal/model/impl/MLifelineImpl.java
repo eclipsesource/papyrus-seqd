@@ -140,7 +140,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	@Override
 	public List<MExecutionOccurrence> getExecutionOccurrences() {
 		if (executionOccurrences == null) {
-			executionOccurrences = new EObjectContainmentEList<>(MExecutionOccurrence.class, this,
+			executionOccurrences = new EObjectContainmentEList<MExecutionOccurrence>(
+					MExecutionOccurrence.class, this,
 					SequenceDiagramPackage.MLIFELINE__EXECUTION_OCCURRENCES);
 		}
 		return executionOccurrences;
@@ -154,7 +155,7 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	@Override
 	public List<MExecution> getExecutions() {
 		if (executions == null) {
-			executions = new EObjectContainmentEList<>(MExecution.class, this,
+			executions = new EObjectContainmentEList<MExecution>(MExecution.class, this,
 					SequenceDiagramPackage.MLIFELINE__EXECUTIONS);
 		}
 		return executions;
@@ -338,9 +339,9 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case SequenceDiagramPackage.MLIFELINE__EXECUTION_OCCURRENCES:
-				return (executionOccurrences != null) && !executionOccurrences.isEmpty();
+				return executionOccurrences != null && !executionOccurrences.isEmpty();
 			case SequenceDiagramPackage.MLIFELINE__EXECUTIONS:
-				return (executions != null) && !executions.isEmpty();
+				return executions != null && !executions.isEmpty();
 			case SequenceDiagramPackage.MLIFELINE__LEFT:
 				return LEFT_EDEFAULT == null ? getLeft() != null : !LEFT_EDEFAULT.equals(getLeft());
 			case SequenceDiagramPackage.MLIFELINE__RIGHT:

@@ -363,13 +363,22 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MINTERACTION___GET_LIFELINE_AT__INT = MELEMENT_OPERATION_COUNT + 5;
 
 	/**
+	 * The operation id for the '<em>Get Bottom Most Element</em>' operation. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MINTERACTION___GET_BOTTOM_MOST_ELEMENT = MELEMENT_OPERATION_COUNT + 6;
+
+	/**
 	 * The number of operations of the '<em>MInteraction</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MINTERACTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 6;
+	int MINTERACTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 7;
 
 	/**
 	 * The meta object id for the
@@ -1672,6 +1681,17 @@ public interface SequenceDiagramPackage extends EPackage {
 	EOperation getMInteraction__GetLifelineAt__int();
 
 	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getBottomMostElement() <em>Get Bottom
+	 * Most Element</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Get Bottom Most Element</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MInteraction#getBottomMostElement()
+	 * @generated
+	 */
+	EOperation getMInteraction__GetBottomMostElement();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline
 	 * <em>MLifeline</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2411,6 +2431,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation MINTERACTION___GET_LIFELINE_AT__INT = eINSTANCE.getMInteraction__GetLifelineAt__int();
+
+		/**
+		 * The meta object literal for the '<em><b>Get Bottom Most Element</b></em>' operation. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MINTERACTION___GET_BOTTOM_MOST_ELEMENT = eINSTANCE.getMInteraction__GetBottomMostElement();
 
 		/**
 		 * The meta object literal for the

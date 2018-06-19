@@ -12,18 +12,26 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts;
 
+import static org.eclipse.gmf.runtime.notation.NotationPackage.Literals.LINE_STYLE__LINE_WIDTH;
+import static org.eclipse.gmf.runtime.notation.NotationPackage.Literals.LOCATION__X;
+import static org.eclipse.gmf.runtime.notation.NotationPackage.Literals.LOCATION__Y;
+
+import java.util.Optional;
+import java.util.OptionalInt;
+
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.BorderedBorderItemEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IBorderItemEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
 import org.eclipse.gmf.runtime.diagram.ui.figures.BorderedNodeFigure;
 import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
-import org.eclipse.gmf.runtime.notation.NotationPackage;
+import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.LifelineBodyFigure;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.InteractionSemanticEditPolicy;
@@ -32,6 +40,10 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.L
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineCreationEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.SequenceDiagramPopupBarEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.locators.OnLineBorderItemLocator;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
+import org.eclipse.papyrus.uml.interaction.model.MElement;
+import org.eclipse.papyrus.uml.interaction.model.MInteraction;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 
 /**
  * Edit Part that manages the body (the <i>line</i>) of the lifeline.
@@ -39,21 +51,20 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.locators.OnLine
 public class LifelineBodyEditPart extends BorderedBorderItemEditPart {
 
 	/**
-	 * The minimum width of a LifelineBody figure, in pixels
+	 * The minimum width of a LifelineBody figure, in pixels.
 	 */
 	public static final int MIN_WIDTH = 1;
 
 	/**
-	 * The minimum height of a LifelineBody figure, in pixels
+	 * The minimum height of a LifelineBody figure, in pixels.
 	 */
-	public static final int MIN_HEIGHT = 20;
+	public static final int MIN_HEIGHT = 400;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param view
-	 *            the view model.
+	 * The bottom padding of the LifelineBody, in pixels.
 	 */
+	public static final int PADDING_BOTTOM = 10;
+
 	public LifelineBodyEditPart(View view) {
 		super(view);
 	}
@@ -67,11 +78,13 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart {
 	@Override
 	protected NodeFigure createNodeFigure() {
 		return new BorderedNodeFigure(createMainFigure()) {
+			/**
+			 * By default, BorderedNodeFigure will delegate to their border items, but not to their main
+			 * figure, which may provide a custom containsPoint(), especially when the main figure is a
+			 * 1px-wide line...
+			 */
 			@Override
 			public boolean containsPoint(int x, int y) {
-				// By default, BorderedNodeFigure will delegate to their border items,
-				// but not to their main figure (Which may provide a custom containsPoint(), especially when
-				// the main figure is a 1px-wide line...)
 				return super.containsPoint(x, y) || getMainFigure().containsPoint(x, y);
 			}
 		};
@@ -80,34 +93,44 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart {
 	@Override
 	protected void refreshBounds() {
 		if (getBorderItemLocator() != null) {
-			int x = ((Integer)getStructuralFeatureValue(NotationPackage.eINSTANCE.getLocation_X()))
-					.intValue();
-			int y = ((Integer)getStructuralFeatureValue(NotationPackage.eINSTANCE.getLocation_Y()))
-					.intValue();
-			Point loc = new Point(x, y);
-
-			// Change the width: this is the Line width; not the BoundsWidth (We don't want to resize the body
-			// horizontally)
-			int width = Math.max(MIN_WIDTH,
-					((Integer)getStructuralFeatureValue(NotationPackage.eINSTANCE.getLineStyle_LineWidth()))
-							.intValue());
-			int height = Math.max(MIN_HEIGHT,
-					((Integer)getStructuralFeatureValue(NotationPackage.eINSTANCE.getSize_Height()))
-							.intValue());
-			Dimension size = new Dimension(width, height);
-
-			getBorderItemLocator().setConstraint(new Rectangle(loc, size));
+			int width = Math.max(MIN_WIDTH, getIntAttributeValue(LINE_STYLE__LINE_WIDTH));
+			Dimension size = new Dimension(width, computeLifelineHeight());
+			Point location = new Point(getIntAttributeValue(LOCATION__X), getIntAttributeValue(LOCATION__Y));
+			getBorderItemLocator().setConstraint(new Rectangle(location, size));
 			getBorderItemLocator().relocate(getFigure());
 		} else {
 			super.refresh();
 		}
 	}
 
+	protected int computeLifelineHeight() {
+		MInteraction mInteraction = getMInteraction();
+		Optional<Integer> bottomMostElementY = mInteraction.getBottomMostElement().map(MElement::getBottom)
+				.map(OptionalInt::getAsInt);
+		int endOfLifelineY = Math.max(bottomMostElementY.orElse(Integer.valueOf(-1)).intValue(), MIN_HEIGHT);
+		return getLayoutHelper().toRelativeY(getShape(), endOfLifelineY + PADDING_BOTTOM);
+	}
+
+	private MInteraction getMInteraction() {
+		return MInteraction.getInstance(this.getDiagramView());
+	}
+
+	private Shape getShape() {
+		return (Shape)getNotationView();
+	}
+
+	private LayoutHelper getLayoutHelper() {
+		return LogicalModelPlugin.getInstance().getLayoutHelper(getEditingDomain());
+	}
+
+	private int getIntAttributeValue(EAttribute feature) {
+		return ((Integer)getStructuralFeatureValue(feature)).intValue();
+	}
+
 	@Override
 	protected void handleNotificationEvent(Notification event) {
 		super.handleNotificationEvent(event);
-		if (event.getNotifier() == getNotationView()
-				&& NotationPackage.Literals.LINE_STYLE__LINE_WIDTH == event.getFeature()) {
+		if (event.getNotifier() == getNotationView() && LINE_STYLE__LINE_WIDTH == event.getFeature()) {
 			refreshBounds();
 		}
 	}

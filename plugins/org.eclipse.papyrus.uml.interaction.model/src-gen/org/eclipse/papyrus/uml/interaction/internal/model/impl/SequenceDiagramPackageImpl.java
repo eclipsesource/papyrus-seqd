@@ -177,10 +177,9 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	public static SequenceDiagramPackage init() {
-		if (isInited) {
+		if (isInited)
 			return (SequenceDiagramPackage)EPackage.Registry.INSTANCE
 					.getEPackage(SequenceDiagramPackage.eNS_URI);
-		}
 
 		// Obtain or create and register package
 		SequenceDiagramPackageImpl theSequenceDiagramPackage = (SequenceDiagramPackageImpl)(EPackage.Registry.INSTANCE
@@ -417,6 +416,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	@Override
 	public EOperation getMInteraction__GetLifelineAt__int() {
 		return mInteractionEClass.getEOperations().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMInteraction__GetBottomMostElement() {
+		return mInteractionEClass.getEOperations().get(6);
 	}
 
 	/**
@@ -923,9 +932,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	public void createPackageContents() {
-		if (isCreated) {
+		if (isCreated)
 			return;
-		}
 		isCreated = true;
 
 		// Create classes and their features
@@ -951,6 +959,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEOperation(mInteractionEClass, MINTERACTION___GET_MESSAGE__MESSAGE);
 		createEOperation(mInteractionEClass, MINTERACTION___ADD_LIFELINE__INT_INT);
 		createEOperation(mInteractionEClass, MINTERACTION___GET_LIFELINE_AT__INT);
+		createEOperation(mInteractionEClass, MINTERACTION___GET_BOTTOM_MOST_ELEMENT);
 
 		mLifelineEClass = createEClass(MLIFELINE);
 		createEReference(mLifelineEClass, MLIFELINE__EXECUTION_OCCURRENCES);
@@ -1025,9 +1034,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	public void initializePackageContents() {
-		if (isInitialized) {
+		if (isInitialized)
 			return;
-		}
 		isInitialized = true;
 
 		// Initialize package
@@ -1208,6 +1216,19 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		g1 = createEGenericType(this.getOptional());
 		g2 = createEGenericType(this.getMLifeline());
 		g1.getETypeArguments().add(g2);
+		initEOperation(op, g1);
+
+		op = initEOperation(getMInteraction__GetBottomMostElement(), null, "getBottomMostElement", 1, 1, //$NON-NLS-1$
+				IS_UNIQUE, IS_ORDERED);
+		g1 = createEGenericType(this.getOptional());
+		g2 = createEGenericType();
+		g1.getETypeArguments().add(g2);
+		g3 = createEGenericType(this.getMElement());
+		g2.setEUpperBound(g3);
+		g4 = createEGenericType();
+		g3.getETypeArguments().add(g4);
+		EGenericType g5 = createEGenericType(theUMLPackage.getElement());
+		g4.setEUpperBound(g5);
 		initEOperation(op, g1);
 
 		initEClass(mLifelineEClass, MLifeline.class, "MLifeline", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$

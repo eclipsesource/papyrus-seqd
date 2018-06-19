@@ -67,7 +67,7 @@ public class SequenceDiagramItemProviderAdapterFactory extends SequenceDiagramAd
 	 * 
 	 * @generated
 	 */
-	protected Collection<Object> supportedTypes = new ArrayList<>();
+	protected Collection<Object> supportedTypes = new ArrayList<Object>();
 
 	/**
 	 * This constructs an instance. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -335,24 +335,18 @@ public class SequenceDiagramItemProviderAdapterFactory extends SequenceDiagramAd
 	 */
 	@Override
 	public void dispose() {
-		if (mInteractionItemProvider != null) {
+		if (mInteractionItemProvider != null)
 			mInteractionItemProvider.dispose();
-		}
-		if (mLifelineItemProvider != null) {
+		if (mLifelineItemProvider != null)
 			mLifelineItemProvider.dispose();
-		}
-		if (mExecutionItemProvider != null) {
+		if (mExecutionItemProvider != null)
 			mExecutionItemProvider.dispose();
-		}
-		if (mExecutionOccurrenceItemProvider != null) {
+		if (mExecutionOccurrenceItemProvider != null)
 			mExecutionOccurrenceItemProvider.dispose();
-		}
-		if (mMessageEndItemProvider != null) {
+		if (mMessageEndItemProvider != null)
 			mMessageEndItemProvider.dispose();
-		}
-		if (mMessageItemProvider != null) {
+		if (mMessageItemProvider != null)
 			mMessageItemProvider.dispose();
-		}
 	}
 
 }
