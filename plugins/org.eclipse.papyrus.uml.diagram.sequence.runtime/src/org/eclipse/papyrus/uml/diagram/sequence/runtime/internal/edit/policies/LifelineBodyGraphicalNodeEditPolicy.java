@@ -14,31 +14,34 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil.getSort;
 
-import java.util.List;
+import java.util.Iterator;
 import java.util.Optional;
 
-import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.FeedbackHelper;
 import org.eclipse.gef.requests.CreateConnectionRequest;
+import org.eclipse.gef.requests.ReconnectRequest;
+import org.eclipse.gmf.runtime.common.core.command.CompositeCommand;
+import org.eclipse.gmf.runtime.diagram.core.commands.SetConnectionAnchorsCommand;
+import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.INodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewRequest;
-import org.eclipse.gmf.runtime.diagram.ui.requests.CreateUnspecifiedTypeConnectionRequest;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
-import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.LifelineBodyAnchor;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageFeedbackHelper.Mode;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.CreateRequestSwitch;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
-import org.eclipse.papyrus.uml.service.types.element.UMLElementTypes;
-import org.eclipse.papyrus.uml.service.types.utils.ElementUtil;
 import org.eclipse.uml2.uml.Interaction;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
@@ -154,12 +157,13 @@ public class LifelineBodyGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy
 	 */
 	@Override
 	protected FeedbackHelper getFeedbackHelper(CreateConnectionRequest request) {
-		if (!isMessageConnection(request)) {
+		if (!MessageUtil.isMessageConnection(request)) {
 			return super.getFeedbackHelper(request);
 		}
 
 		if (feedbackHelper == null) {
-			feedbackHelper = new MessageFeedbackHelper();
+			feedbackHelper = new MessageFeedbackHelper(Mode.CREATE,
+					MessageUtil.isSynchronousMessageConnection(request), true);
 			Point p = request.getLocation();
 			connectionFeedback = createDummyConnection(request);
 			connectionFeedback.setConnectionRouter(getDummyConnectionRouter(request));
@@ -172,23 +176,60 @@ public class LifelineBodyGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy
 		return feedbackHelper;
 	}
 
-	boolean isMessageConnection(CreateConnectionRequest request) {
-		boolean result = false;
+	@Override
+	protected Command getReconnectSourceCommand(ReconnectRequest request) {
+		Command result = super.getReconnectSourceCommand(request);
 
-		if (request instanceof CreateUnspecifiedTypeConnectionRequest) {
-			CreateUnspecifiedTypeConnectionRequest unspecified = (CreateUnspecifiedTypeConnectionRequest)request;
-			result = ((List<?>)unspecified.getAllRequests()).stream()
-					.filter(CreateConnectionRequest.class::isInstance)
-					.map(CreateConnectionRequest.class::cast).anyMatch(this::isMessageConnection);
-		} else if (request instanceof CreateConnectionViewRequest) {
-			CreateConnectionViewRequest specified = (CreateConnectionViewRequest)request;
-			Optional<IAdaptable> elementAdapter = Optional
-					.ofNullable(specified.getConnectionViewDescriptor().getElementAdapter());
-			return elementAdapter.map(a -> a.getAdapter(IElementType.class))
-					.filter(type -> ElementUtil.isTypeOf(type, UMLElementTypes.MESSAGE)).isPresent();
-		}
+		ConnectionEditPart connectionEP = (ConnectionEditPart)request.getConnectionEditPart();
+		Connection connection = (Connection)connectionEP.getFigure();
+		Point targetLocation = getLocation(connection.getTargetAnchor());
+
+		// Apply constraints implemented in the feedback
+		SetConnectionAnchorsCommand scaCommand = getSetConnectionAnchorsCommand(result);
+		INodeEditPart target = (INodeEditPart)connectionEP.getTarget();
+		ReconnectRequest targetRequest = new ReconnectRequest(REQ_RECONNECT_TARGET);
+		targetRequest.setLocation(targetLocation);
+		ConnectionAnchor newTargetAnchor = target.getTargetConnectionAnchor(targetRequest);
+		scaCommand.setNewTargetTerminal(target.mapConnectionAnchorToTerminal(newTargetAnchor));
 
 		return result;
+	}
+
+	@Override
+	protected Command getReconnectTargetCommand(ReconnectRequest request) {
+		Command result = super.getReconnectTargetCommand(request);
+
+		ConnectionEditPart connectionEP = (ConnectionEditPart)request.getConnectionEditPart();
+		Connection connection = (Connection)connectionEP.getFigure();
+		Point sourceLocation = getLocation(connection.getSourceAnchor());
+
+		// Apply constraints implemented in the feedback
+		SetConnectionAnchorsCommand scaCommand = getSetConnectionAnchorsCommand(result);
+		INodeEditPart source = (INodeEditPart)connectionEP.getSource();
+		ReconnectRequest sourceRequest = new ReconnectRequest(REQ_RECONNECT_SOURCE);
+		sourceRequest.setLocation(sourceLocation);
+		ConnectionAnchor newSourceAnchor = source.getSourceConnectionAnchor(sourceRequest);
+		scaCommand.setNewSourceTerminal(source.mapConnectionAnchorToTerminal(newSourceAnchor));
+
+		return result;
+	}
+
+	private Point getLocation(ConnectionAnchor anchor) {
+		IFigure owner = anchor.getOwner();
+		Point ownerOrigin = owner.getBounds().getLocation();
+		owner.getParent().translateToAbsolute(ownerOrigin);
+		return anchor.getLocation(ownerOrigin);
+	}
+
+	SetConnectionAnchorsCommand getSetConnectionAnchorsCommand(Command command) {
+		CompositeCommand composite = (CompositeCommand)((ICommandProxy)command).getICommand();
+		for (Iterator<?> iter = composite.iterator(); iter.hasNext();) {
+			Object next = iter.next();
+			if (next instanceof SetConnectionAnchorsCommand) {
+				return (SetConnectionAnchorsCommand)next;
+			}
+		}
+		return null;
 	}
 
 	//
@@ -220,36 +261,5 @@ public class LifelineBodyGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy
 			this.sort = sort;
 		}
 
-	}
-
-	// Feedback helper for messages that does not allow them to slope upwards
-	private static class MessageFeedbackHelper extends FeedbackHelper {
-		MessageFeedbackHelper() {
-			super();
-		}
-
-		@Override
-		public void update(ConnectionAnchor _anchor, Point p) {
-			ConnectionAnchor anchor = _anchor;
-			ConnectionAnchor src = getConnection().getSourceAnchor();
-
-			if ((src instanceof LifelineBodyAnchor) && (anchor instanceof LifelineBodyAnchor)) {
-				LifelineBodyAnchor sourceAnchor = (LifelineBodyAnchor)src;
-				LifelineBodyAnchor targetAnchor = (LifelineBodyAnchor)anchor;
-
-				IFigure source = sourceAnchor.getOwner();
-				Point sourceOrigin = source.getBounds().getLocation();
-				source.getParent().translateToAbsolute(sourceOrigin);
-				Point sourceLocation = sourceAnchor.getLocation(sourceOrigin);
-				int delta = p.y() - sourceLocation.y();
-				if (delta < 0) {
-					// Force it horizontal
-					p.setY(sourceLocation.y());
-					anchor = ((NodeFigure)targetAnchor.getOwner()).getTargetConnectionAnchorAt(p);
-				}
-			}
-
-			super.update(anchor, p);
-		}
 	}
 }
