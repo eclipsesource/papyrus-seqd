@@ -21,11 +21,12 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MMessageImpl;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
-import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.ElementRemovalCommandImpl;
+import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.MessageOccurrenceSpecification;
@@ -96,8 +97,8 @@ public class RemoveLifelineCommand extends ModelCommand<MLifelineImpl> implement
 		/* nudge */
 		if (nudge) {
 			/* nudge before deletion, because otherwise we would have to recreate MInteraction */
-			allCommands.add(new NudgeOnRemovalCommand(getEditingDomain(), getTarget().getInteraction(),
-					getElementsToRemove()));
+			allCommands.add(new NudgeOnRemovalCommand(getEditingDomain(),
+					(MInteractionImpl)getTarget().getInteraction(), getElementsToRemove()));
 		}
 		allCommands.add(delegate);
 		allCommands.add(diagramsResultCommand);

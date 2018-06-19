@@ -256,6 +256,15 @@ public class BasicDeletionTest {
 		int lifeline2NewLeft = lifeline1.getLeft().getAsInt();
 		int lifeline3NewLeft = lifeline2NewLeft + diff;
 
+		MExecution execution4 = interaction().getLifelines().get(2).getExecutions().get(0);
+		int execution4NewTop = execution1.getTop().getAsInt();
+		int execution4NewBottom = execution4NewTop
+				+ (execution4.getBottom().getAsInt() - execution4.getTop().getAsInt());
+
+		int execution3Top = interaction().getLifelines().get(1).getExecutions().get(1).getTop().getAsInt();
+		/* execution 4 newBottom + old gap to message 2 */
+		int execution3NewTop = execution4NewBottom + (execution3Top - message2.getBottom().getAsInt());
+
 		/* act */
 		executeAndAssertRemoval((RemovalCommand<Element>)lifeline1.remove(), //
 				lifeline1, //
@@ -277,8 +286,8 @@ public class BasicDeletionTest {
 		assertEquals(2, interaction().getLifelines().get(1).getExecutionOccurrences().size());
 
 		/* executions move up, lifelines move to left */
-		assertTop(170, interaction().getLifelines().get(0).getExecutions().get(0));
-		assertTop(63, interaction().getLifelines().get(1).getExecutions().get(0));
+		assertTop(execution4NewTop, interaction().getLifelines().get(1).getExecutions().get(0));
+		assertTop(execution3NewTop, interaction().getLifelines().get(0).getExecutions().get(0));
 		assertTopLeft(lifelineTop, lifeline2NewLeft, interaction().getLifelines().get(0));
 		assertTopLeft(lifelineTop, lifeline3NewLeft, interaction().getLifelines().get(1));
 	}
@@ -297,6 +306,9 @@ public class BasicDeletionTest {
 		int lifelineTop = lifeline2.getTop().getAsInt();
 		int lifeline3NewLeft = lifeline2.getLeft().getAsInt();
 
+		int execution1Top = interaction().getLifelines().get(0).getExecutions().get(0).getTop().getAsInt();
+		int execution3Top = interaction().getLifelines().get(2).getExecutions().get(0).getTop().getAsInt();
+
 		/* act */
 		executeAndAssertRemoval((RemovalCommand<Element>)lifeline2.remove(), //
 				lifeline2, //
@@ -313,9 +325,9 @@ public class BasicDeletionTest {
 		assertEquals(2, interaction().getLifelines().get(0).getExecutionOccurrences().size());
 		assertEquals(2, interaction().getLifelines().get(1).getExecutionOccurrences().size());
 
-		/* executions move up, right lifeline move to left where deleted was */
-		assertTop(63, interaction().getLifelines().get(0).getExecutions().get(0));
-		assertTop(83, interaction().getLifelines().get(1).getExecutions().get(0));
+		/* right lifeline move to left where deleted was */
+		assertTop(execution1Top, interaction().getLifelines().get(0).getExecutions().get(0));
+		assertTop(execution3Top, interaction().getLifelines().get(1).getExecutions().get(0));
 		assertTopLeft(lifelineTop, lifeline3NewLeft, interaction().getLifelines().get(1));
 	}
 }

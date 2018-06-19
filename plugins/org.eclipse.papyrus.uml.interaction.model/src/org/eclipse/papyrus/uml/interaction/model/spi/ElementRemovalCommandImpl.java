@@ -55,7 +55,8 @@ public class ElementRemovalCommandImpl extends CommandWrapper implements Removal
 	/**
 	 * Creates a removal command which combines the result of the given removal commands.
 	 */
-	public ElementRemovalCommandImpl(EditingDomain domain, List<RemovalCommand<Element>> commands) {
+	public ElementRemovalCommandImpl(EditingDomain domain,
+			List<? extends RemovalCommand<? extends Element>> commands) {
 		super(CompoundModelCommand.compose(domain, new ArrayList<Command>(commands)));
 		this.domain = domain;
 		toRemove.addAll(commands.stream()//

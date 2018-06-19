@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MMessageImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
@@ -97,8 +98,8 @@ public class RemoveMessageCommand extends ModelCommand<MMessageImpl> implements 
 		/* nudge */
 		if (nudge) {
 			/* nudge before deletion, because otherwise we would have to recreate MInteraction */
-			allCommands.add(new NudgeOnRemovalCommand(getEditingDomain(), getTarget().getInteraction(),
-					getElementsToRemove()));
+			allCommands.add(new NudgeOnRemovalCommand(getEditingDomain(),
+					(MInteractionImpl)getTarget().getInteraction(), getElementsToRemove()));
 		}
 		allCommands.add(delegate);
 		allCommands.add(diagramsResultCommand);

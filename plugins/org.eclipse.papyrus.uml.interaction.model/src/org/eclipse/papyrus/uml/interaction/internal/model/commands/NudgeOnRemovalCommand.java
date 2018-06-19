@@ -23,36 +23,29 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.CommandWrapper;
 import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
-import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
-import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.uml2.uml.Element;
 
 /**
  * This command analyses the current graph and fills the white space created by the deletion of elements.
  */
-public class NudgeOnRemovalCommand extends CommandWrapper {
+public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 
 	private static final int DEFAULT_VERTICAL_OFFSET = 10;
-
-	private EditingDomain editingDomain;
 
 	private Set<MElement<? extends Element>> mElementsToRemove;
 
 	private MInteraction interaction;
-
-	private Collection<Element> elementsToRemove;
 
 	/**
 	 * Creates a new {@link NudgeCommand}.
@@ -60,17 +53,16 @@ public class NudgeOnRemovalCommand extends CommandWrapper {
 	 * @param editingDomain
 	 *            the {@link EditingDomain}
 	 * @param interaction
-	 *            the {@link MInteraction}
+	 *            the {@link MInteractionImpl}
 	 * @param elementsToRemove
 	 *            the elements which will be removed
 	 */
-	public NudgeOnRemovalCommand(EditingDomain editingDomain, MInteraction interaction,
+	public NudgeOnRemovalCommand(EditingDomain editingDomain, MInteractionImpl interaction,
 			Collection<Element> elementsToRemove) {
+		super(interaction);
 
-		this.editingDomain = editingDomain;
 		this.interaction = interaction;
-		this.elementsToRemove = elementsToRemove;
-		this.mElementsToRemove = getRemovedMElements();
+		this.mElementsToRemove = getRemovedMElements(elementsToRemove);
 
 		List<Command> nudgeCommands = new ArrayList<>();
 		nudgeCommands.addAll(createVerticalNudgeCommands());
@@ -88,12 +80,15 @@ public class NudgeOnRemovalCommand extends CommandWrapper {
 	/**
 	 * Maps the removed {@link Element}s to their respective {@link MElement}. Filters out {@link MOccurrence}
 	 * as they are currently just point values connected to other {@link MElement}s.
+	 * 
+	 * @param elementsToRemove
+	 *            the removed {@link Element elements}
 	 */
-	private Set<MElement<? extends Element>> getRemovedMElements() {
+	private Set<MElement<? extends Element>> getRemovedMElements(Collection<Element> elementsToRemove) {
 		return elementsToRemove.stream()//
-				.map(e -> interaction.getElement(e))//
-				.filter(o -> o.isPresent())//
-				.map(o -> o.get())//
+				.map(interaction::getElement)//
+				.filter(Optional::isPresent)//
+				.map(Optional::get)//
 				.filter(e -> !MOccurrence.class.isInstance(e))// TODO MGate special case once available
 				.collect(Collectors.toSet());
 	}
@@ -180,9 +175,7 @@ public class NudgeOnRemovalCommand extends CommandWrapper {
 	 */
 	private int additionalVerticalOffSet() {
 		if (mElementsToRemove.stream()//
-				.filter(MLifeline.class::isInstance)//
-				.findAny()//
-				.isPresent()) {
+				.anyMatch(MLifeline.class::isInstance)) {
 			/* ensure there is a gap after the start of a lifeline */
 			return DEFAULT_VERTICAL_OFFSET;
 		}
@@ -194,7 +187,8 @@ public class NudgeOnRemovalCommand extends CommandWrapper {
 		/* find the deleted lifelines and order all lifelines from left to right */
 		Set<MLifeline> deletedLifelines = mElementsToRemove.stream()//
 				.filter(MLifeline.class::isInstance)//
-				.map(MLifeline.class::cast).collect(Collectors.toSet());
+				.map(MLifeline.class::cast)//
+				.collect(Collectors.toSet());
 
 		List<MLifeline> lifelinesLeftToRight = interaction.getLifelines().stream()//
 				.sorted((l1, l2) -> {
@@ -295,19 +289,6 @@ public class NudgeOnRemovalCommand extends CommandWrapper {
 		}
 		topToElements.get(top).add(element);
 		bottomToElements.get(bottom).add(element);
-	}
-
-	private final DiagramHelper diagramHelper() {
-		return LogicalModelPlugin.getInstance().getDiagramHelper(editingDomain);
-	}
-
-	private final LayoutHelper layoutHelper() {
-		return LogicalModelPlugin.getInstance().getLayoutHelper(editingDomain);
-	}
-
-	@Override
-	public Command chain(Command next) {
-		return CompoundModelCommand.compose(editingDomain, this, next);
 	}
 
 }
