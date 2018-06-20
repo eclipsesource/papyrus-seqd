@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -43,7 +44,9 @@ import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MObject;
+import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Interaction;
@@ -244,9 +247,9 @@ public class MInteractionImpl extends MElementImpl<Interaction> implements MInte
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case SequenceDiagramPackage.MINTERACTION__LIFELINES:
-				return (lifelines != null) && !lifelines.isEmpty();
+				return lifelines != null && !lifelines.isEmpty();
 			case SequenceDiagramPackage.MINTERACTION__MESSAGES:
-				return (messages != null) && !messages.isEmpty();
+				return messages != null && !messages.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
@@ -272,6 +275,8 @@ public class MInteractionImpl extends MElementImpl<Interaction> implements MInte
 				return addLifeline((Integer)arguments.get(0), (Integer)arguments.get(1));
 			case SequenceDiagramPackage.MINTERACTION___GET_LIFELINE_AT__INT:
 				return getLifelineAt((Integer)arguments.get(0));
+			case SequenceDiagramPackage.MINTERACTION___GET_BOTTOMMOST_ELEMENT:
+				return getBottommostElement();
 		}
 		return super.eInvoke(operationID, arguments);
 	}
@@ -335,6 +340,27 @@ public class MInteractionImpl extends MElementImpl<Interaction> implements MInte
 		Predicate<MLifeline> hit = ll -> offset <= layout.getRight(shape.apply(ll));
 
 		return getLifelines().stream().sorted(leftToRight).filter(hit).findFirst();
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Optional<? extends MElement<? extends Element>> getBottommostElement() {
+		Stream<MMessageEnd> messageEnds = getMessages().stream()
+				.flatMap((m) -> Stream.of(m.getSend(), m.getReceive())).filter(Optional::isPresent)
+				.map(Optional::get);
+		Stream<MOccurrence<?>> occurrances = getLifelines().stream()
+				.flatMap((lifeline) -> lifeline.getExecutions().stream())
+				.flatMap((e) -> Stream.of(e.getStart(), e.getFinish())).filter(Optional::isPresent)
+				.map(Optional::get);
+		return Stream.concat(messageEnds, occurrances).max(Comparator.comparingInt(this::bottomOfMElement));
+	}
+
+	private int bottomOfMElement(MElement<? extends Element> mElement) {
+		return mElement.getBottom().orElse(-1);
 	}
 
 } // MInteractionImpl

@@ -23,20 +23,13 @@ import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.AnchorParser;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.AnchorParser.AnchorKind;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.LifelineBodyAnchor;
+import org.eclipse.swt.SWT;
 
 public class LifelineBodyFigure extends NodeFigure {
 
 	private static Rectangle LINEBOUNDS = Rectangle.SINGLETON;
 
 	private static final int TOLERANCE = 5;
-
-	public LifelineBodyFigure() {
-		initFigure();
-	}
-
-	private void initFigure() {
-		// placeholder
-	}
 
 	@Override
 	protected void paintFigure(Graphics graphics) {
@@ -45,6 +38,7 @@ public class LifelineBodyFigure extends NodeFigure {
 		line.addPoint(r.getTop());
 		line.addPoint(r.getBottom());
 		line.setLineWidth(r.width());
+		line.setLineStyle(SWT.LINE_DASH);
 		line.paintFigure(graphics);
 	}
 
