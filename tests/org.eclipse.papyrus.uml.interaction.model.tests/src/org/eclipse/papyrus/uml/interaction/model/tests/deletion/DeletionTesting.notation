@@ -9,7 +9,7 @@
         <children xmi:type="notation:Shape" xmi:id="_9sGg02KEEeiIbNyTKulhvg" type="Shape_Lifeline_Body">
           <children xmi:type="notation:Shape" xmi:id="_FMjagGKFEeiIbNyTKulhvg" type="Shape_Execution_Specification">
             <element xmi:type="uml:BehaviorExecutionSpecification" href="DeletionTesting.uml#_FMhlUGKFEeiIbNyTKulhvg"/>
-            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FMjagWKFEeiIbNyTKulhvg" x="-4" y="10" width="10" height="100"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FMjagWKFEeiIbNyTKulhvg" x="-4" y="10" width="10" height="91"/>
           </children>
           <layoutConstraint xmi:type="notation:Size" xmi:id="_9sGg1GKEEeiIbNyTKulhvg" width="2" height="300"/>
         </children>
@@ -39,7 +39,7 @@
         <children xmi:type="notation:Shape" xmi:id="_OLNfs2MWEei-baqYVSEfiQ" type="Shape_Lifeline_Body">
           <children xmi:type="notation:Shape" xmi:id="_WlinsGMWEei-baqYVSEfiQ" type="Shape_Execution_Specification">
             <element xmi:type="uml:BehaviorExecutionSpecification" href="DeletionTesting.uml#_WleWQGMWEei-baqYVSEfiQ"/>
-            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_WlinsWMWEei-baqYVSEfiQ" x="-4" y="175" width="10" height="40"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_WlinsWMWEei-baqYVSEfiQ" x="-5" y="30" width="10" height="22"/>
           </children>
           <layoutConstraint xmi:type="notation:Size" xmi:id="_OLNftGMWEei-baqYVSEfiQ" width="2" height="300"/>
         </children>

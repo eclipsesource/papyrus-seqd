@@ -22,15 +22,15 @@ import org.eclipse.emf.ecore.EObject;
  * Command which is supposed to delete model element. It offers methods to access the elements marked for
  * deletion.
  */
-public interface RemovalCommand extends Command, Supplier<Collection<EObject>> {
+public interface RemovalCommand<T extends EObject> extends Command, Supplier<Collection<T>> {
 
 	/**
 	 * @return the elements which are marked for removal when this command was created.
 	 */
-	Collection<EObject> getElementsToRemove();
+	Collection<T> getElementsToRemove();
 
 	@Override
-	default Collection<EObject> get() {
+	default Collection<T> get() {
 		return getElementsToRemove();
 	}
 

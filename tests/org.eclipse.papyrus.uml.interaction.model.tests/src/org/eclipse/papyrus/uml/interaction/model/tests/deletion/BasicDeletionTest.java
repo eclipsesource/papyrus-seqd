@@ -2,14 +2,13 @@ package org.eclipse.papyrus.uml.interaction.model.tests.deletion;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.IntSupplier;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
@@ -18,6 +17,8 @@ import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelFixture;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
+import org.eclipse.uml2.uml.Element;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -29,6 +30,22 @@ public class BasicDeletionTest {
 
 	private MInteraction interaction;
 
+	private static void assertTop(int top, MElement<?> element) {
+		assertEquals(top, element.getTop().orElseGet(fail("Top missing"))); //$NON-NLS-1$
+	}
+
+	private static void assertTopLeft(int top, int left, MLifeline element) {
+		assertTop(top, element);
+		assertEquals(left, element.getLeft().orElseGet(fail("Left missing"))); //$NON-NLS-1$
+	}
+
+	private static IntSupplier fail(String msg) {
+		return () -> {
+			Assert.fail(msg);
+			return 0;
+		};
+	}
+
 	private MInteraction interaction() {
 		if (interaction == null) {
 			interaction = MInteraction.getInstance(model.getInteraction(), model.getSequenceDiagram().get());
@@ -36,14 +53,15 @@ public class BasicDeletionTest {
 		return interaction;
 	}
 
-	private void executeAndAssertRemoval(RemovalCommand remove, MElement<?>... expectedElementsToBeRemoved) {
+	private void executeAndAssertRemoval(RemovalCommand<Element> remove,
+			MElement<?>... expectedElementsToBeRemoved) {
 		if (!remove.canExecute()) {
-			fail("Command not executable"); //$NON-NLS-1$
+			Assert.fail("Command not executable"); //$NON-NLS-1$
 		}
 		/* make sure no duplicates */
 		Set<MElement<?>> exepcted = new LinkedHashSet<MElement<?>>(
 				Arrays.asList(expectedElementsToBeRemoved));
-		Collection<EObject> elementsToRemove = remove.getElementsToRemove();
+		Collection<Element> elementsToRemove = remove.getElementsToRemove();
 		assertEquals(exepcted.size(), elementsToRemove.size());
 		for (MElement<?> mElement : exepcted) {
 			assertTrue(elementsToRemove.contains(mElement.getElement()));
@@ -55,11 +73,15 @@ public class BasicDeletionTest {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void message_notTriggeringExecution() {
-		/* act */
+		/* setup */
 		MMessage message = interaction().getMessages().get(1);
-		executeAndAssertRemoval((RemovalCommand)message.remove(), //
+		int deletedTop = message.getTop().getAsInt();
+
+		/* act */
+		executeAndAssertRemoval((RemovalCommand<Element>)message.remove(), //
 				message, message.getSend().get(), message.getReceive().get());
 
 		/* assert: only message should be deleted with its ends */
@@ -72,15 +94,26 @@ public class BasicDeletionTest {
 		assertEquals(3, interaction().getLifelines().get(1).getExecutionOccurrences().size());
 		assertEquals(2, interaction().getLifelines().get(2).getExecutionOccurrences().size());
 
-		// TODO executions 3 and 4 need to move up
+		/* execution moved up to where message was */
+		assertTop(deletedTop, interaction().getLifelines().get(1).getExecutions().get(1));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void message_triggeringExecution() {
-		/* act */
+		/* setup */
 		MMessage message1 = interaction().getMessages().get(0);
 		MExecution execution2 = interaction().getLifelines().get(1).getExecutions().get(0);
-		executeAndAssertRemoval((RemovalCommand)message1.remove(), //
+
+		MExecution execution1 = interaction().getLifelines().get(0).getExecutions().get(0);
+		int diff = execution2.getBottom().getAsInt() - execution1.getBottom().getAsInt();
+
+		int message2TopExpected = interaction().getMessages().get(1).getTop().getAsInt() - diff;
+		int execution3TopExpected = interaction().getLifelines().get(1).getExecutions().get(1).getTop()
+				.getAsInt() - diff;
+
+		/* act */
+		executeAndAssertRemoval((RemovalCommand<Element>)message1.remove(), //
 				message1, //
 				execution2, execution2.getStart().get(), execution2.getFinish().get());
 
@@ -97,16 +130,33 @@ public class BasicDeletionTest {
 		assertEquals(2, interaction().getLifelines().get(1).getExecutionOccurrences().size());
 		assertEquals(2, interaction().getLifelines().get(2).getExecutionOccurrences().size());
 
-		// TODO nothing should move, as execution 1 is as big as execution 2
+		/* execution 1 slightly smaller than deleted, following message and execution should move up */
+		assertTop(message2TopExpected, interaction().getMessages().get(0));
+		assertTop(execution3TopExpected, interaction().getLifelines().get(1).getExecutions().get(0));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void execution_withMessageTriggeringOtherExecution() {
-		/* act */
+		/* setup */
 		MExecution execution1 = interaction().getLifelines().get(0).getExecutions().get(0);
 		MMessage message1 = interaction().getMessages().get(0);
 		MExecution execution2 = interaction().getLifelines().get(1).getExecutions().get(0);
-		executeAndAssertRemoval((RemovalCommand)execution1.remove(), //
+
+		MExecution execution4 = interaction().getLifelines().get(2).getExecutions().get(0);
+		MMessage message2 = interaction().getMessages().get(1);
+		int execution4NewTop = execution1.getTop().getAsInt();
+		int execution4NewBottom = execution4NewTop
+				+ (execution4.getBottom().getAsInt() - execution4.getTop().getAsInt());
+
+		int diff = message2.getTop().getAsInt() - execution2.getBottom().getAsInt();
+		int message2NewTop = execution4NewBottom + diff;
+		int execution3NewTop = message2NewTop
+				+ (interaction().getLifelines().get(1).getExecutions().get(1).getTop().getAsInt()
+						- message2.getBottom().getAsInt());
+
+		/* act */
+		executeAndAssertRemoval((RemovalCommand<Element>)execution1.remove(), //
 				execution1, execution1.getStart().get(), execution1.getFinish().get(), //
 				message1, //
 				execution2, execution2.getStart().get(), execution2.getFinish().get());
@@ -124,15 +174,29 @@ public class BasicDeletionTest {
 		assertEquals(2, interaction().getLifelines().get(1).getExecutionOccurrences().size());
 		assertEquals(2, interaction().getLifelines().get(2).getExecutionOccurrences().size());
 
-		/* TODO remaining stuff should be moved up */
+		/* execution on right should be moved up to where the deleted area was started. */
+		/* message and execution below should keep distance to new preceeding element */
+		assertTop(execution4NewTop, interaction().getLifelines().get(2).getExecutions().get(0));
+		assertTop(message2NewTop, interaction().getMessages().get(0));
+		assertTop(execution3NewTop, interaction().getLifelines().get(1).getExecutions().get(0));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void execution_triggeredByMessage() {
-		/* act */
+		/* setup */
 		MExecution execution2 = interaction().getLifelines().get(1).getExecutions().get(0);
 		MMessage message1 = interaction().getMessages().get(0);
-		executeAndAssertRemoval((RemovalCommand)execution2.remove(), //
+
+		MExecution execution1 = interaction().getLifelines().get(0).getExecutions().get(0);
+		int diff = execution2.getBottom().getAsInt() - execution1.getBottom().getAsInt();
+
+		int message2TopExpected = interaction().getMessages().get(1).getTop().getAsInt() - diff;
+		int execution3TopExpected = interaction().getLifelines().get(1).getExecutions().get(1).getTop()
+				.getAsInt() - diff;
+
+		/* act */
+		executeAndAssertRemoval((RemovalCommand<Element>)execution2.remove(), //
 				execution2, execution2.getStart().get(), execution2.getFinish().get(), //
 				message1);
 
@@ -148,19 +212,22 @@ public class BasicDeletionTest {
 		assertEquals(2, interaction().getLifelines().get(1).getExecutionOccurrences().size());
 		assertEquals(2, interaction().getLifelines().get(2).getExecutionOccurrences().size());
 
-		/* TODO noting should be moved */
+		/* execution 1 slightly smaller than deleted, following message and execution should move up */
+		assertTop(message2TopExpected, interaction().getMessages().get(0));
+		assertTop(execution3TopExpected, interaction().getLifelines().get(1).getExecutions().get(0));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void execution_isolated() {
-		/* act */
+		/* setup */
 		MExecution execution3 = interaction().getLifelines().get(2).getExecutions().get(0);
-		executeAndAssertRemoval((RemovalCommand)execution3.remove(), //
+
+		/* act */
+		executeAndAssertRemoval((RemovalCommand<Element>)execution3.remove(), //
 				execution3, execution3.getStart().get(), execution3.getFinish().get());
 
-		/*
-		 * assert
-		 */
+		/* assert */
 		assertEquals(2, interaction().getMessages().size());
 		assertEquals(3, interaction().getLifelines().size());
 		assertEquals(1, interaction().getLifelines().get(0).getExecutions().size());
@@ -170,19 +237,36 @@ public class BasicDeletionTest {
 		assertEquals(3, interaction().getLifelines().get(1).getExecutionOccurrences().size());
 		assertEquals(0, interaction().getLifelines().get(2).getExecutionOccurrences().size());
 
-		/* TODO last execution should be moved up */
+		/* no moves */
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void lifeline_executionTwoMessagesTriggeringOtherExecution() {
-		/* act */
+		/* setup */
 		MLifeline lifeline1 = interaction().getLifelines().get(0);
 		MExecution execution1 = interaction().getLifelines().get(0).getExecutions().get(0);
 		MExecution execution2 = interaction().getLifelines().get(1).getExecutions().get(0);
 		MMessage message1 = interaction().getMessages().get(0);
 		MMessage message2 = interaction().getMessages().get(1);
 
-		executeAndAssertRemoval((RemovalCommand)lifeline1.remove(), //
+		int lifelineTop = lifeline1.getTop().getAsInt();
+		int diff = interaction().getLifelines().get(2).getLeft().getAsInt()
+				- interaction().getLifelines().get(1).getLeft().getAsInt();
+		int lifeline2NewLeft = lifeline1.getLeft().getAsInt();
+		int lifeline3NewLeft = lifeline2NewLeft + diff;
+
+		MExecution execution4 = interaction().getLifelines().get(2).getExecutions().get(0);
+		int execution4NewTop = execution1.getTop().getAsInt();
+		int execution4NewBottom = execution4NewTop
+				+ (execution4.getBottom().getAsInt() - execution4.getTop().getAsInt());
+
+		int execution3Top = interaction().getLifelines().get(1).getExecutions().get(1).getTop().getAsInt();
+		/* execution 4 newBottom + old gap to message 2 */
+		int execution3NewTop = execution4NewBottom + (execution3Top - message2.getBottom().getAsInt());
+
+		/* act */
+		executeAndAssertRemoval((RemovalCommand<Element>)lifeline1.remove(), //
 				lifeline1, //
 				execution1, execution1.getStart().get(), execution1.getFinish().get(), //
 				execution2, execution2.getStart().get(), execution2.getFinish().get(), //
@@ -193,9 +277,7 @@ public class BasicDeletionTest {
 																					// ends have to
 																					// be mentioned
 
-		/*
-		 * assert
-		 */
+		/* assert */
 		assertEquals(0, interaction().getMessages().size());
 		assertEquals(2, interaction().getLifelines().size());
 		assertEquals(1, interaction().getLifelines().get(0).getExecutions().size());
@@ -203,12 +285,17 @@ public class BasicDeletionTest {
 		assertEquals(2, interaction().getLifelines().get(0).getExecutionOccurrences().size());
 		assertEquals(2, interaction().getLifelines().get(1).getExecutionOccurrences().size());
 
-		/* TODO move lifelines to left and move execution occurences up */
+		/* executions move up, lifelines move to left */
+		assertTop(execution4NewTop, interaction().getLifelines().get(1).getExecutions().get(0));
+		assertTop(execution3NewTop, interaction().getLifelines().get(0).getExecutions().get(0));
+		assertTopLeft(lifelineTop, lifeline2NewLeft, interaction().getLifelines().get(0));
+		assertTopLeft(lifelineTop, lifeline3NewLeft, interaction().getLifelines().get(1));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void lifeline_twoMessagesTwoExecution() {
-		/* act */
+		/* setup */
 		MLifeline lifeline2 = interaction().getLifelines().get(1);
 
 		MExecution execution2 = interaction().getLifelines().get(1).getExecutions().get(0);
@@ -216,16 +303,21 @@ public class BasicDeletionTest {
 		MMessage message1 = interaction().getMessages().get(0);
 		MMessage message2 = interaction().getMessages().get(1);
 
-		executeAndAssertRemoval((RemovalCommand)lifeline2.remove(), //
+		int lifelineTop = lifeline2.getTop().getAsInt();
+		int lifeline3NewLeft = lifeline2.getLeft().getAsInt();
+
+		int execution1Top = interaction().getLifelines().get(0).getExecutions().get(0).getTop().getAsInt();
+		int execution3Top = interaction().getLifelines().get(2).getExecutions().get(0).getTop().getAsInt();
+
+		/* act */
+		executeAndAssertRemoval((RemovalCommand<Element>)lifeline2.remove(), //
 				lifeline2, //
 				execution2, execution2.getStart().get(), execution2.getFinish().get(), //
 				execution4, execution4.getStart().get(), execution4.getFinish().get(), //
 				message1, //
 				message2, message2.getSend().get(), message2.getReceive().get());
 
-		/*
-		 * assert
-		 */
+		/* assert */
 		assertEquals(0, interaction().getMessages().size());
 		assertEquals(2, interaction().getLifelines().size());
 		assertEquals(1, interaction().getLifelines().get(0).getExecutions().size());
@@ -233,6 +325,9 @@ public class BasicDeletionTest {
 		assertEquals(2, interaction().getLifelines().get(0).getExecutionOccurrences().size());
 		assertEquals(2, interaction().getLifelines().get(1).getExecutionOccurrences().size());
 
-		/* TODO move lifelines to left and move execution occurences up */
+		/* right lifeline move to left where deleted was */
+		assertTop(execution1Top, interaction().getLifelines().get(0).getExecutions().get(0));
+		assertTop(execution3Top, interaction().getLifelines().get(1).getExecutions().get(0));
+		assertTopLeft(lifelineTop, lifeline3NewLeft, interaction().getLifelines().get(1));
 	}
 }

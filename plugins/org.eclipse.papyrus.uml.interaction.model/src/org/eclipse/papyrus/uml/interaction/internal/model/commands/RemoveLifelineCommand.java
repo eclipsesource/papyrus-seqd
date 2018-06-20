@@ -20,14 +20,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MMessageImpl;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
+import org.eclipse.papyrus.uml.interaction.model.spi.ElementRemovalCommandImpl;
 import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
-import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommandImpl;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.MessageOccurrenceSpecification;
 
 /**
@@ -35,9 +36,9 @@ import org.eclipse.uml2.uml.MessageOccurrenceSpecification;
  *
  * @author Johannes Faltermeier
  */
-public class RemoveLifelineCommand extends ModelCommand<MLifelineImpl> implements RemovalCommand {
+public class RemoveLifelineCommand extends ModelCommand<MLifelineImpl> implements RemovalCommand<Element> {
 
-	private RemovalCommand delegate;
+	private RemovalCommand<Element> delegate;
 
 	private boolean nudge;
 
@@ -57,7 +58,7 @@ public class RemoveLifelineCommand extends ModelCommand<MLifelineImpl> implement
 	protected Command createCommand() {
 		MLifelineImpl lifeline = getTarget();
 
-		List<RemovalCommand> allCommands = new ArrayList<>(lifeline.getExecutions().size() + 1);
+		List<RemovalCommand<Element>> removalCommands = new ArrayList<>(lifeline.getExecutions().size() + 1);
 
 		/* collect non execution related messages */
 		Set<MessageOccurrenceSpecification> messageEndsToDelete = new LinkedHashSet<MessageOccurrenceSpecification>(
@@ -70,7 +71,7 @@ public class RemoveLifelineCommand extends ModelCommand<MLifelineImpl> implement
 		lifeline.getExecutions().forEach(e -> {
 			e.getStart().ifPresent(o -> messageEndsToDelete.remove(o.getElement()));
 			e.getFinish().ifPresent(o -> messageEndsToDelete.remove(o.getElement()));
-			allCommands.add(new RemoveExecutionCommand((MExecutionImpl)e, false));
+			removalCommands.add(new RemoveExecutionCommand((MExecutionImpl)e, false));
 		});
 
 		/* remove non execution messages */
@@ -80,24 +81,34 @@ public class RemoveLifelineCommand extends ModelCommand<MLifelineImpl> implement
 				.filter(m -> m.isPresent())//
 				.map(m -> m.get())//
 				.collect(Collectors.toSet())//
-				.forEach(m -> allCommands.add(new RemoveMessageCommand((MMessageImpl)m, false)));
+				.forEach(m -> removalCommands.add(new RemoveMessageCommand((MMessageImpl)m, false)));
 
 		/* semantics */
 		SemanticHelper semantics = semanticHelper();
-		allCommands.add(semantics.deleteLifeline(lifeline.getElement()));
+		removalCommands.add(semantics.deleteLifeline(lifeline.getElement()));
 
-		delegate = new RemovalCommandImpl(getEditingDomain(), allCommands);
+		delegate = new ElementRemovalCommandImpl(getEditingDomain(), removalCommands);
 
 		/* diagram */
 		DiagramHelper diagrams = diagramHelper();
 		Command diagramsResultCommand = diagrams.deleteView(lifeline.getDiagramView().get());
 
+		List<Command> allCommands = new ArrayList<>();
+		/* nudge */
+		if (nudge) {
+			/* nudge before deletion, because otherwise we would have to recreate MInteraction */
+			allCommands.add(new NudgeOnRemovalCommand(getEditingDomain(),
+					(MInteractionImpl)getTarget().getInteraction(), getElementsToRemove()));
+		}
+		allCommands.add(delegate);
+		allCommands.add(diagramsResultCommand);
+
 		/* chain */
-		return CompoundModelCommand.compose(getEditingDomain(), delegate, diagramsResultCommand);
+		return CompoundModelCommand.compose(getEditingDomain(), allCommands);
 	}
 
 	@Override
-	public Collection<EObject> getElementsToRemove() {
+	public Collection<Element> getElementsToRemove() {
 		if (delegate == null) {
 			return Collections.emptySet();
 		}
