@@ -141,6 +141,15 @@ public interface MLifeline extends MElement<Lifeline> {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Optional&lt;org.eclipse.papyrus.uml.interaction.model.MElement&lt;?
+	 *        extends org.eclipse.uml2.uml.Element&gt;&gt;" required="true" elementRequired="true"
+	 * @generated
+	 */
+	Optional<MElement<? extends Element>> preceding(MElement<? extends Element> element);
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Optional&lt;org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence&gt;"
 	 *        required="true" occurrenceRequired="true"
 	 * @generated

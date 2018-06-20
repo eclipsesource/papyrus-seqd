@@ -13,6 +13,8 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil.getSort;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
 
 import java.util.Iterator;
 import java.util.Optional;
@@ -22,6 +24,7 @@ import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.FeedbackHelper;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
@@ -42,6 +45,8 @@ import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MMessage;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.uml2.uml.Interaction;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
@@ -192,6 +197,26 @@ public class LifelineBodyGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy
 		ConnectionAnchor newTargetAnchor = target.getTargetConnectionAnchor(targetRequest);
 		scaCommand.setNewTargetTerminal(target.mapConnectionAnchorToTerminal(newTargetAnchor));
 
+		return getSourceEnd(connectionEP).flatMap(src -> constrainReconnection(request, src)).orElse(result);
+	}
+
+	protected Optional<Command> constrainReconnection(ReconnectRequest request, MMessageEnd end) {
+
+		Optional<Command> result = Optional.empty();
+
+		// Disallow semantic reordering below the next element on the lifeline
+		Optional<MLifeline> lifeline = end.getCovered();
+		Optional<MElement<?>> successor = lifeline.flatMap(ll -> ll.following(end));
+		if (successor.filter(above(request.getLocation().y())).isPresent()) {
+			result = Optional.of(UnexecutableCommand.INSTANCE);
+		} else {
+			// And above the previous on the lifeline
+			Optional<MElement<?>> predecessor = lifeline.flatMap(ll -> ll.preceding(end));
+			if (predecessor.filter(below(request.getLocation().y())).isPresent()) {
+				result = Optional.of(UnexecutableCommand.INSTANCE);
+			}
+		}
+
 		return result;
 	}
 
@@ -211,7 +236,7 @@ public class LifelineBodyGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy
 		ConnectionAnchor newSourceAnchor = source.getSourceConnectionAnchor(sourceRequest);
 		scaCommand.setNewSourceTerminal(source.mapConnectionAnchorToTerminal(newSourceAnchor));
 
-		return result;
+		return getTargetEnd(connectionEP).flatMap(tgt -> constrainReconnection(request, tgt)).orElse(result);
 	}
 
 	private Point getLocation(ConnectionAnchor anchor) {
@@ -230,6 +255,24 @@ public class LifelineBodyGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy
 			}
 		}
 		return null;
+	}
+
+	Optional<MMessageEnd> getSourceEnd(ConnectionEditPart connection) {
+		return getEnd(connection, true);
+	}
+
+	Optional<MMessageEnd> getTargetEnd(ConnectionEditPart connection) {
+		return getEnd(connection, false);
+	}
+
+	Optional<MMessageEnd> getEnd(ConnectionEditPart connection, boolean source) {
+		Diagram diagram = connection.getNotationView().getDiagram();
+		Optional<Message> message = Optional.ofNullable(connection.resolveSemanticElement())
+				.filter(Message.class::isInstance).map(Message.class::cast);
+		Optional<MInteraction> interaction = message
+				.map(msg -> MInteraction.getInstance(msg.getInteraction(), diagram));
+		return interaction.flatMap(in -> in.getMessage(message.get()))
+				.flatMap(source ? MMessage::getSend : MMessage::getReceive);
 	}
 
 	//

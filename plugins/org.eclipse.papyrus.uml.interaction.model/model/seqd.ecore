@@ -159,6 +159,22 @@
         </eGenericType>
       </eParameters>
     </eOperations>
+    <eOperations name="preceding" lowerBound="1">
+      <eGenericType eClassifier="#//Optional">
+        <eTypeArguments eClassifier="#//MElement">
+          <eTypeArguments>
+            <eUpperBound eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
+          </eTypeArguments>
+        </eTypeArguments>
+      </eGenericType>
+      <eParameters name="element" lowerBound="1">
+        <eGenericType eClassifier="#//MElement">
+          <eTypeArguments>
+            <eUpperBound eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
+          </eTypeArguments>
+        </eGenericType>
+      </eParameters>
+    </eOperations>
     <eOperations name="getExecutionOccurrence" lowerBound="1">
       <eGenericType eClassifier="#//Optional">
         <eTypeArguments eClassifier="#//MExecutionOccurrence"/>

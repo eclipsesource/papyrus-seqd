@@ -222,6 +222,21 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 * @generated NOT
 	 */
 	@Override
+	public Optional<MElement<? extends Element>> preceding(MElement<? extends Element> element) {
+		Vertex reference = getGraph().vertex(element.getElement());
+		if (reference == null) {
+			return Optional.empty();
+		}
+		return Optional.ofNullable(GraphFunctions.predecessorOn(getElement()).apply(reference))
+				.flatMap(v -> getInteraction().getElement(v.getInteractionElement()));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
 	public CreationCommand<ExecutionSpecification> insertExecutionAfter(MElement<?> before, int offset,
 			int height, Element specification) {
 		return new InsertExecutionCommand(this, before, offset, height, specification);
@@ -253,7 +268,7 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	@Override
 	public CreationCommand<Message> insertMessageAfter(MElement<?> beforeSend, int sendOffset,
@@ -379,6 +394,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return getDiagramView();
 			case SequenceDiagramPackage.MLIFELINE___FOLLOWING__MELEMENT:
 				return following((MElement<? extends Element>)arguments.get(0));
+			case SequenceDiagramPackage.MLIFELINE___PRECEDING__MELEMENT:
+				return preceding((MElement<? extends Element>)arguments.get(0));
 			case SequenceDiagramPackage.MLIFELINE___GET_EXECUTION_OCCURRENCE__EXECUTIONOCCURRENCESPECIFICATION:
 				return getExecutionOccurrence((ExecutionOccurrenceSpecification)arguments.get(0));
 			case SequenceDiagramPackage.MLIFELINE___GET_EXECUTION__EXECUTIONSPECIFICATION:
