@@ -75,6 +75,8 @@ import junit.textui.TestRunner;
  * <em>Insert Execution After</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement)
  * <em>Insert Message After</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement)
+ * <em>Insert Message After</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#elementAt(int) <em>Element At</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#nudgeHorizontally(int) <em>Nudge
  * Horizontally</em>}</li>
@@ -359,7 +361,7 @@ public class MLifelineTest extends MElementTest {
 		MMessage reply = interaction.getMessages().get(1);
 		Operation operation = findUMLElement("AnchorsModel::Foo::doIt", Operation.class);
 		CreationCommand<Message> command = getFixture().insertMessageAfter(reply, 15, receiver,
-				MessageSort.ASYNCH_CALL_LITERAL, operation);
+				MessageSort.SYNCH_CALL_LITERAL, operation);
 
 		assertThat(command, executable());
 		Message umlMessage = create(command);
@@ -369,7 +371,57 @@ public class MLifelineTest extends MElementTest {
 		assertThat(message.getTop(), isPresent(282));
 		assertThat(message.getBottom(), isPresent(282));
 		assertThat(umlMessage.getSignature(), is(operation));
-		assertThat(umlMessage.getMessageSort(), is(MessageSort.ASYNCH_CALL_LITERAL));
+		assertThat(umlMessage.getMessageSort(), is(MessageSort.SYNCH_CALL_LITERAL));
+		assertThat(umlMessage.getMessageKind(), is(MessageKind.COMPLETE_LITERAL));
+
+		MessageEnd send = umlMessage.getSendEvent();
+		assertThat(send, notNullValue());
+		assertThat(send.getMessage(), is(umlMessage));
+		assertThat(getFixture().getElement().getCoveredBys(), hasItem((InteractionFragment)send));
+
+		MessageEnd recv = umlMessage.getReceiveEvent();
+		assertThat(recv, notNullValue());
+		assertThat(recv.getMessage(), is(umlMessage));
+		assertThat(receiver.getElement().getCoveredBys(), hasItem((InteractionFragment)recv));
+
+		// The edge connects the lifeline bodies (not the heads)
+		Edge edge = message.getDiagramView().get();
+		assertThat(edge.getSource(), notNullValue());
+		assertThat(edge.getSource().getType(), containsString("Body"));
+		assertThat(edge.getSource().getElement(), is(getFixture().getElement()));
+		assertThat(edge.getTarget(), notNullValue());
+		assertThat(edge.getTarget().getType(), containsString("Body"));
+		assertThat(edge.getTarget().getElement(), is(receiver.getElement()));
+	}
+
+	/**
+	 * Tests the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement)
+	 * <em>Insert Message After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement,
+	 *      int, org.eclipse.papyrus.uml.interaction.model.MLifeline,
+	 *      org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.uml2.uml.MessageSort,
+	 *      org.eclipse.uml2.uml.NamedElement)
+	 * @generated NOT
+	 */
+	public void testInsertMessageAfter__MElement_int_MLifeline_MElement_int_MessageSort_NamedElement() {
+		MLifeline receiver = interaction.getLifelines().get(0);
+		MMessage reply = interaction.getMessages().get(1);
+		Operation operation = findUMLElement("AnchorsModel::Foo::doIt", Operation.class);
+		CreationCommand<Message> command = getFixture().insertMessageAfter(reply.getSend().get(), 15,
+				receiver, reply.getReceive().get(), 45, MessageSort.ASYNCH_SIGNAL_LITERAL, operation);
+
+		assertThat(command, executable());
+		Message umlMessage = create(command);
+		MMessage message = interaction.getMessage(umlMessage).get();
+
+		// 267 {message} + 15 {offset}
+		assertThat(message.getTop(), isPresent(282));
+		// 30 pixels of slope
+		assertThat(message.getBottom(), isPresent(312));
+		assertThat(umlMessage.getSignature(), is(operation));
+		assertThat(umlMessage.getMessageSort(), is(MessageSort.ASYNCH_SIGNAL_LITERAL));
 		assertThat(umlMessage.getMessageKind(), is(MessageKind.COMPLETE_LITERAL));
 
 		MessageEnd send = umlMessage.getSendEvent();

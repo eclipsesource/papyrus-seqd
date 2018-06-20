@@ -18,8 +18,7 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 /**
- * <!-- begin-user-doc --> A test suite for the '<em><b>Seqd</b></em>' model.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A test suite for the '<em><b>Seqd</b></em>' model. <!-- end-user-doc -->
  * 
  * @generated
  */
@@ -46,7 +45,7 @@ public class SeqdAllTests extends TestSuite {
 	}
 
 	public static Test suite() {
-		TestSuite suite = (TestSuite) suiteGen();
+		TestSuite suite = (TestSuite)suiteGen();
 		suite.addTest(new JUnit4TestAdapter(SeqDCustomTests.class));
 		return suite;
 	}

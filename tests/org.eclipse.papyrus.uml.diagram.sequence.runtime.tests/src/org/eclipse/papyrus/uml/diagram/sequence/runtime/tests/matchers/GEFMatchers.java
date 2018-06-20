@@ -12,6 +12,8 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers;
 
+import static java.lang.Math.abs;
+import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.getStandardTolerance;
 import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.isNear;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -31,6 +33,9 @@ import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.LayerConstants;
+import org.eclipse.gef.editparts.LayerManager;
+import org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers;
 import org.hamcrest.Description;
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
@@ -359,6 +364,55 @@ public class GEFMatchers {
 	}
 
 	/**
+	 * Matcher for a horizontal point-list, in which all Y coördinates are the same,
+	 * within a {@code tolerance}.
+	 *
+	 * @param tolerance
+	 *            the tolerated deviation of any Y coördinates from the average
+	 *
+	 * @return the point-list matcher
+	 */
+	public static Matcher<PointList> isHorizontal(double tolerance) {
+		return new TypeSafeDiagnosingMatcher<PointList>() {
+
+			@Override
+			public void describeTo(Description description) {
+				description.appendText("point list is horizontal within ±");
+				description.appendValue(abs(tolerance));
+			}
+
+			@Override
+			protected boolean matchesSafely(PointList item, Description mismatchDescription) {
+				int count = item.size();
+				if (count == 0) {
+					mismatchDescription.appendText("no points to verify"); //$NON-NLS-1$
+					return false;
+				}
+
+				Point p = Point.SINGLETON;
+				double average = 0.0;
+				for (int i = 0; i < count; i++) {
+					item.getPoint(p, i);
+					average = average + p.preciseY();
+				}
+
+				average = average / count;
+				Matcher<Double> delegate = NumberMatchers.isNear(average, tolerance);
+
+				for (int i = 0; i < count; i++) {
+					item.getPoint(p, i);
+					if (!delegate.matches(p.preciseY())) {
+						delegate.describeMismatch(p.preciseY(), mismatchDescription);
+						return false;
+					}
+				}
+
+				return true;
+			}
+		};
+	}
+
+	/**
 	 * Matcher for the start and end of point-list.
 	 *
 	 * @param fromX,&nbsp;fromY
@@ -515,6 +569,19 @@ public class GEFMatchers {
 		};
 	}
 
+	static Function<GraphicalEditPart, IFigure> feedback() {
+		return ep -> {
+			IFigure feedbackLayer = ((LayerManager) ep.getRoot()).getLayer(LayerConstants.FEEDBACK_LAYER);
+			// We anticipate only a single active feedback figure
+			return ((List<?>) feedbackLayer.getChildren()).stream().filter(IFigure.class::isInstance)
+					.map(IFigure.class::cast).findAny().orElse(null);
+		};
+	}
+
+	static Function<EditPart, IFigure> editPartFeedback() {
+		return feedback().compose(graphical());
+	}
+
 	static Function<GraphicalEditPart, IFigure> figure() {
 		return GraphicalEditPart::getFigure;
 	}
@@ -632,6 +699,14 @@ public class GEFMatchers {
 			return GEFMatchers.runs(GEFMatchers.runs(fromX, fromY, toX, toY, tolerance), figurePoints());
 		}
 
+		public static Matcher<IFigure> isHorizontal() {
+			return isHorizontal(getStandardTolerance());
+		}
+
+		public static Matcher<IFigure> isHorizontal(double tolerance) {
+			return GEFMatchers.runs(GEFMatchers.isHorizontal(tolerance), figurePoints());
+		}
+
 	}
 
 	/**
@@ -642,6 +717,24 @@ public class GEFMatchers {
 
 		private EditParts() {
 			super();
+		}
+
+		public static Matcher<EditPart> figureThat(Matcher<? super IFigure> figureMatcher) {
+			return new FeatureMatcher<EditPart, IFigure>(figureMatcher, "figure", "figure") {
+				@Override
+				protected IFigure featureValueOf(EditPart actual) {
+					return editPartFigure().apply(actual);
+				}
+			};
+		}
+
+		public static Matcher<EditPart> feedbackThat(Matcher<? super IFigure> figureMatcher) {
+			return new FeatureMatcher<EditPart, IFigure>(figureMatcher, "feedback", "feedback") {
+				@Override
+				protected IFigure featureValueOf(EditPart actual) {
+					return editPartFeedback().apply(actual);
+				}
+			};
 		}
 
 		public static Matcher<EditPart> isAt(Matcher<? super Point> where) {
@@ -709,6 +802,14 @@ public class GEFMatchers {
 
 		public static Matcher<EditPart> runs(int fromX, int fromY, int toX, int toY, int tolerance) {
 			return GEFMatchers.runs(GEFMatchers.runs(fromX, fromY, toX, toY, tolerance), editPartPoints());
+		}
+
+		public static Matcher<EditPart> isHorizontal() {
+			return isHorizontal(getStandardTolerance());
+		}
+
+		public static Matcher<EditPart> isHorizontal(double tolerance) {
+			return GEFMatchers.runs(GEFMatchers.isHorizontal(tolerance), editPartPoints());
 		}
 
 	}

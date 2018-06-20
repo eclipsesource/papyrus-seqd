@@ -100,6 +100,15 @@
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter/sort"/>
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter/signature"/>
       </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/insertMessageAfter.1">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.1/beforeSend"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.1/sendOffset"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.1/receiver"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.1/beforeRecv"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.1/recvOffset"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.1/sort"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.1/signature"/>
+      </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/elementAt">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/elementAt/offset"/>
       </genOperations>

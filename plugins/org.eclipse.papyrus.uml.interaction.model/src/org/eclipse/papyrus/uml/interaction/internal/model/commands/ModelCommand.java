@@ -29,6 +29,7 @@ import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Interaction;
 
 /**
  * Partial implementation of a mutation operation on the logical model.
@@ -59,7 +60,9 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 	}
 
 	protected final void checkInteraction(MElement<?> element) {
-		if (element.getInteraction() != target.getInteraction()) {
+		Interaction interaction = element.getInteraction().getElement();
+
+		if ((interaction == null) || (interaction != target.getInteraction().getElement())) {
 			throw new IllegalArgumentException("element is not in the lifeline's interaction"); //$NON-NLS-1$
 		}
 	}

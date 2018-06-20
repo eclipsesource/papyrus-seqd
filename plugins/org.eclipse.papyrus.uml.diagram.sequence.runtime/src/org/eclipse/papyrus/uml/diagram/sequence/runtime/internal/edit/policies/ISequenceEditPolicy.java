@@ -26,6 +26,7 @@ import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.commands.wrappers.OperationToGEFCommandWrapper;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 
 /**
@@ -50,6 +51,10 @@ public interface ISequenceEditPolicy extends EditPolicy {
 
 	default LayoutHelper getLayoutHelper() {
 		return Activator.getDefault().getLayoutHelper(__getEditingDomain(this));
+	}
+
+	default LayoutConstraints getLayoutConstraints() {
+		return getLayoutHelper().getConstraints();
 	}
 
 	// This should be a private 'getEditingDomain' method in Java 9

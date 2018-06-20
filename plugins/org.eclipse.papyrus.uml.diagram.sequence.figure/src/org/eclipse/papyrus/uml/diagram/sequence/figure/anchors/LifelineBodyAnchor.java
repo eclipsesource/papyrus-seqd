@@ -41,6 +41,10 @@ public class LifelineBodyAnchor extends AbstractConnectionAnchor {
 		this.lifelinebodyFigure = lifelinebodyFigure;
 	}
 
+	public String getTerminal() {
+		return String.valueOf(height);
+	}
+
 	@Override
 	public Point getLocation(Point reference) {
 		Rectangle body = lifelinebodyFigure.getBounds().getCopy();

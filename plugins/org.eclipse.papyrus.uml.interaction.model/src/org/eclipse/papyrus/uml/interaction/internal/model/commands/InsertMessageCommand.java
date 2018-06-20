@@ -46,15 +46,21 @@ import org.eclipse.uml2.uml.UMLPackage;
  */
 public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements CreationCommand<Message> {
 
-	private final MElement<?> before;
+	private final MElement<?> beforeSend;
 
-	private final int offset;
+	private final int sendOffset;
 
 	private final MLifeline receiver;
+
+	private final MElement<?> beforeRecv;
+
+	private final int recvOffset;
 
 	private final MessageSort sort;
 
 	private final NamedElement signature;
+
+	private final boolean syncMessage;
 
 	private CreationCommand<Message> resultCommand;
 
@@ -77,16 +83,57 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	public InsertMessageCommand(MLifelineImpl sender, MElement<?> before, int offset, MLifeline receiver,
 			MessageSort sort, NamedElement signature) {
 
+		this(sender, before, offset, receiver, before, offset, sort, signature);
+	}
+
+	/**
+	 * Initializes me.
+	 * 
+	 * @param sender
+	 *            the lifeline from which to create the message
+	 * @param beforeSend
+	 *            the element in the sequence after which to create the message send event
+	 * @param sendOffset
+	 *            the offset from the reference element at which to create message send event
+	 * @param receiver
+	 *            the lifeline to receive the message
+	 * @param beforeRecv
+	 *            the element in the sequence after which to create the message receive event
+	 * @param recvOffset
+	 *            the offset on the {@code receiver} lifeline of the message receive end. If the message
+	 *            {@code sort} is not asynchronous, then this must be at the same absolute Y coördinate as the
+	 *            sender {@code offset}
+	 * @param sort
+	 *            the message sort
+	 * @param signature
+	 *            the message signature, if any
+	 */
+	public InsertMessageCommand(MLifelineImpl sender, MElement<?> beforeSend, int sendOffset,
+			MLifeline receiver, MElement<?> beforeRecv, int recvOffset, MessageSort sort,
+			NamedElement signature) {
+
 		super(sender);
 
-		checkInteraction(before);
+		checkInteraction(beforeSend);
+		checkInteraction(beforeRecv);
 		if (signature != null && !(signature instanceof Operation) && !(signature instanceof Signal)) {
 			throw new IllegalArgumentException("signature is neither operation nor signal"); //$NON-NLS-1$
 		}
+		switch (sort) {
+			case ASYNCH_CALL_LITERAL:
+			case ASYNCH_SIGNAL_LITERAL:
+				syncMessage = false;
+				break;
+			default:
+				syncMessage = true;
+				break;
+		}
 
-		this.before = before;
-		this.offset = offset;
+		this.beforeSend = beforeSend;
+		this.sendOffset = sendOffset;
 		this.receiver = receiver;
+		this.beforeRecv = beforeRecv;
+		this.recvOffset = recvOffset;
 		this.sort = sort;
 		this.signature = signature;
 	}
@@ -98,8 +145,12 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 
 	@Override
 	protected Command createCommand() {
-		Vertex reference = vertex(before);
-		if (reference == null) {
+		Vertex sendReference = vertex(beforeSend);
+		if (sendReference == null) {
+			return UnexecutableCommand.INSTANCE;
+		}
+		Vertex recvReference = vertex(beforeRecv);
+		if (recvReference == null) {
 			return UnexecutableCommand.INSTANCE;
 		}
 
@@ -112,21 +163,23 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			return UnexecutableCommand.INSTANCE;
 		}
 
-		OptionalInt referenceY = layoutHelper().getBottom(reference);
-		if (!referenceY.isPresent()) {
+		OptionalInt sendReferenceY = layoutHelper().getBottom(sendReference);
+		if (!sendReferenceY.isPresent()) {
+			return UnexecutableCommand.INSTANCE;
+		}
+		OptionalInt recvReferenceY = layoutHelper().getBottom(recvReference);
+		if (!recvReferenceY.isPresent()) {
 			return UnexecutableCommand.INSTANCE;
 		}
 
-		MElement<? extends Element> insertionPoint = normalizeFragmentInsertionPoint(before);
+		MElement<? extends Element> sendInsertionPoint = normalizeFragmentInsertionPoint(beforeSend);
+		MElement<? extends Element> recvInsertionPoint = normalizeFragmentInsertionPoint(beforeRecv);
 
 		SemanticHelper semantics = semanticHelper();
-		CreationParameters sendParams = insertionPoint instanceof MLifeline
-				// Just append to the fragments in that case
-				? CreationParameters.in(insertionPoint.getInteraction().getElement(),
-						UMLPackage.Literals.INTERACTION__FRAGMENT)
-				: CreationParameters.after(insertionPoint.getElement());
+		CreationParameters sendParams = endParams(sendInsertionPoint);
 		CreationCommand<MessageEnd> sendEvent = semantics.createMessageOccurrence(sendParams);
-		CreationParameters recvParams = CreationParameters.after(sendEvent);
+		CreationParameters recvParams = syncMessage ? CreationParameters.after(sendEvent)
+				: endParams(recvInsertionPoint);
 		CreationCommand<MessageEnd> recvEvent = semantics.createMessageOccurrence(recvParams);
 		CreationParameters messageParams = CreationParameters.in(getTarget().getInteraction().getElement(),
 				UMLPackage.Literals.INTERACTION__MESSAGE);
@@ -144,14 +197,15 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		// And the diagram visualization
 		Function<View, View> lifelineBody = diagramHelper()::getLifelineBodyShape;
 		result = result.chain(diagramHelper().createMessageConnector(resultCommand, //
-				compose(sender::getDiagramView, lifelineBody), () -> referenceY.getAsInt() + offset, //
-				compose(receiver::getDiagramView, lifelineBody), () -> referenceY.getAsInt() + offset));
+				compose(sender::getDiagramView, lifelineBody), () -> sendReferenceY.getAsInt() + sendOffset, //
+				compose(receiver::getDiagramView, lifelineBody),
+				() -> recvReferenceY.getAsInt() + recvOffset));
 
 		// Now we have commands to add the message specification. But, first we must make
 		// room for it in the diagram. Nudge the element that will follow the new receive event
-		int spaceRequired = 2 * offset;
-		MElement<?> distanceFrom = insertionPoint;
-		Optional<Command> makeSpace = getTarget().following(insertionPoint).map(el -> {
+		int spaceRequired = 2 * sendOffset;
+		MElement<?> distanceFrom = sendInsertionPoint;
+		Optional<Command> makeSpace = getTarget().following(sendInsertionPoint).map(el -> {
 			OptionalInt distance = el.verticalDistance(distanceFrom);
 			return distance.isPresent() ? el.nudge(max(0, spaceRequired - distance.getAsInt())) : null;
 		});
@@ -160,5 +214,13 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		}
 
 		return result;
+	}
+
+	private CreationParameters endParams(MElement<? extends Element> insertionPoint) {
+		return insertionPoint instanceof MLifeline
+				// Just append to the fragments in that case
+				? CreationParameters.in(insertionPoint.getInteraction().getElement(),
+						UMLPackage.Literals.INTERACTION__FRAGMENT)
+				: CreationParameters.after(insertionPoint.getElement());
 	}
 }

@@ -12,6 +12,8 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.spi.impl;
 
+import static java.lang.Math.abs;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +50,24 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 	@Override
 	public int getYOffset(Compartment shapeCompartment) {
 		return standardYOffsets.getOrDefault(shapeCompartment.getType(), ZERO).intValue();
+	}
+
+	@Override
+	public double getAsyncMessageSlopeThreshold() {
+		return 3.0;
+	}
+
+	@Override
+	public boolean isAsyncMessageSlope(double x1, double y1, double x2, double y2) {
+		if (abs(x2 - x1) < 0.1) {
+			return true; // Vertical is as asynchronous as it gets
+		} else if (abs(y2 - y1) <= 5.0) {
+			return false; // Allow for some pointer sloppiness by the user
+		}
+
+		double slope = (abs(y2 - y1) / abs(x2 - x1)) * 100.0;
+
+		return slope >= 3.0;
 	}
 
 	private static Map<String, Integer> loadXOffsets() {

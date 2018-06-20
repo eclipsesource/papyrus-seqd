@@ -252,6 +252,20 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
+	 * @generated
+	 */
+	@Override
+	public CreationCommand<Message> insertMessageAfter(MElement<?> beforeSend, int sendOffset,
+			MLifeline receiver, MElement<?> beforeRecv, int recvOffset, MessageSort sort,
+			NamedElement signature) {
+
+		return new InsertMessageCommand(this, beforeSend, sendOffset, receiver, beforeRecv, recvOffset, sort,
+				signature);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated NOT
 	 */
 	@Override
@@ -378,6 +392,10 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return insertMessageAfter((MElement<?>)arguments.get(0), (Integer)arguments.get(1),
 						(MLifeline)arguments.get(2), (MessageSort)arguments.get(3),
 						(NamedElement)arguments.get(4));
+			case SequenceDiagramPackage.MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MELEMENT_INT_MESSAGESORT_NAMEDELEMENT:
+				return insertMessageAfter((MElement<?>)arguments.get(0), (Integer)arguments.get(1),
+						(MLifeline)arguments.get(2), (MElement<?>)arguments.get(3), (Integer)arguments.get(4),
+						(MessageSort)arguments.get(5), (NamedElement)arguments.get(6));
 			case SequenceDiagramPackage.MLIFELINE___ELEMENT_AT__INT:
 				return elementAt((Integer)arguments.get(0));
 			case SequenceDiagramPackage.MLIFELINE___NUDGE_HORIZONTALLY__INT:

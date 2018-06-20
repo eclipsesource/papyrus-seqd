@@ -35,8 +35,10 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
+import org.eclipse.gef.tools.SelectionTool;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramEditor;
+import org.eclipse.gmf.runtime.diagram.ui.services.palette.SelectionToolEx;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.infra.core.sasheditor.di.contentprovider.utils.IPageUtils;
@@ -48,6 +50,7 @@ import org.eclipse.papyrus.infra.gmfdiag.common.service.palette.AspectUnspecifie
 import org.eclipse.papyrus.infra.gmfdiag.common.service.palette.AspectUnspecifiedTypeCreationTool;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelFixture;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -337,12 +340,29 @@ public class EditorFixture extends ModelFixture {
 	 * @return the newly created connection edit-part
 	 */
 	public EditPart createConnection(IElementType type, Point start, Point finish) {
-		DiagramEditPart diagram = getDiagramEditPart();
-		EditPartViewer viewer = diagram.getViewer();
+		EditPartViewer viewer = getDiagramEditPart().getViewer();
 
 		@SuppressWarnings("unchecked")
 		Set<EditPart> originalEditParts = new HashSet<EditPart>(viewer.getEditPartRegistry().values());
 
+		drawConnection(type, start, finish, true);
+
+		// Find the new edit-part
+		@SuppressWarnings("unchecked")
+		Set<EditPart> newEditParts = new HashSet<EditPart>(viewer.getEditPartRegistry().values());
+		newEditParts.removeAll(originalEditParts);
+		while (newEditParts.removeIf(ep -> !(ep instanceof ConnectionEditPart))) {
+			// Keep only the topmost new edit-parts (that aren't nested in other new
+			// edit-parts)
+		}
+
+		return newEditParts.stream().findFirst()
+				.orElseGet(failOnAbsence("New connection edit-part not found"));
+	}
+
+	private void drawConnection(IElementType type, Point start, Point finish, boolean complete) {
+		DiagramEditPart diagram = getDiagramEditPart();
+		EditPartViewer viewer = diagram.getViewer();
 		AspectUnspecifiedTypeConnectionTool tool = new AspectUnspecifiedTypeConnectionTool(
 				singletonList(type));
 
@@ -368,7 +388,7 @@ public class EditorFixture extends ModelFixture {
 
 		flushDisplayEvents();
 
-		// Move and click again
+		// Move and, if completing, click again
 		mouse.type = SWT.MouseMove;
 		mouse.button = 0;
 		mouse.x = finish.x();
@@ -377,6 +397,88 @@ public class EditorFixture extends ModelFixture {
 
 		flushDisplayEvents();
 
+		if (complete) {
+			mouse.button = 1;
+			mouse.type = SWT.MouseDown;
+			tool.mouseDown(new MouseEvent(mouse), viewer);
+			mouse.type = SWT.MouseUp;
+			tool.mouseUp(new MouseEvent(mouse), viewer);
+
+			flushDisplayEvents();
+		}
+	}
+
+	/**
+	 * Operate the mouse pointer as though to create a new connection in the current
+	 * diagram, but do not click to complete it.
+	 *
+	 * @param type
+	 *            the type of shape to create
+	 * @param start
+	 *            the location (mouse pointer) at which to start drawing the
+	 *            connection
+	 * @param finish
+	 *            the location (mouse pointer) at which to hover the end of the
+	 *            connection
+	 */
+	public void hoverConnection(IElementType type, Point start, Point finish) {
+		drawConnection(type, start, finish, false);
+	}
+
+	/**
+	 * Type the escape key in the selection tool on the current diagram.
+	 */
+	public void escape() {
+		DiagramEditPart diagram = getDiagramEditPart();
+		EditPartViewer viewer = diagram.getViewer();
+		SelectionTool tool = new SelectionToolEx();
+
+		Event key = new Event();
+		key.display = editor.getSite().getShell().getDisplay();
+		key.widget = viewer.getControl();
+		key.character = SWT.ESC;
+
+		viewer.getEditDomain().setActiveTool(tool);
+		tool.setViewer(viewer);
+
+		// Type the key
+		key.type = SWT.KeyDown;
+		tool.keyDown(new KeyEvent(key), viewer);
+		tool.keyUp(new KeyEvent(key), viewer);
+
+		flushDisplayEvents();
+	}
+
+	/**
+	 * Select an object in the diagram and drag it to another location.
+	 *
+	 * @param start
+	 *            the location (mouse pointer) at which to start dragging the
+	 *            selection
+	 * @param finish
+	 *            the location (mouse pointer) at which to finish dragging the
+	 *            selection
+	 */
+	public void moveSelection(Point start, Point finish) {
+		DiagramEditPart diagram = getDiagramEditPart();
+		EditPartViewer viewer = diagram.getViewer();
+
+		SelectionTool tool = new SelectionToolEx();
+
+		Event mouse = new Event();
+		mouse.display = editor.getSite().getShell().getDisplay();
+		mouse.widget = viewer.getControl();
+		mouse.x = start.x();
+		mouse.y = start.y();
+
+		viewer.getEditDomain().setActiveTool(tool);
+		tool.setViewer(viewer);
+
+		// Move the mouse to the start location
+		mouse.type = SWT.MouseMove;
+		tool.mouseMove(new MouseEvent(mouse), viewer);
+
+		// Click to select
 		mouse.button = 1;
 		mouse.type = SWT.MouseDown;
 		tool.mouseDown(new MouseEvent(mouse), viewer);
@@ -385,17 +487,32 @@ public class EditorFixture extends ModelFixture {
 
 		flushDisplayEvents();
 
-		// Find the new edit-part
-		@SuppressWarnings("unchecked")
-		Set<EditPart> newEditParts = new HashSet<EditPart>(viewer.getEditPartRegistry().values());
-		newEditParts.removeAll(originalEditParts);
-		while (newEditParts.removeIf(ep -> !(ep instanceof ConnectionEditPart))) {
-			// Keep only the topmost new edit-parts (that aren't nested in other new
-			// edit-parts)
-		}
+		viewer.getEditDomain().setActiveTool(tool);
+		tool.setViewer(viewer);
 
-		return newEditParts.stream().findFirst()
-				.orElseGet(failOnAbsence("New connection edit-part not found"));
+		// Mouse down to start dragging
+		mouse.type = SWT.MouseDown;
+		// button is still 1
+		tool.mouseDown(new MouseEvent(mouse), viewer);
+
+		flushDisplayEvents();
+
+		// Drag
+		mouse.type = SWT.MouseMove;
+		// button is still 1
+		mouse.x = finish.x();
+		mouse.y = finish.y();
+		tool.mouseDrag(new MouseEvent(mouse), viewer);
+
+		flushDisplayEvents();
+
+		// Release
+		mouse.type = SWT.MouseDown;
+		// button is still 1
+		mouse.type = SWT.MouseUp;
+		tool.mouseUp(new MouseEvent(mouse), viewer);
+
+		flushDisplayEvents();
 	}
 
 	//
