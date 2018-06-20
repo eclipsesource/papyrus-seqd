@@ -46,6 +46,7 @@ import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MObject;
+import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Interaction;
@@ -274,8 +275,8 @@ public class MInteractionImpl extends MElementImpl<Interaction> implements MInte
 				return addLifeline((Integer)arguments.get(0), (Integer)arguments.get(1));
 			case SequenceDiagramPackage.MINTERACTION___GET_LIFELINE_AT__INT:
 				return getLifelineAt((Integer)arguments.get(0));
-			case SequenceDiagramPackage.MINTERACTION___GET_BOTTOM_MOST_ELEMENT:
-				return getBottomMostElement();
+			case SequenceDiagramPackage.MINTERACTION___GET_BOTTOMMOST_ELEMENT:
+				return getBottommostElement();
 		}
 		return super.eInvoke(operationID, arguments);
 	}
@@ -347,15 +348,19 @@ public class MInteractionImpl extends MElementImpl<Interaction> implements MInte
 	 * @generated NOT
 	 */
 	@Override
-	public Optional<? extends MElement<?>> getBottomMostElement() {
+	public Optional<? extends MElement<? extends Element>> getBottommostElement() {
 		Stream<MMessageEnd> messageEnds = getMessages().stream()
 				.flatMap((m) -> Stream.of(m.getSend(), m.getReceive())).filter(Optional::isPresent)
 				.map(Optional::get);
-		return messageEnds.max(Comparator.comparingInt(this::bottomOfMMessageEnd));
+		Stream<MOccurrence<?>> occurrances = getLifelines().stream()
+				.flatMap((lifeline) -> lifeline.getExecutions().stream())
+				.flatMap((e) -> Stream.of(e.getStart(), e.getFinish())).filter(Optional::isPresent)
+				.map(Optional::get);
+		return Stream.concat(messageEnds, occurrances).max(Comparator.comparingInt(this::bottomOfMElement));
 	}
 
-	private int bottomOfMMessageEnd(MMessageEnd m) {
-		return m.getBottom().orElse(-1);
+	private int bottomOfMElement(MElement<? extends Element> mElement) {
+		return mElement.getBottom().orElse(-1);
 	}
 
 } // MInteractionImpl

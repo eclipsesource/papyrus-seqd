@@ -424,7 +424,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
-	public EOperation getMInteraction__GetBottomMostElement() {
+	public EOperation getMInteraction__GetBottommostElement() {
 		return mInteractionEClass.getEOperations().get(6);
 	}
 
@@ -959,7 +959,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEOperation(mInteractionEClass, MINTERACTION___GET_MESSAGE__MESSAGE);
 		createEOperation(mInteractionEClass, MINTERACTION___ADD_LIFELINE__INT_INT);
 		createEOperation(mInteractionEClass, MINTERACTION___GET_LIFELINE_AT__INT);
-		createEOperation(mInteractionEClass, MINTERACTION___GET_BOTTOM_MOST_ELEMENT);
+		createEOperation(mInteractionEClass, MINTERACTION___GET_BOTTOMMOST_ELEMENT);
 
 		mLifelineEClass = createEClass(MLIFELINE);
 		createEReference(mLifelineEClass, MLIFELINE__EXECUTION_OCCURRENCES);
@@ -1218,7 +1218,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		g1.getETypeArguments().add(g2);
 		initEOperation(op, g1);
 
-		op = initEOperation(getMInteraction__GetBottomMostElement(), null, "getBottomMostElement", 1, 1, //$NON-NLS-1$
+		op = initEOperation(getMInteraction__GetBottommostElement(), null, "getBottommostElement", 1, 1, //$NON-NLS-1$
 				IS_UNIQUE, IS_ORDERED);
 		g1 = createEGenericType(this.getOptional());
 		g2 = createEGenericType();

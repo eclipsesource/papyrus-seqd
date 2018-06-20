@@ -105,7 +105,7 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart {
 
 	protected int computeLifelineHeight() {
 		MInteraction mInteraction = getMInteraction();
-		Optional<Integer> bottomMostElementY = mInteraction.getBottomMostElement().map(MElement::getBottom)
+		Optional<Integer> bottomMostElementY = mInteraction.getBottommostElement().map(MElement::getBottom)
 				.map(OptionalInt::getAsInt);
 		int endOfLifelineY = Math.max(bottomMostElementY.orElse(Integer.valueOf(-1)).intValue(), MIN_HEIGHT);
 		return getLayoutHelper().toRelativeY(getShape(), endOfLifelineY + PADDING_BOTTOM);

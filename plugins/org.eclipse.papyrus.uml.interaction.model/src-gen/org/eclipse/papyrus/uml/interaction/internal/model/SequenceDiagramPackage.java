@@ -363,13 +363,13 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MINTERACTION___GET_LIFELINE_AT__INT = MELEMENT_OPERATION_COUNT + 5;
 
 	/**
-	 * The operation id for the '<em>Get Bottom Most Element</em>' operation. <!-- begin-user-doc --> <!--
+	 * The operation id for the '<em>Get Bottommost Element</em>' operation. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MINTERACTION___GET_BOTTOM_MOST_ELEMENT = MELEMENT_OPERATION_COUNT + 6;
+	int MINTERACTION___GET_BOTTOMMOST_ELEMENT = MELEMENT_OPERATION_COUNT + 6;
 
 	/**
 	 * The number of operations of the '<em>MInteraction</em>' class. <!-- begin-user-doc --> <!--
@@ -1682,14 +1682,14 @@ public interface SequenceDiagramPackage extends EPackage {
 
 	/**
 	 * Returns the meta object for the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getBottomMostElement() <em>Get Bottom
-	 * Most Element</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getBottommostElement() <em>Get
+	 * Bottommost Element</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @return the meta object for the '<em>Get Bottom Most Element</em>' operation.
-	 * @see org.eclipse.papyrus.uml.interaction.model.MInteraction#getBottomMostElement()
+	 * @return the meta object for the '<em>Get Bottommost Element</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MInteraction#getBottommostElement()
 	 * @generated
 	 */
-	EOperation getMInteraction__GetBottomMostElement();
+	EOperation getMInteraction__GetBottommostElement();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline
@@ -2433,12 +2433,12 @@ public interface SequenceDiagramPackage extends EPackage {
 		EOperation MINTERACTION___GET_LIFELINE_AT__INT = eINSTANCE.getMInteraction__GetLifelineAt__int();
 
 		/**
-		 * The meta object literal for the '<em><b>Get Bottom Most Element</b></em>' operation. <!--
+		 * The meta object literal for the '<em><b>Get Bottommost Element</b></em>' operation. <!--
 		 * begin-user-doc --> <!-- end-user-doc -->
 		 * 
 		 * @generated
 		 */
-		EOperation MINTERACTION___GET_BOTTOM_MOST_ELEMENT = eINSTANCE.getMInteraction__GetBottomMostElement();
+		EOperation MINTERACTION___GET_BOTTOMMOST_ELEMENT = eINSTANCE.getMInteraction__GetBottommostElement();
 
 		/**
 		 * The meta object literal for the

@@ -188,11 +188,11 @@ public interface MInteraction extends MElement<Interaction> {
 	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> Returns the bottommost element,
 	 * such as a message end, contained by this interaction. <!-- end-model-doc -->
 	 * 
-	 * @model kind="operation"
-	 *        dataType="org.eclipse.papyrus.uml.interaction.model.Optional&lt;org.eclipse.papyrus.uml.interaction.model.MElement&gt;"
-	 *        required="true"
+	 * @model kind="operation" dataType="org.eclipse.papyrus.uml.interaction.model.Optional&lt;? extends
+	 *        org.eclipse.papyrus.uml.interaction.model.MElement&lt;? extends
+	 *        org.eclipse.uml2.uml.Element&gt;&gt;" required="true"
 	 * @generated
 	 */
-	Optional<? extends MElement<? extends Element>> getBottomMostElement();
+	Optional<? extends MElement<? extends Element>> getBottommostElement();
 
 } // MInteraction
