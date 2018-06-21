@@ -13,6 +13,8 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind.EXECUTION_SPECIFICATION_ID;
+
 import java.util.Optional;
 import java.util.OptionalInt;
 
@@ -72,8 +74,10 @@ public class LifelineCreationEditPolicy extends LogicalModelCreationEditPolicy {
 							}
 						}
 
-						return lifeline.insertExecutionAfter(before.orElse(lifeline), offset,
-								size != null ? size.height : 40, eClass);
+						int height = size != null ? size.height
+								: getLayoutConstraints().getHeight(EXECUTION_SPECIFICATION_ID);
+
+						return lifeline.insertExecutionAfter(before.orElse(lifeline), offset, height, eClass);
 					}
 
 					@Override

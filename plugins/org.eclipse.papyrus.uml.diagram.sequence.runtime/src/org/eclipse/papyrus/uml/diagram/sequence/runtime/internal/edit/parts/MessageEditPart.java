@@ -29,7 +29,9 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.L
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.UMLPackage;
 
-public class MessageEditPart extends ConnectionNodeEditPart {
+public class MessageEditPart extends ConnectionNodeEditPart implements ISequenceEditPart {
+
+	private static final String ARROW = "_arrow"; //$NON-NLS-1$
 
 	public MessageEditPart(View view) {
 		super(view);
@@ -80,7 +82,8 @@ public class MessageEditPart extends ConnectionNodeEditPart {
 	@Override
 	protected RotatableDecoration getArrowDecoration(int arrowType) {
 		RotatableDecoration arrowDecoration = super.getArrowDecoration(arrowType);
-		setScale(arrowDecoration, 5, 5);
+		getNotationView().getType();
+		setScale(arrowDecoration, getWidth(ARROW), getHeight(ARROW));
 		return arrowDecoration;
 	}
 

@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.interaction.model.spi;
 
 import org.eclipse.gmf.runtime.notation.Compartment;
+import org.eclipse.gmf.runtime.notation.View;
 
 /**
  * Encoding of the layout constraints for shapes, compartments, etc.
@@ -20,6 +21,10 @@ import org.eclipse.gmf.runtime.notation.Compartment;
  * @author Christian W. Damus
  */
 public interface LayoutConstraints {
+
+	public enum Orientation {
+		TOP, BOTTOM, LEFT, RIGHT;
+	}
 
 	/**
 	 * Queries the x-coördinate offset of a shape compartment within its parent shape, accounting for name
@@ -40,6 +45,108 @@ public interface LayoutConstraints {
 	 * @return its Y offset within the parent shape
 	 */
 	int getYOffset(Compartment shapeCompartment);
+
+	/**
+	 * Queries the minimum height of a view.
+	 * 
+	 * @param view
+	 *            a view.
+	 * @return its minimum height.
+	 */
+	int getHeight(View view);
+
+	/**
+	 * Queries the minimum height of a view type.
+	 * 
+	 * @param viewType
+	 *            a view type.
+	 * @return its minimum height.
+	 */
+	int getHeight(String viewType);
+
+	/**
+	 * Queries the minimum height of a view with a modifier.
+	 * 
+	 * @param viewType
+	 *            a view.
+	 * @param modifier
+	 *            a modifier allows to define sub-parts of a view.
+	 * @return its minimum height.
+	 */
+	int getHeight(View view, String modifier);
+
+	/**
+	 * Queries the minimum height of a view type with a modifier.
+	 * 
+	 * @param viewType
+	 *            a view type.
+	 * @param modifier
+	 *            a modifier allows to define sub-parts of a view.
+	 * @return its minimum height.
+	 */
+	int getHeight(String viewType, String modifier);
+
+	/**
+	 * Queries the minimum width of a view.
+	 * 
+	 * @param view
+	 *            a view.
+	 * @return its minimum width.
+	 */
+	int getWidth(View view);
+
+	/**
+	 * Queries the minimum width of a view type.
+	 * 
+	 * @param viewType
+	 *            a view type.
+	 * @return its minimum width.
+	 */
+	int getWidth(String viewType);
+
+	/**
+	 * Queries the minimum width of a view with a modifier.
+	 * 
+	 * @param view
+	 *            a view.
+	 * @param modifier
+	 *            a modifier allows to define sub-parts of a view.
+	 * @return its minimum width.
+	 */
+	int getWidth(View view, String modifier);
+
+	/**
+	 * Queries the minimum width of a view with a modifier.
+	 * 
+	 * @param viewType
+	 *            a view type.
+	 * @param modifier
+	 *            a modifier allows to define sub-parts of a view.
+	 * @return its minimum width.
+	 */
+	int getWidth(String viewType, String modifier);
+
+	/**
+	 * Queries the padding of a view.
+	 * 
+	 * @param orientation
+	 *            specifies whether the bottom, top, left, or right padding shall be returned.
+	 * @param view
+	 *            a view.
+	 * @return its padding.
+	 */
+	int getPadding(Orientation orientation, View view);
+
+	/**
+	 * Queries the padding of a view.
+	 * 
+	 * @param orientation
+	 *            specifies whether the bottom, top, left, or right padding shall be returned.
+	 * @param viewType
+	 *            a view type.
+	 * @return its padding.
+	 */
+	int getPadding(Orientation orientation, String viewType);
 
 	/**
 	 * Obtain the minimal slope, as a percentage, of an asynchronous message slope that should be deemed

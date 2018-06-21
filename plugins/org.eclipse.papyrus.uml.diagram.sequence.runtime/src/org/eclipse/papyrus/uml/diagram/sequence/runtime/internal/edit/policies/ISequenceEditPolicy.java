@@ -54,7 +54,7 @@ public interface ISequenceEditPolicy extends EditPolicy {
 	}
 
 	default LayoutConstraints getLayoutConstraints() {
-		return getLayoutHelper().getConstraints();
+		return Activator.getDefault().getLayoutConstraints(__getEditingDomain(this));
 	}
 
 	// This should be a private 'getEditingDomain' method in Java 9
