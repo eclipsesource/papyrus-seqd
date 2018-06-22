@@ -201,4 +201,88 @@ public class AnchorParser {
 		}
 	}
 
+	/**
+	 * Compute the terminal for an unparameterized anchor {@code kind}.
+	 * 
+	 * @param kind
+	 *            the anchor kind
+	 * @return its terminal
+	 */
+	public String getTerminal(AnchorKind kind) {
+		switch (kind) {
+			case FIXED:
+				return NO_PREFIX;
+			case START:
+				return START_PREFIX;
+			case END:
+				return END_PREFIX;
+			case UNKNOWN:
+				throw new IllegalArgumentException("unsupported anchor kind: " + kind); //$NON-NLS-1$
+			default:
+				throw new IllegalArgumentException("anchor kind requires parameters: " + kind); //$NON-NLS-1$
+		}
+	}
+
+	/**
+	 * Compute the terminal for an anchor {@code kind} that is parameterized only by a {@code distance}.
+	 * 
+	 * @param kind
+	 *            the anchor kind
+	 * @param distance
+	 *            the distance of the anchor from its origin
+	 * @return its terminal
+	 */
+	public String getTerminal(AnchorKind kind, int distance) {
+		switch (kind) {
+			case DISTANCE:
+				return Integer.toString(distance);
+			case UNKNOWN:
+				throw new IllegalArgumentException("unsupported anchor kind: " + kind); //$NON-NLS-1$
+			default:
+				throw new IllegalArgumentException("wrong parameters for anchor kind: " + kind); //$NON-NLS-1$
+		}
+	}
+
+	/**
+	 * Compute the terminal for an anchor {@code kind} that is parameterized by a {@code distance} relative to
+	 * some {@code position}.
+	 * 
+	 * @param kind
+	 *            the anchor kind
+	 * @param position
+	 *            the relative position of the anchor's origin
+	 * @param distance
+	 *            the distance of the anchor from its origin
+	 * @return its terminal
+	 */
+	public String getTerminal(AnchorKind kind, int position, int distance) {
+		switch (kind) {
+			case SIDE:
+				switch (position) {
+					case PositionConstants.LEFT:
+						return LEFT + Integer.toString(distance);
+					case PositionConstants.RIGHT:
+						return RIGHT + Integer.toString(distance);
+					default:
+						throw new IllegalArgumentException("invalid position: " + position); //$NON-NLS-1$
+				}
+			case BORDER:
+				switch (position) {
+					case PositionConstants.NORTH:
+						return NORTH + Integer.toString(distance);
+					case PositionConstants.WEST:
+						return WEST + Integer.toString(distance);
+					case PositionConstants.SOUTH:
+						return SOUTH + Integer.toString(distance);
+					case PositionConstants.EAST:
+						return EAST + Integer.toString(distance);
+					default:
+						throw new IllegalArgumentException("invalid position: " + position); //$NON-NLS-1$
+				}
+			case UNKNOWN:
+				throw new IllegalArgumentException("unsupported anchor kind: " + kind); //$NON-NLS-1$
+			default:
+				throw new IllegalArgumentException("wrong parameters for anchor kind: " + kind); //$NON-NLS-1$
+		}
+	}
 }

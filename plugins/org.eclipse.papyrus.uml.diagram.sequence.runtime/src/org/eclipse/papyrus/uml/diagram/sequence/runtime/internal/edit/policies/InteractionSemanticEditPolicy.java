@@ -13,7 +13,6 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
-import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gmf.runtime.common.core.command.IdentityCommand;
 import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
@@ -27,7 +26,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.SequenceTypeSwitch;
 /**
  * {@link SemanticEditPolicy} that delegates to the Interaction logical model to compute commands.
  */
-public class InteractionSemanticEditPolicy extends SemanticEditPolicy {
+public class InteractionSemanticEditPolicy extends LogicalModelElementSemanticEditPolicy {
 
 	@Override
 	protected Command getSemanticCommand(IEditCommandRequest request) {
@@ -53,13 +52,14 @@ public class InteractionSemanticEditPolicy extends SemanticEditPolicy {
 				}.doSwitch(request.getElementType());
 			}
 
+			@Override
+			public Command caseEditCommandRequest(IEditCommandRequest request) {
+				return InteractionSemanticEditPolicy.super.getSemanticCommand(request);
+			}
+
 		}.doSwitch(request);
 
 		return result;
 	}
 
-	@Override
-	public Command getCommand(Request request) {
-		return super.getCommand(request);
-	}
 }

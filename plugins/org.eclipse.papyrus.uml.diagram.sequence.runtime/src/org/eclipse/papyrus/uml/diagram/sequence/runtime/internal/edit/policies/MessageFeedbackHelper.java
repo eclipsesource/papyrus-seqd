@@ -18,7 +18,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.editpolicies.FeedbackHelper;
 import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
-import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.LifelineBodyAnchor;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.ISequenceAnchor;
 
 /**
  * Feedback helper for messages that does not allow them to slope upwards and that ensures horizontality of
@@ -54,8 +54,8 @@ class MessageFeedbackHelper extends FeedbackHelper {
 		ConnectionAnchor anchor = _anchor;
 		ConnectionAnchor other = getOtherAnchor();
 
-		if ((other instanceof LifelineBodyAnchor) && (anchor instanceof LifelineBodyAnchor)) {
-			LifelineBodyAnchor otherAnchor = (LifelineBodyAnchor)other;
+		if ((other instanceof ISequenceAnchor) && (anchor instanceof ISequenceAnchor)) {
+			ISequenceAnchor otherAnchor = (ISequenceAnchor)other;
 
 			Point otherLocation = getLocation(otherAnchor);
 
@@ -123,7 +123,7 @@ class MessageFeedbackHelper extends FeedbackHelper {
 		return isTarget ? connection.getSourceAnchor() : connection.getTargetAnchor();
 	}
 
-	private Point getLocation(LifelineBodyAnchor anchor) {
+	private Point getLocation(ConnectionAnchor anchor) {
 		IFigure owner = anchor.getOwner();
 		Point ownerOrigin = owner.getBounds().getLocation();
 		owner.getParent().translateToAbsolute(ownerOrigin);

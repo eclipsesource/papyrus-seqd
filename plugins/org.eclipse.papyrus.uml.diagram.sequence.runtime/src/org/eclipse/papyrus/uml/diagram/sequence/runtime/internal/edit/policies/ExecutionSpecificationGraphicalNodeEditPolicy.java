@@ -17,12 +17,12 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
  *
  * @author Christian W. Damus
  */
-public class LifelineBodyGraphicalNodeEditPolicy extends AbstractSequenceGraphicalNodeEditPolicy {
+public class ExecutionSpecificationGraphicalNodeEditPolicy extends AbstractSequenceGraphicalNodeEditPolicy {
 
 	/**
 	 * Initializes me.
 	 */
-	public LifelineBodyGraphicalNodeEditPolicy() {
+	public ExecutionSpecificationGraphicalNodeEditPolicy() {
 		super();
 	}
 

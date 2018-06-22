@@ -17,7 +17,7 @@ import static org.eclipse.papyrus.uml.interaction.graph.util.Suppliers.compose;
 
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
@@ -27,6 +27,7 @@ import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
+import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredAddCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
@@ -154,11 +155,18 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			return UnexecutableCommand.INSTANCE;
 		}
 
-		Vertex sender = vertex();
+		// Is there actually an execution occurrence here?
+		Optional<MExecution> sendingExec = getTarget().elementAt(sendOffset)
+				.filter(MExecution.class::isInstance).map(MExecution.class::cast);
+		Vertex sender = sendingExec.map(this::vertex).orElseGet(this::vertex);
 		if (sender == null || sender.getDiagramView() == null) {
 			return UnexecutableCommand.INSTANCE;
 		}
-		Vertex receiver = vertex(this.receiver);
+
+		// Is there actually an execution occurrence here?
+		Optional<MExecution> receivingExec = this.receiver.elementAt(recvOffset)
+				.filter(MExecution.class::isInstance).map(MExecution.class::cast);
+		Vertex receiver = receivingExec.map(this::vertex).orElseGet(() -> vertex(this.receiver));
 		if (receiver == null || receiver.getDiagramView() == null) {
 			return UnexecutableCommand.INSTANCE;
 		}
@@ -195,11 +203,17 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				UMLPackage.Literals.LIFELINE__COVERED_BY, recvEvent));
 
 		// And the diagram visualization
-		Function<View, View> lifelineBody = diagramHelper()::getLifelineBodyShape;
+		Supplier<View> senderView = sender::getDiagramView;
+		if (!sendingExec.isPresent()) {
+			senderView = compose(senderView, diagramHelper()::getLifelineBodyShape);
+		}
+		Supplier<View> receiverView = receiver::getDiagramView;
+		if (!receivingExec.isPresent()) {
+			receiverView = compose(receiverView, diagramHelper()::getLifelineBodyShape);
+		}
 		result = result.chain(diagramHelper().createMessageConnector(resultCommand, //
-				compose(sender::getDiagramView, lifelineBody), () -> sendReferenceY.getAsInt() + sendOffset, //
-				compose(receiver::getDiagramView, lifelineBody),
-				() -> recvReferenceY.getAsInt() + recvOffset));
+				senderView, () -> sendReferenceY.getAsInt() + sendOffset, //
+				receiverView, () -> recvReferenceY.getAsInt() + recvOffset));
 
 		// Now we have commands to add the message specification. But, first we must make
 		// room for it in the diagram. Nudge the element that will follow the new receive event

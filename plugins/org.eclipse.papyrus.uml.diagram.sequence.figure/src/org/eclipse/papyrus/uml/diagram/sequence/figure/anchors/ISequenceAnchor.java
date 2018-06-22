@@ -10,20 +10,22 @@
  *   Christian W. Damus - Initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
+package org.eclipse.papyrus.uml.diagram.sequence.figure.anchors;
+
+import org.eclipse.draw2d.ConnectionAnchor;
 
 /**
- * This is the {@code LifelineBodyGraphicalNodeEditPolicy} type. Enjoy.
+ * Protocol for anchors in sequence diagrams, for messages, general orderings, comment tethers, etc.
  *
  * @author Christian W. Damus
  */
-public class LifelineBodyGraphicalNodeEditPolicy extends AbstractSequenceGraphicalNodeEditPolicy {
+public interface ISequenceAnchor extends ConnectionAnchor {
 
 	/**
-	 * Initializes me.
+	 * Query my terminal string for identification in the notation model.
+	 * 
+	 * @return my terminal
 	 */
-	public LifelineBodyGraphicalNodeEditPolicy() {
-		super();
-	}
+	String getTerminal();
 
 }

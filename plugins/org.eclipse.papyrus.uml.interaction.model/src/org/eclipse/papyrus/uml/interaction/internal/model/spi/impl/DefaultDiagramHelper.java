@@ -207,15 +207,37 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			result.setType("Edge_Message");
 			result.setElement(message.get());
 
+			Shape sourceView = (Shape)source.get();
+			Shape targetView = (Shape)target.get();
+			boolean leftToRight = layoutHelper().getLeft(sourceView) <= layoutHelper().getLeft(targetView);
+
 			IdentityAnchor sourceAnchor = (IdentityAnchor)result
 					.createSourceAnchor(NotationPackage.Literals.IDENTITY_ANCHOR);
-			sourceAnchor
-					.setId(Integer.toString(sourceY.getAsInt() - layoutHelper().getTop((Shape)source.get())));
+			int sourceDistance = sourceY.getAsInt() - layoutHelper().getTop(sourceView);
+			String sourceID = Integer.toString(sourceDistance);
+			if (sourceView.getElement() instanceof ExecutionSpecification) {
+				// Which direction?
+				if (leftToRight) {
+					sourceID = "right;" + sourceID;
+				} else {
+					sourceID = "left;" + sourceID;
+				}
+			}
+			sourceAnchor.setId(sourceID);
 
 			IdentityAnchor targetAnchor = (IdentityAnchor)result
 					.createTargetAnchor(NotationPackage.Literals.IDENTITY_ANCHOR);
-			targetAnchor
-					.setId(Integer.toString(targetY.getAsInt() - layoutHelper().getTop((Shape)target.get())));
+			int targetDistance = targetY.getAsInt() - layoutHelper().getTop(targetView);
+			String targetID = Integer.toString(targetDistance);
+			if (targetView.getElement() instanceof ExecutionSpecification) {
+				// Which direction?
+				if (leftToRight) {
+					targetID = "left;" + targetID;
+				} else {
+					targetID = "right;" + targetID;
+				}
+			}
+			targetAnchor.setId(targetID);
 
 			result.createBendpoints(NotationPackage.Literals.RELATIVE_BENDPOINTS);
 

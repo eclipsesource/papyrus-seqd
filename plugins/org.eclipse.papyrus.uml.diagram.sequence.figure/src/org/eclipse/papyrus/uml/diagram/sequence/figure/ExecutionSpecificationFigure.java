@@ -15,8 +15,12 @@ import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.RectangleFigure;
+import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.AnchorParser;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.AnchorParser.AnchorKind;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.BorderAnchor;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.ExecutionSpecificationEndAnchor;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.ExecutionSpecificationSideAnchor;
@@ -38,56 +42,77 @@ public class ExecutionSpecificationFigure extends NodeFigure {
 
 	@Override
 	public ConnectionAnchor getConnectionAnchor(String terminal) {
-
 		if (terminal == null || terminal.isEmpty()) {
 			return super.getConnectionAnchor(terminal);
 		}
 
-		/* Start/End Anchors */
-
-		switch (terminal) {
-			case "start":
-				return new ExecutionSpecificationStartAnchor(this);
-			case "end":
-				return new ExecutionSpecificationEndAnchor(this);
-		}
-
-		/* Side Anchors (For Messages) */
-
+		AnchorParser anchorParser = AnchorParser.getInstance();
 		try {
-			if (terminal.startsWith("left;")) {
-				int side = PositionConstants.LEFT;
-				int height = Integer.parseInt(terminal.substring(5));
-				return new ExecutionSpecificationSideAnchor(this, side, height);
-			} else if (terminal.startsWith("right;")) {
-				int side = PositionConstants.RIGHT;
-				int height = Integer.parseInt(terminal.substring(6));
-				return new ExecutionSpecificationSideAnchor(this, side, height);
+			AnchorKind anchorKind = anchorParser.getAnchorKind(terminal);
+			switch (anchorKind) {
+				//
+				// Message anchors
+				//
+				case SIDE:
+					return new ExecutionSpecificationSideAnchor(this, anchorParser.getSide(terminal),
+							anchorParser.getDistanceFromReference(terminal));
+				case START:
+					return new ExecutionSpecificationStartAnchor(this);
+				case END:
+					return new ExecutionSpecificationEndAnchor(this);
+				//
+				// Comment/constraint tether anchors
+				//
+				case BORDER:
+					return new BorderAnchor(this, anchorParser.getBorder(terminal),
+							anchorParser.getDistanceFromReference(terminal));
+				default:
+					throw new IllegalArgumentException("terminal: " + terminal); //$NON-NLS-1$
 			}
-
-			/* Border Anchors (For Comments and Constraints) */
-
-			else if (terminal.startsWith("north;")) {
-				int side = PositionConstants.NORTH;
-				int height = Integer.parseInt(terminal.substring(6));
-				return new BorderAnchor(this, side, height);
-			} else if (terminal.startsWith("south;")) {
-				int side = PositionConstants.NORTH;
-				int height = Integer.parseInt(terminal.substring(6));
-				return new BorderAnchor(this, side, height);
-			} else if (terminal.startsWith("east;")) {
-				int side = PositionConstants.EAST;
-				int height = Integer.parseInt(terminal.substring(5));
-				return new BorderAnchor(this, side, height);
-			} else if (terminal.startsWith("west;")) {
-				int side = PositionConstants.WEST;
-				int height = Integer.parseInt(terminal.substring(5));
-				return new BorderAnchor(this, side, height);
-			}
-		} catch (NumberFormatException ex) {
-			// Ignore
+		} catch (IllegalArgumentException ex) {
+			ex.printStackTrace(); // TODO Log
 		}
 
 		return super.getConnectionAnchor(terminal);
+	}
+
+	@Override
+	public ConnectionAnchor getSourceConnectionAnchorAt(Point p) {
+		// We don't use fractional positioning of anchor
+		PrecisionPoint pp = new PrecisionPoint(p);
+		translateFromParent(pp);
+		translateToRelative(pp);
+		return createAnchor(pp);
+	}
+
+	@Override
+	public ConnectionAnchor getTargetConnectionAnchorAt(Point p) {
+		// We don't use fractional positioning of anchor
+		PrecisionPoint pp = new PrecisionPoint(p);
+		translateFromParent(pp);
+		translateToRelative(pp);
+		return createAnchor(pp);
+	}
+
+	@Override
+	protected ConnectionAnchor createAnchor(PrecisionPoint p) {
+		if (p == null) {
+			return createDefaultAnchor();
+		}
+		if (p.y() <= 1) {
+			return new ExecutionSpecificationStartAnchor(this);
+		}
+		Rectangle rect = getBounds();
+		if (p.y() >= (rect.height() - 1)) {
+			return new ExecutionSpecificationEndAnchor(this);
+		}
+		if (p.x() <= (rect.width() / 2)) {
+			return new ExecutionSpecificationSideAnchor(this, PositionConstants.LEFT, p.y());
+		}
+		if (p.x() > (rect.width() / 2)) {
+			return new ExecutionSpecificationSideAnchor(this, PositionConstants.RIGHT, p.y());
+		}
+
+		return super.createAnchor(p);
 	}
 }
