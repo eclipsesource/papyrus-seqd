@@ -14,7 +14,7 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
-import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Orientation;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 
 /**
@@ -31,39 +31,39 @@ public interface ISequenceEditPart extends IGraphicalEditPart {
 		return Activator.getDefault().getLayoutConstraints(getEditingDomain());
 	}
 
-	default int getWidth() {
-		return getLayoutConstraints().getWidth(getNotationView());
+	default int getMinimumWidth() {
+		return getLayoutConstraints().getMinimumWidth(getNotationView());
 	}
 
-	default int getHeight() {
-		return getLayoutConstraints().getHeight(getNotationView());
+	default int getMinimumHeight() {
+		return getLayoutConstraints().getMinimumHeight(getNotationView());
 	}
 
-	default int getWidth(String modifier) {
-		return getLayoutConstraints().getWidth(getNotationView(), modifier);
+	default int getMinimumWidth(String modifier) {
+		return getLayoutConstraints().getMinimumWidth(getNotationView(), modifier);
 	}
 
-	default int getHeight(String modifier) {
-		return getLayoutConstraints().getHeight(getNotationView(), modifier);
+	default int getMinimumHeight(String modifier) {
+		return getLayoutConstraints().getMinimumHeight(getNotationView(), modifier);
 	}
 
 	default int getPaddingTop() {
-		return getPadding(Orientation.TOP);
+		return getPadding(RelativePosition.TOP);
 	}
 
 	default int getPaddingBottom() {
-		return getPadding(Orientation.BOTTOM);
+		return getPadding(RelativePosition.BOTTOM);
 	}
 
 	default int getPaddingLeft() {
-		return getPadding(Orientation.LEFT);
+		return getPadding(RelativePosition.LEFT);
 	}
 
 	default int getPaddingRight() {
-		return getPadding(Orientation.RIGHT);
+		return getPadding(RelativePosition.RIGHT);
 	}
 
-	default int getPadding(Orientation orientation) {
+	default int getPadding(RelativePosition orientation) {
 		return getLayoutConstraints().getPadding(orientation, getNotationView());
 	}
 

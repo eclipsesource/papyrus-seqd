@@ -75,7 +75,7 @@ public class LifelineCreationEditPolicy extends LogicalModelCreationEditPolicy {
 						}
 
 						int height = size != null ? size.height
-								: getLayoutConstraints().getHeight(EXECUTION_SPECIFICATION_ID);
+								: getLayoutConstraints().getMinimumHeight(EXECUTION_SPECIFICATION_ID);
 
 						return lifeline.insertExecutionAfter(before.orElse(lifeline), offset, height, eClass);
 					}

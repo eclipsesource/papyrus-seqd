@@ -12,6 +12,10 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.spi.impl;
 
 import static java.lang.Math.abs;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.applyModifier;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.ARROW;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.NO_MODIFIER;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition.BOTTOM;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,8 +32,6 @@ import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 public class DefaultLayoutConstraints implements LayoutConstraints {
 
 	private static Integer ZERO = Integer.valueOf(0);
-
-	private static String NO_MODIFIER = ""; //$NON-NLS-1$
 
 	private final Map<String, Integer> standardXOffsets;
 
@@ -65,56 +67,56 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 	}
 
 	@Override
-	public int getHeight(View view) {
-		return getHeight(view.getType());
+	public int getMinimumHeight(View view) {
+		return getMinimumHeight(view.getType());
 	}
 
 	@Override
-	public int getHeight(String viewType) {
-		return getHeight(viewType, NO_MODIFIER);
+	public int getMinimumHeight(String viewType) {
+		return getMinimumHeight(viewType, NO_MODIFIER);
 	}
 
 	@Override
-	public int getHeight(View view, String modifier) {
-		return getHeight(view.getType(), modifier);
+	public int getMinimumHeight(View view, String modifier) {
+		return getMinimumHeight(view.getType(), modifier);
 	}
 
 	@Override
-	public int getHeight(String viewType, String modifier) {
-		return standardHeights.getOrDefault(viewType + modifier, ZERO).intValue();
+	public int getMinimumHeight(String viewType, String modifier) {
+		return standardHeights.getOrDefault(applyModifier(modifier, viewType), ZERO).intValue();
 	}
 
 	@Override
-	public int getWidth(View view) {
-		return getWidth(view.getType());
+	public int getMinimumWidth(View view) {
+		return getMinimumWidth(view.getType());
 	}
 
 	@Override
-	public int getWidth(String viewType) {
-		return getWidth(viewType, NO_MODIFIER);
+	public int getMinimumWidth(String viewType) {
+		return getMinimumWidth(viewType, NO_MODIFIER);
 	}
 
 	@Override
-	public int getWidth(View view, String modifier) {
-		return getWidth(view.getType(), modifier);
+	public int getMinimumWidth(View view, String modifier) {
+		return getMinimumWidth(view.getType(), modifier);
 	}
 
 	@Override
-	public int getWidth(String viewType, String modifier) {
-		return standardWidths.getOrDefault(viewType + modifier, ZERO).intValue();
+	public int getMinimumWidth(String viewType, String modifier) {
+		return standardWidths.getOrDefault(applyModifier(modifier, viewType), ZERO).intValue();
 	}
 
 	@Override
-	public int getPadding(Orientation orientation, View view) {
+	public int getPadding(RelativePosition orientation, View view) {
 		return getPadding(orientation, view.getType());
 	}
 
 	@Override
-	public int getPadding(Orientation orientation, String viewType) {
+	public int getPadding(RelativePosition orientation, String viewType) {
 		return standardPaddings.getOrDefault(forOrientation(orientation, viewType), ZERO).intValue();
 	}
 
-	private static String forOrientation(Orientation orientation, String type) {
+	private static String forOrientation(RelativePosition orientation, String type) {
 		return type + "_" + orientation.toString(); //$NON-NLS-1$
 	}
 
@@ -160,7 +162,7 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 		Map<String, Integer> result = new HashMap<>();
 
 		result.put("Shape_Lifeline_Body", 400);
-		result.put("Edge_Message_arrow", 5);
+		result.put(applyModifier(ARROW, "Edge_Message"), 5);
 		result.put("Shape_Execution_Specification", 40);
 
 		return result;
@@ -171,7 +173,7 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 		Map<String, Integer> result = new HashMap<>();
 
 		result.put("Shape_Lifeline_Body", 1);
-		result.put("Edge_Message_arrow", 5);
+		result.put(applyModifier(ARROW, "Edge_Message"), 5);
 
 		return result;
 	}
@@ -180,7 +182,7 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 	private static Map<String, Integer> loadPaddings() {
 		Map<String, Integer> result = new HashMap<>();
 
-		result.put(forOrientation(Orientation.BOTTOM, "Shape_Lifeline_Body"), 10);
+		result.put(forOrientation(BOTTOM, "Shape_Lifeline_Body"), 10);
 
 		return result;
 	}

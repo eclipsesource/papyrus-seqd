@@ -76,7 +76,7 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart implements 
 	@Override
 	protected void refreshBounds() {
 		if (getBorderItemLocator() != null) {
-			int width = Math.max(getWidth(), getIntAttributeValue(LINE_STYLE__LINE_WIDTH));
+			int width = Math.max(getMinimumWidth(), getIntAttributeValue(LINE_STYLE__LINE_WIDTH));
 			Dimension size = new Dimension(width, computeLifelineHeight());
 			Point location = new Point(getIntAttributeValue(LOCATION__X), getIntAttributeValue(LOCATION__Y));
 			getBorderItemLocator().setConstraint(new Rectangle(location, size));
@@ -91,7 +91,7 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart implements 
 		Optional<Integer> bottomMostElementY = mInteraction.getBottommostElement().map(MElement::getBottom)
 				.map(OptionalInt::getAsInt);
 		int endOfLifelineY = Math.max(bottomMostElementY.orElse(Integer.valueOf(-1)).intValue(),
-				getHeight());
+				getMinimumHeight());
 		return getLayoutHelper().toRelativeY(getShape(), endOfLifelineY + getPaddingBottom());
 	}
 
