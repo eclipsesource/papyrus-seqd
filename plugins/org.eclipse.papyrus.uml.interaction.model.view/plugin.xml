@@ -11,17 +11,44 @@
  
  Contributors:
    Christian W. Damus - Initial API and implementation
+   Antonio Campesino - Figures View, EditParts View and Notation View
  
 -->
 
 <plugin>
    <extension
          point="org.eclipse.ui.views">
+      <category
+            id="org.eclipse.papyrus.uml.interaction.model"
+            name="GMF/Papyrus Development Tools">
+      </category>
       <view
+            category="org.eclipse.papyrus.uml.interaction.model"
             class="org.eclipse.papyrus.uml.interaction.model.internal.view.LogicalModelView"
             icon="$nl$/icons/full/view16/logical_model.gif"
             id="org.eclipse.papyrus.uml.interaction.model.view.view1"
             name="Logical Model"
+            restorable="true">
+      </view>
+      <view
+            category="org.eclipse.papyrus.uml.interaction.model"
+            class="org.eclipse.papyrus.uml.interaction.model.internal.view.GMFFigureView"
+            id="org.eclipse.papyrus.uml.interaction.model.internal.view.figures"
+            name="GEF Figures Explorer"
+            restorable="true">
+      </view>
+      <view
+            category="org.eclipse.papyrus.uml.interaction.model"
+            class="org.eclipse.papyrus.uml.interaction.model.internal.view.GMFEditPartView"
+            id="org.eclipse.papyrus.uml.interaction.model.internal.view.editparts"
+            name="GEF EditParts Explorer"
+            restorable="true">
+      </view>
+      <view
+            category="org.eclipse.papyrus.uml.interaction.model"
+            class="org.eclipse.papyrus.uml.interaction.model.internal.view.GMFNotationView"
+            id="org.eclipse.papyrus.uml.interaction.model.internal.view.notation"
+            name="GMF Notation Explorer"
             restorable="true">
       </view>
    </extension>
