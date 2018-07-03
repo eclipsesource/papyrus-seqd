@@ -22,7 +22,6 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.CreationEditPolicy;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.papyrus.uml.diagram.sequence.figure.HeaderFigure;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MObject;
@@ -53,10 +52,6 @@ public class InteractionCreationEditPolicy extends LogicalModelCreationEditPolic
 
 				if (ElementUtil.isTypeOf(type, UMLElementTypes.LIFELINE)) {
 					int xOffset = location.x();
-
-					// Account for the header's margin to ensure that the lifeline is placed
-					// exactly where the mouse cursor put it
-					xOffset = xOffset - HeaderFigure.DEFAULT_MARGIN_WIDTH;
 
 					return object.addLifeline(xOffset, size != null ? size.height : -1);
 				}
