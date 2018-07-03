@@ -31,6 +31,8 @@ public class LifelineBodyFigure extends NodeFigure {
 
 	private static final int TOLERANCE = 5;
 
+	private int anchorHeight;
+
 	@Override
 	protected void paintFigure(Graphics graphics) {
 		Polyline line = new Polyline();
@@ -80,7 +82,7 @@ public class LifelineBodyFigure extends NodeFigure {
 
 	@Override
 	protected ConnectionAnchor createDefaultAnchor() {
-		return new LifelineBodyAnchor(this);
+		return new LifelineBodyAnchor(this, anchorHeight);
 	}
 
 	@Override
@@ -131,6 +133,14 @@ public class LifelineBodyFigure extends NodeFigure {
 	@Override
 	protected boolean useLocalCoordinates() {
 		return true;
+	}
+
+	public int getAnchorHeight() {
+		return anchorHeight;
+	}
+
+	public void setAnchorHeight(int anchorHeight) {
+		this.anchorHeight = anchorHeight;
 	}
 
 }

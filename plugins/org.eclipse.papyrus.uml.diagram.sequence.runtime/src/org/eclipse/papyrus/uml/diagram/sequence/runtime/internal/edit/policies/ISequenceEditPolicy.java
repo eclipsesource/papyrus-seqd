@@ -23,6 +23,7 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.commands.wrappers.OperationToGEFCommandWrapper;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
@@ -67,6 +68,12 @@ public interface ISequenceEditPolicy extends EditPolicy {
 	static IFigure __getHostFigure(ISequenceEditPolicy __this) {
 		EditPart host = __this.getHost();
 		return (host instanceof GraphicalEditPart) ? ((GraphicalEditPart)host).getFigure() : null;
+	}
+
+	// This should be a private 'getHostView' method in Java 9
+	static View __getHostView(ISequenceEditPolicy __this) {
+		EditPart host = __this.getHost();
+		return (host instanceof IGraphicalEditPart) ? ((IGraphicalEditPart)host).getNotationView() : null;
 	}
 
 	/**

@@ -28,10 +28,6 @@ public class LifelineBodyAnchor extends AbstractConnectionAnchor {
 
 	private int height;
 
-	public LifelineBodyAnchor(LifelineBodyFigure lifelinebodyFigure) {
-		this(lifelinebodyFigure, 10);
-	}
-
 	public LifelineBodyAnchor(LifelineBodyFigure lifelinebodyFigure, int height) {
 		super(lifelinebodyFigure);
 		// We actually attach the anchor to the BodyFigure of the Lifeline
