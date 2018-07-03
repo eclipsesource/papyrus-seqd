@@ -8,6 +8,8 @@
  *
  * Contributors:
  *   Christian W. Damus - Initial API and implementation
+ *   Antonio Campesino (Ericsson AB) - Addiding setRight functions
+ *   
  *****************************************************************************/
 
 package org.eclipse.papyrus.uml.interaction.model.spi;
@@ -198,6 +200,29 @@ public interface LayoutHelper {
 	 * @return the command, which may not be executable but will not be {@code null}
 	 */
 	Command setLeft(Shape shape, int xPosition);
+
+	/**
+	 * Obtains a command that sets the right (x-coördinate) of the diagram visual element associated with a
+	 * vertex in the graph.
+	 * 
+	 * @param v
+	 *            a vertex in the semantic dependency graph
+	 * @param xPosition
+	 *            the new right position to set
+	 * @return the command, which may not be executable but will not be {@code null}
+	 */
+	Command setRight(Vertex v, int xPosition);
+
+	/**
+	 * Obtains a command that sets the right (x-coördinate) of a {@code shape} in the sequence diagram.
+	 * 
+	 * @param shape
+	 *            a shape in the sequence diagram
+	 * @param xPosition
+	 *            the new right position to set
+	 * @return the command, which may not be executable but will not be {@code null}
+	 */
+	Command setRight(Shape shape, int xPosition);
 
 	/**
 	 * Returns the bounds for a new representation, given the proposed bounds.

@@ -38,6 +38,9 @@
       <eParameters name="deltaY" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     </eOperations>
     <eOperations name="remove" lowerBound="1" eType="#//Command"/>
+    <eOperations name="resize" lowerBound="1" eType="#//Command">
+      <eParameters name="deltaHeight" lowerBound="1" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EInt"/>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="interaction" lowerBound="1"
         eType="#//MInteraction" changeable="false" volatile="true" transient="true"
         derived="true" resolveProxies="false"/>
@@ -298,6 +301,16 @@
         <details key="documentation" value="Nudge the lifeline horizontally, along with all of the layout that depends on it."/>
       </eAnnotations>
       <eParameters name="deltaX" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="the distance by which to nudge the lifeline in the X axis (negative values nudging to the left, of course)"/>
+        </eAnnotations>
+      </eParameters>
+    </eOperations>
+    <eOperations name="resizeHorizontally" lowerBound="1" eType="#//Command">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Resize the lifeline horizontally, nudging the following lifelines along with all of the layout that depends on it."/>
+      </eAnnotations>
+      <eParameters name="deltaWidth" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
         <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
           <details key="documentation" value="the distance by which to nudge the lifeline in the X axis (negative values nudging to the left, of course)"/>
         </eAnnotations>

@@ -26,9 +26,11 @@ import org.eclipse.draw2d.Shape;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
+import org.eclipse.emf.workspace.EMFCommandOperation;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
@@ -46,13 +48,16 @@ import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.NotationFactory;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.commands.wrappers.OperationToGEFCommandWrapper;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.LifelineHeaderEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.InteractionUtil;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.service.types.element.UMLElementTypes;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Interaction;
+import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.UMLPackage;
 
 /**
@@ -149,8 +154,39 @@ public class InteractionLayoutEditPolicy extends XYLayoutEditPolicy {
 	protected Command createChangeConstraintCommand(ChangeBoundsRequest request, EditPart child,
 			Object constraint) {
 
-		Object newConstraint = constraint;
+		if (child instanceof LifelineHeaderEditPart) {
+			MInteraction mInteraction = MInteraction.getInstance(((View)getHost().getModel()).getDiagram());
+			Lifeline lifeline = (Lifeline)((IGraphicalEditPart)child).resolveSemanticElement();
+			if (RequestConstants.REQ_MOVE_CHILDREN.equals(request.getType())) {
+				return mInteraction.getLifeline(lifeline)
+						.map(mLifeline -> OperationToGEFCommandWrapper
+								.wrap(new EMFCommandOperation(TransactionUtil.getEditingDomain(lifeline),
+										mLifeline.nudgeHorizontally(request.getMoveDelta().x))))
+						.orElse(null);
+			} else if (RequestConstants.REQ_RESIZE_CHILDREN.equals(request.getType())) {
+				org.eclipse.emf.common.command.Command cmd = IdentityCommand.INSTANCE;
+				if (request.getMoveDelta().x != 0) {
+					cmd = cmd.chain(mInteraction.getLifeline(lifeline)
+							.map(mLifeline -> mLifeline.nudgeHorizontally(request.getMoveDelta().x))
+							.orElse(IdentityCommand.INSTANCE));
+				}
 
+				if (request.getSizeDelta().width != 0) {
+					cmd = cmd.chain(mInteraction.getLifeline(lifeline)
+							.map(mLifeline -> mLifeline.resizeHorizontally(request.getSizeDelta().width))
+							.orElse(IdentityCommand.INSTANCE));
+				}
+
+				if (cmd == IdentityCommand.INSTANCE) {
+					return null;
+				}
+
+				return OperationToGEFCommandWrapper
+						.wrap(new EMFCommandOperation(TransactionUtil.getEditingDomain(lifeline), cmd));
+			}
+		}
+
+		Object newConstraint = constraint;
 		if (RequestConstants.REQ_MOVE_CHILDREN.equals(request.getType())
 				&& (constraint instanceof Rectangle)) {
 			Node node = child.getAdapter(Node.class);
