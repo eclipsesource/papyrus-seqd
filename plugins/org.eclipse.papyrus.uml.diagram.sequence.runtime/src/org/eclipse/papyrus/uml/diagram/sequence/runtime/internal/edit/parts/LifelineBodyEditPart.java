@@ -15,6 +15,7 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts;
 import static org.eclipse.gmf.runtime.notation.NotationPackage.Literals.LINE_STYLE__LINE_WIDTH;
 import static org.eclipse.gmf.runtime.notation.NotationPackage.Literals.LOCATION__X;
 import static org.eclipse.gmf.runtime.notation.NotationPackage.Literals.LOCATION__Y;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.ANCHOR;
 
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -55,6 +56,7 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart implements 
 	@Override
 	protected NodeFigure createMainFigure() {
 		LifelineBodyFigure fig = new LifelineBodyFigure();
+		fig.setAnchorHeight(getMinimumHeight(ANCHOR));
 		return fig;
 	}
 

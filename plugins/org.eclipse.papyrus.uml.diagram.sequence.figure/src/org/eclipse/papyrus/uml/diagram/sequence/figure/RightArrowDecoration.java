@@ -22,9 +22,8 @@ public class RightArrowDecoration extends PolylineDecoration {
 
 	public RightArrowDecoration() {
 		setTemplate(TRIANGLE_TIP);
-		setScale(5.0, 5.0);
 		setLineWidth(1);
 		setBackgroundColor(ColorConstants.blue);
 	}
-	
+
 }

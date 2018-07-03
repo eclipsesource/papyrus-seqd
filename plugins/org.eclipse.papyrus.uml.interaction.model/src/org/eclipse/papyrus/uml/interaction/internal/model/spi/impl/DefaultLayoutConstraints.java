@@ -13,6 +13,7 @@ package org.eclipse.papyrus.uml.interaction.internal.model.spi.impl;
 
 import static java.lang.Math.abs;
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.applyModifier;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.ANCHOR;
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.ARROW;
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.NO_MODIFIER;
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition.BOTTOM;
@@ -164,6 +165,8 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 		result.put("Shape_Lifeline_Body", 400);
 		result.put(applyModifier(ARROW, "Edge_Message"), 5);
 		result.put("Shape_Execution_Specification", 40);
+		result.put("Interaction_Contents", 180);
+		result.put(applyModifier(ANCHOR, "Shape_Lifeline_Body"), 10);
 
 		return result;
 	}
@@ -174,7 +177,7 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 
 		result.put("Shape_Lifeline_Body", 1);
 		result.put(applyModifier(ARROW, "Edge_Message"), 5);
-
+		result.put("Interaction_Contents", 45);
 		return result;
 	}
 

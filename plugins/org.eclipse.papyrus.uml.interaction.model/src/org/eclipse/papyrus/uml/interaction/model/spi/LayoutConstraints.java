@@ -31,6 +31,8 @@ public interface LayoutConstraints {
 		public static String NO_MODIFIER = ""; //$NON-NLS-1$
 
 		public static final String ARROW = "arrow"; //$NON-NLS-1$
+
+		public static final String ANCHOR = "anchor"; //$NON-NLS-1$
 	}
 
 	/**
@@ -180,11 +182,11 @@ public interface LayoutConstraints {
 
 	/**
 	 * Applies a {@link Modifiers modifier} to the given <code>viewType</code> and returns the resulting key.
+	 * 
 	 * @param modifier
 	 *            the modifier.
 	 * @param viewType
 	 *            the view type.
-	 * 
 	 * @return The key representing the view type with the given modifier applied.
 	 */
 	public static String applyModifier(String modifier, String viewType) {
