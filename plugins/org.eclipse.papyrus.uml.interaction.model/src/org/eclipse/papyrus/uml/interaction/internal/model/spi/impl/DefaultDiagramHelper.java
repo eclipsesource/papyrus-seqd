@@ -82,7 +82,7 @@ public class DefaultDiagramHelper implements DiagramHelper {
 
 	@Override
 	public Shape getInteractionFrame(Diagram diagram) {
-		return (Shape)ViewUtil.getChildBySemanticHint(diagram, "Shape_Interaction");
+		return (Shape)ViewUtil.getChildBySemanticHint(diagram, ViewTypes.INTERACTION);
 	}
 
 	@Override
@@ -90,8 +90,8 @@ public class DefaultDiagramHelper implements DiagramHelper {
 		Compartment result;
 
 		switch (shape.getType()) {
-			case "Shape_Interaction":
-				result = (Compartment)ViewUtil.getChildBySemanticHint(shape, "Interaction_Contents");
+			case ViewTypes.INTERACTION:
+				result = (Compartment)ViewUtil.getChildBySemanticHint(shape, ViewTypes.INTERACTION_CONTENTS);
 				break;
 			default:
 				result = null;
@@ -112,7 +112,7 @@ public class DefaultDiagramHelper implements DiagramHelper {
 
 		Supplier<Shape> shape = () -> {
 			Shape result = NotationFactory.eINSTANCE.createShape();
-			result.setType("Shape_Lifeline_Header");
+			result.setType(ViewTypes.LIFELINE_HEADER);
 			result.setElement(lifeline.get());
 
 			Bounds bounds = NotationFactory.eINSTANCE.createBounds();
@@ -125,12 +125,12 @@ public class DefaultDiagramHelper implements DiagramHelper {
 
 			// create compartment for name
 			Shape headerCompartment = (Shape)result.createChild(NotationPackage.Literals.SHAPE);
-			headerCompartment.setType("Compartment_Lifeline_Header");
+			headerCompartment.setType(ViewTypes.LIFELINE_HEADER_COMPARTMENT);
 			Shape nameLabel = (Shape)result.createChild(NotationPackage.Literals.SHAPE);
-			nameLabel.setType("Label_Lifeline_Name");
+			nameLabel.setType(ViewTypes.LIFELINE_NAME);
 
 			Shape body = (Shape)result.createChild(NotationPackage.Literals.SHAPE);
-			body.setType("Shape_Lifeline_Body");
+			body.setType(ViewTypes.LIFELINE_BODY);
 			Size bodySize = NotationFactory.eINSTANCE.createSize();
 			bodySize.setWidth(2);
 			bodySize.setHeight(150);
@@ -151,11 +151,11 @@ public class DefaultDiagramHelper implements DiagramHelper {
 		}
 
 		switch (lifelineView.getType()) {
-			case "Shape_Lifeline_Body":
+			case ViewTypes.LIFELINE_BODY:
 				// That's it
 				return (Shape)lifelineView;
-			case "Shape_Lifeline_Header":
-				return (Shape)ViewUtil.getChildBySemanticHint(lifelineView, "Shape_Lifeline_Body");
+			case ViewTypes.LIFELINE_HEADER:
+				return (Shape)ViewUtil.getChildBySemanticHint(lifelineView, ViewTypes.LIFELINE_BODY);
 			default:
 				return getLifelineBodyShape(ViewUtil.getViewContainer(lifelineView));
 		}
@@ -177,7 +177,7 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			int execWidth = 10;
 
 			Shape result = NotationFactory.eINSTANCE.createShape();
-			result.setType("Shape_Execution_Specification");
+			result.setType(ViewTypes.EXECUTION_SPECIFICATION);
 			result.setElement(execution.get());
 
 			Bounds bounds = NotationFactory.eINSTANCE.createBounds();
@@ -204,7 +204,7 @@ public class DefaultDiagramHelper implements DiagramHelper {
 
 		Supplier<Connector> connector = () -> {
 			Connector result = NotationFactory.eINSTANCE.createConnector();
-			result.setType("Edge_Message");
+			result.setType(ViewTypes.MESSAGE);
 			result.setElement(message.get());
 
 			IdentityAnchor sourceAnchor = (IdentityAnchor)result

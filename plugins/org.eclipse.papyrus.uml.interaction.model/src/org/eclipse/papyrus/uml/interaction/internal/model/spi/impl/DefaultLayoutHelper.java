@@ -45,6 +45,7 @@ import org.eclipse.gmf.runtime.notation.util.NotationSwitch;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil;
 import org.eclipse.papyrus.uml.interaction.graph.util.Suppliers;
+import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.uml2.uml.ExecutionSpecification;
@@ -258,7 +259,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	}
 
 	private static boolean isLifelineBody(View view) {
-		return "Shape_Lifeline_Body".equals(view.getType()); //$NON-NLS-1$
+		return ViewTypes.LIFELINE_BODY.equals(view.getType());
 	}
 
 	@SuppressWarnings("boxing")

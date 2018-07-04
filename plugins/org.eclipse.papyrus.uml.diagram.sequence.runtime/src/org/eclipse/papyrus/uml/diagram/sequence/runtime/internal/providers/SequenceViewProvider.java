@@ -15,11 +15,12 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.gmf.runtime.diagram.core.services.view.CreateNodeViewOperation;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.gmfdiag.common.providers.CustomAbstractViewProvider;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.factories.InteractionFrameViewFactory;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.factories.SequenceDiagramViewFactory;
+import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper.ViewTypes;
 
 public class SequenceViewProvider extends CustomAbstractViewProvider {
+	public static final String DIAGRAM_TYPE = "Lightweight Sequence Diagram"; //$NON-NLS-1$
 
 	public SequenceViewProvider() {
 		initDiagramType();
@@ -27,7 +28,7 @@ public class SequenceViewProvider extends CustomAbstractViewProvider {
 	}
 
 	private void initDiagramType() {
-		diagramType = RepresentationKind.NAME;
+		diagramType = DIAGRAM_TYPE;
 	}
 
 	private void initGraphicalTypeRegistry() {
@@ -42,7 +43,7 @@ public class SequenceViewProvider extends CustomAbstractViewProvider {
 	@Override
 	protected Class<?> getNodeViewClass(IAdaptable semanticAdapter, View containerView, String semanticHint) {
 		switch (semanticHint) {
-			case RepresentationKind.INTERACTION_ID:
+			case ViewTypes.INTERACTION:
 				return InteractionFrameViewFactory.class;
 		}
 		return super.getNodeViewClass(semanticAdapter, containerView, semanticHint);

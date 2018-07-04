@@ -9,6 +9,7 @@
  * Contributors:
  *   Christian W. Damus - Initial API and implementation
  *****************************************************************************/
+
 package org.eclipse.papyrus.uml.interaction.internal.model.spi.impl;
 
 import static java.lang.Math.abs;
@@ -23,6 +24,7 @@ import java.util.Map;
 
 import org.eclipse.gmf.runtime.notation.Compartment;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 
 /**
@@ -139,11 +141,12 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 		return slope >= 3.0;
 	}
 
+	@SuppressWarnings("boxing")
 	private static Map<String, Integer> loadXOffsets() {
 		Map<String, Integer> result = new HashMap<>();
 
 		// Inset of the viewpoint figure
-		result.put("Interaction_Contents", 5);
+		result.put(ViewTypes.INTERACTION_CONTENTS, 5);
 
 		return result;
 	}
@@ -153,7 +156,7 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 		Map<String, Integer> result = new HashMap<>();
 
 		// The size of the interaction frame's pentagon label
-		result.put("Interaction_Contents", 30);
+		result.put(ViewTypes.INTERACTION_CONTENTS, 30);
 
 		return result;
 	}

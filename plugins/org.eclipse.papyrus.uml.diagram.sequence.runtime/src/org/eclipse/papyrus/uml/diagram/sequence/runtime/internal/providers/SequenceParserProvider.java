@@ -23,8 +23,8 @@ import org.eclipse.gmf.runtime.common.ui.services.parser.ParserService;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.emf.ui.services.parser.ParserHintAdapter;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.parsers.MessageFormatParser;
+import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper.ViewTypes;
 import org.eclipse.uml2.uml.UMLPackage;
 
 public class SequenceParserProvider extends AbstractProvider implements IParserProvider {
@@ -32,7 +32,7 @@ public class SequenceParserProvider extends AbstractProvider implements IParserP
 	protected IParser getParser(String visualID) {
 		if (visualID != null) {
 			switch (visualID) {
-				case RepresentationKind.INTERACTION_NAME_ID:
+				case ViewTypes.INTERACTION_NAME:
 					return getInteraction_NameLabel_Parser();
 			}
 		}

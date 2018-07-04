@@ -14,7 +14,7 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.preferences;
 
 import org.eclipse.papyrus.infra.gmfdiag.preferences.pages.DiagramPreferencePage;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind;
+import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper.ViewTypes;
 
 /**
  * This is the {@code LightweightSequenceDiagramPreferencePage} type. Enjoy.
@@ -30,7 +30,7 @@ public class LightweightSequenceDiagramPreferencePage extends DiagramPreferenceP
 		super();
 
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
-		setPreferenceKey(RepresentationKind.MODEL_ID);
+		setPreferenceKey(ViewTypes.LIGHTWEIGHT_SEQUENCE_DIAGRAM);
 	}
 
 }

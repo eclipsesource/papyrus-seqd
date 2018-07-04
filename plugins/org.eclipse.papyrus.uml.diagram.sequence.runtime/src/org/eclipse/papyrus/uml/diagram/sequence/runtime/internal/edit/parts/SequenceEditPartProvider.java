@@ -14,14 +14,15 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.services.editpart.AbstractEditPartProvider;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper.ViewTypes;
 
 public class SequenceEditPartProvider extends AbstractEditPartProvider {
 
 	@Override
 	protected Class<? extends IGraphicalEditPart> getDiagramEditPartClass(View view) {
-		if (RepresentationKind.MODEL_ID.equals(view.getType())) {
+		if (ViewTypes.LIGHTWEIGHT_SEQUENCE_DIAGRAM.equals(view.getType())) {
 			return LightweightSequenceDiagramEditPart.class;
-		} else if (RepresentationKind.DIAGRAM_ID.equals(view.getType())) {
+		} else if (ViewTypes.SEQUENCE_DIAGRAM.equals(view.getType())) {
 			return LightweightSequenceDiagramEditPart.class;
 		}
 		return null;
@@ -30,9 +31,9 @@ public class SequenceEditPartProvider extends AbstractEditPartProvider {
 	@Override
 	protected Class<? extends IGraphicalEditPart> getEdgeEditPartClass(View view) {
 		switch (view.getType()) {
-			case RepresentationKind.MESSAGE_ID:
+			case ViewTypes.MESSAGE:
 				return MessageEditPart.class;
-			case RepresentationKind.GENERAL_ORDERING_ID:
+			case ViewTypes.GENERAL_ORDERING:
 				return GeneralOrderingEditPart.class;
 		}
 
@@ -42,23 +43,23 @@ public class SequenceEditPartProvider extends AbstractEditPartProvider {
 	@Override
 	protected Class<? extends IGraphicalEditPart> getNodeEditPartClass(View view) {
 		switch (view.getType()) {
-			case RepresentationKind.INTERACTION_ID:
+			case ViewTypes.INTERACTION:
 				return InteractionEditPart.class;
-			case RepresentationKind.LIFELINE_HEADER_ID:
+			case ViewTypes.LIFELINE_HEADER:
 				return LifelineHeaderEditPart.class;
-			case RepresentationKind.LIFELINE_HEADER_COMPARTMENT_ID:
+			case ViewTypes.LIFELINE_HEADER_COMPARTMENT:
 				return LifelineHeaderCompartmentEditPart.class;
-			case RepresentationKind.LIFELINE_BODY_ID:
+			case ViewTypes.LIFELINE_BODY:
 				return LifelineBodyEditPart.class;
-			case RepresentationKind.LIFELINE_NAME_ID:
+			case ViewTypes.LIFELINE_NAME:
 				return LifelineNameEditPart.class;
-			case RepresentationKind.INTERACTION_NAME_ID:
+			case ViewTypes.INTERACTION_NAME:
 				return InteractionNameEditPart.class;
-			case RepresentationKind.INTERACTION_COMPARTMENT_ID:
+			case ViewTypes.INTERACTION_CONTENTS:
 				return InteractionCompartmentEditPart.class;
-			case RepresentationKind.EXECUTION_SPECIFICATION_ID:
+			case ViewTypes.EXECUTION_SPECIFICATION:
 				return ExecutionSpecificationEditPart.class;
-			case RepresentationKind.STATE_INVARIANT_ID:
+			case ViewTypes.STATE_INVARIANT:
 				return StateInvariantEditPart.class;
 		}
 

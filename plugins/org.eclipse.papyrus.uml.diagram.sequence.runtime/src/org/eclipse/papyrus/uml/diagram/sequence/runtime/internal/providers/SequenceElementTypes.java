@@ -23,7 +23,7 @@ import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.papyrus.infra.gmfdiag.common.providers.DiagramElementTypes;
 import org.eclipse.papyrus.infra.gmfdiag.tooling.runtime.providers.DiagramElementTypeImages;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind;
+import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper.ViewTypes;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.uml2.uml.UMLPackage;
 
@@ -125,9 +125,9 @@ public final class SequenceElementTypes {
 	public static IElementType getElementType(String visualID) {
 		if (visualID != null) {
 			switch (visualID) {
-				case RepresentationKind.DIAGRAM_ID:
+				case ViewTypes.SEQUENCE_DIAGRAM:
 					return Package_SequenceDiagram;
-				case RepresentationKind.INTERACTION_ID:
+				case ViewTypes.INTERACTION:
 					return Interaction_Shape;
 			}
 		}

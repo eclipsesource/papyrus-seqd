@@ -12,7 +12,7 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.part;
 
 import org.eclipse.papyrus.infra.gmfdiag.common.GmfEditorFactory;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind;
+import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper.ViewTypes;
 
 /**
  * The editor factory to launch the sequence diagram.
@@ -23,6 +23,6 @@ public class LightweightSequenceDiagramEditorFactory extends GmfEditorFactory {
 	 * Instantiates a new sequence diagram editor factory.
 	 */
 	public LightweightSequenceDiagramEditorFactory() {
-		super(LightweightSequenceDiagramEditor.class, RepresentationKind.MODEL_ID);
+		super(LightweightSequenceDiagramEditor.class, ViewTypes.LIGHTWEIGHT_SEQUENCE_DIAGRAM);
 	}
 }
