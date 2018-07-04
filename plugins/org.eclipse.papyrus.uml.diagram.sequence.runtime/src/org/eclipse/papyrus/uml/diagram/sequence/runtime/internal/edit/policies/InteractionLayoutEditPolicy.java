@@ -13,7 +13,6 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
-import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.ISequenceEditPolicy.__getHostView;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.GeometryUtil.asBounds;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.GeometryUtil.asRectangle;
 import static org.eclipse.papyrus.uml.service.types.utils.ElementUtil.isTypeOf;
@@ -103,8 +102,8 @@ public class InteractionLayoutEditPolicy extends XYLayoutEditPolicy implements I
 			Dimension proposedSize = createRequest.getSize();
 			if (proposedSize == null) {
 				// This will be null until the user draws out a rect
-				int minWidth = getLayoutConstraints().getMinimumHeight(__getHostView(this));
-				int minHeight = getLayoutConstraints().getMinimumHeight(__getHostView(this));
+				int minWidth = getMinimumWidth();
+				int minHeight = getMinimumHeight();
 				proposedSize = new Dimension(minWidth, minHeight);
 			}
 

@@ -94,4 +94,13 @@ public interface ISequenceEditPolicy extends EditPolicy {
 
 		return result;
 	}
+
+	default int getMinimumWidth() {
+		return getLayoutConstraints().getMinimumWidth(__getHostView(this));
+	}
+
+	default int getMinimumHeight() {
+		return getLayoutConstraints().getMinimumHeight(__getHostView(this));
+	}
+
 }
