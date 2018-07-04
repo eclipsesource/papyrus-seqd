@@ -56,7 +56,7 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart implements 
 	@Override
 	protected NodeFigure createMainFigure() {
 		LifelineBodyFigure fig = new LifelineBodyFigure();
-		fig.setAnchorHeight(getMinimumHeight(ANCHOR));
+		fig.setDefaultAnchorDistance(getMinimumHeight(ANCHOR));
 		return fig;
 	}
 

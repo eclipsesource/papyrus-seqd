@@ -31,7 +31,7 @@ public class LifelineBodyFigure extends NodeFigure {
 
 	private static final int TOLERANCE = 5;
 
-	private int anchorHeight;
+	private int defaultAnchorDistance;
 
 	@Override
 	protected void paintFigure(Graphics graphics) {
@@ -82,7 +82,7 @@ public class LifelineBodyFigure extends NodeFigure {
 
 	@Override
 	protected ConnectionAnchor createDefaultAnchor() {
-		return new LifelineBodyAnchor(this, anchorHeight);
+		return new LifelineBodyAnchor(this, defaultAnchorDistance);
 	}
 
 	@Override
@@ -135,12 +135,12 @@ public class LifelineBodyFigure extends NodeFigure {
 		return true;
 	}
 
-	public int getAnchorHeight() {
-		return anchorHeight;
+	public int getDefaultAnchorDistance() {
+		return defaultAnchorDistance;
 	}
 
-	public void setAnchorHeight(int anchorHeight) {
-		this.anchorHeight = anchorHeight;
+	public void setDefaultAnchorDistance(int distance) {
+		this.defaultAnchorDistance = distance;
 	}
 
 }
