@@ -17,12 +17,13 @@ import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.LifelineHeaderFigure;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.AnchorParser.AnchorKind;
 
 /**
  * An Anchor on the Lifeline header. The anchor is configured with a Height position relative to the top of
  * the header, and a side (Left or Right).
  */
-public class LifelineHeaderAnchor extends AbstractConnectionAnchor {
+public class LifelineHeaderAnchor extends AbstractConnectionAnchor implements ISequenceAnchor {
 
 	private int height;
 
@@ -61,6 +62,16 @@ public class LifelineHeaderAnchor extends AbstractConnectionAnchor {
 		}
 		lifelineHeaderFigure.getParent().translateToAbsolute(location);
 		return location;
+	}
+
+	@Override
+	public String getTerminal() {
+		return AnchorParser.getInstance().getTerminal(AnchorKind.SIDE, side, height);
+	}
+
+	@Override
+	public String toString() {
+		return String.format("LLHeadAnchor(%s)", getTerminal()); //$NON-NLS-1$
 	}
 
 }

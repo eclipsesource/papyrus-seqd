@@ -83,15 +83,44 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				Point mouse = request.getLocation();
 				Point location = getRelativeLocation(mouse);
 
-				Optional<MElement<?>> before = lifeline.elementAt(location.y());
-				int offset = getOffsetFrom(location, lifeline, before);
-
-				Command result = new StartMessageCommand(lifeline, mouse, before, offset,
-						getSort(messageType));
+				AnchorDescriptor anchorDesc = computeAnchoring(location);
+				Command result = new StartMessageCommand(lifeline, mouse, anchorDesc.elementBefore,
+						anchorDesc.offset, getSort(messageType));
 				request.setStartCommand(result);
 				return result;
 			}
 		}.doSwitch(request);
+	}
+
+	private AnchorDescriptor computeAnchoring(Point location) {
+		Optional<MElement<?>> self = getLogicalElement();
+		Optional<MLifeline> lifeline = getLifeline();
+
+		Optional<MElement<?>> before;
+		int offset;
+
+		// Are we connecting from an execution specification?
+		if (self.isPresent() && self.get() != lifeline.orElse(null)) {
+			// Connecting to something on the lifeline (e.g., execution)
+			// so in that case the location is already relative to its top
+			MElement<?> _self = self.get();
+			if (_self instanceof MExecution) {
+				// Measure from the start occurrence
+				before = ((MExecution)_self).getStart().map(MElement.class::cast);
+			} else {
+				before = self;
+			}
+			offset = location.y();
+		} else if (lifeline.isPresent()) {
+			MLifeline _lifeline = lifeline.get();
+			before = _lifeline.elementAt(location.y());
+			offset = getOffsetFrom(location, _lifeline, before);
+		} else {
+			before = Optional.empty();
+			offset = 0;
+		}
+
+		return new AnchorDescriptor(before, offset);
 	}
 
 	protected MInteraction getInteraction() {
@@ -127,7 +156,8 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		return getLogicalElement().flatMap(lifelineSwitch::doSwitch);
 	}
 
-	private int getOffsetFrom(Point relativeMouse, MLifeline lifeline, Optional<MElement<?>> before) {
+	private int getOffsetFrom(Point relativeMouse, MLifeline lifeline,
+			Optional<? extends MElement<?>> before) {
 		int result = relativeMouse.y();
 
 		if (before.isPresent()) {
@@ -170,11 +200,10 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 						location = getRelativeLocation(location);
 
-						Optional<MElement<?>> before = receiver.elementAt(location.y());
-						int offset = getOffsetFrom(location, receiver, before);
-
+						AnchorDescriptor anchorDesc = computeAnchoring(location);
 						result = sender.insertMessageAfter(start.before.orElse(sender), start.offset,
-								receiver, before.orElse(receiver), offset, start.sort, null);
+								receiver, anchorDesc.elementBefore.orElse(receiver), anchorDesc.offset,
+								start.sort, null);
 						break;
 					default:
 						// Enforce a horizontal layout
@@ -237,12 +266,12 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		// Disallow semantic reordering below the next element on the lifeline
 		Optional<MLifeline> lifeline = end.getCovered();
-		Optional<MElement<?>> successor = lifeline.flatMap(ll -> ll.following(end));
+		Optional<? extends MElement<?>> successor = lifeline.flatMap(ll -> ll.following(end));
 		if (successor.filter(above(request.getLocation().y())).isPresent()) {
 			result = Optional.of(UnexecutableCommand.INSTANCE);
 		} else {
 			// And above the previous on the lifeline
-			Optional<MElement<?>> predecessor = lifeline.flatMap(ll -> ll.preceding(end));
+			Optional<? extends MElement<?>> predecessor = lifeline.flatMap(ll -> ll.preceding(end));
 			if (predecessor.filter(below(request.getLocation().y())).isPresent()) {
 				result = Optional.of(UnexecutableCommand.INSTANCE);
 			}
@@ -332,6 +361,20 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 			this.before = before;
 			this.offset = offset;
 			this.sort = sort;
+		}
+
+	}
+
+	private static class AnchorDescriptor {
+		final Optional<MElement<?>> elementBefore;
+
+		final int offset;
+
+		AnchorDescriptor(Optional<MElement<?>> elementBefore, int offset) {
+			super();
+
+			this.elementBefore = elementBefore;
+			this.offset = offset;
 		}
 
 	}

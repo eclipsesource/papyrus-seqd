@@ -89,4 +89,9 @@ public class LifelineBodyAnchor extends AbstractConnectionAnchor implements ISeq
 		return null;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("LLBodyAnchor(%s)", getTerminal()); //$NON-NLS-1$
+	}
+
 }

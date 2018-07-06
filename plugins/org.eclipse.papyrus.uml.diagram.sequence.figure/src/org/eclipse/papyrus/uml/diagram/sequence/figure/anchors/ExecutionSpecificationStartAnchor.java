@@ -39,4 +39,9 @@ public class ExecutionSpecificationStartAnchor extends AbstractConnectionAnchor 
 		return AnchorParser.getInstance().getTerminal(AnchorKind.START);
 	}
 
+	@Override
+	public String toString() {
+		return String.format("ExecAnchor(%s)", getTerminal()); //$NON-NLS-1$
+	}
+
 }

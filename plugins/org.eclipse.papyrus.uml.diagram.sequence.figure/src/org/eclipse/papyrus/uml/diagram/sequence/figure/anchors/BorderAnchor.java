@@ -17,11 +17,12 @@ import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.AnchorParser.AnchorKind;
 
 /**
  * Generic fixed position anchor that is allowed to attach to any side of the owner figure
  */
-public class BorderAnchor extends AbstractConnectionAnchor {
+public class BorderAnchor extends AbstractConnectionAnchor implements ISequenceAnchor {
 
 	private int distance;
 
@@ -78,6 +79,16 @@ public class BorderAnchor extends AbstractConnectionAnchor {
 		}
 
 		return result;
+	}
+
+	@Override
+	public String getTerminal() {
+		return AnchorParser.getInstance().getTerminal(AnchorKind.BORDER, side, distance);
+	}
+
+	@Override
+	public String toString() {
+		return String.format("BorderAnchor(%s)", getTerminal()); //$NON-NLS-1$
 	}
 
 }

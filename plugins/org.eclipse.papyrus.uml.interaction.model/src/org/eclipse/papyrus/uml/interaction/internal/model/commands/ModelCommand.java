@@ -23,8 +23,10 @@ import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugi
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
+import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
@@ -121,6 +123,16 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 			if (end.isSend()) {
 				// After the message is received, if it is received
 				result = end.getOtherEnd().orElse(end);
+			}
+		}
+
+		if (result instanceof MOccurrence<?>) {
+			// Insert after the execution specification that it starts (if any)
+			// so that the new fragment can be grouped in that occurrence
+			MOccurrence<?> occurrence = (MOccurrence<?>)result;
+			Optional<MExecution> exec = occurrence.getStartedExecution();
+			if (exec.isPresent()) {
+				result = exec.get();
 			}
 		}
 

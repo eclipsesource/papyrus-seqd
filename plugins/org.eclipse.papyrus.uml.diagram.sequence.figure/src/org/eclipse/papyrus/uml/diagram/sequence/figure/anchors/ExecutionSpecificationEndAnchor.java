@@ -38,4 +38,9 @@ public class ExecutionSpecificationEndAnchor extends AbstractConnectionAnchor im
 	public String getTerminal() {
 		return AnchorParser.getInstance().getTerminal(AnchorKind.END);
 	}
+
+	@Override
+	public String toString() {
+		return String.format("ExecAnchor(%s)", getTerminal()); //$NON-NLS-1$
+	}
 }

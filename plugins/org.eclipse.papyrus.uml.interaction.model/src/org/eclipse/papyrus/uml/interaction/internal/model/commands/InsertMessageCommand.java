@@ -23,13 +23,16 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.MObjectImpl;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredAddCommand;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Message;
@@ -84,7 +87,10 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	public InsertMessageCommand(MLifelineImpl sender, MElement<?> before, int offset, MLifeline receiver,
 			MessageSort sort, NamedElement signature) {
 
-		this(sender, before, offset, receiver, before, offset, sort, signature);
+		// This message is to be drawn horizontal, so anchor it on the receiver at an appropriate
+		// offset according to the absolute vertical position of the sending end
+		this(sender, before, offset, receiver, receiver, receiverOffset(before, offset, receiver), sort,
+				signature);
 	}
 
 	/**
@@ -139,6 +145,35 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		this.signature = signature;
 	}
 
+	/**
+	 * Compute the offset on the receiver of horizontal message based on the sending {@code offset} from its
+	 * reference point.
+	 * 
+	 * @param beforeSend
+	 *            the sending reference point
+	 * @param offset
+	 *            the sending offset from the reference point
+	 * @param receiver
+	 *            the receiving lifeline
+	 * @return the offset on the {@code receiver} of the receive end of the horizontal message
+	 */
+	private static int receiverOffset(MElement<?> beforeSend, int offset, MLifeline receiver) {
+		LayoutHelper layout = LogicalModelPlugin.getInstance()
+				.getLayoutHelper(((MObjectImpl<?>)beforeSend).getEditingDomain());
+		int absoluteY;
+		if (beforeSend instanceof MLifeline) {
+			MLifeline sender = (MLifeline)beforeSend;
+			int llTop = layout.getBottom(sender.getDiagramView().get());
+			absoluteY = llTop + offset;
+		} else {
+			// For executions also the top to allow for messages to anchor within it
+			absoluteY = beforeSend.getTop().orElse(0) + offset;
+		}
+
+		int llTop = layout.getBottom(receiver.getDiagramView().get());
+		return absoluteY - llTop;
+	}
+
 	@Override
 	public Message getNewObject() {
 		return (resultCommand == null) ? null : resultCommand.getNewObject();
@@ -156,15 +191,23 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		}
 
 		// Is there actually an execution occurrence here?
-		Optional<MExecution> sendingExec = getTarget().elementAt(sendOffset)
-				.filter(MExecution.class::isInstance).map(MExecution.class::cast);
+		int llTop = layoutHelper().getBottom(getTarget().getDiagramView().get());
+		int where = beforeSend == getTarget() ? sendOffset
+				// For executions also the top to allow for messages to anchor within it
+				: beforeSend.getTop().orElse(llTop) - llTop + sendOffset;
+		Optional<MExecution> sendingExec = getTarget().elementAt(where).filter(MExecution.class::isInstance)
+				.map(MExecution.class::cast);
 		Vertex sender = sendingExec.map(this::vertex).orElseGet(this::vertex);
 		if (sender == null || sender.getDiagramView() == null) {
 			return UnexecutableCommand.INSTANCE;
 		}
 
 		// Is there actually an execution occurrence here?
-		Optional<MExecution> receivingExec = this.receiver.elementAt(recvOffset)
+		llTop = layoutHelper().getBottom(receiver.getDiagramView().get());
+		where = beforeRecv == receiver ? recvOffset
+				// For executions also the top to allow for messages to anchor within it
+				: beforeRecv.getTop().orElse(llTop) - llTop + recvOffset;
+		Optional<MExecution> receivingExec = this.receiver.elementAt(where)
 				.filter(MExecution.class::isInstance).map(MExecution.class::cast);
 		Vertex receiver = receivingExec.map(this::vertex).orElseGet(() -> vertex(this.receiver));
 		if (receiver == null || receiver.getDiagramView() == null) {

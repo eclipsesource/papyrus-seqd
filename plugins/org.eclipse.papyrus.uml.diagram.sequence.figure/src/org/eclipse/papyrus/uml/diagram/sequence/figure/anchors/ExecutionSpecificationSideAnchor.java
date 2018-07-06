@@ -53,4 +53,9 @@ public class ExecutionSpecificationSideAnchor extends AbstractConnectionAnchor i
 		return AnchorParser.getInstance().getTerminal(AnchorKind.SIDE, side, height);
 	}
 
+	@Override
+	public String toString() {
+		return String.format("ExecAnchor(%s)", getTerminal()); //$NON-NLS-1$
+	}
+
 }
