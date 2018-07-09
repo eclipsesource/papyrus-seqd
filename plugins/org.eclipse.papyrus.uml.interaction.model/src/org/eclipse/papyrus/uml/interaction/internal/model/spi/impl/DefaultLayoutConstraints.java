@@ -165,11 +165,11 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 	private static Map<String, Integer> loadHeights() {
 		Map<String, Integer> result = new HashMap<>();
 
-		result.put("Shape_Lifeline_Body", 400);
-		result.put(applyModifier(ARROW, "Edge_Message"), 5);
-		result.put("Shape_Execution_Specification", 40);
-		result.put("Interaction_Contents", 180);
-		result.put(applyModifier(ANCHOR, "Shape_Lifeline_Body"), 10);
+		result.put(ViewTypes.LIFELINE_BODY, 400);
+		result.put(applyModifier(ARROW, ViewTypes.MESSAGE), 5);
+		result.put(ViewTypes.EXECUTION_SPECIFICATION, 40);
+		result.put(ViewTypes.INTERACTION_CONTENTS, 180);
+		result.put(applyModifier(ANCHOR, ViewTypes.LIFELINE_BODY), 10);
 
 		return result;
 	}
@@ -178,9 +178,9 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 	private static Map<String, Integer> loadWidths() {
 		Map<String, Integer> result = new HashMap<>();
 
-		result.put("Shape_Lifeline_Body", 1);
-		result.put(applyModifier(ARROW, "Edge_Message"), 5);
-		result.put("Interaction_Contents", 45);
+		result.put(ViewTypes.LIFELINE_BODY, 1);
+		result.put(applyModifier(ARROW, ViewTypes.MESSAGE), 5);
+		result.put(ViewTypes.INTERACTION_CONTENTS, 45);
 		return result;
 	}
 
@@ -188,7 +188,7 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 	private static Map<String, Integer> loadPaddings() {
 		Map<String, Integer> result = new HashMap<>();
 
-		result.put(forOrientation(BOTTOM, "Shape_Lifeline_Body"), 10);
+		result.put(forOrientation(BOTTOM, ViewTypes.LIFELINE_BODY), 10);
 
 		return result;
 	}
