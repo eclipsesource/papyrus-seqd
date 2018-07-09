@@ -15,6 +15,7 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts;
 import static org.eclipse.gmf.runtime.notation.NotationPackage.Literals.LINE_STYLE__LINE_WIDTH;
 import static org.eclipse.gmf.runtime.notation.NotationPackage.Literals.LOCATION__X;
 import static org.eclipse.gmf.runtime.notation.NotationPackage.Literals.LOCATION__Y;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.ANCHOR;
 
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -40,30 +41,13 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.L
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineCreationEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.SequenceDiagramPopupBarEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.locators.OnLineBorderItemLocator;
-import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
-import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 
 /**
  * Edit Part that manages the body (the <i>line</i>) of the lifeline.
  */
-public class LifelineBodyEditPart extends BorderedBorderItemEditPart {
-
-	/**
-	 * The minimum width of a LifelineBody figure, in pixels.
-	 */
-	public static final int MIN_WIDTH = 1;
-
-	/**
-	 * The minimum height of a LifelineBody figure, in pixels.
-	 */
-	public static final int MIN_HEIGHT = 400;
-
-	/**
-	 * The bottom padding of the LifelineBody, in pixels.
-	 */
-	public static final int PADDING_BOTTOM = 10;
+public class LifelineBodyEditPart extends BorderedBorderItemEditPart implements ISequenceEditPart {
 
 	public LifelineBodyEditPart(View view) {
 		super(view);
@@ -72,6 +56,7 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart {
 	@Override
 	protected NodeFigure createMainFigure() {
 		LifelineBodyFigure fig = new LifelineBodyFigure();
+		fig.setDefaultAnchorDistance(getMinimumHeight(ANCHOR));
 		return fig;
 	}
 
@@ -93,7 +78,7 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart {
 	@Override
 	protected void refreshBounds() {
 		if (getBorderItemLocator() != null) {
-			int width = Math.max(MIN_WIDTH, getIntAttributeValue(LINE_STYLE__LINE_WIDTH));
+			int width = Math.max(getMinimumWidth(), getIntAttributeValue(LINE_STYLE__LINE_WIDTH));
 			Dimension size = new Dimension(width, computeLifelineHeight());
 			Point location = new Point(getIntAttributeValue(LOCATION__X), getIntAttributeValue(LOCATION__Y));
 			getBorderItemLocator().setConstraint(new Rectangle(location, size));
@@ -107,8 +92,9 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart {
 		MInteraction mInteraction = getMInteraction();
 		Optional<Integer> bottomMostElementY = mInteraction.getBottommostElement().map(MElement::getBottom)
 				.map(OptionalInt::getAsInt);
-		int endOfLifelineY = Math.max(bottomMostElementY.orElse(Integer.valueOf(-1)).intValue(), MIN_HEIGHT);
-		return getLayoutHelper().toRelativeY(getShape(), endOfLifelineY + PADDING_BOTTOM);
+		int endOfLifelineY = Math.max(bottomMostElementY.orElse(Integer.valueOf(-1)).intValue(),
+				getMinimumHeight());
+		return getLayoutHelper().toRelativeY(getShape(), endOfLifelineY + getPaddingBottom());
 	}
 
 	private MInteraction getMInteraction() {
@@ -117,10 +103,6 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart {
 
 	private Shape getShape() {
 		return (Shape)getNotationView();
-	}
-
-	private LayoutHelper getLayoutHelper() {
-		return LogicalModelPlugin.getInstance().getLayoutHelper(getEditingDomain());
 	}
 
 	private int getIntAttributeValue(EAttribute feature) {

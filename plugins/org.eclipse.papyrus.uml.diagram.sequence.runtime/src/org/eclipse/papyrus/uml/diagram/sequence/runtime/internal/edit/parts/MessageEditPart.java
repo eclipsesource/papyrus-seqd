@@ -11,6 +11,8 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts;
 
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.ARROW;
+
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.Graphics;
@@ -29,7 +31,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.L
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.UMLPackage;
 
-public class MessageEditPart extends ConnectionNodeEditPart {
+public class MessageEditPart extends ConnectionNodeEditPart implements ISequenceEditPart {
 
 	public MessageEditPart(View view) {
 		super(view);
@@ -80,7 +82,8 @@ public class MessageEditPart extends ConnectionNodeEditPart {
 	@Override
 	protected RotatableDecoration getArrowDecoration(int arrowType) {
 		RotatableDecoration arrowDecoration = super.getArrowDecoration(arrowType);
-		setScale(arrowDecoration, 5, 5);
+		getNotationView().getType();
+		setScale(arrowDecoration, getMinimumWidth(ARROW), getMinimumHeight(ARROW));
 		return arrowDecoration;
 	}
 

@@ -19,37 +19,33 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.LifelineBodyFigure;
 
 /**
- * An Anchor on the Lifeline body. The anchor is configured with a Height position relative to the top of the
- * lifeline body.
+ * An Anchor on the Lifeline body. The anchor is configured with a Distance position relative to the top of
+ * the lifeline body.
  */
 public class LifelineBodyAnchor extends AbstractConnectionAnchor {
 
 	private final LifelineBodyFigure lifelinebodyFigure;
 
-	private int height;
+	private int distance;
 
-	public LifelineBodyAnchor(LifelineBodyFigure lifelinebodyFigure) {
-		this(lifelinebodyFigure, 10);
-	}
-
-	public LifelineBodyAnchor(LifelineBodyFigure lifelinebodyFigure, int height) {
+	public LifelineBodyAnchor(LifelineBodyFigure lifelinebodyFigure, int distance) {
 		super(lifelinebodyFigure);
 		// We actually attach the anchor to the BodyFigure of the Lifeline
 		// Note: this causes issues for policies/interaction, because the body is far away
 		// from the Lifeline's Bounds. However, we're only interested in rendering here, and this works fine
-		this.height = height;
+		this.distance = distance;
 		this.lifelinebodyFigure = lifelinebodyFigure;
 	}
 
 	public String getTerminal() {
-		return String.valueOf(height);
+		return String.valueOf(distance);
 	}
 
 	@Override
 	public Point getLocation(Point reference) {
 		Rectangle body = lifelinebodyFigure.getBounds().getCopy();
 		lifelinebodyFigure.translateToAbsolute(body);
-		int boundedHeight = Math.min(height, body.height);
+		int boundedHeight = Math.min(distance, body.height);
 		int realHeight = (int)Math.round(boundedHeight * getScale(lifelinebodyFigure));
 		Point location = new Point(0, realHeight);
 		location.translate(body.getTopLeft());

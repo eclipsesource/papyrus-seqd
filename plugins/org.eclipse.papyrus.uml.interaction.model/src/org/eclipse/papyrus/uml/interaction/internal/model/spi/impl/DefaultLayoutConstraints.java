@@ -9,15 +9,20 @@
  * Contributors:
  *   Christian W. Damus - Initial API and implementation
  *****************************************************************************/
-
 package org.eclipse.papyrus.uml.interaction.internal.model.spi.impl;
 
 import static java.lang.Math.abs;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.applyModifier;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.ANCHOR;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.ARROW;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.NO_MODIFIER;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition.BOTTOM;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.gmf.runtime.notation.Compartment;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 
 /**
@@ -26,11 +31,18 @@ import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
  * @author Christian W. Damus
  */
 public class DefaultLayoutConstraints implements LayoutConstraints {
+
 	private static Integer ZERO = Integer.valueOf(0);
 
 	private final Map<String, Integer> standardXOffsets;
 
 	private final Map<String, Integer> standardYOffsets;
+
+	private final Map<String, Integer> standardHeights;
+
+	private final Map<String, Integer> standardWidths;
+
+	private final Map<String, Integer> standardPaddings;
 
 	/**
 	 * Initializes me.
@@ -40,6 +52,9 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 
 		standardXOffsets = loadXOffsets();
 		standardYOffsets = loadYOffsets();
+		standardHeights = loadHeights();
+		standardWidths = loadWidths();
+		standardPaddings = loadPaddings();
 	}
 
 	@Override
@@ -50,6 +65,60 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 	@Override
 	public int getYOffset(Compartment shapeCompartment) {
 		return standardYOffsets.getOrDefault(shapeCompartment.getType(), ZERO).intValue();
+	}
+
+	@Override
+	public int getMinimumHeight(View view) {
+		return getMinimumHeight(view.getType());
+	}
+
+	@Override
+	public int getMinimumHeight(String viewType) {
+		return getMinimumHeight(viewType, NO_MODIFIER);
+	}
+
+	@Override
+	public int getMinimumHeight(View view, String modifier) {
+		return getMinimumHeight(view.getType(), modifier);
+	}
+
+	@Override
+	public int getMinimumHeight(String viewType, String modifier) {
+		return standardHeights.getOrDefault(applyModifier(modifier, viewType), ZERO).intValue();
+	}
+
+	@Override
+	public int getMinimumWidth(View view) {
+		return getMinimumWidth(view.getType());
+	}
+
+	@Override
+	public int getMinimumWidth(String viewType) {
+		return getMinimumWidth(viewType, NO_MODIFIER);
+	}
+
+	@Override
+	public int getMinimumWidth(View view, String modifier) {
+		return getMinimumWidth(view.getType(), modifier);
+	}
+
+	@Override
+	public int getMinimumWidth(String viewType, String modifier) {
+		return standardWidths.getOrDefault(applyModifier(modifier, viewType), ZERO).intValue();
+	}
+
+	@Override
+	public int getPadding(RelativePosition orientation, View view) {
+		return getPadding(orientation, view.getType());
+	}
+
+	@Override
+	public int getPadding(RelativePosition orientation, String viewType) {
+		return standardPaddings.getOrDefault(forOrientation(orientation, viewType), ZERO).intValue();
+	}
+
+	private static String forOrientation(RelativePosition orientation, String type) {
+		return type + "_" + orientation.toString(); //$NON-NLS-1$
 	}
 
 	@Override
@@ -85,6 +154,38 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 
 		// The size of the interaction frame's pentagon label
 		result.put("Interaction_Contents", 30);
+
+		return result;
+	}
+
+	@SuppressWarnings("boxing")
+	private static Map<String, Integer> loadHeights() {
+		Map<String, Integer> result = new HashMap<>();
+
+		result.put("Shape_Lifeline_Body", 400);
+		result.put(applyModifier(ARROW, "Edge_Message"), 5);
+		result.put("Shape_Execution_Specification", 40);
+		result.put("Interaction_Contents", 180);
+		result.put(applyModifier(ANCHOR, "Shape_Lifeline_Body"), 10);
+
+		return result;
+	}
+
+	@SuppressWarnings("boxing")
+	private static Map<String, Integer> loadWidths() {
+		Map<String, Integer> result = new HashMap<>();
+
+		result.put("Shape_Lifeline_Body", 1);
+		result.put(applyModifier(ARROW, "Edge_Message"), 5);
+		result.put("Interaction_Contents", 45);
+		return result;
+	}
+
+	@SuppressWarnings("boxing")
+	private static Map<String, Integer> loadPaddings() {
+		Map<String, Integer> result = new HashMap<>();
+
+		result.put(forOrientation(BOTTOM, "Shape_Lifeline_Body"), 10);
 
 		return result;
 	}
