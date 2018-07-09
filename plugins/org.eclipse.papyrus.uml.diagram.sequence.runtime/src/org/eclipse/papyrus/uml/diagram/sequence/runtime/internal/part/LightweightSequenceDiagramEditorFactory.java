@@ -12,7 +12,7 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.part;
 
 import org.eclipse.papyrus.infra.gmfdiag.common.GmfEditorFactory;
-import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper.ViewTypes;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 
 /**
  * The editor factory to launch the sequence diagram.

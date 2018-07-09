@@ -21,7 +21,7 @@ import org.eclipse.gmf.runtime.notation.LayoutConstraint;
 import org.eclipse.gmf.runtime.notation.NotationFactory;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper.ViewTypes;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 
 /**
  * View factory for the interaction frame, especially in a new diagram.

@@ -24,7 +24,7 @@ import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.emf.ui.services.parser.ParserHintAdapter;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.parsers.MessageFormatParser;
-import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper.ViewTypes;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.UMLPackage;
 
 public class SequenceParserProvider extends AbstractProvider implements IParserProvider {

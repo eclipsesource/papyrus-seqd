@@ -24,8 +24,8 @@ import java.util.Map;
 
 import org.eclipse.gmf.runtime.notation.Compartment;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 
 /**
  * Encoding of the default layout constraints for shapes, compartments, etc.

@@ -14,7 +14,7 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.services.editpart.AbstractEditPartProvider;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper.ViewTypes;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 
 public class SequenceEditPartProvider extends AbstractEditPartProvider {
 

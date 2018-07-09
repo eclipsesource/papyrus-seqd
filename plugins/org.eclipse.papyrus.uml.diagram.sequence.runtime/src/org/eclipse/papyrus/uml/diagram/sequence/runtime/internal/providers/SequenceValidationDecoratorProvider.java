@@ -23,7 +23,7 @@ import org.eclipse.gmf.runtime.notation.Edge;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.common.providers.ValidationDecoratorProvider;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.part.LightweightSequenceDiagramEditor;
-import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper.ViewTypes;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 
 /**
  * @generated

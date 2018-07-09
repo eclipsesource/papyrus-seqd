@@ -17,7 +17,7 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.gmfdiag.common.providers.CustomAbstractViewProvider;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.factories.InteractionFrameViewFactory;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.factories.SequenceDiagramViewFactory;
-import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper.ViewTypes;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 
 public class SequenceViewProvider extends CustomAbstractViewProvider {
 	public static final String DIAGRAM_TYPE = "Lightweight Sequence Diagram"; //$NON-NLS-1$
