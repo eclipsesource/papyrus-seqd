@@ -11,12 +11,15 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts;
 
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.ARROW;
+
 import org.eclipse.draw2d.Connection;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.GeneralOrderingFigure;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.RightArrowDecoration;
 
-public class GeneralOrderingEditPart extends ConnectionNodeEditPart {
+public class GeneralOrderingEditPart extends ConnectionNodeEditPart implements ISequenceEditPart {
 
 	public GeneralOrderingEditPart(View view) {
 		super(view);
@@ -24,7 +27,11 @@ public class GeneralOrderingEditPart extends ConnectionNodeEditPart {
 
 	@Override
 	protected Connection createConnectionFigure() {
-		return new GeneralOrderingFigure();
+		GeneralOrderingFigure connection = new GeneralOrderingFigure();
+		RightArrowDecoration targetDecoration = new RightArrowDecoration();
+		targetDecoration.setScale(getMinimumWidth(ARROW), getMinimumHeight(ARROW));
+		connection.setTargetDecoration(targetDecoration);
+		return connection;
 	}
 
 }

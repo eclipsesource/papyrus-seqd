@@ -58,7 +58,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 /**
  * Specific {@link LayoutEditPolicy} that relies on the logical model to draw feedback.
  */
-public class InteractionLayoutEditPolicy extends XYLayoutEditPolicy {
+public class InteractionLayoutEditPolicy extends XYLayoutEditPolicy implements ISequenceEditPolicy {
 
 	private Shape feedback;
 
@@ -102,7 +102,9 @@ public class InteractionLayoutEditPolicy extends XYLayoutEditPolicy {
 			Dimension proposedSize = createRequest.getSize();
 			if (proposedSize == null) {
 				// This will be null until the user draws out a rect
-				proposedSize = new Dimension(45, 180); // TODO
+				int minWidth = getMinimumWidth();
+				int minHeight = getMinimumHeight();
+				proposedSize = new Dimension(minWidth, minHeight);
 			}
 
 			translateFromAbsoluteToLayoutRelative(proposedLocation);
@@ -166,7 +168,8 @@ public class InteractionLayoutEditPolicy extends XYLayoutEditPolicy {
 		return super.createChangeConstraintCommand(request, child, newConstraint);
 	}
 
-	protected Point getRelativeLocation(Point location) {
+	@Override
+	public Point getRelativeLocation(Point location) {
 		Point absolute = location.getCopy();
 		Rectangle parentBounds = getParentBounds();
 		Point insideLocation = absolute.translate(parentBounds.getLocation().negate());
