@@ -12,6 +12,8 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.fail;
 
@@ -497,14 +499,24 @@ public class EditorFixture extends ModelFixture {
 
 		flushDisplayEvents();
 
-		// Drag
+		// Drag in 5-pixel increments
 		mouse.type = SWT.MouseMove;
 		// button is still 1
-		mouse.x = finish.x();
-		mouse.y = finish.y();
-		tool.mouseDrag(new MouseEvent(mouse), viewer);
+		do {
+			if (mouse.x < finish.x()) {
+				mouse.x = min(mouse.x + 5, finish.x());
+			} else if (mouse.x > finish.x()) {
+				mouse.x = max(mouse.x - 5, finish.x());
+			}
+			if (mouse.y < finish.y()) {
+				mouse.y = min(mouse.y + 5, finish.y());
+			} else if (mouse.y > finish.y()) {
+				mouse.y = max(mouse.y - 5, finish.y());
+			}
+			tool.mouseDrag(new MouseEvent(mouse), viewer);
 
-		flushDisplayEvents();
+			flushDisplayEvents();
+		} while ((mouse.x != finish.x()) || (mouse.y != finish.y()));
 
 		// Release
 		mouse.type = SWT.MouseDown;

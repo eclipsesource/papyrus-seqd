@@ -12,6 +12,7 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.isForce;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil.getSort;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
@@ -228,7 +229,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		if (feedbackHelper == null) {
 			feedbackHelper = new MessageFeedbackHelper(Mode.CREATE,
-					MessageUtil.isSynchronousMessageConnection(request), true);
+					MessageUtil.isSynchronousMessageConnection(request));
 			Point p = request.getLocation();
 			connectionFeedback = createDummyConnection(request);
 			connectionFeedback.setConnectionRouter(getDummyConnectionRouter(request));
@@ -244,6 +245,11 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 	@Override
 	protected Command getReconnectSourceCommand(ReconnectRequest request) {
 		Command result = super.getReconnectSourceCommand(request);
+
+		if (isForce(request)) {
+			// Just reconnect this end; no sloping constraints required
+			return result;
+		}
 
 		ConnectionEditPart connectionEP = (ConnectionEditPart)request.getConnectionEditPart();
 		Connection connection = (Connection)connectionEP.getFigure();
@@ -283,6 +289,11 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 	@Override
 	protected Command getReconnectTargetCommand(ReconnectRequest request) {
 		Command result = super.getReconnectTargetCommand(request);
+
+		if (isForce(request)) {
+			// Just reconnect this end; no sloping constraints required
+			return result;
+		}
 
 		ConnectionEditPart connectionEP = (ConnectionEditPart)request.getConnectionEditPart();
 		Connection connection = (Connection)connectionEP.getFigure();
