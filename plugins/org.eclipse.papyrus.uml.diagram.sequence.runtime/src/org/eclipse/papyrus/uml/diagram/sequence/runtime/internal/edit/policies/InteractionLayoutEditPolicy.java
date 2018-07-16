@@ -26,7 +26,6 @@ import org.eclipse.draw2d.Shape;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
@@ -54,6 +53,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.Life
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.InteractionUtil;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
+import org.eclipse.papyrus.uml.interaction.model.spi.NoopCommand;
 import org.eclipse.papyrus.uml.service.types.element.UMLElementTypes;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Interaction;
@@ -164,20 +164,20 @@ public class InteractionLayoutEditPolicy extends XYLayoutEditPolicy {
 										mLifeline.nudgeHorizontally(request.getMoveDelta().x))))
 						.orElse(null);
 			} else if (RequestConstants.REQ_RESIZE_CHILDREN.equals(request.getType())) {
-				org.eclipse.emf.common.command.Command cmd = IdentityCommand.INSTANCE;
+				org.eclipse.emf.common.command.Command cmd = NoopCommand.INSTANCE;
 				if (request.getMoveDelta().x != 0) {
 					cmd = cmd.chain(mInteraction.getLifeline(lifeline)
 							.map(mLifeline -> mLifeline.nudgeHorizontally(request.getMoveDelta().x))
-							.orElse(IdentityCommand.INSTANCE));
+							.orElse(NoopCommand.INSTANCE));
 				}
 
 				if (request.getSizeDelta().width != 0) {
 					cmd = cmd.chain(mInteraction.getLifeline(lifeline)
 							.map(mLifeline -> mLifeline.resizeHorizontally(request.getSizeDelta().width))
-							.orElse(IdentityCommand.INSTANCE));
+							.orElse(NoopCommand.INSTANCE));
 				}
 
-				if (cmd == IdentityCommand.INSTANCE) {
+				if (cmd == NoopCommand.INSTANCE) {
 					return null;
 				}
 

@@ -15,7 +15,6 @@ package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 import java.util.Optional;
 
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.gmf.runtime.notation.Connector;
@@ -29,6 +28,7 @@ import org.eclipse.papyrus.uml.interaction.graph.GroupKind;
 import org.eclipse.papyrus.uml.interaction.graph.Tag;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
+import org.eclipse.papyrus.uml.interaction.model.spi.NoopCommand;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Message;
 
@@ -76,7 +76,7 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 	@Override
 	protected Command createCommand() {
 		if (deltaY == 0) {
-			return IdentityCommand.INSTANCE;
+			return NoopCommand.INSTANCE;
 		}
 
 		// Note that a move up is just a negative move down
