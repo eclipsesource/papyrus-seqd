@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
@@ -34,6 +33,7 @@ import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.spi.NoopCommand;
 import org.eclipse.uml2.uml.Element;
 
 /**
@@ -70,7 +70,7 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 
 		/* create the command */
 		if (nudgeCommands.isEmpty()) {
-			command = IdentityCommand.INSTANCE;
+			command = NoopCommand.INSTANCE;
 		} else {
 			command = CompoundModelCommand.compose(editingDomain, nudgeCommands);
 		}

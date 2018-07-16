@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.papyrus.uml.interaction.graph.GraphPredicates;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
+import org.eclipse.papyrus.uml.interaction.model.spi.NoopCommand;
 import org.eclipse.uml2.uml.UMLPackage;
 
 /**
@@ -49,7 +49,7 @@ public class NudgeHorizontallyCommand extends ModelCommand<MLifelineImpl> {
 	@Override
 	protected Command createCommand() {
 		if (deltaX == 0) {
-			return IdentityCommand.INSTANCE;
+			return NoopCommand.INSTANCE;
 		}
 
 		// Note that a move left is just a negative move right
