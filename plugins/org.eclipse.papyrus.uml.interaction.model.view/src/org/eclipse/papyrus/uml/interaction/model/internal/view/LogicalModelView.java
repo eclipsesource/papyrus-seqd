@@ -15,7 +15,7 @@ package org.eclipse.papyrus.uml.interaction.model.internal.view;
 
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.uml.diagram.common.part.UmlGmfDiagramEditor;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.ui.part.IPage;
 import org.eclipse.ui.part.IPageBookViewPage;
 
@@ -40,7 +40,7 @@ public class LogicalModelView extends PapyrusPageBookView {
 	}
 
 	protected boolean isSubpageImportant(UmlGmfDiagramEditor editor, Diagram diagram) {
-		return RepresentationKind.MODEL_ID.equals(diagram.getType());
+		return ViewTypes.LIGHTWEIGHT_SEQUENCE_DIAGRAM.equals(diagram.getType());
 	}
 
 }

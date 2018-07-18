@@ -29,7 +29,7 @@ import org.eclipse.papyrus.infra.gmfdiag.common.helper.NotationHelper;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.InteractionCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.LifelineBodyEditPart;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -83,7 +83,7 @@ public class NoPapyrusEditPolicyProvider extends AbstractProvider implements IEd
 		if (view == null || view.getDiagram() == null) {
 			return false;
 		}
-		return RepresentationKind.MODEL_ID.equals(view.getDiagram().getType());
+		return ViewTypes.LIGHTWEIGHT_SEQUENCE_DIAGRAM.equals(view.getDiagram().getType());
 	}
 
 	@Override

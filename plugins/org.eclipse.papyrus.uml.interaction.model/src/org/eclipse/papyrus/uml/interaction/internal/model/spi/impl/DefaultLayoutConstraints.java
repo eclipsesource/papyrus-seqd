@@ -9,6 +9,7 @@
  * Contributors:
  *   Christian W. Damus - Initial API and implementation
  *****************************************************************************/
+
 package org.eclipse.papyrus.uml.interaction.internal.model.spi.impl;
 
 import static java.lang.Math.abs;
@@ -24,6 +25,7 @@ import java.util.Map;
 import org.eclipse.gmf.runtime.notation.Compartment;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 
 /**
  * Encoding of the default layout constraints for shapes, compartments, etc.
@@ -139,11 +141,12 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 		return slope >= 3.0;
 	}
 
+	@SuppressWarnings("boxing")
 	private static Map<String, Integer> loadXOffsets() {
 		Map<String, Integer> result = new HashMap<>();
 
 		// Inset of the viewpoint figure
-		result.put("Interaction_Contents", 5);
+		result.put(ViewTypes.INTERACTION_CONTENTS, 5);
 
 		return result;
 	}
@@ -153,7 +156,7 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 		Map<String, Integer> result = new HashMap<>();
 
 		// The size of the interaction frame's pentagon label
-		result.put("Interaction_Contents", 30);
+		result.put(ViewTypes.INTERACTION_CONTENTS, 30);
 
 		return result;
 	}
@@ -162,11 +165,11 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 	private static Map<String, Integer> loadHeights() {
 		Map<String, Integer> result = new HashMap<>();
 
-		result.put("Shape_Lifeline_Body", 400);
-		result.put(applyModifier(ARROW, "Edge_Message"), 5);
-		result.put("Shape_Execution_Specification", 40);
-		result.put("Interaction_Contents", 180);
-		result.put(applyModifier(ANCHOR, "Shape_Lifeline_Body"), 10);
+		result.put(ViewTypes.LIFELINE_BODY, 400);
+		result.put(applyModifier(ARROW, ViewTypes.MESSAGE), 5);
+		result.put(ViewTypes.EXECUTION_SPECIFICATION, 40);
+		result.put(ViewTypes.INTERACTION_CONTENTS, 180);
+		result.put(applyModifier(ANCHOR, ViewTypes.LIFELINE_BODY), 10);
 
 		return result;
 	}
@@ -175,9 +178,9 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 	private static Map<String, Integer> loadWidths() {
 		Map<String, Integer> result = new HashMap<>();
 
-		result.put("Shape_Lifeline_Body", 1);
-		result.put(applyModifier(ARROW, "Edge_Message"), 5);
-		result.put("Interaction_Contents", 45);
+		result.put(ViewTypes.LIFELINE_BODY, 1);
+		result.put(applyModifier(ARROW, ViewTypes.MESSAGE), 5);
+		result.put(ViewTypes.INTERACTION_CONTENTS, 45);
 		return result;
 	}
 
@@ -185,7 +188,7 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 	private static Map<String, Integer> loadPaddings() {
 		Map<String, Integer> result = new HashMap<>();
 
-		result.put(forOrientation(BOTTOM, "Shape_Lifeline_Body"), 10);
+		result.put(forOrientation(BOTTOM, ViewTypes.LIFELINE_BODY), 10);
 
 		return result;
 	}

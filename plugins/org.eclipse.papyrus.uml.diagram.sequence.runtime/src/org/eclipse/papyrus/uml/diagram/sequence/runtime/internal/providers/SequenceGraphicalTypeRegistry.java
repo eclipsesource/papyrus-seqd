@@ -16,7 +16,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.gmfdiag.common.providers.GraphicalTypeRegistry;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.Interaction;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
@@ -34,13 +34,13 @@ public class SequenceGraphicalTypeRegistry extends GraphicalTypeRegistry {
 	}
 
 	private SequenceGraphicalTypeRegistry() {
-		knownNodes.add(RepresentationKind.INTERACTION_ID);
-		knownNodes.add(RepresentationKind.LIFELINE_HEADER_ID);
-		knownNodes.add(RepresentationKind.LIFELINE_HEADER_COMPARTMENT_ID);
-		knownNodes.add(RepresentationKind.LIFELINE_NAME_ID);
-		knownNodes.add(RepresentationKind.LIFELINE_BODY_ID);
+		knownNodes.add(ViewTypes.INTERACTION);
+		knownNodes.add(ViewTypes.LIFELINE_HEADER);
+		knownNodes.add(ViewTypes.LIFELINE_HEADER_COMPARTMENT);
+		knownNodes.add(ViewTypes.LIFELINE_NAME);
+		knownNodes.add(ViewTypes.LIFELINE_BODY);
 
-		knownEdges.add(RepresentationKind.MESSAGE_ID);
+		knownEdges.add(ViewTypes.MESSAGE);
 	}
 
 	@Override
@@ -48,17 +48,17 @@ public class SequenceGraphicalTypeRegistry extends GraphicalTypeRegistry {
 		UMLSwitch<String> t = new UMLSwitch<String>() {
 			@Override
 			public String caseInteraction(Interaction object) {
-				return RepresentationKind.INTERACTION_ID;
+				return ViewTypes.INTERACTION;
 			}
 
 			@Override
 			public String caseLifeline(Lifeline object) {
-				return RepresentationKind.LIFELINE_HEADER_ID;
+				return ViewTypes.LIFELINE_HEADER;
 			}
 
 			@Override
 			public String caseMessage(Message object) {
-				return RepresentationKind.MESSAGE_ID;
+				return ViewTypes.MESSAGE;
 			}
 
 			@Override
@@ -75,8 +75,8 @@ public class SequenceGraphicalTypeRegistry extends GraphicalTypeRegistry {
 
 	public static String getVisualID(View view) {
 		if (view instanceof Diagram) {
-			if (RepresentationKind.MODEL_ID.equals(view.getType())) {
-				return RepresentationKind.DIAGRAM_ID;
+			if (ViewTypes.LIGHTWEIGHT_SEQUENCE_DIAGRAM.equals(view.getType())) {
+				return ViewTypes.SEQUENCE_DIAGRAM;
 			} else {
 				return ""; //$NON-NLS-1$
 			}

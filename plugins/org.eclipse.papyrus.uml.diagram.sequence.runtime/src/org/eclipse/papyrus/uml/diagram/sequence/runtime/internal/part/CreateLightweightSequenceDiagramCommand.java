@@ -18,7 +18,7 @@ import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.infra.gmfdiag.common.utils.DiagramUtils;
 import org.eclipse.papyrus.uml.diagram.common.commands.CreateBehavioredClassifierDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.UMLPackage;
 
 /**
@@ -29,7 +29,7 @@ public class CreateLightweightSequenceDiagramCommand extends CreateBehavioredCla
 
 	@Override
 	protected String getDiagramNotationID() {
-		return RepresentationKind.MODEL_ID;
+		return ViewTypes.LIGHTWEIGHT_SEQUENCE_DIAGRAM;
 	}
 
 	@Override

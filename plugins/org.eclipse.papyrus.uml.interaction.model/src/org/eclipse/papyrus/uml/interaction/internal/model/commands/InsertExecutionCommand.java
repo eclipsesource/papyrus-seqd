@@ -32,6 +32,7 @@ import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredAddCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Element;
@@ -202,6 +203,6 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 	 */
 	protected Shape getTargetView() {
 		View headerView = getTarget().getDiagramView().get();
-		return (Shape)ViewUtil.getChildBySemanticHint(headerView, "Shape_Lifeline_Body"); //$NON-NLS-1$
+		return (Shape)ViewUtil.getChildBySemanticHint(headerView, ViewTypes.LIFELINE_BODY);
 	}
 }

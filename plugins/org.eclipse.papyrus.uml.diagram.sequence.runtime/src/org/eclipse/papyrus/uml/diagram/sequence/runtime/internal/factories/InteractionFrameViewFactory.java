@@ -21,7 +21,7 @@ import org.eclipse.gmf.runtime.notation.LayoutConstraint;
 import org.eclipse.gmf.runtime.notation.NotationFactory;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 
 /**
  * View factory for the interaction frame, especially in a new diagram.
@@ -42,11 +42,11 @@ public class InteractionFrameViewFactory extends ShapeViewFactory {
 		Shape result = super.createNode();
 
 		DecorationNode nameLabel = NotationFactory.eINSTANCE.createDecorationNode();
-		nameLabel.setType(RepresentationKind.INTERACTION_NAME_ID);
+		nameLabel.setType(ViewTypes.INTERACTION_NAME);
 		ViewUtil.insertChildView(result, nameLabel, ViewUtil.APPEND, true);
 
 		Compartment contents = NotationFactory.eINSTANCE.createCompartment();
-		contents.setType(RepresentationKind.INTERACTION_COMPARTMENT_ID);
+		contents.setType(ViewTypes.INTERACTION_CONTENTS);
 		ViewUtil.insertChildView(result, contents, ViewUtil.APPEND, true);
 
 		return result;

@@ -57,7 +57,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.papyrus.infra.gmfdiag.tooling.runtime.part.DefaultDiagramEditorUtil;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Messages;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.RepresentationKind;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -77,7 +77,8 @@ public class UMLDiagramEditorUtil {
 	public static Map<?, ?> getSaveOptions() {
 		HashMap<String, Object> saveOptions = new HashMap<String, Object>();
 		saveOptions.put(XMLResource.OPTION_ENCODING, "UTF-8"); //$NON-NLS-1$
-		saveOptions.put(Resource.OPTION_SAVE_ONLY_IF_CHANGED, Resource.OPTION_SAVE_ONLY_IF_CHANGED_MEMORY_BUFFER);
+		saveOptions.put(Resource.OPTION_SAVE_ONLY_IF_CHANGED,
+				Resource.OPTION_SAVE_ONLY_IF_CHANGED_MEMORY_BUFFER);
 		return saveOptions;
 	}
 
@@ -89,7 +90,8 @@ public class UMLDiagramEditorUtil {
 		IResource workspaceResource = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(path));
 		if (workspaceResource instanceof IFile) {
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			return null != page.openEditor(new FileEditorInput((IFile) workspaceResource), LightweightSequenceDiagramEditor.ID);
+			return null != page.openEditor(new FileEditorInput((IFile)workspaceResource),
+					LightweightSequenceDiagramEditor.ID);
 		}
 		return false;
 	}
@@ -140,7 +142,8 @@ public class UMLDiagramEditorUtil {
 	 * @generated
 	 */
 	public static Resource createDiagram(URI diagramURI, URI modelURI, IProgressMonitor progressMonitor) {
-		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainFactory.INSTANCE.createEditingDomain();
+		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainFactory.INSTANCE
+				.createEditingDomain();
 		progressMonitor.beginTask(Messages.UMLDiagramEditorUtil_CreateDiagramProgressTask, 3);
 		final Resource diagramResource = editingDomain.getResourceSet().createResource(diagramURI);
 		final Resource modelResource = editingDomain.getResourceSet().createResource(modelURI);
@@ -153,7 +156,7 @@ public class UMLDiagramEditorUtil {
 				Package model = createInitialModel();
 				attachModelToResource(model, modelResource);
 
-				Diagram diagram = ViewService.createDiagram(model, RepresentationKind.MODEL_ID,
+				Diagram diagram = ViewService.createDiagram(model, ViewTypes.LIGHTWEIGHT_SEQUENCE_DIAGRAM,
 						Activator.DIAGRAM_PREFERENCES_HINT);
 				if (diagram != null) {
 					diagramResource.getContents().add(diagram);
@@ -162,10 +165,8 @@ public class UMLDiagramEditorUtil {
 				}
 
 				try {
-					modelResource
-							.save(UMLDiagramEditorUtil.getSaveOptions());
-					diagramResource
-							.save(UMLDiagramEditorUtil.getSaveOptions());
+					modelResource.save(UMLDiagramEditorUtil.getSaveOptions());
+					diagramResource.save(UMLDiagramEditorUtil.getSaveOptions());
 				} catch (IOException e) {
 
 					Activator.log.error("Unable to store model and diagram resources", e); //$NON-NLS-1$
@@ -174,8 +175,8 @@ public class UMLDiagramEditorUtil {
 			}
 		};
 		try {
-			OperationHistoryFactory.getOperationHistory().execute(command, SubMonitor.convert(progressMonitor, 1),
-					null);
+			OperationHistoryFactory.getOperationHistory().execute(command,
+					SubMonitor.convert(progressMonitor, 1), null);
 		} catch (ExecutionException e) {
 			Activator.log.error("Unable to create model and diagram", e); //$NON-NLS-1$
 		}
@@ -185,9 +186,8 @@ public class UMLDiagramEditorUtil {
 	}
 
 	/**
-	 * Create a new instance of domain element associated with canvas.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Create a new instance of domain element associated with canvas. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
 	 * 
 	 * @generated
 	 */
@@ -196,9 +196,7 @@ public class UMLDiagramEditorUtil {
 	}
 
 	/**
-	 * Store model element in the resource.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Store model element in the resource. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
@@ -222,7 +220,7 @@ public class UMLDiagramEditorUtil {
 
 		if (!editParts.isEmpty()) {
 			diagramPart.getDiagramGraphicalViewer()
-					.reveal(firstPrimary != null ? firstPrimary : (EditPart) editParts.get(0));
+					.reveal(firstPrimary != null ? firstPrimary : (EditPart)editParts.get(0));
 		}
 	}
 
@@ -231,11 +229,11 @@ public class UMLDiagramEditorUtil {
 	 */
 	private static int findElementsInDiagramByID(DiagramEditPart diagramPart, EObject element,
 			List<EditPart> editPartCollector) {
-		IDiagramGraphicalViewer viewer = (IDiagramGraphicalViewer) diagramPart.getViewer();
+		IDiagramGraphicalViewer viewer = (IDiagramGraphicalViewer)diagramPart.getViewer();
 		final int intialNumOfEditParts = editPartCollector.size();
 
 		if (element instanceof View) { // support notation element lookup
-			EditPart editPart = (EditPart) viewer.getEditPartRegistry().get(element);
+			EditPart editPart = (EditPart)viewer.getEditPartRegistry().get(element);
 			if (editPart != null) {
 				editPartCollector.add(editPart);
 				return 1;
@@ -275,7 +273,7 @@ public class UMLDiagramEditorUtil {
 			LazyElement2ViewMap lazyElement2ViewMap) {
 		boolean hasStructuralURI = false;
 		if (targetElement.eResource() instanceof XMLResource) {
-			hasStructuralURI = ((XMLResource) targetElement.eResource()).getID(targetElement) == null;
+			hasStructuralURI = ((XMLResource)targetElement.eResource()).getID(targetElement) == null;
 		}
 
 		View view = null;
@@ -284,7 +282,7 @@ public class UMLDiagramEditorUtil {
 			view = lazyElement2ViewMap.getElement2ViewMap().get(targetElement);
 		} else if (findElementsInDiagramByID(diagramEditPart, targetElement, editPartHolder) > 0) {
 			EditPart editPart = editPartHolder.get(0);
-			view = editPart.getModel() instanceof View ? (View) editPart.getModel() : null;
+			view = editPart.getModel() instanceof View ? (View)editPart.getModel() : null;
 		}
 
 		return (view == null) ? diagramEditPart.getDiagramView() : view;
@@ -328,7 +326,7 @@ public class UMLDiagramEditorUtil {
 				// map possible notation elements to itself as these can't be found by view.getElement()
 				for (EObject element : elementSet) {
 					if (element instanceof View) {
-						View view = (View) element;
+						View view = (View)element;
 						if (view.getDiagram() == scope.getDiagram()) {
 							element2ViewMap.put(element, view); // take only those that part of our diagram
 						}
@@ -358,13 +356,13 @@ public class UMLDiagramEditorUtil {
 			}
 			boolean complete = false;
 			for (Iterator<?> it = parentView.getChildren().iterator(); it.hasNext() && !complete;) {
-				complete = buildElement2ViewMap((View) it.next(), element2ViewMap, elements);
+				complete = buildElement2ViewMap((View)it.next(), element2ViewMap, elements);
 			}
 			for (Iterator<?> it = parentView.getSourceEdges().iterator(); it.hasNext() && !complete;) {
-				complete = buildElement2ViewMap((View) it.next(), element2ViewMap, elements);
+				complete = buildElement2ViewMap((View)it.next(), element2ViewMap, elements);
 			}
 			for (Iterator<?> it = parentView.getTargetEdges().iterator(); it.hasNext() && !complete;) {
-				complete = buildElement2ViewMap((View) it.next(), element2ViewMap, elements);
+				complete = buildElement2ViewMap((View)it.next(), element2ViewMap, elements);
 			}
 			return complete;
 		}
