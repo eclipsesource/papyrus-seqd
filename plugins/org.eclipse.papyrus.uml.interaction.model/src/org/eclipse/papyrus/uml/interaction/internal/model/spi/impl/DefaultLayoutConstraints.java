@@ -61,12 +61,22 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 
 	@Override
 	public int getXOffset(Compartment shapeCompartment) {
-		return standardXOffsets.getOrDefault(shapeCompartment.getType(), ZERO).intValue();
+		return getXOffset(shapeCompartment.getType());
+	}
+
+	@Override
+	public int getXOffset(String viewType) {
+		return standardXOffsets.getOrDefault(viewType, ZERO).intValue();
 	}
 
 	@Override
 	public int getYOffset(Compartment shapeCompartment) {
-		return standardYOffsets.getOrDefault(shapeCompartment.getType(), ZERO).intValue();
+		return getYOffset(shapeCompartment.getType());
+	}
+
+	@Override
+	public int getYOffset(String viewType) {
+		return standardYOffsets.getOrDefault(viewType, ZERO).intValue();
 	}
 
 	@Override
