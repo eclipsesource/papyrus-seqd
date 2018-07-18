@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_3XpTICHsEeiIiO6KSag_9g" name="AnchorsModel">
+  <packageImport xmi:id="_3euykCHsEeiIiO6KSag_9g">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_MYBq8CIUEeiFUtGmEMBqqw" name="ExecutionSpecificationAnchors">
+    <lifeline xmi:id="_MYBq8SIUEeiFUtGmEMBqqw" name="LeftLine" coveredBy="_bCuaMCe5Eei33oLfoI_NYA _bCuaMye5Eei33oLfoI_NYA"/>
+    <lifeline xmi:id="_MYBq8iIUEeiFUtGmEMBqqw" name="RightLine" coveredBy="_bCuaMSe5Eei33oLfoI_NYA _bCuaMie5Eei33oLfoI_NYA _UmObcCIUEeiFUtGmEMBqqw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_bCuaMCe5Eei33oLfoI_NYA" name="request-send" covered="_MYBq8SIUEeiFUtGmEMBqqw" message="_bCuaNCe5Eei33oLfoI_NYA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_bCuaMSe5Eei33oLfoI_NYA" name="request-recv" covered="_MYBq8iIUEeiFUtGmEMBqqw" message="_bCuaNCe5Eei33oLfoI_NYA"/>
+    <fragment xmi:type="uml:ActionExecutionSpecification" xmi:id="_UmObcCIUEeiFUtGmEMBqqw" name="ActionExecutionSpecification1" covered="_MYBq8iIUEeiFUtGmEMBqqw" finish="_bCuaMie5Eei33oLfoI_NYA" start="_bCuaMSe5Eei33oLfoI_NYA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_bCuaMie5Eei33oLfoI_NYA" name="reply-send" covered="_MYBq8iIUEeiFUtGmEMBqqw" message="_bCuaNSe5Eei33oLfoI_NYA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_bCuaMye5Eei33oLfoI_NYA" name="reply-recv" covered="_MYBq8SIUEeiFUtGmEMBqqw" message="_bCuaNSe5Eei33oLfoI_NYA"/>
+    <message xmi:id="_bCuaNCe5Eei33oLfoI_NYA" name="request" messageSort="asynchCall" receiveEvent="_bCuaMSe5Eei33oLfoI_NYA" sendEvent="_bCuaMCe5Eei33oLfoI_NYA"/>
+    <message xmi:id="_bCuaNSe5Eei33oLfoI_NYA" name="reply" messageSort="reply" receiveEvent="_bCuaMye5Eei33oLfoI_NYA" sendEvent="_bCuaMie5Eei33oLfoI_NYA"/>
+  </packagedElement>
+</uml:Model>

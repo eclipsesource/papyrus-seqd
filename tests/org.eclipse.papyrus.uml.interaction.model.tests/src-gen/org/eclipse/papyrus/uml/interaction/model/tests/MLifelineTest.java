@@ -65,6 +65,8 @@ import junit.textui.TestRunner;
  * View</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#following(org.eclipse.papyrus.uml.interaction.model.MElement)
  * <em>Following</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#preceding(org.eclipse.papyrus.uml.interaction.model.MElement)
+ * <em>Preceding</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getExecutionOccurrence(org.eclipse.uml2.uml.ExecutionOccurrenceSpecification)
  * <em>Get Execution Occurrence</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getExecution(org.eclipse.uml2.uml.ExecutionSpecification)
@@ -263,6 +265,27 @@ public class MLifelineTest extends MElementTest {
 		assertThat(following, isPresent(wraps(umlInteraction.getFragment("reply-send"))));
 		following = getFixture().following(following.get());
 		assertThat(following, not(isPresent()));
+	}
+
+	/**
+	 * Tests the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#preceding(org.eclipse.papyrus.uml.interaction.model.MElement)
+	 * <em>Preceding</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#preceding(org.eclipse.papyrus.uml.interaction.model.MElement)
+	 * @generated NOT
+	 */
+	public void testPreceding__MElement() {
+		Optional<MMessageEnd> end = interaction.getElement(umlInteraction.getFragment("reply-send"))
+				.map(MMessageEnd.class::cast);
+		Assume.assumeThat(end, isPresent());
+
+		Optional<MElement<?>> preceding = getFixture().preceding(end.get());
+		assertThat(preceding, isPresent(wraps(umlInteraction.getFragment("ActionExecutionSpecification1"))));
+		preceding = getFixture().preceding(preceding.get());
+		assertThat(preceding, isPresent(wraps(umlInteraction.getFragment("request-recv"))));
+		preceding = getFixture().preceding(preceding.get());
+		assertThat(preceding, not(isPresent()));
 	}
 
 	/**

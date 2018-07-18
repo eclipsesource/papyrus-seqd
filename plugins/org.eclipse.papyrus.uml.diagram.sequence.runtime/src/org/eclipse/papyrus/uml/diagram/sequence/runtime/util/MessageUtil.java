@@ -13,12 +13,20 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.util;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.gef.requests.CreateConnectionRequest;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewRequest;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateUnspecifiedTypeConnectionRequest;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.emf.type.core.IHintedType;
 import org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil;
+import org.eclipse.papyrus.uml.service.types.element.UMLElementTypes;
+import org.eclipse.papyrus.uml.service.types.utils.ElementUtil;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
@@ -102,5 +110,52 @@ public class MessageUtil {
 				return MessageSort.ASYNCH_CALL_LITERAL;
 			}
 		}.doSwitch(messageType);
+	}
+
+	public static boolean isSynchronousMessage(IElementType messageType) {
+		return isSynchronous(getSort(messageType));
+	}
+
+	public static boolean isSynchronous(MessageSort messageSort) {
+		// Is it *not* an asynchronous message type?
+		switch (messageSort) {
+			case ASYNCH_CALL_LITERAL:
+			case ASYNCH_SIGNAL_LITERAL:
+				return false;
+			default:
+				return true;
+		}
+	}
+
+	public static boolean isMessage(IElementType type) {
+		return ElementUtil.isTypeOf(type, UMLElementTypes.MESSAGE);
+	}
+
+	public static boolean isMessageConnection(CreateConnectionRequest request) {
+		return isMessageConnection(request, MessageUtil::isMessage);
+	}
+
+	public static boolean isSynchronousMessageConnection(CreateConnectionRequest request) {
+		return isMessageConnection(request, MessageUtil::isSynchronousMessage);
+	}
+
+	private static boolean isMessageConnection(CreateConnectionRequest request,
+			Predicate<? super IElementType> typeTest) {
+		boolean result = false;
+
+		if (request instanceof CreateUnspecifiedTypeConnectionRequest) {
+			CreateUnspecifiedTypeConnectionRequest unspecified = (CreateUnspecifiedTypeConnectionRequest)request;
+			result = ((List<?>)unspecified.getAllRequests()).stream()
+					.filter(CreateConnectionRequest.class::isInstance)
+					.map(CreateConnectionRequest.class::cast)
+					.anyMatch(req -> isMessageConnection(req, typeTest));
+		} else if (request instanceof CreateConnectionViewRequest) {
+			CreateConnectionViewRequest specified = (CreateConnectionViewRequest)request;
+			Optional<IAdaptable> elementAdapter = Optional
+					.ofNullable(specified.getConnectionViewDescriptor().getElementAdapter());
+			result = elementAdapter.map(a -> a.getAdapter(IElementType.class)).filter(typeTest).isPresent();
+		}
+
+		return result;
 	}
 }

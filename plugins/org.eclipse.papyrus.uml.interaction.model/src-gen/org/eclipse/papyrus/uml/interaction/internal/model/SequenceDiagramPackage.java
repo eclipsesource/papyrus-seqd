@@ -536,13 +536,21 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MLIFELINE___FOLLOWING__MELEMENT = MELEMENT_OPERATION_COUNT + 2;
 
 	/**
+	 * The operation id for the '<em>Preceding</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___PRECEDING__MELEMENT = MELEMENT_OPERATION_COUNT + 3;
+
+	/**
 	 * The operation id for the '<em>Get Execution Occurrence</em>' operation. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE___GET_EXECUTION_OCCURRENCE__EXECUTIONOCCURRENCESPECIFICATION = MELEMENT_OPERATION_COUNT + 3;
+	int MLIFELINE___GET_EXECUTION_OCCURRENCE__EXECUTIONOCCURRENCESPECIFICATION = MELEMENT_OPERATION_COUNT + 4;
 
 	/**
 	 * The operation id for the '<em>Get Execution</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
@@ -551,7 +559,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE___GET_EXECUTION__EXECUTIONSPECIFICATION = MELEMENT_OPERATION_COUNT + 4;
+	int MLIFELINE___GET_EXECUTION__EXECUTIONSPECIFICATION = MELEMENT_OPERATION_COUNT + 5;
 
 	/**
 	 * The operation id for the '<em>Insert Execution After</em>' operation. <!-- begin-user-doc --> <!--
@@ -560,7 +568,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE___INSERT_EXECUTION_AFTER__MELEMENT_INT_INT_ELEMENT = MELEMENT_OPERATION_COUNT + 5;
+	int MLIFELINE___INSERT_EXECUTION_AFTER__MELEMENT_INT_INT_ELEMENT = MELEMENT_OPERATION_COUNT + 6;
 
 	/**
 	 * The operation id for the '<em>Insert Execution After</em>' operation. <!-- begin-user-doc --> <!--
@@ -569,7 +577,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE___INSERT_EXECUTION_AFTER__MELEMENT_INT_INT_ECLASS = MELEMENT_OPERATION_COUNT + 6;
+	int MLIFELINE___INSERT_EXECUTION_AFTER__MELEMENT_INT_INT_ECLASS = MELEMENT_OPERATION_COUNT + 7;
 
 	/**
 	 * The operation id for the '<em>Insert Message After</em>' operation. <!-- begin-user-doc --> <!--
@@ -579,7 +587,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MESSAGESORT_NAMEDELEMENT = MELEMENT_OPERATION_COUNT
-			+ 7;
+			+ 8;
 
 	/**
 	 * The operation id for the '<em>Insert Message After</em>' operation. <!-- begin-user-doc --> <!--
@@ -589,7 +597,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MELEMENT_INT_MESSAGESORT_NAMEDELEMENT = MELEMENT_OPERATION_COUNT
-			+ 8;
+			+ 9;
 
 	/**
 	 * The operation id for the '<em>Element At</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -597,7 +605,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE___ELEMENT_AT__INT = MELEMENT_OPERATION_COUNT + 9;
+	int MLIFELINE___ELEMENT_AT__INT = MELEMENT_OPERATION_COUNT + 10;
 
 	/**
 	 * The operation id for the '<em>Nudge Horizontally</em>' operation. <!-- begin-user-doc --> <!--
@@ -606,7 +614,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE___NUDGE_HORIZONTALLY__INT = MELEMENT_OPERATION_COUNT + 10;
+	int MLIFELINE___NUDGE_HORIZONTALLY__INT = MELEMENT_OPERATION_COUNT + 11;
 
 	/**
 	 * The number of operations of the '<em>MLifeline</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
@@ -615,7 +623,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 11;
+	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 12;
 
 	/**
 	 * The meta object id for the
@@ -1793,6 +1801,17 @@ public interface SequenceDiagramPackage extends EPackage {
 
 	/**
 	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#preceding(org.eclipse.papyrus.uml.interaction.model.MElement)
+	 * <em>Preceding</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Preceding</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#preceding(org.eclipse.papyrus.uml.interaction.model.MElement)
+	 * @generated
+	 */
+	EOperation getMLifeline__Preceding__MElement();
+
+	/**
+	 * Returns the meta object for the
 	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getExecutionOccurrence(org.eclipse.uml2.uml.ExecutionOccurrenceSpecification)
 	 * <em>Get Execution Occurrence</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2530,6 +2549,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation MLIFELINE___FOLLOWING__MELEMENT = eINSTANCE.getMLifeline__Following__MElement();
+
+		/**
+		 * The meta object literal for the '<em><b>Preceding</b></em>' operation. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MLIFELINE___PRECEDING__MELEMENT = eINSTANCE.getMLifeline__Preceding__MElement();
 
 		/**
 		 * The meta object literal for the '<em><b>Get Execution Occurrence</b></em>' operation. <!--

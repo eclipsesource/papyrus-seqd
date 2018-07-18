@@ -15,8 +15,9 @@ import org.eclipse.draw2d.AbstractConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.AnchorParser.AnchorKind;
 
-public class ExecutionSpecificationEndAnchor extends AbstractConnectionAnchor {
+public class ExecutionSpecificationEndAnchor extends AbstractConnectionAnchor implements ISequenceAnchor {
 
 	public ExecutionSpecificationEndAnchor(IFigure figure) {
 		super(figure);
@@ -33,4 +34,13 @@ public class ExecutionSpecificationEndAnchor extends AbstractConnectionAnchor {
 		return location;
 	}
 
+	@Override
+	public String getTerminal() {
+		return AnchorParser.getInstance().getTerminal(AnchorKind.END);
+	}
+
+	@Override
+	public String toString() {
+		return String.format("ExecAnchor(%s)", getTerminal()); //$NON-NLS-1$
+	}
 }

@@ -427,7 +427,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 			int headRight = getRight(head);
 			int headLeft = getLeft(head);
 			if ((headLeft != DEFAULT_LEFT) && (headRight != DEFAULT_RIGHT)) {
-				return (headRight - headLeft) / 2;
+				return (headRight + headLeft) / 2;
 			}
 		} else {
 			LayoutConstraint constraint = shape.getLayoutConstraint();

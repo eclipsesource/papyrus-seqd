@@ -17,16 +17,17 @@ import org.eclipse.draw2d.ScalableFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.LifelineBodyFigure;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.AnchorParser.AnchorKind;
 
 /**
  * An Anchor on the Lifeline body. The anchor is configured with a Distance position relative to the top of
  * the lifeline body.
  */
-public class LifelineBodyAnchor extends AbstractConnectionAnchor {
+public class LifelineBodyAnchor extends AbstractConnectionAnchor implements ISequenceAnchor {
 
 	private final LifelineBodyFigure lifelinebodyFigure;
-
 	private int distance;
+
 
 	public LifelineBodyAnchor(LifelineBodyFigure lifelinebodyFigure, int distance) {
 		super(lifelinebodyFigure);
@@ -37,8 +38,9 @@ public class LifelineBodyAnchor extends AbstractConnectionAnchor {
 		this.lifelinebodyFigure = lifelinebodyFigure;
 	}
 
+	@Override
 	public String getTerminal() {
-		return String.valueOf(distance);
+		return AnchorParser.getInstance().getTerminal(AnchorKind.DISTANCE, distance);
 	}
 
 	@Override
@@ -81,6 +83,11 @@ public class LifelineBodyAnchor extends AbstractConnectionAnchor {
 			parent = parent.getParent();
 		}
 		return null;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("LLBodyAnchor(%s)", getTerminal()); //$NON-NLS-1$
 	}
 
 }

@@ -12,18 +12,26 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
-/**
- * This is the {@code LifelineBodyGraphicalNodeEditPolicy} type. Enjoy.
- *
- * @author Christian W. Damus
- */
-public class LifelineBodyGraphicalNodeEditPolicy extends AbstractSequenceGraphicalNodeEditPolicy {
+import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.requests.BendpointRequest;
+import org.eclipse.gmf.runtime.diagram.ui.editpolicies.ConnectionBendpointEditPolicy;
 
-	/**
-	 * Initializes me.
-	 */
-	public LifelineBodyGraphicalNodeEditPolicy() {
-		super();
+/**
+ * Connection bend-points edit-policy for messages, which do not support bendpoints.
+ */
+public class MessageBendpointsEditPolicy extends ConnectionBendpointEditPolicy {
+
+	public MessageBendpointsEditPolicy() {
+		super(); // Always oblique
 	}
 
+	@Override
+	protected Command getCreateBendpointCommand(BendpointRequest request) {
+		return null;
+	}
+
+	@Override
+	protected void showCreateBendpointFeedback(BendpointRequest request) {
+		// No bendpoints
+	}
 }
