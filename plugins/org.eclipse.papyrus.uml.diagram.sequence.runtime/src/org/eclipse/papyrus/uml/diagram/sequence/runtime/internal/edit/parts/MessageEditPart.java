@@ -13,6 +13,10 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts;
 
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.ARROW;
 
+import com.google.common.eventbus.EventBus;
+
+import java.util.Optional;
+
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.Graphics;
@@ -20,6 +24,7 @@ import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineDecoration;
 import org.eclipse.draw2d.RotatableDecoration;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.gef.DragTracker;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
@@ -31,10 +36,13 @@ import org.eclipse.papyrus.uml.diagram.sequence.figure.MessageFigure;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LogicalModelElementSemanticEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageBendpointsEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageEndpointEditPolicy;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.MessageMoveTracker;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.UMLPackage;
 
 public class MessageEditPart extends ConnectionNodeEditPart implements ISequenceEditPart {
+
+	private final EventBus bus = new EventBus();
 
 	public MessageEditPart(View view) {
 		super(view);
@@ -144,7 +152,7 @@ public class MessageEditPart extends ConnectionNodeEditPart implements ISequence
 	protected void createDefaultEditPolicies() {
 		super.createDefaultEditPolicies();
 		installEditPolicy(EditPolicyRoles.SEMANTIC_ROLE, new LogicalModelElementSemanticEditPolicy());
-		installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE, new MessageEndpointEditPolicy());
+		installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE, new MessageEndpointEditPolicy(bus));
 		installEditPolicy(EditPolicy.CONNECTION_BENDPOINTS_ROLE, new MessageBendpointsEditPolicy());
 	}
 
@@ -156,5 +164,11 @@ public class MessageEditPart extends ConnectionNodeEditPart implements ISequence
 	@Override
 	protected void refreshRoutingStyles() {
 		// Routing styles are not supported because we do not support bendpoints
+	}
+
+	@Override
+	public DragTracker getDragTracker(Request req) {
+		return Optional.ofNullable(super.getDragTracker(req))
+				.map(trk -> new MessageMoveTracker(this, trk, bus)).orElse(null);
 	}
 }

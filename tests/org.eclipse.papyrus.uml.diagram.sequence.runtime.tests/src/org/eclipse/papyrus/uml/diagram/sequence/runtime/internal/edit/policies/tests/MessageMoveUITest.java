@@ -107,6 +107,33 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 		assertThat(messageEP, runs(sendX, y, recvX, y));
 	}
 
+	@Test
+	public void attemptToMoveAsyncMessageAcrossAnother() {
+		final int slopeY = INITIAL_Y + 80;
+		final int otherY = moveDown ? INITIAL_Y + 80 + 15 : INITIAL_Y - 15;
+
+		if (!moveDown) { // Be sure to create messages in top-down order to avoid nudging
+			createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, otherY), at(recvX, otherY));
+		}
+
+		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, INITIAL_Y),
+				at(recvX, slopeY)); // always sloping down, of course
+		assumeThat(messageEP, runs(sendX, INITIAL_Y, recvX, slopeY));
+
+		if (moveDown) { // Be sure to create messages in top-down order to avoid nudging
+			createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, otherY), at(recvX, otherY));
+		}
+
+		int delta = moveDown ? 30 : -30;
+		int x = (sendX + recvX) / 2;
+		int grabY = (INITIAL_Y + slopeY) / 2;
+		int y = grabY + delta;
+
+		editor.moveSelection(at(x, grabY), at(x, y));
+
+		assertThat("Message should not have moved", messageEP, runs(sendX, INITIAL_Y, recvX, slopeY));
+	}
+
 	//
 	// Test framework
 	//
