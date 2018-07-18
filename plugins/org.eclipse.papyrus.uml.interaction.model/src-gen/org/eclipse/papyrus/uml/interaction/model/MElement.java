@@ -175,4 +175,13 @@ public interface MElement<T extends Element> extends MObject {
 	 */
 	Command remove();
 
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Command" required="true"
+	 *        deltaHeightRequired="true"
+	 * @generated
+	 */
+	Command resize(int deltaHeight);
+
 } // MElement

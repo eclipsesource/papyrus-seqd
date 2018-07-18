@@ -261,4 +261,17 @@ public interface MLifeline extends MElement<Lifeline> {
 	 */
 	Command nudgeHorizontally(int deltaX);
 
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> Resize the lifeline
+	 * horizontally, nudging the following lifelines along with all of the layout that depends on it.
+	 * 
+	 * @param deltaWidth
+	 *            the distance by which to nudge the lifeline in the X axis (negative values nudging to the
+	 *            left, of course) <!-- end-model-doc -->
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Command" required="true"
+	 *        deltaWidthRequired="true"
+	 * @generated
+	 */
+	Command resizeHorizontally(int deltaWidth);
+
 } // MLifeline

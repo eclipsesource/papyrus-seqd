@@ -35,6 +35,7 @@ import org.eclipse.papyrus.uml.interaction.internal.model.commands.InsertExecuti
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.InsertMessageCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.NudgeHorizontallyCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.RemoveLifelineCommand;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.ResizeHorizontallyCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
@@ -253,7 +254,7 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	@Override
 	public CreationCommand<Message> insertMessageAfter(MElement<?> beforeSend, int sendOffset,
@@ -296,6 +297,16 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	@Override
 	public Command nudgeHorizontally(int deltaX) {
 		return new NudgeHorizontallyCommand(this, deltaX);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Command resizeHorizontally(int deltaWidth) {
+		return new ResizeHorizontallyCommand(this, deltaWidth);
 	}
 
 	/**
@@ -401,6 +412,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return elementAt((Integer)arguments.get(0));
 			case SequenceDiagramPackage.MLIFELINE___NUDGE_HORIZONTALLY__INT:
 				return nudgeHorizontally((Integer)arguments.get(0));
+			case SequenceDiagramPackage.MLIFELINE___RESIZE_HORIZONTALLY__INT:
+				return resizeHorizontally((Integer)arguments.get(0));
 		}
 		return super.eInvoke(operationID, arguments);
 	}

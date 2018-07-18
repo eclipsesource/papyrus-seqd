@@ -334,6 +334,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EOperation getMElement__Resize__int() {
+		return mElementEClass.getEOperations().get(6);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EClass getMInteraction() {
 		return mInteractionEClass;
 	}
@@ -586,6 +596,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	@Override
 	public EOperation getMLifeline__NudgeHorizontally__int() {
 		return mLifelineEClass.getEOperations().get(10);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMLifeline__ResizeHorizontally__int() {
+		return mLifelineEClass.getEOperations().get(11);
 	}
 
 	/**
@@ -959,6 +979,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEOperation(mElementEClass, MELEMENT___FOLLOWING);
 		createEOperation(mElementEClass, MELEMENT___NUDGE__INT);
 		createEOperation(mElementEClass, MELEMENT___REMOVE);
+		createEOperation(mElementEClass, MELEMENT___RESIZE__INT);
 
 		mInteractionEClass = createEClass(MINTERACTION);
 		createEReference(mInteractionEClass, MINTERACTION__LIFELINES);
@@ -990,6 +1011,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 				MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MELEMENT_INT_MESSAGESORT_NAMEDELEMENT);
 		createEOperation(mLifelineEClass, MLIFELINE___ELEMENT_AT__INT);
 		createEOperation(mLifelineEClass, MLIFELINE___NUDGE_HORIZONTALLY__INT);
+		createEOperation(mLifelineEClass, MLIFELINE___RESIZE_HORIZONTALLY__INT);
 
 		mExecutionEClass = createEClass(MEXECUTION);
 		createEAttribute(mExecutionEClass, MEXECUTION__START);
@@ -1057,10 +1079,10 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 
 		// Obtain other dependent packages
 		UMLPackage theUMLPackage = (UMLPackage)EPackage.Registry.INSTANCE.getEPackage(UMLPackage.eNS_URI);
-		NotationPackage theNotationPackage = (NotationPackage)EPackage.Registry.INSTANCE
-				.getEPackage(NotationPackage.eNS_URI);
 		EcorePackage theEcorePackage = (EcorePackage)EPackage.Registry.INSTANCE
 				.getEPackage(EcorePackage.eNS_URI);
+		NotationPackage theNotationPackage = (NotationPackage)EPackage.Registry.INSTANCE
+				.getEPackage(NotationPackage.eNS_URI);
 
 		// Create type parameters
 		ETypeParameter mElementEClass_T = addETypeParameter(mElementEClass, "T"); //$NON-NLS-1$
@@ -1164,6 +1186,10 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		addEParameter(op, ecorePackage.getEInt(), "deltaY", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEOperation(getMElement__Remove(), this.getCommand(), "remove", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		op = initEOperation(getMElement__Resize__int(), this.getCommand(), "resize", 1, 1, IS_UNIQUE, //$NON-NLS-1$
+				IS_ORDERED);
+		addEParameter(op, theEcorePackage.getEInt(), "deltaHeight", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(mInteractionEClass, MInteraction.class, "MInteraction", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);
@@ -1383,6 +1409,10 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		op = initEOperation(getMLifeline__NudgeHorizontally__int(), this.getCommand(), "nudgeHorizontally", 1, //$NON-NLS-1$
 				1, IS_UNIQUE, IS_ORDERED);
 		addEParameter(op, ecorePackage.getEInt(), "deltaX", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		op = initEOperation(getMLifeline__ResizeHorizontally__int(), this.getCommand(), "resizeHorizontally", //$NON-NLS-1$
+				1, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, ecorePackage.getEInt(), "deltaWidth", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(mExecutionEClass, MExecution.class, "MExecution", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);

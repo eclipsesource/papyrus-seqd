@@ -178,13 +178,21 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MELEMENT___REMOVE = 5;
 
 	/**
+	 * The operation id for the '<em>Resize</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MELEMENT___RESIZE__INT = 6;
+
+	/**
 	 * The number of operations of the '<em>MElement</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MELEMENT_OPERATION_COUNT = 6;
+	int MELEMENT_OPERATION_COUNT = 7;
 
 	/**
 	 * The meta object id for the
@@ -307,6 +315,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MINTERACTION___REMOVE = MELEMENT___REMOVE;
+
+	/**
+	 * The operation id for the '<em>Resize</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MINTERACTION___RESIZE__INT = MELEMENT___RESIZE__INT;
 
 	/**
 	 * The operation id for the '<em>Get Diagram View</em>' operation. <!-- begin-user-doc --> <!--
@@ -511,6 +527,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MLIFELINE___REMOVE = MELEMENT___REMOVE;
 
 	/**
+	 * The operation id for the '<em>Resize</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___RESIZE__INT = MELEMENT___RESIZE__INT;
+
+	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -609,13 +633,22 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MLIFELINE___NUDGE_HORIZONTALLY__INT = MELEMENT_OPERATION_COUNT + 10;
 
 	/**
+	 * The operation id for the '<em>Resize Horizontally</em>' operation. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___RESIZE_HORIZONTALLY__INT = MELEMENT_OPERATION_COUNT + 11;
+
+	/**
 	 * The number of operations of the '<em>MLifeline</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 11;
+	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 12;
 
 	/**
 	 * The meta object id for the
@@ -729,6 +762,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MEXECUTION___REMOVE = MELEMENT___REMOVE;
+
+	/**
+	 * The operation id for the '<em>Resize</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION___RESIZE__INT = MELEMENT___RESIZE__INT;
 
 	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -897,6 +938,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MOCCURRENCE___REMOVE = MELEMENT___REMOVE;
 
 	/**
+	 * The operation id for the '<em>Resize</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MOCCURRENCE___RESIZE__INT = MELEMENT___RESIZE__INT;
+
+	/**
 	 * The number of operations of the '<em>MOccurrence</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
@@ -1027,6 +1076,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MEXECUTION_OCCURRENCE___REMOVE = MOCCURRENCE___REMOVE;
+
+	/**
+	 * The operation id for the '<em>Resize</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION_OCCURRENCE___RESIZE__INT = MOCCURRENCE___RESIZE__INT;
 
 	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1204,6 +1261,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MMESSAGE_END___REMOVE = MOCCURRENCE___REMOVE;
 
 	/**
+	 * The operation id for the '<em>Resize</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE_END___RESIZE__INT = MOCCURRENCE___RESIZE__INT;
+
+	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -1376,6 +1441,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MMESSAGE___REMOVE = MELEMENT___REMOVE;
+
+	/**
+	 * The operation id for the '<em>Resize</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE___RESIZE__INT = MELEMENT___RESIZE__INT;
 
 	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1589,6 +1662,16 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EOperation getMElement__Remove();
+
+	/**
+	 * Returns the meta object for the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#resize(int)
+	 * <em>Resize</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Resize</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#resize(int)
+	 * @generated
+	 */
+	EOperation getMElement__Resize__int();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction
@@ -1885,6 +1968,17 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EOperation getMLifeline__NudgeHorizontally__int();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#resizeHorizontally(int) <em>Resize
+	 * Horizontally</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Resize Horizontally</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#resizeHorizontally(int)
+	 * @generated
+	 */
+	EOperation getMLifeline__ResizeHorizontally__int();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MExecution
@@ -2382,6 +2476,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		EOperation MELEMENT___REMOVE = eINSTANCE.getMElement__Remove();
 
 		/**
+		 * The meta object literal for the '<em><b>Resize</b></em>' operation. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MELEMENT___RESIZE__INT = eINSTANCE.getMElement__Resize__int();
+
+		/**
 		 * The meta object literal for the
 		 * '{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl
 		 * <em>MInteraction</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2600,6 +2702,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation MLIFELINE___NUDGE_HORIZONTALLY__INT = eINSTANCE.getMLifeline__NudgeHorizontally__int();
+
+		/**
+		 * The meta object literal for the '<em><b>Resize Horizontally</b></em>' operation. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MLIFELINE___RESIZE_HORIZONTALLY__INT = eINSTANCE.getMLifeline__ResizeHorizontally__int();
 
 		/**
 		 * The meta object literal for the

@@ -792,6 +792,34 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	}
 
 	@Override
+	public Command setRight(Vertex v, int xPosition) {
+		Command result = UnexecutableCommand.INSTANCE;
+
+		View view = v.getDiagramView();
+		if (view instanceof Shape) {
+			result = setRight((Shape)view, xPosition);
+		}
+		return result;
+	}
+
+	@Override
+	@SuppressWarnings("boxing")
+	public Command setRight(Shape shape, int xPosition) {
+		Command result = UnexecutableCommand.INSTANCE;
+		if (isLifelineBody(shape)) {
+			// The lifeline body has no real width: its right is its left
+			return result;
+		}
+
+		if (shape.getLayoutConstraint() instanceof Size) {
+			int left = getLeft(shape);
+			result = SetCommand.create(editingDomain, shape.getLayoutConstraint(),
+					NotationPackage.Literals.SIZE__WIDTH, xPosition - left);
+		}
+		return result;
+	}
+
+	@Override
 	public Bounds getNewBounds(EClass eClass, Bounds proposedBounds, Node container) {
 		// TODO: Implement new bounds optimization
 		Bounds result = EcoreUtil.copy(proposedBounds);

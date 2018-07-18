@@ -1,18 +1,20 @@
 /*****************************************************************************
- * Copyright (c) 2018 Christian W. Damus and others.
- * 
+ * (c) Copyright 2018 Telefonaktiebolaget LM Ericsson
+ *
+ *    
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   Christian W. Damus - Initial API and implementation
+ *  Antonio Campesino (Ericsson) - Initial API and implementation
+ *
  *****************************************************************************/
-
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.command.Command;
@@ -23,55 +25,57 @@ import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.uml2.uml.UMLPackage;
 
 /**
- * A horizontal nudge operation. A nudge moves a lifeline right or left and all of its dependents with it. It
- * does not reorder any elements in the sequence.
+ * A horizontal resize operation. It resize the lifeline, keeping its original position and moves all of its
+ * dependencies accordingly. It does not reorder any elements in the sequence.
  *
- * @author Christian W. Damus
+ * @author Antonio Campesino - Ericsson AB
  */
-public class NudgeHorizontallyCommand extends ModelCommand<MLifelineImpl> {
-
-	private final int deltaX;
+public class ResizeHorizontallyCommand extends ModelCommand<MLifelineImpl> {
+	private final int deltaWidth;
 
 	/**
-	 * Initializes me.
+	 * Constructor
 	 * 
 	 * @param lifeline
-	 *            the lifeline to be nudged right or left
+	 *            the lifeline to be resized
 	 * @param deltaX
-	 *            the distance by which to nudge the {@code lifeline}
+	 *            the delta by which the {@code lifeline} is resized.
 	 */
-	public NudgeHorizontallyCommand(MLifelineImpl lifeline, int deltaX) {
+	public ResizeHorizontallyCommand(MLifelineImpl lifeline, int deltaWidth) {
 		super(lifeline);
-
-		this.deltaX = deltaX;
+		this.deltaWidth = deltaWidth;
 	}
 
 	@Override
 	protected Command createCommand() {
-		if (deltaX == 0) {
-			return IdentityCommand.INSTANCE;
+		Command cmd = IdentityCommand.INSTANCE;
+		if (deltaWidth == 0) {
+			return cmd;
 		}
 
 		// Note that a move left is just a negative move right
-		MoveRightVisitor moveRight = new MoveRightVisitor(this, deltaX);
+		MoveRightVisitor moveRight = new MoveRightVisitor(this, deltaWidth);
 
 		Vertex vertex = vertex();
-		if (vertex != null) {
-			// Visit this vertex
-			vertex.accept(moveRight);
+		OptionalInt right = layoutHelper().getRight(vertex);
+		if (right.isPresent()) {
+			cmd = cmd.chain(layoutHelper().setRight(vertex, right.getAsInt() + deltaWidth));
+		}
 
+		if (vertex != null) {
 			// All lifelines to the right of the one we're nudging
 			List<Vertex> lifelines = vertex.graph().initial().immediateSuccessors()
 					.filter(GraphPredicates.isA(UMLPackage.Literals.LIFELINE)).sequential()
 					.collect(Collectors.toList());
 			int referencePoint = lifelines.indexOf(vertex);
-			lifelines.subList(0, referencePoint).forEach(moveRight::markVisited);
+			lifelines.subList(0, referencePoint + 1).forEach(moveRight::markVisited);
 			lifelines.subList(referencePoint + 1, lifelines.size()).forEach(moveRight::visit);
 
 			// And all following (skipping lifelines already visited or marked as such)
 			getGraph().walkAfter(vertex, moveRight);
 		}
 
-		return moveRight.getResult();
+		cmd = cmd.chain(moveRight.getResult());
+		return cmd;
 	}
 }

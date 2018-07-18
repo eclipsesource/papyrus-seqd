@@ -225,6 +225,16 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Command resize(int deltaHeight) {
+		return UnexecutableCommand.INSTANCE;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -286,6 +296,8 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 				return nudge((Integer)arguments.get(0));
 			case SequenceDiagramPackage.MELEMENT___REMOVE:
 				return remove();
+			case SequenceDiagramPackage.MELEMENT___RESIZE__INT:
+				return resize((Integer)arguments.get(0));
 		}
 		return super.eInvoke(operationID, arguments);
 	}
