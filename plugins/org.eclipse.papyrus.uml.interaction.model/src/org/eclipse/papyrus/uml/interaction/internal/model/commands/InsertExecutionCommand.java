@@ -12,8 +12,6 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
-import static java.lang.Math.max;
-
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Function;
@@ -182,11 +180,11 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 
 		// Now we have commands to add the execution specification. But, first we must make
 		// room for it in the diagram. Nudge the element that will follow the new execution
-		int spaceRequired = 2 * offset + height;
+
 		MElement<?> distanceFrom = insertionPoint;
 		Optional<Command> makeSpace = getTarget().following(insertionPoint).map(el -> {
 			OptionalInt distance = el.verticalDistance(distanceFrom);
-			return distance.isPresent() ? el.nudge(max(0, spaceRequired - distance.getAsInt())) : null;
+			return distance.isPresent() ? el.nudge(height) : null;
 		});
 		if (makeSpace.isPresent()) {
 			result = makeSpace.get().chain(result);
