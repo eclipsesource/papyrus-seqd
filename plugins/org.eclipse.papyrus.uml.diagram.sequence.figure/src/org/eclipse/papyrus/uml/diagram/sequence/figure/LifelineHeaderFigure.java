@@ -17,6 +17,7 @@ import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
+import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.ConstrainedToolbarLayout;
 import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
@@ -91,9 +92,12 @@ public class LifelineHeaderFigure extends NodeFigure {
 		// The figure doesn't have enough info to find the right Anchor Kind.
 		// We need a method with additional parameters.
 
-		// Alternatively, we may return a generic anchor (Body + Header) and let the Edit Part decide whether
+		// For now, we return a generic anchor (Body + Header) and let the Edit Part decide whether
 		// the request is valid
-		throw new UnsupportedOperationException();
+		PrecisionPoint pp = new PrecisionPoint(p);
+		translateFromParent(pp);
+		translateToRelative(pp);
+		return createAnchor(pp);
 	}
 
 	@Override

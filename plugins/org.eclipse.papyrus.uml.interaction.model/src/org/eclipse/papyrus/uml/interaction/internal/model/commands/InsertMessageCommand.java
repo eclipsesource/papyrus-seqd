@@ -15,15 +15,23 @@ package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 import static java.lang.Math.max;
 import static org.eclipse.papyrus.uml.interaction.graph.util.Suppliers.compose;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
+import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MObjectImpl;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
@@ -179,6 +187,7 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		return (resultCommand == null) ? null : resultCommand.getNewObject();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Command createCommand() {
 		Vertex sendReference = vertex(beforeSend);
@@ -190,7 +199,7 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			return UnexecutableCommand.INSTANCE;
 		}
 
-		// Is there actually an execution occurrence here?
+		// Send: Is there actually an execution occurrence here?
 		int llTop = layoutHelper().getBottom(getTarget().getDiagramView().get());
 		int where = beforeSend == getTarget() ? sendOffset
 				// For executions also the top to allow for messages to anchor within it
@@ -202,13 +211,24 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			return UnexecutableCommand.INSTANCE;
 		}
 
-		// Is there actually an execution occurrence here?
+		// Receive: Is there actually an execution occurrence here?
+		// In case of create or destruction messages, this should not connect to execution occurrences,
+		// because they connect to lifeline-header/new destruction occurrence
 		llTop = layoutHelper().getBottom(receiver.getDiagramView().get());
 		where = beforeRecv == receiver ? recvOffset
 				// For executions also the top to allow for messages to anchor within it
 				: beforeRecv.getTop().orElse(llTop) - llTop + recvOffset;
-		Optional<MExecution> receivingExec = this.receiver.elementAt(where)
-				.filter(MExecution.class::isInstance).map(MExecution.class::cast);
+		Optional<MExecution> receivingExec;
+		switch (sort) {
+			case CREATE_MESSAGE_LITERAL:
+			case DELETE_MESSAGE_LITERAL:
+				receivingExec = Optional.empty();
+				break;
+			default:
+				receivingExec = this.receiver.elementAt(where).filter(MExecution.class::isInstance)
+						.map(MExecution.class::cast);
+				break;
+		}
 		Vertex receiver = receivingExec.map(this::vertex).orElseGet(() -> vertex(this.receiver));
 		if (receiver == null || receiver.getDiagramView() == null) {
 			return UnexecutableCommand.INSTANCE;
@@ -223,6 +243,17 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			return UnexecutableCommand.INSTANCE;
 		}
 
+		switch (sort) {
+			case CREATE_MESSAGE_LITERAL:
+				/* receiver must have no elements before */
+				if (this.receiver.elementAt(recvOffset + relativeTopOfBefore()).isPresent()) {
+					return UnexecutableCommand.INSTANCE;
+				}
+				break;
+			default:
+				break;
+		}
+
 		MElement<? extends Element> sendInsertionPoint = normalizeFragmentInsertionPoint(beforeSend);
 		MElement<? extends Element> recvInsertionPoint = normalizeFragmentInsertionPoint(beforeRecv);
 
@@ -231,7 +262,16 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		CreationCommand<MessageEnd> sendEvent = semantics.createMessageOccurrence(sendParams);
 		CreationParameters recvParams = syncMessage ? CreationParameters.after(sendEvent)
 				: endParams(recvInsertionPoint);
-		CreationCommand<MessageEnd> recvEvent = semantics.createMessageOccurrence(recvParams);
+		CreationCommand<MessageEnd> recvEvent;
+		switch (sort) {
+			case DELETE_MESSAGE_LITERAL:
+				/* receive event should be destruction occurrence */
+				recvEvent = semantics.createDestructionOccurrence(recvParams);
+				break;
+			default:
+				recvEvent = semantics.createMessageOccurrence(recvParams);
+				break;
+		}
 		CreationParameters messageParams = CreationParameters.in(getTarget().getInteraction().getElement(),
 				UMLPackage.Literals.INTERACTION__MESSAGE);
 		resultCommand = semantics.createMessage(sendEvent, recvEvent, sort, signature, messageParams);
@@ -250,27 +290,117 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		if (!sendingExec.isPresent()) {
 			senderView = compose(senderView, diagramHelper()::getLifelineBodyShape);
 		}
-		Supplier<View> receiverView = receiver::getDiagramView;
-		if (!receivingExec.isPresent()) {
-			receiverView = compose(receiverView, diagramHelper()::getLifelineBodyShape);
+		Supplier<? extends View> receiverView;
+		switch (sort) {
+			case CREATE_MESSAGE_LITERAL:
+				/* creation message should connect to lifeline header */
+				receiverView = receiver::getDiagramView;
+				break;
+
+			case DELETE_MESSAGE_LITERAL:
+				/* create destruction occurrence */
+				CreationCommand<Shape> destructionOccurrenceShape = diagramHelper()
+						.createDestructionOccurrenceShape(recvEvent,
+								diagramHelper().getLifelineBodyShape(receiver.getDiagramView()),
+								recvReferenceY.getAsInt() + recvOffset);
+				result = result.chain(destructionOccurrenceShape);
+				receiverView = destructionOccurrenceShape;
+				break;
+
+			default:
+				receiverView = receiver::getDiagramView;
+				if (!receivingExec.isPresent()) {
+					receiverView = compose(receiverView, diagramHelper()::getLifelineBodyShape);
+				}
+				break;
 		}
+
+		/* create message */
 		result = result.chain(diagramHelper().createMessageConnector(resultCommand, //
 				senderView, () -> sendReferenceY.getAsInt() + sendOffset, //
 				receiverView, () -> recvReferenceY.getAsInt() + recvOffset));
 
-		// Now we have commands to add the message specification. But, first we must make
-		// room for it in the diagram. Nudge the element that will follow the new receive event
-		int spaceRequired = 2 * sendOffset;
-		MElement<?> distanceFrom = sendInsertionPoint;
-		Optional<Command> makeSpace = getTarget().following(sendInsertionPoint).map(el -> {
-			OptionalInt distance = el.verticalDistance(distanceFrom);
-			return distance.isPresent() ? el.nudge(max(0, spaceRequired - distance.getAsInt())) : null;
-		});
-		if (makeSpace.isPresent()) {
-			result = makeSpace.get().chain(result);
+		switch (sort) {
+			case CREATE_MESSAGE_LITERAL:
+				List<Command> commands = new ArrayList<>(3);
+
+				View receiverShape = (this.receiver).getDiagramView().orElse(null);
+				int receiverBodyTop = layoutHelper()
+						.getTop(diagramHelper().getLifelineBodyShape(receiverShape));
+				int receiverLifelineTop = this.receiver.getTop().orElse(0);
+
+				/* first make room to move created lifeline down by nudging all required elements down */
+				int creationMessageTop = recvReferenceY.getAsInt() + recvOffset;
+				List<MElement<? extends Element>> elementsToNudge = new ArrayList<>();
+
+				int movedReceiverlifelineTop = creationMessageTop
+						- ((receiverBodyTop - receiverLifelineTop) / 2);
+
+				int receiverDeltaY = movedReceiverlifelineTop - receiverLifelineTop;
+				int receiverDeltaYFinal = receiverDeltaY;
+
+				/* collect elements below */
+				findElementsToNudge(creationMessageTop, elementsToNudge,
+						getTarget().getInteraction().getMessages().stream());
+				findElementsToNudge(creationMessageTop, elementsToNudge,
+						getTarget().getInteraction().getLifelines().stream()//
+								.filter(m -> m.getTop().orElse(0) < creationMessageTop)//
+								.flatMap(l -> l.getExecutions().stream()));
+				Collections.sort(elementsToNudge,
+						Comparator.comparingInt(e -> ((MElementImpl<? extends Element>)e).getTop().orElse(0))
+								.reversed());
+				List<Command> nudgeCommands = new ArrayList<>(elementsToNudge.size());
+				for (int i = 0; i < elementsToNudge.size(); i++) {
+					MElement<? extends Element> element = elementsToNudge.get(i);
+					nudgeCommands.add(Create.nudgeCommand(getGraph(), getEditingDomain(), receiverDeltaYFinal,
+							0, element));
+				}
+
+				if (!nudgeCommands.isEmpty()) {
+					commands.add(CompoundModelCommand.compose(getEditingDomain(), nudgeCommands));
+				}
+
+				/* finally move lifeline */
+				commands.add(Create.nudgeCommand(getGraph(), getEditingDomain(), receiverDeltaYFinal, 0,
+						this.receiver));
+
+				/* build final command */
+				result = CompoundModelCommand.compose(getEditingDomain(), commands).chain(result);
+				break;
+
+			case DELETE_MESSAGE_LITERAL:
+				break;
+
+			default:
+				// Now we have commands to add the message specification. But, first we must make
+				// room for it in the diagram. Nudge the element that will follow the new receive event
+				int spaceRequired = 2 * sendOffset;
+				MElement<?> distanceFrom = sendInsertionPoint;
+				Optional<Command> makeSpace = getTarget().following(sendInsertionPoint).map(el -> {
+					OptionalInt distance = el.verticalDistance(distanceFrom);
+					return distance.isPresent() ? el.nudge(max(0, spaceRequired - distance.getAsInt()))
+							: null;
+				});
+				if (makeSpace.isPresent()) {
+					result = makeSpace.get().chain(result);
+				}
+				break;
 		}
 
 		return result;
+
+	}
+
+	private int relativeTopOfBefore() {
+		return beforeSend.getTop().getAsInt() - layoutHelper().getBottom(getTarget().getDiagramView().get());
+	}
+
+	private static void findElementsToNudge(int creationMessageTop,
+			List<MElement<? extends Element>> elementsToNudge, Stream<?> stream) {
+		stream//
+				.filter(MElementImpl.class::isInstance).map(MElementImpl.class::cast)
+				.filter(m -> m.getTop().orElse(0) >= creationMessageTop)//
+				.collect(Collectors.toCollection(() -> elementsToNudge));
 	}
 
 	private CreationParameters endParams(MElement<? extends Element> insertionPoint) {

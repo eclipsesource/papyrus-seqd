@@ -45,6 +45,7 @@ import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
+import org.eclipse.uml2.uml.MessageEnd;
 import org.eclipse.uml2.uml.UMLPackage;
 
 /**
@@ -186,6 +187,40 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			bounds.setY(layoutHelper().toRelativeY(result, lifelineBody, yPosition)); // Relative to parent
 			bounds.setWidth(execWidth);
 			bounds.setHeight(height);
+			result.setLayoutConstraint(bounds);
+
+			return result;
+		};
+
+		CreationParameters parameters = CreationParameters.in(lifelineBody,
+				NotationPackage.Literals.VIEW__PERSISTED_CHILDREN);
+		return new DeferredCreateCommand<>(Shape.class, editingDomain, parameters, shape);
+	}
+
+	@Override
+	public CreationCommand<Shape> createDestructionOccurrenceShape(Supplier<? extends MessageEnd> destruction,
+			Shape lifelineBody, int yPosition) {
+
+		// TODO: The Logical Model is required to have no dependencies on the diagram editor,
+		// but this is usually the responsibility of a View Provider. That should be okay ...
+
+		Supplier<Shape> shape = () -> {
+			LayoutConstraint llBounds = lifelineBody.getLayoutConstraint();
+			int width = 0;
+			if (Size.class.isInstance(llBounds)) {
+				width = Size.class.cast(llBounds).getWidth();
+			}
+			int execWidth = 20;
+
+			Shape result = NotationFactory.eINSTANCE.createShape();
+			result.setType("Shape_Destruction_Specification");
+			result.setElement(destruction.get());
+
+			Bounds bounds = NotationFactory.eINSTANCE.createBounds();
+			bounds.setX((width - execWidth) / 2); // Relative to the parent
+			bounds.setY(layoutHelper().toRelativeY(result, lifelineBody, yPosition - (execWidth / 2)));
+			bounds.setWidth(execWidth);
+			bounds.setHeight(execWidth);
 			result.setLayoutConstraint(bounds);
 
 			return result;

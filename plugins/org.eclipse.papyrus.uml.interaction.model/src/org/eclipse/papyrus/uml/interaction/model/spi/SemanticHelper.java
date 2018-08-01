@@ -22,6 +22,7 @@ import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Behavior;
+import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Lifeline;
@@ -270,6 +271,16 @@ public interface SemanticHelper {
 	 * @return the message occurrence creation command
 	 */
 	CreationCommand<MessageEnd> createMessageOccurrence(CreationParameters parameters);
+
+	/**
+	 * Create a new destruction occurrence specification.
+	 * 
+	 * @param parameters
+	 *            creation parameters. The {@link CreationParameters#getEClass() eClass} parameter is fixed to
+	 *            {@link DestructionOccurrenceSpecification}
+	 * @return the message occurrence creation command
+	 */
+	CreationCommand<MessageEnd> createDestructionOccurrence(CreationParameters parameters);
 
 	/**
 	 * Create a new message.

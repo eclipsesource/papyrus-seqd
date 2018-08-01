@@ -23,6 +23,11 @@ public enum Tag {
 	 * vertex to the lifeline that it creates.
 	 */
 	LIFELINE_CREATION,
+
+	/**
+	 * Tags a {@link Vertex} that is the destruction of a lifeline.
+	 */
+	LIFELINE_DESTRUCTION,
 	/**
 	 * Tags a {@link Vertex} that is an execution start occurrence or an {@code Edge} that links an execution
 	 * occurrence vertex to the execution specification vertex that it starts.

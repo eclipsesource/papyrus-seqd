@@ -15,6 +15,10 @@ package org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.tests;
 import static org.eclipse.papyrus.uml.interaction.tests.matchers.NotationMatchers.isBounds;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.regex.Matcher;
 
 import org.eclipse.gmf.runtime.notation.Bounds;
 import org.eclipse.gmf.runtime.notation.Node;
@@ -91,5 +95,19 @@ public class DefaultLayoutHelperTest {
 		result.setWidth(width);
 		result.setHeight(height);
 		return result;
+	}
+
+	//
+	// Tests
+	//
+
+	@Test
+	public void test_IDENTITY_ANCHOR_PATTERN() {
+		Matcher positive = DefaultLayoutHelper.IDENTITY_ANCHOR_PATTERN.matcher("left;24");
+		Matcher negative = DefaultLayoutHelper.IDENTITY_ANCHOR_PATTERN.matcher("left;-24");
+		assertTrue(positive.matches());
+		assertTrue(negative.matches());
+		assertEquals(24, Integer.parseInt(positive.group(2)));
+		assertEquals(-24, Integer.parseInt(negative.group(2)));
 	}
 }

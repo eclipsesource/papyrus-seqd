@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_oL-5MGKCEeiIbNyTKulhvg" name="DeletionTesting">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_oTJRIGKCEeiIbNyTKulhvg">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_oM9woGKCEeiIbNyTKulhvg" name="Interaction1">
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_pAurQIBPEeiHX58pcu-8PA" name="Lifeline1" coveredBy="_q1-8sIBPEeiHX58pcu-8PA _IeQIUIHgEeiQNsBZ3CgDGA"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_pZfwkIBPEeiHX58pcu-8PA" name="Lifeline2" coveredBy="_q1-8sYBPEeiHX58pcu-8PA _rWj6MIBPEeiHX58pcu-8PA _v1im8IBPEeiHX58pcu-8PA _H1OZcIHgEeiQNsBZ3CgDGA _IeQvYIHgEeiQNsBZ3CgDGA"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_pzMqAIBPEeiHX58pcu-8PA" name="Lifeline3" coveredBy="_rWkhQIBPEeiHX58pcu-8PA _v1jOAIBPEeiHX58pcu-8PA _H1OZcYHgEeiQNsBZ3CgDGA"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_SuuCsIEIEeiw9MGAh8FgWQ" name="Lifeline4"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_q1-8sIBPEeiHX58pcu-8PA" covered="_pAurQIBPEeiHX58pcu-8PA" message="_q1-8soBPEeiHX58pcu-8PA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_q1-8sYBPEeiHX58pcu-8PA" covered="_pZfwkIBPEeiHX58pcu-8PA" message="_q1-8soBPEeiHX58pcu-8PA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_IeQIUIHgEeiQNsBZ3CgDGA" covered="_pAurQIBPEeiHX58pcu-8PA" message="_IeRWcIHgEeiQNsBZ3CgDGA"/>
+    <fragment xmi:type="uml:DestructionOccurrenceSpecification" xmi:id="_IeQvYIHgEeiQNsBZ3CgDGA" covered="_pZfwkIBPEeiHX58pcu-8PA" message="_IeRWcIHgEeiQNsBZ3CgDGA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_v1im8IBPEeiHX58pcu-8PA" covered="_pZfwkIBPEeiHX58pcu-8PA" message="_v1jOAYBPEeiHX58pcu-8PA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_v1jOAIBPEeiHX58pcu-8PA" covered="_pzMqAIBPEeiHX58pcu-8PA" message="_v1jOAYBPEeiHX58pcu-8PA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_rWj6MIBPEeiHX58pcu-8PA" covered="_pZfwkIBPEeiHX58pcu-8PA" message="_rWkhQYBPEeiHX58pcu-8PA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_rWkhQIBPEeiHX58pcu-8PA" covered="_pzMqAIBPEeiHX58pcu-8PA" message="_rWkhQYBPEeiHX58pcu-8PA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_H1OZcIHgEeiQNsBZ3CgDGA" covered="_pZfwkIBPEeiHX58pcu-8PA" message="_H1OZcoHgEeiQNsBZ3CgDGA"/>
+    <fragment xmi:type="uml:DestructionOccurrenceSpecification" xmi:id="_H1OZcYHgEeiQNsBZ3CgDGA" covered="_pzMqAIBPEeiHX58pcu-8PA" message="_H1OZcoHgEeiQNsBZ3CgDGA"/>
+    <message xmi:type="uml:Message" xmi:id="_q1-8soBPEeiHX58pcu-8PA" name="M1" messageSort="reply" receiveEvent="_q1-8sYBPEeiHX58pcu-8PA" sendEvent="_q1-8sIBPEeiHX58pcu-8PA"/>
+    <message xmi:type="uml:Message" xmi:id="_rWkhQYBPEeiHX58pcu-8PA" name="M3" messageSort="reply" receiveEvent="_rWkhQIBPEeiHX58pcu-8PA" sendEvent="_rWj6MIBPEeiHX58pcu-8PA"/>
+    <message xmi:type="uml:Message" xmi:id="_H1OZcoHgEeiQNsBZ3CgDGA" name="M4" messageSort="deleteMessage" receiveEvent="_H1OZcYHgEeiQNsBZ3CgDGA" sendEvent="_H1OZcIHgEeiQNsBZ3CgDGA"/>
+    <message xmi:type="uml:Message" xmi:id="_IeRWcIHgEeiQNsBZ3CgDGA" name="M5" messageSort="deleteMessage" receiveEvent="_IeQvYIHgEeiQNsBZ3CgDGA" sendEvent="_IeQIUIHgEeiQNsBZ3CgDGA"/>
+    <message xmi:type="uml:Message" xmi:id="_v1jOAYBPEeiHX58pcu-8PA" name="M2" messageSort="createMessage" receiveEvent="_v1jOAIBPEeiHX58pcu-8PA" sendEvent="_v1im8IBPEeiHX58pcu-8PA"/>
+  </packagedElement>
+</uml:Model>

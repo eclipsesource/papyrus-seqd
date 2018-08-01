@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.gmf.runtime.notation.Shape;
+import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MMessageImpl;
@@ -28,6 +30,7 @@ import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.MessageEnd;
 
 /**
  * A message removal operation.
@@ -93,6 +96,21 @@ public class RemoveMessageCommand extends ModelCommand<MMessageImpl> implements 
 		/* diagram */
 		DiagramHelper diagrams = diagramHelper();
 		Command diagramsResultCommand = diagrams.deleteView(getTarget().getDiagramView().get());
+
+		switch (getTarget().getElement().getMessageSort()) {
+			case DELETE_MESSAGE_LITERAL:
+				/* delete cross as well */
+				MessageEnd destructionEnd = getTarget().getReceiveEnd().getElement();
+				Optional<Shape> destructionShape = Optional.ofNullable(getGraph().vertex(destructionEnd))//
+						.map(Vertex::getDiagramView)//
+						.filter(Shape.class::isInstance)//
+						.map(Shape.class::cast);
+				if (destructionShape.isPresent()) {
+					diagramsResultCommand = diagramsResultCommand
+							.chain(diagrams.deleteView(destructionShape.get()));
+				}
+				break;
+		}
 
 		List<Command> allCommands = new ArrayList<>();
 		/* nudge */

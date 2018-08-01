@@ -38,6 +38,7 @@ import org.eclipse.papyrus.uml.interaction.graph.GroupKind;
 import org.eclipse.papyrus.uml.interaction.graph.Tag;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.uml2.uml.CombinedFragment;
+import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Gate;
@@ -197,6 +198,14 @@ public class GraphComputer {
 					edge.tag(Tag.LIFELINE_CREATION);
 					InteractionFragment receive = tag((InteractionFragment)message.getReceiveEvent(),
 							Tag.LIFELINE_CREATION);
+					edge(message, receive.getCovereds());
+				}
+			} else if (message.getMessageSort() == MessageSort.DELETE_MESSAGE_LITERAL) {
+				if (message.getReceiveEvent() instanceof DestructionOccurrenceSpecification) {
+					edge.hasTag(Tag.LIFELINE_DESTRUCTION);
+					DestructionOccurrenceSpecification receive = tag(
+							(DestructionOccurrenceSpecification)message.getReceiveEvent(),
+							Tag.LIFELINE_DESTRUCTION);
 					edge(message, receive.getCovereds());
 				}
 			}

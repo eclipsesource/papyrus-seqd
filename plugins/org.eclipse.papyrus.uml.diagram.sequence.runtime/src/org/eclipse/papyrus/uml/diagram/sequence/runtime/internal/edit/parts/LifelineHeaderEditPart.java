@@ -29,8 +29,9 @@ import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
 import org.eclipse.gmf.runtime.diagram.ui.figures.BorderItemLocator;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.LifelineHeaderFigure;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.InteractionSemanticEditPolicy;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineHeaderGraphicalNodeEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineHeaderResizeEditPolicy;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LogicalModelElementSemanticEditPolicy;
 import org.eclipse.papyrus.uml.tools.utils.UMLUtil;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Lifeline;
@@ -43,6 +44,15 @@ public class LifelineHeaderEditPart extends AbstractBorderedShapeEditPart {
 
 	public LifelineHeaderEditPart(View view) {
 		super(view);
+	}
+
+	@Override
+	public Command getCommand(Request _request) {
+		if ("connection end".equals(_request.getType())) {
+			toString();
+		}
+		Command command = super.getCommand(_request);
+		return command;
 	}
 
 	@Override
@@ -71,7 +81,8 @@ public class LifelineHeaderEditPart extends AbstractBorderedShapeEditPart {
 
 		ResizableEditPolicy resizePolicy = new LifelineHeaderResizeEditPolicy();
 		installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, resizePolicy);
-		installEditPolicy(EditPolicyRoles.SEMANTIC_ROLE, new LogicalModelElementSemanticEditPolicy());
+		installEditPolicy(EditPolicyRoles.SEMANTIC_ROLE, new InteractionSemanticEditPolicy());
+		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new LifelineHeaderGraphicalNodeEditPolicy());
 	}
 
 	@Override
@@ -114,11 +125,6 @@ public class LifelineHeaderEditPart extends AbstractBorderedShapeEditPart {
 	@Override
 	protected void addChildVisual(EditPart childEditPart, int index) {
 		super.addChildVisual(childEditPart, index);
-	}
-
-	@Override
-	public Command getCommand(Request request) {
-		return super.getCommand(request);
 	}
 
 	@Override
