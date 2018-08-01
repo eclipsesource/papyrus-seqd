@@ -43,6 +43,8 @@ public final class ViewTypes {
 
 	public static final String STATE_INVARIANT = "Shape_State_Invariant"; //$NON-NLS-1$
 
+	public static final String DESTRUCTION_SPECIFICATION = "Shape_Destruction_Specification"; //$NON-NLS-1$
+
 	private ViewTypes() {
 		// prevent instantiation for class only holding constants.
 	}
