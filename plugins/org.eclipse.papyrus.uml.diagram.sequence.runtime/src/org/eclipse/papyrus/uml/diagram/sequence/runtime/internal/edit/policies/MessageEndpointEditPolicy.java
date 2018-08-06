@@ -20,6 +20,8 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.pol
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setOriginalSourceLocation;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setOriginalTargetLocation;
 
+import com.google.common.eventbus.EventBus;
+
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.EditPart;
@@ -34,6 +36,7 @@ import org.eclipse.gef.requests.ReconnectRequest;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageFeedbackHelper.Mode;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.CommandCreatedEvent;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
 import org.eclipse.uml2.uml.Message;
 
@@ -41,6 +44,8 @@ import org.eclipse.uml2.uml.Message;
  * Endpoint edit-policy for management of message ends.
  */
 public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy {
+
+	private final EventBus bus;
 
 	// Last known mouse location on the connection in case of move gesture
 	private Point lastMouseLocation;
@@ -53,19 +58,30 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy {
 	private MessageFeedbackHelper feedbackHelper;
 
 	/**
-	 * Initializes me.
+	 * Initializes me with my event bus.
+	 * 
+	 * @param bus
+	 *            an event bus on which to publish commands that I create
 	 */
-	public MessageEndpointEditPolicy() {
+	public MessageEndpointEditPolicy(EventBus bus) {
 		super();
+
+		this.bus = bus;
 	}
 
 	@Override
 	public Command getCommand(Request request) {
+		Command result;
+
 		if (REQ_CREATE_BENDPOINT.equals(request.getType())) {
-			return getMoveConnectionCommand((BendpointRequest)request);
+			result = getMoveConnectionCommand((BendpointRequest)request);
 		} else {
-			return super.getCommand(request);
+			result = super.getCommand(request);
 		}
+
+		bus.post(new CommandCreatedEvent(request, result));
+
+		return result;
 	}
 
 	/**

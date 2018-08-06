@@ -245,23 +245,21 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 	@Override
 	protected Command getReconnectSourceCommand(ReconnectRequest request) {
 		Command result = super.getReconnectSourceCommand(request);
-
-		if (isForce(request)) {
-			// Just reconnect this end; no sloping constraints required
-			return result;
-		}
-
 		ConnectionEditPart connectionEP = (ConnectionEditPart)request.getConnectionEditPart();
-		Connection connection = (Connection)connectionEP.getFigure();
-		Point targetLocation = getLocation(connection.getTargetAnchor());
 
-		// Apply constraints implemented in the feedback
-		SetConnectionAnchorsCommand scaCommand = getSetConnectionAnchorsCommand(result);
-		INodeEditPart target = (INodeEditPart)connectionEP.getTarget();
-		ReconnectRequest targetRequest = new ReconnectRequest(REQ_RECONNECT_TARGET);
-		targetRequest.setLocation(targetLocation);
-		ConnectionAnchor newTargetAnchor = target.getTargetConnectionAnchor(targetRequest);
-		scaCommand.setNewTargetTerminal(target.mapConnectionAnchorToTerminal(newTargetAnchor));
+		if (!isForce(request)) {
+			// Need feedback constraints in addition to semantic constraints
+			Connection connection = (Connection)connectionEP.getFigure();
+			Point targetLocation = getLocation(connection.getTargetAnchor());
+
+			// Apply constraints implemented in the feedback
+			SetConnectionAnchorsCommand scaCommand = getSetConnectionAnchorsCommand(result);
+			INodeEditPart target = (INodeEditPart)connectionEP.getTarget();
+			ReconnectRequest targetRequest = new ReconnectRequest(REQ_RECONNECT_TARGET);
+			targetRequest.setLocation(targetLocation);
+			ConnectionAnchor newTargetAnchor = target.getTargetConnectionAnchor(targetRequest);
+			scaCommand.setNewTargetTerminal(target.mapConnectionAnchorToTerminal(newTargetAnchor));
+		}
 
 		return getSourceEnd(connectionEP).flatMap(src -> constrainReconnection(request, src)).orElse(result);
 	}
@@ -289,23 +287,21 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 	@Override
 	protected Command getReconnectTargetCommand(ReconnectRequest request) {
 		Command result = super.getReconnectTargetCommand(request);
-
-		if (isForce(request)) {
-			// Just reconnect this end; no sloping constraints required
-			return result;
-		}
-
 		ConnectionEditPart connectionEP = (ConnectionEditPart)request.getConnectionEditPart();
-		Connection connection = (Connection)connectionEP.getFigure();
-		Point sourceLocation = getLocation(connection.getSourceAnchor());
 
-		// Apply constraints implemented in the feedback
-		SetConnectionAnchorsCommand scaCommand = getSetConnectionAnchorsCommand(result);
-		INodeEditPart source = (INodeEditPart)connectionEP.getSource();
-		ReconnectRequest sourceRequest = new ReconnectRequest(REQ_RECONNECT_SOURCE);
-		sourceRequest.setLocation(sourceLocation);
-		ConnectionAnchor newSourceAnchor = source.getSourceConnectionAnchor(sourceRequest);
-		scaCommand.setNewSourceTerminal(source.mapConnectionAnchorToTerminal(newSourceAnchor));
+		if (!isForce(request)) {
+			// Need feedback constraints in addition to semantic constraints
+			Connection connection = (Connection)connectionEP.getFigure();
+			Point sourceLocation = getLocation(connection.getSourceAnchor());
+
+			// Apply constraints implemented in the feedback
+			SetConnectionAnchorsCommand scaCommand = getSetConnectionAnchorsCommand(result);
+			INodeEditPart source = (INodeEditPart)connectionEP.getSource();
+			ReconnectRequest sourceRequest = new ReconnectRequest(REQ_RECONNECT_SOURCE);
+			sourceRequest.setLocation(sourceLocation);
+			ConnectionAnchor newSourceAnchor = source.getSourceConnectionAnchor(sourceRequest);
+			scaCommand.setNewSourceTerminal(source.mapConnectionAnchorToTerminal(newSourceAnchor));
+		}
 
 		return getTargetEnd(connectionEP).flatMap(tgt -> constrainReconnection(request, tgt)).orElse(result);
 	}
