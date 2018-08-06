@@ -46,6 +46,15 @@ public interface LayoutConstraints {
 	int getXOffset(Compartment shapeCompartment);
 
 	/**
+	 * Queries the x-coördinate offset of a view type
+	 * 
+	 * @param viewType
+	 *            a view type.
+	 * @return its X offset
+	 */
+	int getXOffset(String viewType);
+
+	/**
 	 * Queries the y-coördinate offset of a shape compartment within its parent shape, accounting for name
 	 * labels etc. that take up space but which size is not encoded in the notation.
 	 * 
@@ -54,6 +63,15 @@ public interface LayoutConstraints {
 	 * @return its Y offset within the parent shape
 	 */
 	int getYOffset(Compartment shapeCompartment);
+
+	/**
+	 * Queries the y-coördinate offset of a view type
+	 * 
+	 * @param viewType
+	 *            a view type.
+	 * @return its Y offset
+	 */
+	int getYOffset(String viewType);
 
 	/**
 	 * Queries the minimum height of a view.
