@@ -801,9 +801,9 @@ public class DefaultLayoutHelper implements LayoutHelper {
 				case UMLPackage.LIFELINE:
 					// TODO the magic number 25 is referenced from
 					// org.eclipse.papyrus.uml.interaction.internal.model.commands.NudgeOnRemovalCommand.getDefaultLifelineTop(MLifeline)
-					result.setY(25);
-					result.setWidth(100);
-					result.setHeight(28);
+					result.setY(getConstraints().getYOffset(ViewTypes.LIFELINE_HEADER));
+					result.setWidth(getConstraints().getMinimumWidth(ViewTypes.LIFELINE_HEADER));
+					result.setHeight(getConstraints().getMinimumHeight(ViewTypes.LIFELINE_HEADER));
 					break;
 			}
 		}

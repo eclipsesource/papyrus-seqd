@@ -167,7 +167,7 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 
 		// The size of the interaction frame's pentagon label
 		result.put(ViewTypes.INTERACTION_CONTENTS, 30);
-
+		result.put(ViewTypes.LIFELINE_HEADER, 25);
 		return result;
 	}
 
@@ -180,7 +180,7 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 		result.put(ViewTypes.EXECUTION_SPECIFICATION, 40);
 		result.put(ViewTypes.INTERACTION_CONTENTS, 180);
 		result.put(applyModifier(ANCHOR, ViewTypes.LIFELINE_BODY), 10);
-
+		result.put(ViewTypes.LIFELINE_HEADER, 28);
 		return result;
 	}
 
@@ -191,6 +191,7 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 		result.put(ViewTypes.LIFELINE_BODY, 1);
 		result.put(applyModifier(ARROW, ViewTypes.MESSAGE), 5);
 		result.put(ViewTypes.INTERACTION_CONTENTS, 45);
+		result.put(ViewTypes.LIFELINE_HEADER, 100);
 		return result;
 	}
 
