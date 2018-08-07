@@ -78,7 +78,7 @@ public final class Create {
 			/* fix one half message */
 			MMessage message = (MMessage)element;
 			if (message.getElement().getMessageSort() == MessageSort.CREATE_MESSAGE_LITERAL) {
-				return creationMethodNudgeCommand(graph, editingDomain, delta, deltaChildren, message);
+				return creationMessageNudgeCommand(graph, editingDomain, delta, deltaChildren, message);
 			}
 			return new NudgeCommand((MElementImpl<? extends Element>)element, delta, false);
 		} else if (element instanceof MLifeline) {
@@ -90,7 +90,7 @@ public final class Create {
 		return new NudgeCommand((MElementImpl<? extends Element>)element, delta, false);
 	}
 
-	private static Command creationMethodNudgeCommand(//
+	private static Command creationMessageNudgeCommand(//
 			Graph graph, //
 			EditingDomain editingDomain, //
 			int delta, //
@@ -128,9 +128,13 @@ public final class Create {
 			});
 			m.getReceiver().ifPresent(l -> {
 				if (l == lifeline) {
-					Vertex v = vertex(graph, m.getReceive().get());
-					nudgeCommands.add(layoutHelper(editingDomain).setTop(v,
-							layoutHelper(editingDomain).getTop(v).orElse(0) - deltaChildren));
+					if (m.getElement().getMessageSort() == MessageSort.CREATE_MESSAGE_LITERAL) {
+						/* we are creating the nudged lifeline -> no op */
+					} else {
+						Vertex v = vertex(graph, m.getReceive().get());
+						nudgeCommands.add(layoutHelper(editingDomain).setTop(v,
+								layoutHelper(editingDomain).getTop(v).orElse(0) - deltaChildren));
+					}
 				}
 			});
 		}

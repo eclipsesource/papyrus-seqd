@@ -146,7 +146,7 @@ public class CreateMessageTest {
 	public void nestedCreationMessage() {
 		/* adapt model */
 		CreationCommand<Message> command = interaction().getLifelines().get(0).insertMessageAfter(
-				interaction().getLifelines().get(0), 10, interaction().getLifelines().get(1),
+				interaction().getLifelines().get(0), 5, interaction().getLifelines().get(1),
 				MessageSort.CREATE_MESSAGE_LITERAL, null);
 		execute(command);
 
@@ -156,7 +156,7 @@ public class CreateMessageTest {
 		/* setup */
 		MLifeline lifeline2 = interaction().getLifelines().get(1);
 		MLifeline lifeline3 = interaction().getLifelines().get(2);
-		command = lifeline2.insertMessageAfter(lifeline2, 10, lifeline3, MessageSort.CREATE_MESSAGE_LITERAL,
+		command = lifeline2.insertMessageAfter(lifeline2, 5, lifeline3, MessageSort.CREATE_MESSAGE_LITERAL,
 				null);
 
 		/* act */
@@ -169,13 +169,12 @@ public class CreateMessageTest {
 		assertEquals(4, interaction().getMessages().size());
 		assertEquals(MessageSort.CREATE_MESSAGE_LITERAL,
 				interaction().getMessages().get(3).getElement().getMessageSort());
-		assertEquals(getLifelineBodyTop(interaction().getLifelines().get(1)) + 10,
+		assertEquals(getLifelineBodyTop(interaction().getLifelines().get(1)) + 5,
 				interaction().getMessages().get(3).getTop().getAsInt());
 
 		assertEquals(lifeline1Top, interaction().getLifelines().get(0).getTop().getAsInt());
 		assertEquals(lifeline2Top, interaction().getLifelines().get(1).getTop().getAsInt());
-		// ISSUE #335
-		// assertEquals(message3Top, interaction().getMessages().get(2).getTop().getAsInt());
+		assertEquals(message3Top, interaction().getMessages().get(2).getTop().getAsInt());
 
 		int nudgedLifeline3Top = interaction().getMessages().get(3).getTop().getAsInt()
 				- (lifeline3Header / 2);
