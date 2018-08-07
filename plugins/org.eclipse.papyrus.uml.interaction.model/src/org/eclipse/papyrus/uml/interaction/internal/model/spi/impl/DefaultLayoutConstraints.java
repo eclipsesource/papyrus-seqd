@@ -169,6 +169,7 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 		// The size of the interaction frame's pentagon label
 		result.put(ViewTypes.INTERACTION_CONTENTS, 30);
 		result.put(ViewTypes.LIFELINE_HEADER, 25);
+		result.put(ViewTypes.MESSAGE_NAME, -10);
 		return result;
 	}
 

@@ -279,6 +279,8 @@ public class DefaultDiagramHelper implements DiagramHelper {
 
 			result.createBendpoints(NotationPackage.Literals.RELATIVE_BENDPOINTS);
 
+			Shape nameLabel = (Shape)result.createChild(NotationPackage.Literals.SHAPE);
+			nameLabel.setType(ViewTypes.MESSAGE_NAME);
 			return result;
 		};
 

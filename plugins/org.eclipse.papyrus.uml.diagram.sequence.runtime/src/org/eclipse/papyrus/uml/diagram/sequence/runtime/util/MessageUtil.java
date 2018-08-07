@@ -12,6 +12,9 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.util;
 
+import static org.eclipse.uml2.common.util.UML2Util.isEmpty;
+
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -28,10 +31,15 @@ import org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil;
 import org.eclipse.papyrus.uml.service.types.element.UMLElementTypes;
 import org.eclipse.papyrus.uml.service.types.utils.ElementUtil;
 import org.eclipse.uml2.uml.ExecutionSpecification;
+import org.eclipse.uml2.uml.Expression;
+import org.eclipse.uml2.uml.InteractionFragment;
+import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
 import org.eclipse.uml2.uml.MessageSort;
+import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.ValueSpecification;
 
 /**
  * Utilities (extension methods) for working with {@link Message}s.
@@ -154,6 +162,83 @@ public class MessageUtil {
 			Optional<IAdaptable> elementAdapter = Optional
 					.ofNullable(specified.getConnectionViewDescriptor().getElementAdapter());
 			result = elementAdapter.map(a -> a.getAdapter(IElementType.class)).filter(typeTest).isPresent();
+		}
+
+		return result;
+	}
+
+	public static Optional<Lifeline> getCovered(MessageEnd messageEnd) {
+		List<Lifeline> result;
+
+		if (messageEnd instanceof InteractionFragment) {
+			InteractionFragment fragment = (InteractionFragment)messageEnd;
+			result = fragment.getCovereds();
+		} else {
+			result = Collections.emptyList();
+		}
+
+		return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
+	}
+
+	/**
+	 * Create the UML representation of a wildcard ({@code '-'}) request message argument.
+	 * 
+	 * @return the wildcard
+	 */
+	public static ValueSpecification createWildcardRequestMessageArgument() {
+		Expression result = UMLFactory.eINSTANCE.createExpression();
+
+		// This denotes the wildcard (UML 2.5.1 §17.4.3.1)
+		result.setSymbol(""); //$NON-NLS-1$
+
+		return result;
+	}
+
+	/**
+	 * Queries whether a {@code value} specification is the UML representation of a wildcard ({@code '-'})
+	 * request message argument.
+	 * 
+	 * @param value
+	 *            a value specification
+	 * @return whether it is a wildcard request message argument
+	 */
+	public static boolean isWildcardRequestMessageArgument(ValueSpecification value) {
+		boolean result = value instanceof Expression && value.getOwner() instanceof Message;
+
+		if (result) {
+			Expression expression = (Expression)value;
+
+			// This denotes the wildcard (UML 2.5.1 §17.4.3.1)
+			result = "".equals(expression.getSymbol()) && expression.getOperands().isEmpty(); //$NON-NLS-1$
+		}
+
+		return result;
+	}
+
+	public static String getAssignmentTarget(ValueSpecification replyArgument) {
+		String result = null;
+
+		if (replyArgument instanceof Expression) {
+			Expression expr = (Expression)replyArgument;
+
+			// The symbol is the assignment target name (UML 2.5.1 §17.4.3.1)
+			if (!isEmpty(expr.getSymbol())) {
+				result = expr.getSymbol();
+			}
+		}
+
+		return result;
+	}
+
+	public static ValueSpecification getAssignedValue(ValueSpecification replyArgument) {
+		ValueSpecification result = null;
+
+		if (replyArgument instanceof Expression) {
+			Expression expr = (Expression)replyArgument;
+
+			if (!expr.getOperands().isEmpty()) {
+				result = expr.getOperands().get(0);
+			}
 		}
 
 		return result;

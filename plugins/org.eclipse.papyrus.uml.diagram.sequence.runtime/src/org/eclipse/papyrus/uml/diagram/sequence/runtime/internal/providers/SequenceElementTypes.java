@@ -95,6 +95,15 @@ public final class SequenceElementTypes {
 
 			elements.put(Interaction_Shape, UMLPackage.eINSTANCE.getInteraction());
 
+			elements.put(Async_Message_Edge, UMLPackage.eINSTANCE.getMessage());
+
+			elements.put(Sync_Message_Edge, UMLPackage.eINSTANCE.getMessage());
+
+			elements.put(Reply_Message_Edge, UMLPackage.eINSTANCE.getMessage());
+
+			elements.put(Create_Message_Edge, UMLPackage.eINSTANCE.getMessage());
+
+			elements.put(Delete_Message_Edge, UMLPackage.eINSTANCE.getMessage());
 		}
 		return elements.get(type);
 	}
