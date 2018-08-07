@@ -103,8 +103,6 @@ public class CreateMessageTest {
 		interaction = null;
 	}
 
-	// TODO tests for non executable inserts
-
 	@Test
 	public void creationMessage() {
 		/* setup */
@@ -176,7 +174,7 @@ public class CreateMessageTest {
 
 		assertEquals(lifeline1Top, interaction().getLifelines().get(0).getTop().getAsInt());
 		assertEquals(lifeline2Top, interaction().getLifelines().get(1).getTop().getAsInt());
-		// TODO JF should not move
+		// ISSUE #335
 		// assertEquals(message3Top, interaction().getMessages().get(2).getTop().getAsInt());
 
 		int nudgedLifeline3Top = interaction().getMessages().get(3).getTop().getAsInt()

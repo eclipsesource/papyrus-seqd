@@ -213,7 +213,7 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			int execWidth = 20;
 
 			Shape result = NotationFactory.eINSTANCE.createShape();
-			result.setType("Shape_Destruction_Specification");
+			result.setType(ViewTypes.DESTRUCTION_SPECIFICATION);
 			result.setElement(destruction.get());
 
 			Bounds bounds = NotationFactory.eINSTANCE.createBounds();

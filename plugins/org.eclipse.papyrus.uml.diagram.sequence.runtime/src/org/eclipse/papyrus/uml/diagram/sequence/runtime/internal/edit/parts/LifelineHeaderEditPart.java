@@ -20,7 +20,6 @@ import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
-import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.AbstractBorderedShapeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IBorderItemEditPart;
@@ -44,15 +43,6 @@ public class LifelineHeaderEditPart extends AbstractBorderedShapeEditPart {
 
 	public LifelineHeaderEditPart(View view) {
 		super(view);
-	}
-
-	@Override
-	public Command getCommand(Request _request) {
-		if ("connection end".equals(_request.getType())) {
-			toString();
-		}
-		Command command = super.getCommand(_request);
-		return command;
 	}
 
 	@Override

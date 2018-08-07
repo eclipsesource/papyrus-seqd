@@ -133,7 +133,7 @@ public class CreateMessageTestB {
 		assertEquals(message4Top + delta, interaction().getMessages().get(2).getTop().getAsInt());
 		assertEquals(message5Top + delta, interaction().getMessages().get(3).getTop().getAsInt());
 		assertEquals(message1Top + delta, interaction().getMessages().get(0).getBottom().getAsInt());
-		// TODO creation bottom
+		// ISSUE #335
 		// assertEquals(message2Top + delta, interaction().getMessages().get(4).getBottom().getAsInt());
 		assertEquals(message3Top + delta, interaction().getMessages().get(1).getBottom().getAsInt());
 		assertEquals(message4Top + delta, interaction().getMessages().get(2).getBottom().getAsInt());

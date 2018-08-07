@@ -250,6 +250,22 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 					return UnexecutableCommand.INSTANCE;
 				}
 				break;
+			case DELETE_MESSAGE_LITERAL:
+				/* receiver must have no element after */
+				int receiverLifelineTop = layoutHelper().getBottom(this.receiver.getDiagramView().get());
+				int messageEndTopBottom = receiverLifelineTop + recvOffset;
+				List<MElement<? extends Element>> elementsBelow = new ArrayList<>();
+				findElementsBelow(messageEndTopBottom, elementsBelow,
+						getTarget().getInteraction().getMessages().stream(), false);
+				if (!elementsBelow.isEmpty()) {
+					return UnexecutableCommand.INSTANCE;
+				}
+				findElementsBelow(messageEndTopBottom, elementsBelow, this.receiver.getExecutions().stream(),
+						false);
+				if (!elementsBelow.isEmpty()) {
+					return UnexecutableCommand.INSTANCE;
+				}
+				break;
 			default:
 				break;
 		}
@@ -340,12 +356,13 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				int receiverDeltaYFinal = receiverDeltaY;
 
 				/* collect elements below */
-				findElementsToNudge(creationMessageTop, elementsToNudge,
-						getTarget().getInteraction().getMessages().stream());
-				findElementsToNudge(creationMessageTop, elementsToNudge,
+				findElementsBelow(creationMessageTop, elementsToNudge,
+						getTarget().getInteraction().getMessages().stream(), true);
+				findElementsBelow(creationMessageTop, elementsToNudge,
 						getTarget().getInteraction().getLifelines().stream()//
 								.filter(m -> m.getTop().orElse(0) < creationMessageTop)//
-								.flatMap(l -> l.getExecutions().stream()));
+								.flatMap(l -> l.getExecutions().stream()),
+						true);
 				Collections.sort(elementsToNudge,
 						Comparator.comparingInt(e -> ((MElementImpl<? extends Element>)e).getTop().orElse(0))
 								.reversed());
@@ -395,12 +412,17 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		return beforeSend.getTop().getAsInt() - layoutHelper().getBottom(getTarget().getDiagramView().get());
 	}
 
-	private static void findElementsToNudge(int creationMessageTop,
-			List<MElement<? extends Element>> elementsToNudge, Stream<?> stream) {
+	private static void findElementsBelow(int yPosition, List<MElement<? extends Element>> elementsBelow,
+			Stream<?> stream, boolean useTop) {
 		stream//
-				.filter(MElementImpl.class::isInstance).map(MElementImpl.class::cast)
-				.filter(m -> m.getTop().orElse(0) >= creationMessageTop)//
-				.collect(Collectors.toCollection(() -> elementsToNudge));
+				.filter(MElementImpl.class::isInstance).map(MElementImpl.class::cast).filter(m -> {
+					if (useTop) {
+						return m.getTop().orElse(0) >= yPosition;
+					} else {
+						return m.getBottom().orElse(0) >= yPosition;
+					}
+				})//
+				.collect(Collectors.toCollection(() -> elementsBelow));
 	}
 
 	private CreationParameters endParams(MElement<? extends Element> insertionPoint) {
