@@ -140,8 +140,7 @@ public class CreationMessageDeletionTest {
 		assertEquals(message3Top - delta, interaction().getMessages().get(0).getBottom().getAsInt());
 		assertEquals(message5Top - delta, interaction().getMessages().get(1).getBottom().getAsInt());
 		assertEquals(message4Top - delta, interaction().getMessages().get(2).getBottom().getAsInt());
-		// ISSUE #335
-		// assertEquals(message2Top - delta, interaction().getMessages().get(3).getBottom().getAsInt());
+		assertEquals(message2Top - delta, interaction().getMessages().get(3).getBottom().getAsInt());
 		assertEquals(execution1Top - delta,
 				interaction().getLifelines().get(0).getExecutionOccurrences().get(0).getTop().getAsInt());
 		assertEquals(execution2Top - delta,

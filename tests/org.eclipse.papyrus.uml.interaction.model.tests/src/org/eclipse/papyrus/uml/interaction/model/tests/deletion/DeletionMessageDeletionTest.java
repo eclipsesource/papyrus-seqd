@@ -94,8 +94,7 @@ public class DeletionMessageDeletionTest {
 		assertEquals(message3Top - delta, interaction().getMessages().get(0).getTop().getAsInt());
 		assertEquals(message4Top - delta, interaction().getMessages().get(1).getTop().getAsInt());
 		assertEquals(message5Top - delta, interaction().getMessages().get(2).getTop().getAsInt());
-		// ISSUE #335
-		// assertEquals(message2Top - delta, interaction().getMessages().get(3).getBottom().getAsInt());
+		assertEquals(message2Top - delta, interaction().getMessages().get(3).getBottom().getAsInt());
 		assertEquals(message3Top - delta, interaction().getMessages().get(0).getBottom().getAsInt());
 		assertEquals(message4Top - delta, interaction().getMessages().get(1).getBottom().getAsInt());
 		assertEquals(message5Top - delta, interaction().getMessages().get(2).getBottom().getAsInt());
