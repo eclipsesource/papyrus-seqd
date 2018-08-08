@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:style="http://www.eclipse.org/papyrus/infra/gmfdiag/style" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_oNU9AGKCEeiIbNyTKulhvg" type="LightweightSequenceDiagram" name="Lightweight Sequence Diagram" measurementUnit="Pixel">
+  <children xmi:type="notation:Shape" xmi:id="_oNU9AWKCEeiIbNyTKulhvg" type="Shape_Interaction">
+    <children xmi:type="notation:DecorationNode" xmi:id="_oNU9AmKCEeiIbNyTKulhvg" type="Label_Interaction_Name"/>
+    <children xmi:type="notation:Compartment" xmi:id="_oNU9A2KCEeiIbNyTKulhvg" type="Interaction_Contents">
+      <children xmi:type="notation:Shape" xmi:id="_9sGg0GKEEeiIbNyTKulhvg" type="Shape_Lifeline_Header">
+        <children xmi:type="notation:Shape" xmi:id="_9sGg0WKEEeiIbNyTKulhvg" type="Compartment_Lifeline_Header"/>
+        <children xmi:type="notation:Shape" xmi:id="_9sGg0mKEEeiIbNyTKulhvg" type="Label_Lifeline_Name"/>
+        <children xmi:type="notation:Shape" xmi:id="_9sGg02KEEeiIbNyTKulhvg" type="Shape_Lifeline_Body">
+          <children xmi:type="notation:Shape" xmi:id="_FMjagGKFEeiIbNyTKulhvg" type="Shape_Execution_Specification">
+            <element xmi:type="uml:BehaviorExecutionSpecification" href="CreateMessageTesting.uml#_FMhlUGKFEeiIbNyTKulhvg"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FMjagWKFEeiIbNyTKulhvg" x="-4" y="10" width="10" height="91"/>
+          </children>
+          <layoutConstraint xmi:type="notation:Size" xmi:id="_9sGg1GKEEeiIbNyTKulhvg" width="2" height="300"/>
+        </children>
+        <element xmi:type="uml:Lifeline" href="CreateMessageTesting.uml#_9sFSsGKEEeiIbNyTKulhvg"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_9sGg1WKEEeiIbNyTKulhvg" x="47" y="25" width="100" height="28"/>
+      </children>
+      <children xmi:type="notation:Shape" xmi:id="_csgd0GKFEeiIbNyTKulhvg" type="Shape_Lifeline_Header">
+        <children xmi:type="notation:Shape" xmi:id="_csgd0WKFEeiIbNyTKulhvg" type="Compartment_Lifeline_Header"/>
+        <children xmi:type="notation:Shape" xmi:id="_csgd0mKFEeiIbNyTKulhvg" type="Label_Lifeline_Name"/>
+        <children xmi:type="notation:Shape" xmi:id="_csgd02KFEeiIbNyTKulhvg" type="Shape_Lifeline_Body">
+          <children xmi:type="notation:Shape" xmi:id="_F3xsUGKGEeiIbNyTKulhvg" type="Shape_Execution_Specification">
+            <element xmi:type="uml:BehaviorExecutionSpecification" href="CreateMessageTesting.uml#_F3vQEGKGEeiIbNyTKulhvg"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_F3xsUWKGEeiIbNyTKulhvg" x="-4" y="10" width="10" height="100"/>
+          </children>
+          <layoutConstraint xmi:type="notation:Size" xmi:id="_csgd1GKFEeiIbNyTKulhvg" width="2" height="300"/>
+        </children>
+        <element xmi:type="uml:Lifeline" href="CreateMessageTesting.uml#_csfPsGKFEeiIbNyTKulhvg"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_csgd1WKFEeiIbNyTKulhvg" x="317" y="25" width="100" height="28"/>
+      </children>
+      <children xmi:type="notation:Shape" xmi:id="_OLNfsGMWEei-baqYVSEfiQ" type="Shape_Lifeline_Header">
+        <children xmi:type="notation:Shape" xmi:id="_OLNfsWMWEei-baqYVSEfiQ" type="Compartment_Lifeline_Header"/>
+        <children xmi:type="notation:Shape" xmi:id="_OLNfsmMWEei-baqYVSEfiQ" type="Label_Lifeline_Name"/>
+        <children xmi:type="notation:Shape" xmi:id="_OLNfs2MWEei-baqYVSEfiQ" type="Shape_Lifeline_Body">
+          <children xmi:type="notation:Shape" xmi:id="_WlinsGMWEei-baqYVSEfiQ" type="Shape_Execution_Specification">
+            <element xmi:type="uml:BehaviorExecutionSpecification" href="CreateMessageTesting.uml#_WleWQGMWEei-baqYVSEfiQ"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_WlinsWMWEei-baqYVSEfiQ" x="-5" y="30" width="10" height="22"/>
+          </children>
+          <layoutConstraint xmi:type="notation:Size" xmi:id="_OLNftGMWEei-baqYVSEfiQ" width="2" height="300"/>
+        </children>
+        <element xmi:type="uml:Lifeline" href="CreateMessageTesting.uml#_OLMRkGMWEei-baqYVSEfiQ"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_OLNftWMWEei-baqYVSEfiQ" x="530" y="25" width="100" height="28"/>
+      </children>
+    </children>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_oNU9BGKCEeiIbNyTKulhvg" x="37" y="12" width="600" height="450"/>
+  </children>
+  <styles xmi:type="notation:StringValueStyle" xmi:id="_oNU9BWKCEeiIbNyTKulhvg" name="diagram_compatibility_version" stringValue="1.3.0"/>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_oNU9BmKCEeiIbNyTKulhvg"/>
+  <styles xmi:type="style:PapyrusDiagramStyle" xmi:id="_oNU9B2KCEeiIbNyTKulhvg" diagramKindId="org.eclipse.papyrus.uml.diagram.lightweightsequence">
+    <owner xmi:type="uml:Interaction" href="CreateMessageTesting.uml#_oM9woGKCEeiIbNyTKulhvg"/>
+  </styles>
+  <element xmi:type="uml:Interaction" href="CreateMessageTesting.uml#_oM9woGKCEeiIbNyTKulhvg"/>
+  <edges xmi:type="notation:Connector" xmi:id="_JUg94GMTEei-baqYVSEfiQ" type="Edge_Message" source="_9sGg02KEEeiIbNyTKulhvg" target="_csgd02KFEeiIbNyTKulhvg">
+    <element xmi:type="uml:Message" href="CreateMessageTesting.uml#_JUgW0mMTEei-baqYVSEfiQ"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_JUg94WMTEei-baqYVSEfiQ"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_JUg94mMTEei-baqYVSEfiQ" id="10"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_JUg942MTEei-baqYVSEfiQ" id="10"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_M2nxsGMeEei-baqYVSEfiQ" type="Edge_Message" source="_9sGg02KEEeiIbNyTKulhvg" target="_csgd02KFEeiIbNyTKulhvg">
+    <element xmi:type="uml:Message" href="CreateMessageTesting.uml#_M2nKomMeEei-baqYVSEfiQ"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_M2nxsWMeEei-baqYVSEfiQ"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_M2nxsmMeEei-baqYVSEfiQ" id="140"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_M2nxs2MeEei-baqYVSEfiQ" id="140"/>
+  </edges>
+</notation:Diagram>

@@ -150,6 +150,13 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 						Optional<Shape> shape = lifeline.map(Vertex::getDiagramView).map(Shape.class::cast);
 						shape.ifPresent(s -> chain(
 								layoutHelper().setTop(shape.get(), layoutHelper().getTop(s) + delta)));
+					} else if (targetVtx.hasTag(Tag.LIFELINE_DESTRUCTION)) {
+						// Move Destruction Shape
+						Optional<Shape> shape = Optional.ofNullable(targetVtx.getDiagramView())
+								.filter(Shape.class::isInstance).map(Shape.class::cast);
+						shape.ifPresent(s -> {
+							chain(layoutHelper().setTop(s, layoutHelper().getTop(shape.get()) + delta));
+						});
 					} else {
 						// Ordinary message end. Move it down
 						chain(layoutHelper().setYPosition(target, targetOn, targetY + delta));

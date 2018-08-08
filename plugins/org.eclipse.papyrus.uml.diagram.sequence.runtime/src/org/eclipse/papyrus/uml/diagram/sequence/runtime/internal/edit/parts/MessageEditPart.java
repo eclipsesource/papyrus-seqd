@@ -113,6 +113,7 @@ public class MessageEditPart extends ConnectionNodeEditPart implements ISequence
 	protected int getLineType() {
 		switch (getMessage().getMessageSort()) {
 			case REPLY_LITERAL:
+			case CREATE_MESSAGE_LITERAL:
 				return Graphics.LINE_DOT;
 			default:
 				return Graphics.LINE_SOLID;

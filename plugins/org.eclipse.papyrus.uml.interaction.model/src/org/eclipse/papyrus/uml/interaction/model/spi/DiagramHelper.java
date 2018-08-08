@@ -25,6 +25,7 @@ import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
+import org.eclipse.uml2.uml.MessageEnd;
 
 /**
  * Protocol for a pluggable utility that provides creation of the visual elements of a sequence diagram. All
@@ -96,6 +97,21 @@ public interface DiagramHelper {
 	 */
 	CreationCommand<Shape> createExecutionShape(Supplier<? extends ExecutionSpecification> execution,
 			Shape lifeline, int yPosition, int height);
+
+	/**
+	 * Obtain a command to create a shape for the given {@code destruction} specification as a child of a
+	 * {@link lifeline} shape in the diagram.
+	 * 
+	 * @param destruction
+	 *            a destruction specification to be visualized in the diagram
+	 * @param lifeline
+	 *            the lifeline shape in which to create the {@code execution} shape
+	 * @param yPosition
+	 *            the vertical position of the {@code execution} shape to create
+	 * @return the destruction shape creation command
+	 */
+	CreationCommand<Shape> createDestructionOccurrenceShape(Supplier<? extends MessageEnd> destruction,
+			Shape lifeline, int yPosition);
 
 	/**
 	 * Obtain a command to create a shape for the given {@code message} as an edge of a {@link diagram}.

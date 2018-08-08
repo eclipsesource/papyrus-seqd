@@ -13,6 +13,7 @@ package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -26,7 +27,7 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
+import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
@@ -35,6 +36,7 @@ import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.MessageSort;
 
 /**
  * This command analyses the current graph and fills the white space created by the deletion of elements.
@@ -65,6 +67,7 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 		this.mElementsToRemove = getRemovedMElements(elementsToRemove);
 
 		List<Command> nudgeCommands = new ArrayList<>();
+		nudgeCommands.addAll(createVerticalFullLifelineNudgeCommands());
 		nudgeCommands.addAll(createVerticalNudgeCommands());
 		nudgeCommands.addAll(createHorizontalNudgeCommands());
 
@@ -91,6 +94,67 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 				.map(Optional::get)//
 				.filter(e -> !MOccurrence.class.isInstance(e))// TODO MGate special case once available
 				.collect(Collectors.toSet());
+	}
+
+	/**
+	 * When create messages are deleted we need to nudge full lifelines.
+	 */
+	private List<Command> createVerticalFullLifelineNudgeCommands() {
+		List<Command> nudgeCommands = new ArrayList<>();
+
+		List<MMessage> creationMessages = mElementsToRemove.stream()//
+				.filter(MMessage.class::isInstance)//
+				.map(MMessage.class::cast)//
+				.filter(m -> m.getElement().getMessageSort() == MessageSort.CREATE_MESSAGE_LITERAL)
+				.collect(Collectors.toList());
+
+		for (MMessage message : creationMessages) {
+			/* create message deletion should move created lifeline up again */
+			Optional<MLifeline> sender = message.getSender();
+			Optional<MLifeline> receiver = message.getReceiver();
+			if (!sender.isPresent() || !receiver.isPresent()) {
+				continue;
+			}
+
+			int defaultLifelineTop = getDefaultLifelineTop(receiver.get());
+			int delta = receiver.get().getTop().orElse(0) - defaultLifelineTop;
+			nudgeCommands.add(layoutHelper().setTop(vertex(receiver.get()), defaultLifelineTop));
+
+			/*
+			 * fix other tops on moved lifeline which may result in crooked ui by moving them down again
+			 */
+			receiver.get().getExecutions().stream()//
+					.map(this::vertex)//
+					.forEach(v -> nudgeCommands
+							.add(layoutHelper().setTop(v, layoutHelper().getTop(v).orElse(0) + delta)));
+			for (MMessage m : receiver.get().getInteraction().getMessages()) {
+				m.getSender().ifPresent(l -> {
+					if (l == receiver.get()) {
+						Vertex v = vertex(m.getSend().get());
+						nudgeCommands
+								.add(layoutHelper().setTop(v, layoutHelper().getTop(v).orElse(0) + delta));
+					}
+				});
+				m.getReceiver().ifPresent(l -> {
+					if (l == receiver.get()) {
+						Vertex v = vertex(m.getReceive().get());
+						nudgeCommands
+								.add(layoutHelper().setTop(v, layoutHelper().getTop(v).orElse(0) + delta));
+					}
+				});
+			}
+		}
+
+		return nudgeCommands;
+	}
+
+	@SuppressWarnings("boxing")
+	private int getDefaultLifelineTop(MLifeline lifeline) {
+		/* move lifeline header up to very top */
+		// TODO magic number 25 from
+		// org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.DefaultLayoutHelper.getNewBounds(EClass,
+		// Bounds, Node)
+		return lifeline.getDiagramView().map(v -> layoutHelper().toAbsoluteY(v, 25)).orElse(0);
 	}
 
 	@SuppressWarnings("boxing")
@@ -128,16 +192,18 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 
 		/* find out if we have to move elements which start in the deleted range */
 		if (shouldMoveUpperElements(topFinal, bottomFinal, topToElements, bottomToElements)) {
-
 			Set<Integer> topsStartingAfter = topToElements.keySet().stream()//
 					.filter(top -> top >= topFinal)//
 					.collect(Collectors.toSet());
 			Optional<Integer> min = topsStartingAfter.stream().min(Integer::compare);
 			int delta = topFinal - min.orElse(topFinal) + additionalVerticalOffSet();
-			topsStartingAfter.stream()//
+			List<MElement<? extends Element>> elementsToNudge = topsStartingAfter.stream()//
 					.flatMap(key -> topToElements.get(key).stream())//
-					.forEach(element -> nudgeCommands
-							.add(new NudgeCommand((MElementImpl<? extends Element>)element, delta, false)));
+					.collect(Collectors.toList());
+			for (int i = 0; i < elementsToNudge.size(); i++) {
+				MElement<? extends Element> element = elementsToNudge.get(i);
+				nudgeCommands.add(Create.nudgeCommand(getGraph(), getEditingDomain(), delta, delta, element));
+			}
 		}
 
 		/* find out if we have to move elements which start after the deleted range */
@@ -162,10 +228,14 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 				delta = topFinal - min.orElse(topFinal) + additionalVerticalOffSet();
 			}
 
-			topsBelowDeletion.stream()//
+			List<MElement<? extends Element>> elementsToNudge = topsBelowDeletion.stream()//
+					.sorted(Comparator.naturalOrder())//
 					.flatMap(key -> topToElements.get(key).stream())//
-					.forEach(element -> nudgeCommands
-							.add(new NudgeCommand((MElementImpl<? extends Element>)element, delta, false)));
+					.collect(Collectors.toList());
+			for (int i = 0; i < elementsToNudge.size(); i++) {
+				MElement<? extends Element> element = elementsToNudge.get(i);
+				nudgeCommands.add(Create.nudgeCommand(getGraph(), getEditingDomain(), delta, delta, element));
+			}
 		}
 		return nudgeCommands;
 	}

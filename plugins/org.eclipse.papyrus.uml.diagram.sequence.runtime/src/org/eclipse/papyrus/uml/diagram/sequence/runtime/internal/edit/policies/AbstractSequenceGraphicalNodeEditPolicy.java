@@ -346,16 +346,16 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 	// Nested types
 	//
 
-	private static class StartMessageCommand extends Command {
-		private final MLifeline sender;
+	static class StartMessageCommand extends Command {
+		final MLifeline sender;
 
-		private final Point location;
+		final Point location;
 
-		private final Optional<MElement<?>> before;
+		final Optional<MElement<?>> before;
 
-		private final int offset;
+		final int offset;
 
-		private final MessageSort sort;
+		final MessageSort sort;
 
 		/**
 		 * Initializes me.

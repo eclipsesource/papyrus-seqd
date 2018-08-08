@@ -25,6 +25,7 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -39,8 +40,8 @@ import org.eclipse.papyrus.uml.interaction.model.spi.DeferredAddCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredCreateCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredDeleteCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredSetCommand;
-import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.ElementRemovalCommandImpl;
+import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ActionExecutionSpecification;
@@ -124,8 +125,8 @@ public class DefaultSemanticHelper implements SemanticHelper {
 	}
 
 	private RemovalCommand<Element> deferredRemovalCommand(Supplier<? extends Element> toDelete) {
-		return new ElementRemovalCommandImpl(editingDomain, new DeferredDeleteCommand(editingDomain, toDelete),
-				toDelete.get());
+		return new ElementRemovalCommandImpl(editingDomain,
+				new DeferredDeleteCommand(editingDomain, toDelete), toDelete.get());
 	}
 
 	@Override
@@ -376,7 +377,17 @@ public class DefaultSemanticHelper implements SemanticHelper {
 
 	@Override
 	public CreationCommand<MessageEnd> createMessageOccurrence(CreationParameters parameters) {
-		parameters.setEClass(UMLPackage.Literals.MESSAGE_OCCURRENCE_SPECIFICATION);
+		return createMessageOccurrence(parameters, UMLPackage.Literals.MESSAGE_OCCURRENCE_SPECIFICATION);
+	}
+
+	@Override
+	public CreationCommand<MessageEnd> createDestructionOccurrence(CreationParameters parameters) {
+		return createMessageOccurrence(parameters, UMLPackage.Literals.DESTRUCTION_OCCURRENCE_SPECIFICATION);
+	}
+
+	private CreationCommand<MessageEnd> createMessageOccurrence(CreationParameters parameters,
+			EClass eClass) {
+		parameters.setEClass(eClass);
 		return new DeferredCreateCommand<>(editingDomain, MessageEnd.class, parameters);
 	}
 
@@ -507,4 +518,5 @@ public class DefaultSemanticHelper implements SemanticHelper {
 			return result;
 		};
 	}
+
 }

@@ -61,6 +61,8 @@ public class SequenceEditPartProvider extends AbstractEditPartProvider {
 				return ExecutionSpecificationEditPart.class;
 			case ViewTypes.STATE_INVARIANT:
 				return StateInvariantEditPart.class;
+			case ViewTypes.DESTRUCTION_SPECIFICATION:
+				return DestructionSpecificationEditPart.class;
 		}
 
 		return null;

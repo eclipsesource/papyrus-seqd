@@ -82,8 +82,8 @@ public class DefaultLayoutHelper implements LayoutHelper {
 
 	static final int DEFAULT_RIGHT = DEFAULT_LEFT + DEFAULT_WIDTH;
 
-	private static final Pattern IDENTITY_ANCHOR_PATTERN = Pattern
-			.compile("(left;|right;|west;|east;)?(\\d+)"); //$NON-NLS-1$
+	public static final Pattern IDENTITY_ANCHOR_PATTERN = Pattern
+			.compile("(left;|right;|west;|east;)?(-?\\d+)"); //$NON-NLS-1$
 
 	private static final Pattern EXEC_START_FINISH_ANCHOR_PATTERN = Pattern.compile("(start)|(end)"); //$NON-NLS-1$
 
@@ -799,6 +799,8 @@ public class DefaultLayoutHelper implements LayoutHelper {
 		if (eClass.getEPackage() == UMLPackage.eINSTANCE) {
 			switch (eClass.getClassifierID()) {
 				case UMLPackage.LIFELINE:
+					// TODO the magic number 25 is referenced from
+					// org.eclipse.papyrus.uml.interaction.internal.model.commands.NudgeOnRemovalCommand.getDefaultLifelineTop(MLifeline)
 					result.setY(25);
 					result.setWidth(100);
 					result.setHeight(28);

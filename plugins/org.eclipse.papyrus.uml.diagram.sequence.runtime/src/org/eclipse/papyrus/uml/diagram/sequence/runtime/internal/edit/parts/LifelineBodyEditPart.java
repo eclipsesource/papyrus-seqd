@@ -43,6 +43,10 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.S
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.locators.OnLineBorderItemLocator;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
+import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MMessage;
+import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.MessageSort;
 
 /**
  * Edit Part that manages the body (the <i>line</i>) of the lifeline.
@@ -89,12 +93,31 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart implements 
 	}
 
 	protected int computeLifelineHeight() {
+		Shape shape = getShape();
+		Element element = (Element)shape.getElement();
+
 		MInteraction mInteraction = getMInteraction();
+
+		/* if we have a destruction spec on this lifeline, end there */
+		Optional<MLifeline> mLifeline = mInteraction.getElement(element).filter(MLifeline.class::isInstance)
+				.map(MLifeline.class::cast);
+		if (mLifeline.isPresent()) {
+			Optional<MMessage> end = mInteraction.getMessages().stream()//
+					.filter(m -> m.getElement().getMessageSort() == MessageSort.DELETE_MESSAGE_LITERAL)//
+					.filter(m -> m.getReceiver().isPresent())//
+					.filter(m -> m.getReceiver().get() == mLifeline.get())//
+					.findFirst();
+			if (end.isPresent()) {
+				return end.get().getTop().orElse(0) - getLayoutHelper().getTop(shape);
+			}
+		}
+
+		/* else go to bottom */
 		Optional<Integer> bottomMostElementY = mInteraction.getBottommostElement().map(MElement::getBottom)
 				.map(OptionalInt::getAsInt);
 		int endOfLifelineY = Math.max(bottomMostElementY.orElse(Integer.valueOf(-1)).intValue(),
 				getMinimumHeight());
-		return getLayoutHelper().toRelativeY(getShape(), endOfLifelineY + getPaddingBottom());
+		return getLayoutHelper().toRelativeY(shape, endOfLifelineY + getPaddingBottom());
 	}
 
 	private MInteraction getMInteraction() {
