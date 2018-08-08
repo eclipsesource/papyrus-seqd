@@ -134,8 +134,8 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			Shape body = (Shape)result.createChild(NotationPackage.Literals.SHAPE);
 			body.setType(ViewTypes.LIFELINE_BODY);
 			Size bodySize = NotationFactory.eINSTANCE.createSize();
-			bodySize.setWidth(2);
-			bodySize.setHeight(150);
+			bodySize.setWidth(layoutHelper().getConstraints().getMinimumHeight(ViewTypes.LIFELINE_BODY));
+			bodySize.setHeight(layoutHelper().getConstraints().getMinimumHeight(ViewTypes.LIFELINE_BODY));
 			body.setLayoutConstraint(bodySize);
 
 			return result;
@@ -176,7 +176,8 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			if (Size.class.isInstance(llBounds)) {
 				width = Size.class.cast(llBounds).getWidth();
 			}
-			int execWidth = 10;
+			int execWidth = layoutHelper().getConstraints()
+					.getMinimumWidth(ViewTypes.EXECUTION_SPECIFICATION);
 
 			Shape result = NotationFactory.eINSTANCE.createShape();
 			result.setType(ViewTypes.EXECUTION_SPECIFICATION);
@@ -210,7 +211,8 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			if (Size.class.isInstance(llBounds)) {
 				width = Size.class.cast(llBounds).getWidth();
 			}
-			int execWidth = 20;
+			int execWidth = layoutHelper().getConstraints()
+					.getMinimumWidth(ViewTypes.DESTRUCTION_SPECIFICATION);
 
 			Shape result = NotationFactory.eINSTANCE.createShape();
 			result.setType(ViewTypes.DESTRUCTION_SPECIFICATION);
