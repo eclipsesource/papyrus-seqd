@@ -35,6 +35,7 @@ import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.MessageSort;
 
@@ -151,10 +152,8 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 	@SuppressWarnings("boxing")
 	private int getDefaultLifelineTop(MLifeline lifeline) {
 		/* move lifeline header up to very top */
-		// TODO magic number 25 from
-		// org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.DefaultLayoutHelper.getNewBounds(EClass,
-		// Bounds, Node)
-		return lifeline.getDiagramView().map(v -> layoutHelper().toAbsoluteY(v, 25)).orElse(0);
+		int offsetY = layoutHelper().getConstraints().getYOffset(ViewTypes.LIFELINE_HEADER);
+		return lifeline.getDiagramView().map(v -> layoutHelper().toAbsoluteY(v, offsetY)).orElse(0);
 	}
 
 	@SuppressWarnings("boxing")

@@ -33,6 +33,8 @@ public interface LayoutConstraints {
 		public static final String ARROW = "arrow"; //$NON-NLS-1$
 
 		public static final String ANCHOR = "anchor"; //$NON-NLS-1$
+
+		public static final String LINE = "line"; //$NON-NLS-1$
 	}
 
 	/**

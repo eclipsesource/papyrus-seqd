@@ -16,6 +16,7 @@ import static java.lang.Math.abs;
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.applyModifier;
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.ANCHOR;
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.ARROW;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.LINE;
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.NO_MODIFIER;
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition.BOTTOM;
 
@@ -167,7 +168,7 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 
 		// The size of the interaction frame's pentagon label
 		result.put(ViewTypes.INTERACTION_CONTENTS, 30);
-
+		result.put(ViewTypes.LIFELINE_HEADER, 25);
 		return result;
 	}
 
@@ -175,12 +176,13 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 	private static Map<String, Integer> loadHeights() {
 		Map<String, Integer> result = new HashMap<>();
 
-		result.put(ViewTypes.LIFELINE_BODY, 400);
+		result.put(applyModifier(LINE, ViewTypes.LIFELINE_BODY), 400);
 		result.put(applyModifier(ARROW, ViewTypes.MESSAGE), 5);
 		result.put(ViewTypes.EXECUTION_SPECIFICATION, 40);
 		result.put(ViewTypes.INTERACTION_CONTENTS, 180);
 		result.put(applyModifier(ANCHOR, ViewTypes.LIFELINE_BODY), 10);
-
+		result.put(ViewTypes.LIFELINE_HEADER, 28);
+		result.put(ViewTypes.LIFELINE_BODY, 150);
 		return result;
 	}
 
@@ -188,9 +190,13 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 	private static Map<String, Integer> loadWidths() {
 		Map<String, Integer> result = new HashMap<>();
 
-		result.put(ViewTypes.LIFELINE_BODY, 1);
+		result.put(applyModifier(LINE, ViewTypes.LIFELINE_BODY), 1);
 		result.put(applyModifier(ARROW, ViewTypes.MESSAGE), 5);
 		result.put(ViewTypes.INTERACTION_CONTENTS, 45);
+		result.put(ViewTypes.LIFELINE_HEADER, 100);
+		result.put(ViewTypes.EXECUTION_SPECIFICATION, 10);
+		result.put(ViewTypes.DESTRUCTION_SPECIFICATION, 20);
+		result.put(ViewTypes.LIFELINE_BODY, 2);
 		return result;
 	}
 
