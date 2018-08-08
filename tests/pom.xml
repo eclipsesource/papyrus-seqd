@@ -30,6 +30,7 @@
 				<configuration>
 					<useUIHarness>true</useUIHarness>
 					<includes>
+						<include>**/*_PTest.java</include>
 						<include>**/*UITest.java</include>
 					</includes>
 					<failIfNoTests>false</failIfNoTests>
@@ -52,6 +53,7 @@
 							</includes>
 							<excludes>
 								<exclude>**/*UITest.java</exclude>
+								<exclude>**/*_PTest.java</exclude>
 							</excludes>
 							<failIfNoTests>false</failIfNoTests>
 							<testFailureIgnore>false</testFailureIgnore>
