@@ -78,8 +78,11 @@ public class BasicDeletionTest {
 	public void message_notTriggeringExecution() {
 		/* setup */
 		MMessage message = interaction().getMessages().get(1);
-		int deletedTop = message.getTop().getAsInt();
+		MExecution executionBeforeMessage = interaction.getLifelines().get(1).getExecutions().get(0);
+		MExecution executionAfterMessage = interaction.getLifelines().get(1).getExecutions().get(1);
 
+		final int spaceToPreserve = executionAfterMessage.getTop().getAsInt()
+				- message.getBottom().getAsInt();
 		/* act */
 		executeAndAssertRemoval((RemovalCommand<Element>)message.remove(), //
 				message, message.getSend().get(), message.getReceive().get());
@@ -94,8 +97,11 @@ public class BasicDeletionTest {
 		assertEquals(3, interaction().getLifelines().get(1).getExecutionOccurrences().size());
 		assertEquals(2, interaction().getLifelines().get(2).getExecutionOccurrences().size());
 
-		/* execution moved up to where message was */
-		assertTop(deletedTop, interaction().getLifelines().get(1).getExecutions().get(1));
+		/* the space after the deleted message and the next element has been preserved */
+
+		assertEquals(spaceToPreserve,
+				executionAfterMessage.getTop().getAsInt() - executionBeforeMessage.getBottom().getAsInt());
+
 	}
 
 	@SuppressWarnings("unchecked")

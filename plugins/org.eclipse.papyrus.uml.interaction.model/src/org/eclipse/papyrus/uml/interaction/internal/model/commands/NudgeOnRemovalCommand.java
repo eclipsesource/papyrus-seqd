@@ -210,7 +210,7 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 			Set<Integer> topsBelowDeletion = topToElements.keySet().stream()//
 					.filter(top -> top >= bottomFinal)//
 					.collect(Collectors.toSet());
-			Optional<Integer> min = topsBelowDeletion.stream().min(Integer::compare);
+			Optional<Integer> firstTopBelowDeletion = topsBelowDeletion.stream().min(Integer::compare);
 
 			/* if there is an undeleted element ending in deletion range use this as benchmark */
 			Optional<Integer> benchmark = bottomToElements.keySet().stream()//
@@ -220,11 +220,16 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 			int delta;
 			if (benchmark.isPresent()) {
 				/* keep previous distance to deleted range and move below benchmark */
-				delta = (benchmark.get()) - min.orElse(benchmark.get())
-						+ (min.orElse(bottomFinal) - bottomFinal);
+				delta = (benchmark.get()) - firstTopBelowDeletion.orElse(benchmark.get())
+						+ (firstTopBelowDeletion.orElse(bottomFinal) - bottomFinal);
 			} else {
-				/* move to top of deleted range */
-				delta = topFinal - min.orElse(topFinal) + additionalVerticalOffSet();
+				Optional<Integer> firstBottomAboveDeletion = bottomToElements.keySet().stream()
+						.filter(bot -> bot <= topFinal).reduce(Integer::max);
+				/*
+				 * keep previous distance between delete range and next element and move below deleted range
+				 */
+				delta = firstBottomAboveDeletion.orElse(bottomFinal) - bottomFinal
+						+ additionalVerticalOffSet();
 			}
 
 			List<MElement<? extends Element>> elementsToNudge = topsBelowDeletion.stream()//
