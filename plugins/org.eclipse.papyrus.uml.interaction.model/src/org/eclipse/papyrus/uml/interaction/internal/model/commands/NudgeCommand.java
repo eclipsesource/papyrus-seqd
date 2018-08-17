@@ -12,9 +12,7 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
-import java.util.LinkedHashSet;
 import java.util.Optional;
-import java.util.Set;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.IdentityCommand;
@@ -32,7 +30,6 @@ import org.eclipse.papyrus.uml.interaction.graph.Tag;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Message;
 
 /**
@@ -111,8 +108,6 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 	 */
 	private class MoveDownVisitor extends CommandBuildingVisitor<Vertex> {
 
-		private Set<Shape> nudgedExecutionShapes = new LinkedHashSet<>();
-
 		private final int delta;
 
 		MoveDownVisitor(int delta) {
@@ -131,9 +126,6 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 				Shape shape = (Shape)view;
 				int top = layoutHelper().getTop(shape);
 				chain(layoutHelper().setTop(shape, top + delta));
-				if (element instanceof ExecutionSpecification) {
-					nudgedExecutionShapes.add(shape);
-				}
 			} else if (view instanceof Connector && element instanceof Message) {
 				// Move connector anchors down
 				Connector connector = (Connector)view;
@@ -173,9 +165,8 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 			} else if (vertex.hasTag(Tag.EXECUTION_FINISH)) {
 				// Stretch the execution specification, but only if we didn't nudge the top
 				Optional<Vertex> exec = vertex.predecessor(Tag.EXECUTION_FINISH);
-				if (!visited(exec.flatMap(v -> v.predecessor(Tag.EXECUTION_START)))) {
-					Optional<Shape> shape = exec.map(Vertex::getDiagramView).map(Shape.class::cast)
-							.filter(s -> !nudgedExecutionShapes.contains(s));
+				if (!visited(exec)) {
+					Optional<Shape> shape = exec.map(Vertex::getDiagramView).map(Shape.class::cast);
 					Optional<Size> sizeConstraint = shape.map(Shape::getLayoutConstraint)
 							.filter(Size.class::isInstance).map(Size.class::cast);
 					sizeConstraint.ifPresent(size -> chain(SetCommand.create(getEditingDomain(), size,
