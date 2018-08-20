@@ -98,7 +98,7 @@ public class CreationMessageDeletionTest {
 
 		assertEquals(lifeline1Top, interaction().getLifelines().get(2).getTop().getAsInt());
 
-		int delta = message3Top - message2Top;
+		int delta = message2Top - message1Top;
 		assertEquals(message3Top - delta, interaction().getMessages().get(0).getTop().getAsInt());
 		assertEquals(message5Top - delta, interaction().getMessages().get(1).getTop().getAsInt());
 		assertEquals(message4Top - delta, interaction().getMessages().get(2).getTop().getAsInt());
@@ -124,14 +124,16 @@ public class CreationMessageDeletionTest {
 		/* assert: Message1 is deleted */
 		/* assert: Lifeline1 should not move */
 		/* assert: Lifeline2 moved to top */
-		/* assert: other elements nudged up */
+		/* assert: Content of lifeline 2 is not moved */
+		/* assert: Other elements like Lifeline 3 stay at the same place, as create message is not moved */
 		assertEquals(4, interaction().getMessages().size());
 
 		assertEquals(lifeline1Top, interaction().getLifelines().get(0).getTop().getAsInt());
 
 		assertEquals(lifeline1Top, interaction().getLifelines().get(1).getTop().getAsInt());
 
-		int delta = message2Top - message1Top;
+		int delta = 0; // lifeline 3 does not move, as we do not move the create message (see comment and
+						// moving down of the messages when lifeline is moved)
 		assertEquals(lifeline3Top - delta, interaction().getLifelines().get(2).getTop().getAsInt());
 		assertEquals(message3Top - delta, interaction().getMessages().get(0).getTop().getAsInt());
 		assertEquals(message5Top - delta, interaction().getMessages().get(1).getTop().getAsInt());
