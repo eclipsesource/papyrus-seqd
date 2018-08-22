@@ -132,8 +132,11 @@ public class CreationMessageDeletionTest {
 
 		assertEquals(lifeline1Top, interaction().getLifelines().get(1).getTop().getAsInt());
 
-		int delta = 0; // lifeline 3 does not move, as we do not move the create message (see comment and
-						// moving down of the messages when lifeline is moved)
+		/*
+		 * lifeline 3 does not move, as we do not move the create message (see comment and moving down of the
+		 * messages when lifeline is moved)
+		 */
+		int delta = 0;
 		assertEquals(lifeline3Top - delta, interaction().getLifelines().get(2).getTop().getAsInt());
 		assertEquals(message3Top - delta, interaction().getMessages().get(0).getTop().getAsInt());
 		assertEquals(message5Top - delta, interaction().getMessages().get(1).getTop().getAsInt());
