@@ -62,43 +62,44 @@ public class DeletionMessageDeletionTest {
 		lifeline4Top = interaction().getLifelines().get(3).getTop().getAsInt();
 
 		message1Top = interaction().getMessages().get(0).getTop().getAsInt();
-		message2Top = interaction().getMessages().get(4).getTop().getAsInt();
-		message3Top = interaction().getMessages().get(1).getTop().getAsInt();
-		message4Top = interaction().getMessages().get(2).getTop().getAsInt();
-		message5Top = interaction().getMessages().get(3).getTop().getAsInt();
+		message2Top = interaction().getMessages().get(1).getTop().getAsInt();
+		message3Top = interaction().getMessages().get(2).getTop().getAsInt();
+		message4Top = interaction().getMessages().get(3).getTop().getAsInt();
+		message5Top = interaction().getMessages().get(4).getTop().getAsInt();
 	}
 
 	@Test
 	public void delete() {
 		/* setup */
-		MMessage toDelete = interaction().getMessages().get(0);
+		MMessage toDelete = interaction().getMessages().get(3);
 
-		int delta = message2Top - message1Top;
+		int delta = message4Top - message3Top;
 
 		/* act */
 		execute(toDelete.remove());
 
 		/* assert */
-		/* Message 1 deleted */
-		/* L1, L2, L4 do not move */
+		/* Message4 (delete message)deleted */
+		/* L1, L2, L3, L4 do not move */
 		/* M2, L3, M3, M4, M5 all move up */
 		assertEquals(4, interaction().getMessages().size());
 
 		assertEquals(lifeline1Top, interaction().getLifelines().get(0).getTop().getAsInt());
 		assertEquals(lifeline2Top, interaction().getLifelines().get(1).getTop().getAsInt());
+		assertEquals(lifeline3Top, interaction().getLifelines().get(2).getTop().getAsInt());
 		assertEquals(lifeline4Top, interaction().getLifelines().get(3).getTop().getAsInt());
 
-		assertEquals(lifeline3Top - delta, interaction().getLifelines().get(2).getTop().getAsInt());
+		assertEquals(message1Top, interaction().getMessages().get(0).getTop().getAsInt());
+		assertEquals(message2Top, interaction().getMessages().get(1).getTop().getAsInt());
+		assertEquals(message3Top, interaction().getMessages().get(2).getTop().getAsInt());
+		assertEquals(message5Top - delta, interaction().getMessages().get(3).getTop().getAsInt());
 
-		assertEquals(message2Top - delta, interaction().getMessages().get(3).getTop().getAsInt());
-		assertEquals(message3Top - delta, interaction().getMessages().get(0).getTop().getAsInt());
-		assertEquals(message4Top - delta, interaction().getMessages().get(1).getTop().getAsInt());
-		assertEquals(message5Top - delta, interaction().getMessages().get(2).getTop().getAsInt());
-		assertEquals(message2Top - delta, interaction().getMessages().get(3).getBottom().getAsInt());
-		assertEquals(message3Top - delta, interaction().getMessages().get(0).getBottom().getAsInt());
-		assertEquals(message4Top - delta, interaction().getMessages().get(1).getBottom().getAsInt());
-		assertEquals(message5Top - delta, interaction().getMessages().get(2).getBottom().getAsInt());
+		assertEquals(message1Top, interaction().getMessages().get(0).getBottom().getAsInt());
+		assertEquals(message2Top, interaction().getMessages().get(1).getBottom().getAsInt());
+		assertEquals(message3Top, interaction().getMessages().get(2).getBottom().getAsInt());
+		assertEquals(message5Top - delta, interaction().getMessages().get(3).getBottom().getAsInt());
 
+		// Check lifeline height?
 	}
 
 }

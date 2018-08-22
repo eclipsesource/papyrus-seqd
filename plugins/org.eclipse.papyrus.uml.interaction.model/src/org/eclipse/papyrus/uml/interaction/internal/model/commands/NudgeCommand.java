@@ -165,7 +165,7 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 			} else if (vertex.hasTag(Tag.EXECUTION_FINISH)) {
 				// Stretch the execution specification, but only if we didn't nudge the top
 				Optional<Vertex> exec = vertex.predecessor(Tag.EXECUTION_FINISH);
-				if (!visited(exec.flatMap(v -> v.predecessor(Tag.EXECUTION_START)))) {
+				if (!visited(exec)) {
 					Optional<Shape> shape = exec.map(Vertex::getDiagramView).map(Shape.class::cast);
 					Optional<Size> sizeConstraint = shape.map(Shape::getLayoutConstraint)
 							.filter(Size.class::isInstance).map(Size.class::cast);
