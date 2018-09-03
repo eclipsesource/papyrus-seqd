@@ -180,17 +180,43 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 
 		// Now we have commands to add the execution specification. But, first we must make
 		// room for it in the diagram. Nudge the element that will follow the new execution
-
-		MElement<?> distanceFrom = insertionPoint;
-		Optional<Command> makeSpace = getTarget().following(insertionPoint).map(el -> {
-			OptionalInt distance = el.verticalDistance(distanceFrom);
-			return distance.isPresent() ? el.nudge(height) : null;
-		});
+		Optional<Command> makeSpace = createNudgeCommand(insertionPoint, execParams.isInsertBefore());
 		if (makeSpace.isPresent()) {
 			result = makeSpace.get().chain(result);
 		}
 
 		return result;
+	}
+
+	/**
+	 * Creates the nudge command for the insertion of the execution.
+	 * <p>
+	 * If the insertion of the execution <code>isInsertBefore</code>, the <code>insertionPoint</code> also
+	 * needs to be nudged, otherwise we need to nudge everything after the insertion point.
+	 * </p>
+	 * 
+	 * @param insertionPoint
+	 *            the insertion point of the execution's insert command.
+	 * @param isInsertBefore
+	 *            whether or not, the insert command inserted before or after the insertion point.
+	 * @return the nudge command.
+	 */
+	protected Optional<Command> createNudgeCommand(MElement<? extends Element> insertionPoint,
+			boolean isInsertBefore) {
+		final MElement<? extends Element> nudgeStart;
+		if (isInsertBefore) {
+			nudgeStart = getTarget().preceding(insertionPoint).orElse(before);
+		} else {
+			nudgeStart = insertionPoint;
+		}
+
+		MElement<?> distanceFrom = insertionPoint;
+		Optional<Command> makeSpace = getTarget().following(nudgeStart).map(el -> {
+			OptionalInt distance = el.verticalDistance(distanceFrom);
+			return distance.isPresent() ? el.nudge(height) : null;
+		});
+
+		return makeSpace;
 	}
 
 	/**
