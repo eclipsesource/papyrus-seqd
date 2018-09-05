@@ -6,6 +6,7 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
+import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
@@ -121,13 +122,20 @@ public class CreateMessageTest {
 		assertEquals(3, interaction().getMessages().size());
 		assertEquals(MessageSort.CREATE_MESSAGE_LITERAL,
 				interaction().getMessages().get(2).getElement().getMessageSort());
-		assertEquals(getLifelineBodyTop(interaction().getLifelines().get(0)) + 10,
-				interaction().getMessages().get(2).getTop().getAsInt());
+
+		/*
+		 * we created this message sending from the start of an execution, so if that execution was nudged
+		 * down, then the message will have followed. Therefore, assert the message location based on the
+		 * sending execution
+		 */
+		MExecution exec = lifeline1.getExecutions().get(0);
+		assertEquals(exec.getTop().getAsInt(), interaction().getMessages().get(2).getTop().getAsInt());
 
 		assertEquals(lifeline1Top, interaction().getLifelines().get(0).getTop().getAsInt());
 		assertEquals(lifeline3Top, interaction().getLifelines().get(2).getTop().getAsInt());
 
-		int nudgedLifeline2Top = interaction().getMessages().get(2).getTop().getAsInt()
+		/* we drew the creation message to the middle of the side of the lifeline head */
+		int nudgedLifeline2Top = getLifelineBodyTop(interaction().getLifelines().get(0)) + 10 //
 				- (lifeline2Header / 2);
 		assertEquals(nudgedLifeline2Top, interaction().getLifelines().get(1).getTop().getAsInt());
 

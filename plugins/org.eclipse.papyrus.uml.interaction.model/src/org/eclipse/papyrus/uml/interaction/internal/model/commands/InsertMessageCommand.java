@@ -12,7 +12,9 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
+import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
+import static org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil.invertSingle;
 import static org.eclipse.papyrus.uml.interaction.graph.util.Suppliers.compose;
 
 import java.util.ArrayList;
@@ -27,6 +29,14 @@ import java.util.stream.Stream;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.emf.edit.command.CommandParameter;
+import org.eclipse.emf.edit.command.DeleteCommand;
+import org.eclipse.emf.edit.command.MoveCommand;
+import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
@@ -39,14 +49,17 @@ import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredAddCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
 import org.eclipse.uml2.uml.MessageSort;
 import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.OccurrenceSpecification;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -200,12 +213,14 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		}
 
 		// Send: Is there actually an execution occurrence here?
-		int llTop = layoutHelper().getBottom(getTarget().getDiagramView().get());
-		int where = beforeSend == getTarget() ? sendOffset
+		int llTopSend = layoutHelper().getBottom(getTarget().getDiagramView().get());
+		int whereSend = beforeSend == getTarget() ? sendOffset
 				// For executions also the top to allow for messages to anchor within it
-				: beforeSend.getTop().orElse(llTop) - llTop + sendOffset;
-		Optional<MExecution> sendingExec = getTarget().elementAt(where).filter(MExecution.class::isInstance)
-				.map(MExecution.class::cast);
+				: beforeSend.getTop().orElse(llTopSend) - llTopSend + sendOffset;
+		Optional<MExecution> sendingExec = getTarget().elementAt(whereSend).flatMap(this::getExecution)
+				.filter(exec -> //
+				((exec.getBottom().orElse(-1) - llTopSend) >= whereSend) //
+						&& ((exec.getTop().orElse(MAX_VALUE) - llTopSend) <= whereSend));
 		Vertex sender = sendingExec.map(this::vertex).orElseGet(this::vertex);
 		if (sender == null || sender.getDiagramView() == null) {
 			return UnexecutableCommand.INSTANCE;
@@ -214,10 +229,10 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		// Receive: Is there actually an execution occurrence here?
 		// In case of create or destruction messages, this should not connect to execution occurrences,
 		// because they connect to lifeline-header/new destruction occurrence
-		llTop = layoutHelper().getBottom(receiver.getDiagramView().get());
-		where = beforeRecv == receiver ? recvOffset
+		int llTopRecv = layoutHelper().getBottom(receiver.getDiagramView().get());
+		int whereRecv = beforeRecv == receiver ? recvOffset
 				// For executions also the top to allow for messages to anchor within it
-				: beforeRecv.getTop().orElse(llTop) - llTop + recvOffset;
+				: beforeRecv.getTop().orElse(llTopRecv) - llTopRecv + recvOffset;
 		Optional<MExecution> receivingExec;
 		switch (sort) {
 			case CREATE_MESSAGE_LITERAL:
@@ -225,20 +240,28 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				receivingExec = Optional.empty();
 				break;
 			default:
-				receivingExec = this.receiver.elementAt(where).filter(MExecution.class::isInstance)
-						.map(MExecution.class::cast);
+				receivingExec = this.receiver.elementAt(whereRecv).flatMap(this::getExecution).filter(exec -> //
+				((exec.getBottom().orElse(-1) - llTopRecv) >= whereRecv) //
+						&& ((exec.getTop().orElse(MAX_VALUE) - llTopRecv) <= whereRecv));
 				break;
 		}
+		@SuppressWarnings("hiding")
 		Vertex receiver = receivingExec.map(this::vertex).orElseGet(() -> vertex(this.receiver));
 		if (receiver == null || receiver.getDiagramView() == null) {
 			return UnexecutableCommand.INSTANCE;
 		}
 
-		OptionalInt sendReferenceY = layoutHelper().getBottom(sendReference);
+		OptionalInt sendReferenceY = beforeSend == getTarget() ? layoutHelper().getBottom(sendReference)
+				// Reference from the top of an execution specification to allow
+				// connections within its extent
+				: layoutHelper().getTop(sendReference);
 		if (!sendReferenceY.isPresent()) {
 			return UnexecutableCommand.INSTANCE;
 		}
-		OptionalInt recvReferenceY = layoutHelper().getBottom(recvReference);
+		OptionalInt recvReferenceY = beforeRecv == this.receiver ? layoutHelper().getBottom(recvReference)
+				// Reference from the top of an execution specification to allow
+				// connections within its extent
+				: layoutHelper().getTop(recvReference);
 		if (!recvReferenceY.isPresent()) {
 			return UnexecutableCommand.INSTANCE;
 		}
@@ -334,7 +357,8 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		/* create message */
 		result = result.chain(diagramHelper().createMessageConnector(resultCommand, //
 				senderView, () -> sendReferenceY.getAsInt() + sendOffset, //
-				receiverView, () -> recvReferenceY.getAsInt() + recvOffset));
+				receiverView, () -> recvReferenceY.getAsInt() + recvOffset, //
+				this::replace));
 
 		switch (sort) {
 			case CREATE_MESSAGE_LITERAL:
@@ -405,7 +429,6 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		}
 
 		return result;
-
 	}
 
 	private int relativeTopOfBefore() {
@@ -432,4 +455,72 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 						UMLPackage.Literals.INTERACTION__FRAGMENT)
 				: CreationParameters.after(insertionPoint.getElement());
 	}
+
+	private Optional<Command> replace(OccurrenceSpecification occurrence, MessageEnd msgEnd) {
+		Optional<ExecutionSpecification> execSpec = getExecution(occurrence);
+		return execSpec.map(exec -> {
+			boolean isStart = exec.getStart() == occurrence;
+
+			EObject owner = occurrence.eContainer();
+			EReference containment = occurrence.eContainmentFeature();
+			int index = containment.isMany() ? ((EList<?>)owner.eGet(containment)).indexOf(occurrence)
+					: CommandParameter.NO_INDEX;
+
+			Command result = DeleteCommand.create(getEditingDomain(), occurrence);
+
+			if (msgEnd.eContainer() == owner) {
+				result = result
+						.chain(MoveCommand.create(getEditingDomain(), owner, containment, msgEnd, index));
+			} else {
+				result = result
+						.chain(AddCommand.create(getEditingDomain(), owner, containment, msgEnd, index));
+			}
+
+			if (isStart) {
+				result = result.chain(SetCommand.create(getEditingDomain(), exec,
+						UMLPackage.Literals.EXECUTION_SPECIFICATION__START, msgEnd));
+			} else {
+				result = result.chain(SetCommand.create(getEditingDomain(), exec,
+						UMLPackage.Literals.EXECUTION_SPECIFICATION__FINISH, msgEnd));
+			}
+
+			return result;
+		});
+	}
+
+	Optional<MExecution> getExecution(MElement<? extends Element> interactionElement) {
+		Optional<MExecution> result = Optional.empty();
+
+		if (interactionElement instanceof MExecution) {
+			// It already is an execution
+			result = Optional.of((MExecution)interactionElement);
+		} else if (interactionElement instanceof MOccurrence<?>) {
+			MOccurrence<?> occurrence = (MOccurrence<?>)interactionElement;
+			result = occurrence.getStartedExecution();
+			if (!result.isPresent()) {
+				result = occurrence.getFinishedExecution();
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Query the {@link ExecutionSpecification} that is started or finished by an {@code occurrence}
+	 * specification.
+	 * 
+	 * @param occurrence
+	 *            an occurrence in the interaction
+	 * @return the started or finished execution
+	 */
+	Optional<ExecutionSpecification> getExecution(OccurrenceSpecification occurrence) {
+		Optional<ExecutionSpecification> result = invertSingle(occurrence,
+				UMLPackage.Literals.EXECUTION_SPECIFICATION__START, ExecutionSpecification.class);
+		if (!result.isPresent()) {
+			result = invertSingle(occurrence, UMLPackage.Literals.EXECUTION_SPECIFICATION__FINISH,
+					ExecutionSpecification.class);
+		}
+		return result;
+	}
+
 }

@@ -124,4 +124,22 @@
     <!-- when integrated with Papyrus, we should avoid applying this context by default -->   
     <context appliedByDefault="true" contextModel="context/lightweight-seqd.contexts" isCustomizable="true"/>
  </extension>
+ 
+ <extension
+       point="org.eclipse.gmf.runtime.diagram.ui.paletteProviders">
+    <paletteProvider
+          class="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequencePaletteProvider">
+       <Priority
+             name="Highest">
+       </Priority>
+       <!-- For some reason, Papyrus ignores the <content> object descriptor. -->
+       <editor>
+          <!-- the <method> is understood by the extension point. It's an oversight in the exsd. -->
+          <method
+                name="getContributorId()"
+                value="org.eclipse.papyrus.uml.diagram.sequence.runtime">
+          </method>
+       </editor>
+    </paletteProvider>
+ </extension>
 </plugin>

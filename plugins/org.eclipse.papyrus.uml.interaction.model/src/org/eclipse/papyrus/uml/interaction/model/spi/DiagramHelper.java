@@ -12,6 +12,8 @@
 
 package org.eclipse.papyrus.uml.interaction.model.spi;
 
+import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
@@ -26,6 +28,7 @@ import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
+import org.eclipse.uml2.uml.OccurrenceSpecification;
 
 /**
  * Protocol for a pluggable utility that provides creation of the visual elements of a sequence diagram. All
@@ -126,11 +129,16 @@ public interface DiagramHelper {
 	 *            the target to which to attach the connector
 	 * @param targetY
 	 *            the target Y position
+	 * @param collisionHandler
+	 *            an optional handler of collision between a message end and the start or finish occurrence of
+	 *            an execution specification, providing an optional command to
+	 *            {@linkplain Command#chain(Command) chain} to the result. May be {@code null}
 	 * @return the message connector creation command
 	 */
 	Command createMessageConnector(Supplier<Message> message, //
 			Supplier<? extends View> source, IntSupplier sourceY, //
-			Supplier<? extends View> target, IntSupplier targetY);
+			Supplier<? extends View> target, IntSupplier targetY, //
+			BiFunction<? super OccurrenceSpecification, ? super MessageEnd, Optional<Command>> collisionHandler);
 
 	/**
 	 * Obtain a command to delete a given {@code connector}.
