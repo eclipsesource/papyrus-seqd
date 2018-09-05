@@ -35,6 +35,7 @@ import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.MessageSort;
@@ -42,6 +43,7 @@ import org.eclipse.uml2.uml.MessageSort;
 /**
  * This command analyses the current graph and fills the white space created by the deletion of elements.
  */
+@SuppressWarnings("boxing")
 public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 
 	private static final int DEFAULT_VERTICAL_OFFSET = 10;
@@ -149,23 +151,23 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 		return nudgeCommands;
 	}
 
-	@SuppressWarnings("boxing")
 	private int getDefaultLifelineTop(MLifeline lifeline) {
 		/* move lifeline header up to very top */
-		int offsetY = layoutHelper().getConstraints().getYOffset(ViewTypes.LIFELINE_HEADER);
+		int offsetY = constraints().getYOffset(ViewTypes.LIFELINE_HEADER);
 		return lifeline.getDiagramView().map(v -> layoutHelper().toAbsoluteY(v, offsetY)).orElse(0);
 	}
 
-	@SuppressWarnings("boxing")
 	private List<Command> createVerticalNudgeCommands() {
 		List<Command> nudgeCommands = new ArrayList<>();
 		/* find out the deleted range */
 		int deletedTop = Integer.MAX_VALUE;
 		int deletedBottom = Integer.MIN_VALUE;
+		MElement<? extends Element> topMostDeletedElement = null;
 		for (MElement<? extends Element> element : mElementsToRemove) {
 			OptionalInt top = getTop(element);
 			if (top.isPresent() && top.getAsInt() < deletedTop) {
 				deletedTop = top.getAsInt();
+				topMostDeletedElement = element;
 			}
 			OptionalInt bottom = element.getBottom();
 			if (bottom.isPresent() && bottom.getAsInt() > deletedBottom) {
@@ -185,6 +187,14 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 		}
 		for (MMessage message : interaction.getMessages()) {
 			putValuesInMaps(message, topToElements, bottomToElements);
+		}
+
+		/* put bottom of lowest lifeline's header into bottomToElements map */
+		Optional<MLifeline> lowestRelatedLifeline = getRelatedLifelineWithLowestTop(topMostDeletedElement);
+		if (lowestRelatedLifeline.isPresent() && lowestRelatedLifeline.get().getTop().isPresent()) {
+			int lifelineHeaderHeight = constraints().getMinimumHeight(ViewTypes.LIFELINE_HEADER);
+			int bottom = lowestRelatedLifeline.get().getTop().getAsInt() + lifelineHeaderHeight;
+			putValueInMap(bottom, lowestRelatedLifeline.get(), bottomToElements);
 		}
 
 		/* analyse the starting points of remaining elements in comparison with deleted range */
@@ -228,7 +238,7 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 				/*
 				 * keep previous distance between delete range and next element and move below deleted range
 				 */
-				delta = firstBottomAboveDeletion.orElse(bottomFinal) - bottomFinal
+				delta = firstBottomAboveDeletion.orElse(deletedTop) - bottomFinal
 						+ additionalVerticalOffSet();
 			}
 
@@ -242,6 +252,31 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 			}
 		}
 		return nudgeCommands;
+	}
+
+	private Optional<MLifeline> getRelatedLifelineWithLowestTop(MElement<? extends Element> element) {
+		if (element == null) {
+			return Optional.empty();
+		}
+
+		final List<MLifeline> relatedLifelines = new ArrayList<>();
+
+		if (element.getOwner() instanceof MLifeline) {
+			relatedLifelines.add((MLifeline)element.getOwner());
+		}
+
+		if (element instanceof MMessage) {
+			MMessage mMessage = (MMessage)element;
+			mMessage.getSender().ifPresent(relatedLifelines::add);
+			mMessage.getReceiver().ifPresent(relatedLifelines::add);
+		}
+
+		return relatedLifelines.stream().reduce((lowest, current) -> lowest.getTop()
+				.orElse(Integer.MIN_VALUE) >= current.getTop().orElse(Integer.MIN_VALUE) ? lowest : current);
+	}
+
+	private LayoutConstraints constraints() {
+		return layoutHelper().getConstraints();
 	}
 
 	/**
@@ -305,7 +340,6 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 	}
 
 	/** Whether elements in the deleted range have to be moved up. */
-	@SuppressWarnings("boxing")
 	private boolean shouldMoveUpperElements(final int topFinal, final int bottomFinal,
 			Map<Integer, Set<MElement<? extends Element>>> topToElements,
 			Map<Integer, Set<MElement<? extends Element>>> bottomToElements) {
@@ -330,7 +364,6 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 	}
 
 	/** Whether elements starting below the deleted range need to be moved up. */
-	@SuppressWarnings("boxing")
 	private boolean shouldMoveBottomElements(final int bottomFinal,
 			Map<Integer, Set<MElement<? extends Element>>> topToElements) {
 		/*
@@ -345,7 +378,6 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 				.isPresent();
 	}
 
-	@SuppressWarnings("boxing")
 	private void putValuesInMaps(MElement<? extends Element> element,
 			Map<Integer, Set<MElement<? extends Element>>> topToElements,
 			Map<Integer, Set<MElement<? extends Element>>> bottomToElements) {
@@ -355,14 +387,16 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 
 		Integer top = getTop(element).orElse(Integer.MAX_VALUE);
 		Integer bottom = element.getBottom().orElse(Integer.MIN_VALUE);
-		if (!topToElements.containsKey(top)) {
-			topToElements.put(top, new LinkedHashSet<>());
+		putValueInMap(top, element, topToElements);
+		putValueInMap(bottom, element, bottomToElements);
+	}
+
+	protected void putValueInMap(Integer value, MElement<? extends Element> element,
+			Map<Integer, Set<MElement<? extends Element>>> map) {
+		if (!map.containsKey(value)) {
+			map.put(value, new LinkedHashSet<>());
 		}
-		if (!bottomToElements.containsKey(bottom)) {
-			bottomToElements.put(bottom, new LinkedHashSet<>());
-		}
-		topToElements.get(top).add(element);
-		bottomToElements.get(bottom).add(element);
+		map.get(value).add(element);
 	}
 
 }
