@@ -33,18 +33,20 @@ public class LifelineHeaderGraphicalNodeEditPolicy extends GraphicalNodeEditPoli
 	protected Command getConnectionCompleteCommand(CreateConnectionRequest request) {
 		return new CreateRequestSwitch<Command>() {
 			@Override
-			public Command caseCreateConnectionViewRequest(CreateConnectionViewRequest request) {
+			public Command caseCreateConnectionViewRequest(
+					@SuppressWarnings("hiding") CreateConnectionViewRequest request) {
+
 				StartMessageCommand start = (StartMessageCommand)request.getStartCommand();
 				org.eclipse.emf.common.command.Command result;
 
-				MLifeline sender = start.sender;
+				MLifeline sender = start.sender();
 				MInteraction interaction = sender.getInteraction();
 				MLifeline receiver = interaction.getLifeline(getHost().getAdapter(Lifeline.class)).get();
 
-				switch (start.sort) {
+				switch (start.sort()) {
 					case CREATE_MESSAGE_LITERAL:
-						result = sender.insertMessageAfter(start.before.orElse(sender), start.offset,
-								receiver, start.sort, null);
+						result = sender.insertMessageAfter(start.before().orElse(sender), start.offset(),
+								receiver, start.sort(), null);
 						break;
 					default:
 						result = UnexecutableCommand.INSTANCE;

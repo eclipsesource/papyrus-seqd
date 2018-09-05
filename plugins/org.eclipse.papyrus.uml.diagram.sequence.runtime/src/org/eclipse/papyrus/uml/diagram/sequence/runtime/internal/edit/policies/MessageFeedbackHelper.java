@@ -12,6 +12,8 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
+import com.google.common.eventbus.EventBus;
+
 import java.util.Optional;
 
 import org.eclipse.draw2d.Connection;
@@ -34,6 +36,8 @@ class MessageFeedbackHelper extends FeedbackHelper {
 	private final boolean synchronous;
 
 	private final IMagnetManager magnetManager;
+
+	private EventBus bus;
 
 	// In the case of moving the message, where it is grabbed
 	private Point grabbedAt;
@@ -107,12 +111,13 @@ class MessageFeedbackHelper extends FeedbackHelper {
 				Optional<IMagnet> magnet = magnetManager.getCapturingMagnet(p);
 				magnet.map(IMagnet::getLocation).ifPresent(p::setLocation);
 
-				if (synchronous) {
+				// Don't permit the message to go back in time if it's asynchronous
+				int delta = mode.isMovingTarget() ? p.y() - otherLocation.y() : otherLocation.y() - p.y();
+
+				if (synchronous || (delta < 0)) {
 					// Constrain the message to horizontal
 					switch (mode) {
 						case CREATE:
-						case MOVE_SOURCE:
-						case MOVE_TARGET:
 							// Bring the other end along (subject to magnet constraints)
 							otherLocation.setY(p.y());
 
@@ -128,44 +133,24 @@ class MessageFeedbackHelper extends FeedbackHelper {
 							recreateOtherAnchor(other, otherLocation);
 							updateOtherAnchor(other);
 							break;
+						case MOVE_SOURCE:
+						case MOVE_TARGET:
+							// Force it horizontal
+							p.setY(otherLocation.y());
+							recreateAnchor(anchor, p);
+							break;
 						default:
 							// MOVE_BOTH is handled separately
 							break;
 					}
+				}
+			}
+
+			if (bus != null) {
+				if (isMovingStartAnchor()) {
+					bus.post(thisLocation);
 				} else {
-					// Don't permit the message to go back in time
-					int delta = mode.isMovingTarget() ? p.y() - otherLocation.y() : otherLocation.y() - p.y();
-
-					if (delta < 0) {
-						switch (mode) {
-							case CREATE:
-								// Force it horizontal
-								p.setY(otherLocation.y());
-								recreateAnchor(anchor, p);
-								break;
-							case MOVE_SOURCE:
-							case MOVE_TARGET:
-								// Bring the other end along (subject to magnet constraints)
-								otherLocation.setY(p.y());
-
-								Optional<IMagnet> otherMagnet = magnetManager
-										.getCapturingMagnet(otherLocation);
-								otherMagnet.map(IMagnet::getLocation).ifPresent(m -> {
-									// Don't move this end if the other is stuck to a magnet
-									int dy = otherLocation.y() - m.y();
-									otherLocation.setLocation(m);
-									p.translate(0, -dy);
-									recreateAnchor(anchor, p);
-								});
-
-								recreateOtherAnchor(other, otherLocation);
-								updateOtherAnchor(other);
-								break;
-							default:
-								// MOVE_BOTH is handled separately
-								break;
-						}
-					}
+					bus.post(otherLocation);
 				}
 			}
 		}
@@ -203,6 +188,16 @@ class MessageFeedbackHelper extends FeedbackHelper {
 		} else {
 			getConnection().setTargetAnchor(other[0]);
 		}
+	}
+
+	/**
+	 * Assign a bus to which I post source location updates.
+	 * 
+	 * @param bus
+	 *            the event bus
+	 */
+	void setEventBus(EventBus bus) {
+		this.bus = bus;
 	}
 
 	//

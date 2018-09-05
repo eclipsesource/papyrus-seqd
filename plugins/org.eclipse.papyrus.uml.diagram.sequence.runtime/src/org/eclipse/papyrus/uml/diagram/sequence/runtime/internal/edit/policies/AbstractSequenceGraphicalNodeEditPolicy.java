@@ -17,6 +17,9 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil.
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -41,6 +44,7 @@ import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ISequenceEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageFeedbackHelper.Mode;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.WeakEventBusDelegator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.CreateRequestSwitch;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
@@ -63,6 +67,8 @@ import org.eclipse.uml2.uml.MessageSort;
  */
 public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy implements ISequenceEditPolicy {
 
+	private final EventBus bus = new EventBus();
+
 	/**
 	 * Initializes me.
 	 */
@@ -84,8 +90,8 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				Point location = getRelativeLocation(mouse);
 
 				AnchorDescriptor anchorDesc = computeAnchoring(location);
-				Command result = new StartMessageCommand(lifeline, mouse, anchorDesc.elementBefore,
-						anchorDesc.offset, getSort(messageType));
+				StartMessageCommand result = new StartMessageCommand(bus, lifeline, mouse,
+						anchorDesc.elementBefore, anchorDesc.offset, getSort(messageType));
 				request.setStartCommand(result);
 				return result;
 			}
@@ -252,8 +258,12 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		}
 
 		if (feedbackHelper == null) {
-			feedbackHelper = new MessageFeedbackHelper(Mode.CREATE,
+			MessageFeedbackHelper helper = new MessageFeedbackHelper(Mode.CREATE,
 					MessageUtil.isSynchronousMessageConnection(request), getMagnetManager());
+			helper.setEventBus(bus);
+
+			feedbackHelper = helper;
+
 			Point p = request.getLocation();
 			connectionFeedback = createDummyConnection(request);
 			connectionFeedback.setConnectionRouter(getDummyConnectionRouter(request));
@@ -264,6 +274,11 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		}
 
 		return feedbackHelper;
+	}
+
+	@Override
+	protected void showCreationFeedback(CreateConnectionRequest request) {
+		super.showCreationFeedback(request);
 	}
 
 	@Override
@@ -370,32 +385,67 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 	// Nested types
 	//
 
-	static class StartMessageCommand extends Command {
-		final MLifeline sender;
+	/**
+	 * A pseudo-command tracking the details of the start location and anchoring of a message to be created.
+	 */
+	class StartMessageCommand extends Command {
+		private final MLifeline sender;
 
-		final Point location;
+		private final MessageSort sort;
 
-		final Optional<MElement<?>> before;
+		private Point location;
 
-		final int offset;
+		private Optional<MElement<?>> before;
 
-		final MessageSort sort;
+		private int offset;
 
 		/**
 		 * Initializes me.
 		 */
-		StartMessageCommand(MLifeline sender, Point absoluteMouse, Optional<MElement<?>> before, int offset,
-				MessageSort sort) {
+		StartMessageCommand(EventBus bus, MLifeline sender, Point absoluteMouse, Optional<MElement<?>> before,
+				int offset, MessageSort sort) {
 
 			this.sender = sender;
 			this.location = absoluteMouse;
 			this.before = before;
 			this.offset = offset;
 			this.sort = sort;
+
+			bus.register(new LocationUpdateHandler(bus, this));
 		}
 
+		MLifeline sender() {
+			return sender;
+		}
+
+		MessageSort sort() {
+			return sort;
+		}
+
+		Optional<MElement<?>> before() {
+			return before;
+		}
+
+		int offset() {
+			return offset;
+		}
+
+		void updateLocation(Point absoluteLocation) {
+			if (!absoluteLocation.equals(this.location)) {
+				this.location = absoluteLocation;
+				Point relativeLocation = getRelativeLocation(absoluteLocation);
+
+				AnchorDescriptor anchor = computeAnchoring(relativeLocation);
+				before = anchor.elementBefore;
+				offset = anchor.offset;
+			}
+		}
 	}
 
+	/**
+	 * A description of the anchoring, in <em>Logical Model</em> terms, of an end of a message to a lifeline
+	 * or an execution specification on a lifeline.
+	 */
 	private static class AnchorDescriptor {
 		final Optional<MElement<?>> elementBefore;
 
@@ -407,6 +457,26 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 			this.elementBefore = elementBefore;
 			this.offset = offset;
 		}
+	}
 
+	/**
+	 * Event handler for location updates posted on the event bus, which forwards them to a
+	 * {@link StartMessageCommand} as long as that command is still viable. This weak reference indirection is
+	 * required because the lifecycle of the {@link StartMessageCommand} is uncontrolled; there is no point in
+	 * GEF at which it is or can be disposed.
+	 */
+	private static final class LocationUpdateHandler extends WeakEventBusDelegator<StartMessageCommand> {
+
+		LocationUpdateHandler(EventBus bus, StartMessageCommand delegate) {
+			super(bus, delegate);
+		}
+
+		@Subscribe
+		public void updateLocation(Point location) {
+			StartMessageCommand delegate = get();
+			if (delegate != null) {
+				delegate.updateLocation(location);
+			}
+		}
 	}
 }

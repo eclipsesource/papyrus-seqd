@@ -78,8 +78,8 @@ public class MessageReconnectionUITest extends AbstractGraphicalEditPolicyUITest
 
 	@Test
 	public void moveAsyncEnd() {
-		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, INITIAL_Y),
-				at(recvX, INITIAL_Y));
+		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, //
+				at(sendX, INITIAL_Y), at(recvX, INITIAL_Y));
 
 		assumeThat(messageEP, runs(sendX, INITIAL_Y, recvX, INITIAL_Y));
 
@@ -92,8 +92,9 @@ public class MessageReconnectionUITest extends AbstractGraphicalEditPolicyUITest
 
 		if (moveSource) {
 			if (moveDown) {
-				expectedSendY = y;
-				expectedRecvY = y;
+				// Cannot slope up, so this end doesn't move
+				expectedSendY = INITIAL_Y;
+				expectedRecvY = INITIAL_Y;
 			} else {
 				expectedSendY = y;
 				expectedRecvY = INITIAL_Y;
@@ -103,8 +104,9 @@ public class MessageReconnectionUITest extends AbstractGraphicalEditPolicyUITest
 				expectedSendY = INITIAL_Y;
 				expectedRecvY = y;
 			} else {
-				expectedSendY = y;
-				expectedRecvY = y;
+				// Cannot slope up, so this end doesn't move
+				expectedSendY = INITIAL_Y;
+				expectedRecvY = INITIAL_Y;
 			}
 		}
 
@@ -126,7 +128,8 @@ public class MessageReconnectionUITest extends AbstractGraphicalEditPolicyUITest
 
 		editor.moveSelection(at(x, INITIAL_Y), at(x, y));
 
-		assertThat(messageEP, runs(sendX, y, recvX, y));
+		assertThat("Was able to move sync message end", messageEP,
+				runs(sendX, INITIAL_Y, recvX, INITIAL_Y));
 	}
 
 	//
