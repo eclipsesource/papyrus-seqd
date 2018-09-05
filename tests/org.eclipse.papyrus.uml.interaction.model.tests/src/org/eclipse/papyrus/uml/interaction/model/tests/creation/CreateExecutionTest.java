@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 @ModelResource({"CreateExecutionTesting.uml", "CreateExecutionTesting.notation" })
+@SuppressWarnings("boxing")
 public class CreateExecutionTest {
 
 	private static final int EXECUTION_HEIGHT = 20;
@@ -49,17 +50,16 @@ public class CreateExecutionTest {
 		return interaction;
 	}
 
-	private void execute(Command remove) {
-		if (!remove.canExecute()) {
+	private void execute(Command command) {
+		if (!command.canExecute()) {
 			Assert.fail("Command not executable"); //$NON-NLS-1$
 		}
-		remove.execute();
+		command.execute();
 		/* force reinit after change */
 		interaction = null;
 	}
 
 	@Test
-	@SuppressWarnings("boxing")
 	public void creationExecutionOnTopOfLifeline1() {
 		/* setup */
 		MLifeline lifeline1 = interaction().getLifelines().get(0);
@@ -81,7 +81,6 @@ public class CreateExecutionTest {
 	}
 
 	@Test
-	@SuppressWarnings("boxing")
 	public void creationExecutionOnTopOfLifeline2() {
 		/* setup */
 		MLifeline lifeline2 = interaction().getLifelines().get(1);
@@ -103,7 +102,6 @@ public class CreateExecutionTest {
 	}
 
 	@Test
-	@SuppressWarnings("boxing")
 	public void creationExecutionAfterMessage1OnLifeline1() {
 		/* setup */
 		MLifeline lifeline1 = interaction().getLifelines().get(0);
@@ -125,7 +123,6 @@ public class CreateExecutionTest {
 	}
 
 	@Test
-	@SuppressWarnings("boxing")
 	public void creationExecutionAfterMessage1OnLifeline2() {
 		/* setup */
 		MLifeline lifeline2 = interaction().getLifelines().get(1);
