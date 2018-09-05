@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Simplifiedui
+Bundle-SymbolicName: org.eclipse.papyrus.uml.diagram.sequence.contribution.simplifiedui;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.eclipse.papyrus.uml.diagram.sequence.contribution.simplifiedui.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.papyrus.infra.newchild;bundle-version="3.0.0",
+ org.eclipse.papyrus.infra.properties;bundle-version="3.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: org.eclipse.papyrus.uml.diagram.sequence.contribution.simplifiedui
+Bundle-ActivationPolicy: lazy
