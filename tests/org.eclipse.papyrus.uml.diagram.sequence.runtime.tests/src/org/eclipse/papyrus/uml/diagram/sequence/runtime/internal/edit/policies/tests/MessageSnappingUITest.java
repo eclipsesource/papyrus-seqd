@@ -24,10 +24,7 @@ import static org.junit.Assume.assumeThat;
 import java.util.Arrays;
 import java.util.function.Function;
 
-import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.edit.command.MoveCommand;
-import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.commands.SetBoundsCommand;
 import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
@@ -40,10 +37,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixtur
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.eclipse.uml2.uml.ExecutionSpecification;
-import org.eclipse.uml2.uml.Interaction;
-import org.eclipse.uml2.uml.InteractionFragment;
 import org.eclipse.uml2.uml.Message;
-import org.eclipse.uml2.uml.UMLPackage;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.Before;
@@ -147,8 +141,6 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 				at(LL2_BODY_X, 120));
 		assumeThat(messageEP, runs(LL1_BODY_X, 120, LL2_BODY_X, 120));
 
-		ensureMessageEndsFirst(messageEP);
-
 		// The receiving end snaps to the exec start and the sending end matches
 		final int midMessage = (LL1_BODY_X + LL2_BODY_X) / 2;
 		editor.with(modifiers,
@@ -162,8 +154,6 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		EditPart messageEP = createConnection(SequenceElementTypes.Reply_Message_Edge, at(LL2_BODY_X, 240),
 				at(LL1_BODY_X, 240));
 		assumeThat(messageEP, runs(LL2_BODY_X, 240, LL1_BODY_X, 240));
-
-		ensureMessageEndsLast(messageEP);
 
 		// The sending end snaps to the exec start and the receiving end matches
 		final int midMessage = (LL1_BODY_X + LL2_BODY_X) / 2;
@@ -248,69 +238,6 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	@SuppressWarnings("unchecked")
 	<T> Matcher<T> withModifiers(Matcher<T> matcher) {
 		return (Matcher<T>) modifiersMatcherFunction.apply(matcher);
-	}
-
-	void ensureMessageEndsFirst(EditPart connectionEP) {
-		Command adjust = null;
-
-		EditingDomain domain = editor.getEditingDomain();
-		Message message = (Message) connectionEP.getAdapter(EObject.class);
-		InteractionFragment send = (InteractionFragment) message.getSendEvent();
-		InteractionFragment recv = (InteractionFragment) message.getReceiveEvent();
-		Interaction interaction = message.getInteraction();
-
-		int sendIndex = interaction.getFragments().indexOf(send);
-		if (sendIndex != 0) {
-			Command move = MoveCommand.create(domain, interaction,
-					UMLPackage.Literals.INTERACTION__FRAGMENT, send, 0);
-			adjust = move;
-		}
-		int recvIndex = interaction.getFragments().indexOf(recv);
-		if (recvIndex != 1) {
-			Command move = MoveCommand.create(domain, interaction,
-					UMLPackage.Literals.INTERACTION__FRAGMENT, recv, 1);
-			if (adjust == null) {
-				adjust = move;
-			} else {
-				adjust = adjust.chain(move);
-			}
-		}
-		if (adjust != null) {
-			domain.getCommandStack().execute(adjust);
-		}
-	}
-
-	void ensureMessageEndsLast(EditPart connectionEP) {
-		Command adjust = null;
-
-		EditingDomain domain = editor.getEditingDomain();
-		Message message = (Message) connectionEP.getAdapter(EObject.class);
-		InteractionFragment send = (InteractionFragment) message.getSendEvent();
-		InteractionFragment recv = (InteractionFragment) message.getReceiveEvent();
-		Interaction interaction = message.getInteraction();
-		int secondLast = interaction.getFragments().size() - 2;
-		int last = interaction.getFragments().size() - 1;
-
-		int sendIndex = interaction.getFragments().indexOf(send);
-		if (sendIndex != secondLast) {
-			Command move = MoveCommand.create(domain, interaction,
-					UMLPackage.Literals.INTERACTION__FRAGMENT, send, secondLast);
-			adjust = move;
-		}
-		int recvIndex = interaction.getFragments().indexOf(recv);
-		if (recvIndex != last) {
-			Command move = MoveCommand.create(domain, interaction,
-					UMLPackage.Literals.INTERACTION__FRAGMENT, recv, last);
-			if (adjust == null) {
-				adjust = move;
-			} else {
-				adjust = adjust.chain(move);
-			}
-		}
-		if (adjust != null) {
-			domain.getCommandStack().execute(adjust);
-			editor.flushDisplayEvents();
-		}
 	}
 
 	static int withinMagnet(boolean execStart) {

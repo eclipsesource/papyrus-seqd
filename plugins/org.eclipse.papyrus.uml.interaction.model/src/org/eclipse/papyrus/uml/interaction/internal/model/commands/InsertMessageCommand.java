@@ -293,14 +293,24 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				break;
 		}
 
-		MElement<? extends Element> sendInsertionPoint = normalizeFragmentInsertionPoint(beforeSend);
-		MElement<? extends Element> recvInsertionPoint = normalizeFragmentInsertionPoint(beforeRecv);
+		// Determine the semantic elements after which to insert each message end
+		List<MElement<? extends Element>> timeline = getTimeline(getTarget().getInteraction());
+		int absoluteSendY = sendReferenceY.getAsInt() + sendOffset;
+		int absoluteRecvY = recvReferenceY.getAsInt() + recvOffset;
+		Optional<MElement<? extends Element>> sendInsert = getInsertionPoint(timeline, absoluteSendY);
+		Optional<MElement<? extends Element>> recvInsert = getInsertionPoint(timeline, absoluteRecvY);
 
 		SemanticHelper semantics = semanticHelper();
-		CreationParameters sendParams = endParams(sendInsertionPoint);
+		CreationParameters sendParams = endParams(
+				() -> sendInsert.map(MElement::getElement).map(Element.class::cast).orElse(null));
 		CreationCommand<MessageEnd> sendEvent = semantics.createMessageOccurrence(sendParams);
 		CreationParameters recvParams = syncMessage ? CreationParameters.after(sendEvent)
-				: endParams(recvInsertionPoint);
+				// If the insertion point is the same or unspecified, then follow the send event
+				: !recvInsert.isPresent() || recvInsert.equals(sendInsert)
+						? CreationParameters.after(sendEvent)
+						// Otherwise, it is specific
+						: endParams(() -> recvInsert.map(MElement::getElement).map(Element.class::cast)
+								.orElse(null));
 		CreationCommand<MessageEnd> recvEvent;
 		switch (sort) {
 			case DELETE_MESSAGE_LITERAL:
@@ -416,8 +426,8 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				// Now we have commands to add the message specification. But, first we must make
 				// room for it in the diagram. Nudge the element that will follow the new receive event
 				int spaceRequired = 2 * sendOffset;
-				MElement<?> distanceFrom = sendInsertionPoint;
-				Optional<Command> makeSpace = getTarget().following(sendInsertionPoint).map(el -> {
+				MElement<?> distanceFrom = normalizeFragmentInsertionPoint(beforeSend);
+				Optional<Command> makeSpace = getTarget().following(distanceFrom).map(el -> {
 					OptionalInt distance = el.verticalDistance(distanceFrom);
 					return distance.isPresent() ? el.nudge(max(0, spaceRequired - distance.getAsInt()))
 							: null;
@@ -448,12 +458,11 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				.collect(Collectors.toCollection(() -> elementsBelow));
 	}
 
-	private CreationParameters endParams(MElement<? extends Element> insertionPoint) {
-		return insertionPoint instanceof MLifeline
-				// Just append to the fragments in that case
-				? CreationParameters.in(insertionPoint.getInteraction().getElement(),
-						UMLPackage.Literals.INTERACTION__FRAGMENT)
-				: CreationParameters.after(insertionPoint.getElement());
+	private CreationParameters endParams(Supplier<? extends EObject> insertionPoint) {
+		CreationParameters result = CreationParameters.in(getTarget().getInteraction().getElement(),
+				UMLPackage.Literals.INTERACTION__FRAGMENT);
+		result.setInsertBefore(insertionPoint);
+		return result;
 	}
 
 	private Optional<Command> replace(OccurrenceSpecification occurrence, MessageEnd msgEnd) {
