@@ -26,4 +26,14 @@
                class="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.preferences.LightweightSequenceDiagramPreferenceInitializer">
          </initializer>
       </extension>
+      <extension
+            point="org.eclipse.core.runtime.adapters">
+         <factory
+               adaptableType="org.eclipse.gef.EditPart"
+               class="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.factories.SequenceEditPartAdapterFactory">
+            <adapter
+                  type="org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnetManager">
+            </adapter>
+         </factory>
+      </extension>
 </plugin>

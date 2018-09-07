@@ -201,6 +201,15 @@ public interface LayoutConstraints {
 	boolean isAsyncMessageSlope(double x1, double y1, double x2, double y2);
 
 	/**
+	 * Query the strength of a magnet attached to the given {@code view}
+	 * 
+	 * @param view
+	 *            a notation view in the diagram that supports magnets
+	 * @return the magnet strength
+	 */
+	int getMagnetStrength(View view);
+
+	/**
 	 * Applies a {@link Modifiers modifier} to the given <code>viewType</code> and returns the resulting key.
 	 * 
 	 * @param modifier

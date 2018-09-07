@@ -110,7 +110,8 @@ public class LifelineBodyGraphicalNodeEditPolicyUITest extends AbstractGraphical
 		EditPart messageEP = createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, 115),
 				at(recvX, 130));
 
-		assertThat("Message should be horizontal", messageEP, runs(sendX, 115, recvX, 115, 2));
+		assertThat("Message should be horizontal to receive location", messageEP,
+				runs(sendX, 130, recvX, 130, 2));
 	}
 
 	@Test

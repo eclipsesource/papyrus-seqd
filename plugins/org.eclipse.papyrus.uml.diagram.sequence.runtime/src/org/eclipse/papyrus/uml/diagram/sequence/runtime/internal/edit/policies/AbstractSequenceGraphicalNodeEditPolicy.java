@@ -24,7 +24,6 @@ import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.FeedbackHelper;
@@ -34,13 +33,13 @@ import org.eclipse.gmf.runtime.common.core.command.CompositeCommand;
 import org.eclipse.gmf.runtime.diagram.core.commands.SetConnectionAnchorsCommand;
 import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.INodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewRequest;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.Diagram;
-import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ISequenceEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageFeedbackHelper.Mode;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.CreateRequestSwitch;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
@@ -94,9 +93,11 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 	}
 
 	private AnchorDescriptor computeAnchoring(Point location) {
-		Optional<MElement<?>> self = getLogicalElement();
-		Optional<MLifeline> lifeline = getLifeline();
+		return computeAnchoring(getLogicalElement(), location);
+	}
 
+	private AnchorDescriptor computeAnchoring(Optional<MElement<?>> self, Point location) {
+		Optional<MLifeline> lifeline = self.flatMap(this::getLifeline);
 		Optional<MElement<?>> before;
 		int offset;
 
@@ -124,19 +125,11 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		return new AnchorDescriptor(before, offset);
 	}
 
-	protected MInteraction getInteraction() {
-		View view = ((IGraphicalEditPart)getHost()).getNotationView();
-		Diagram diagram = view.getDiagram();
-		return MInteraction.getInstance(diagram);
-	}
-
-	protected Optional<MElement<? extends Element>> getLogicalElement() {
-		EObject semantic = ((IGraphicalEditPart)getHost()).resolveSemanticElement();
-		return Optional.ofNullable(semantic).filter(Element.class::isInstance).map(Element.class::cast)
-				.flatMap(getInteraction()::getElement);
-	}
-
 	protected Optional<MLifeline> getLifeline() {
+		return getLogicalElement().flatMap(this::getLifeline);
+	}
+
+	protected Optional<MLifeline> getLifeline(MElement<? extends Element> logicalElement) {
 		SequenceDiagramSwitch<Optional<MLifeline>> lifelineSwitch = new SequenceDiagramSwitch<Optional<MLifeline>>() {
 			@Override
 			public Optional<MLifeline> caseMLifeline(MLifeline object) {
@@ -154,7 +147,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 			}
 		};
 
-		return getLogicalElement().flatMap(lifelineSwitch::doSwitch);
+		return lifelineSwitch.doSwitch(logicalElement);
 	}
 
 	private int getOffsetFrom(Point relativeMouse, MLifeline lifeline,
@@ -183,13 +176,21 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				MLifeline sender = start.sender;
 				MLifeline receiver = getLifeline().get();
 
+				MElement<?> startBefore = start.before.orElse(sender);
+				int startOffset = start.offset;
+				Point startLocation = start.location;
+				Point location = request.getLocation();
+
+				// Snap the point to the nearest magnet, if any
+				Optional<IMagnet> magnet = getMagnetManager().getCapturingMagnet(location);
+				magnet.map(IMagnet::getLocation).ifPresent(location::setLocation);
+
+				int absoluteY = location.y();
+
 				switch (start.sort) {
 					case ASYNCH_CALL_LITERAL:
 					case ASYNCH_SIGNAL_LITERAL:
 						// These can slope down
-						Point location = request.getLocation();
-						int absoluteY = location.y();
-						Point startLocation = start.location;
 						// but don't require such pointer exactitude of the user
 						if ((absoluteY < startLocation.y())
 								|| !getLayoutConstraints().isAsyncMessageSlope(startLocation.preciseX(),
@@ -202,14 +203,37 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 						location = getRelativeLocation(location);
 
 						AnchorDescriptor anchorDesc = computeAnchoring(location);
-						result = sender.insertMessageAfter(start.before.orElse(sender), start.offset,
-								receiver, anchorDesc.elementBefore.orElse(receiver), anchorDesc.offset,
-								start.sort, null);
+						result = sender.insertMessageAfter(startBefore, startOffset, receiver,
+								anchorDesc.elementBefore.orElse(receiver), anchorDesc.offset, start.sort,
+								null);
 						break;
 					default:
-						// Enforce a horizontal layout
-						result = sender.insertMessageAfter(start.before.orElse(sender), start.offset,
-								receiver, start.sort, null);
+						startLocation = startLocation.getCopy();
+
+						Optional<IMagnet> otherMagnet = getMagnetManager().getCapturingMagnet(startLocation)
+								.filter(__ -> !magnet.isPresent()); // But not if the target is on a magnet
+						otherMagnet.map(IMagnet::getLocation).ifPresent(startLocation::setLocation);
+
+						// Enforce a horizontal layout (subject to magnet constraints, with the
+						// target magnet having precendence)
+						if (startLocation.y() != absoluteY || otherMagnet.isPresent()) {
+							if (!otherMagnet.isPresent()) {
+								// Update the source to match the target
+								startLocation.setY(absoluteY);
+							}
+
+							// Recompute the connection source
+							ISequenceEditPart sourceEP = (ISequenceEditPart)request.getSourceEditPart();
+							Point relative = sourceEP.getRelativeLocation(startLocation);
+							AnchorDescriptor newSourceAnchorDesc = computeAnchoring(
+									sourceEP.getLogicalElement(), relative);
+
+							startBefore = newSourceAnchorDesc.elementBefore.orElse(sender);
+							startOffset = newSourceAnchorDesc.offset;
+						}
+
+						result = sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort,
+								null);
 						break;
 				}
 
@@ -229,7 +253,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		if (feedbackHelper == null) {
 			feedbackHelper = new MessageFeedbackHelper(Mode.CREATE,
-					MessageUtil.isSynchronousMessageConnection(request));
+					MessageUtil.isSynchronousMessageConnection(request), getMagnetManager());
 			Point p = request.getLocation();
 			connectionFeedback = createDummyConnection(request);
 			connectionFeedback.setConnectionRouter(getDummyConnectionRouter(request));

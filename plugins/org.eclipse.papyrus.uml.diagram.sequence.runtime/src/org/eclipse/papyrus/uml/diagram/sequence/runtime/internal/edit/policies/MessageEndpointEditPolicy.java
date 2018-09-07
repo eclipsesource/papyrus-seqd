@@ -22,6 +22,8 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.pol
 
 import com.google.common.eventbus.EventBus;
 
+import java.util.Optional;
+
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.EditPart;
@@ -35,6 +37,7 @@ import org.eclipse.gef.requests.LocationRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageFeedbackHelper.Mode;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.CommandCreatedEvent;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
@@ -43,7 +46,7 @@ import org.eclipse.uml2.uml.Message;
 /**
  * Endpoint edit-policy for management of message ends.
  */
-public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy {
+public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy implements ISequenceEditPolicy {
 
 	private final EventBus bus;
 
@@ -94,7 +97,8 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy {
 			boolean synch = MessageUtil.isSynchronous(message.getMessageSort());
 			boolean source = request.isMovingStartAnchor();
 
-			feedbackHelper = new MessageFeedbackHelper(source ? Mode.MOVE_SOURCE : Mode.MOVE_TARGET, synch);
+			feedbackHelper = new MessageFeedbackHelper(source ? Mode.MOVE_SOURCE : Mode.MOVE_TARGET, synch,
+					getMagnetManager());
 			feedbackHelper.setConnection(getConnection());
 		}
 		return feedbackHelper;
@@ -138,8 +142,6 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy {
 		}
 
 		FeedbackHelper helper = getFeedbackHelper(request);
-		helper.setMovingStartAnchor(true);
-		helper.update(getConnection().getSourceAnchor(), request.getLocation());
 		helper.setMovingStartAnchor(false);
 		helper.update(getConnection().getTargetAnchor(), request.getLocation());
 	}
@@ -175,7 +177,7 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy {
 			Message message = (Message)((IGraphicalEditPart)getHost()).resolveSemanticElement();
 			boolean synch = MessageUtil.isSynchronous(message.getMessageSort());
 
-			feedbackHelper = new MessageFeedbackHelper(Mode.MOVE_BOTH, synch);
+			feedbackHelper = new MessageFeedbackHelper(Mode.MOVE_BOTH, synch, getMagnetManager());
 			feedbackHelper.setConnection(getConnection());
 
 			Point grabbedAt = lastMouseLocation;
@@ -208,9 +210,34 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy {
 			EditPart source = connection.getSource();
 			EditPart target = connection.getTarget();
 
-			// Don't modify the original because we get this command many times
+			// Don't modify the originals because we get this command many times
 			Point sourceLocation = getOriginalSourceLocation(request).getCopy();
+			Point targetLocation = getOriginalTargetLocation(request).getCopy();
 			sourceLocation.translate(0, deltaY);
+			targetLocation.translate(0, deltaY);
+
+			int magnetDelta = 0;
+			// Target-end magnets have precedence
+			Optional<IMagnet> magnet = getMagnetManager().getCapturingMagnet(targetLocation);
+			if (magnet.isPresent()) {
+				Point newTargetLocation = targetLocation.getCopy();
+				newTargetLocation.setLocation(magnet.get().getLocation());
+				magnetDelta = newTargetLocation.y() - targetLocation.y();
+			} else {
+				magnet = getMagnetManager().getCapturingMagnet(sourceLocation);
+				if (magnet.isPresent()) {
+					Point newSourceLocation = sourceLocation.getCopy();
+					newSourceLocation.setLocation(magnet.get().getLocation());
+					magnetDelta = newSourceLocation.y() - sourceLocation.y();
+				}
+			}
+
+			if (magnetDelta != 0) {
+				deltaY = deltaY + magnetDelta;
+				sourceLocation.translate(0, magnetDelta);
+				targetLocation.translate(0, magnetDelta);
+			}
+
 			ReconnectRequest sourceReq = new ReconnectRequest(REQ_RECONNECT_SOURCE);
 			sourceReq.setTargetEditPart(source);
 			sourceReq.setConnectionEditPart(connection);
@@ -218,9 +245,6 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy {
 			setForce(sourceReq, true);
 			Command updateSource = source.getCommand(sourceReq);
 
-			// Don't modify the original because we get this command many times
-			Point targetLocation = getOriginalTargetLocation(request).getCopy();
-			targetLocation.translate(0, deltaY);
 			ReconnectRequest targetReq = new ReconnectRequest(REQ_RECONNECT_TARGET);
 			targetReq.setTargetEditPart(target);
 			targetReq.setConnectionEditPart(connection);

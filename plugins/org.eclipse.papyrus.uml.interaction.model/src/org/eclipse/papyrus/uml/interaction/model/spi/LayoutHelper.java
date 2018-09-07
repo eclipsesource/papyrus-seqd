@@ -70,6 +70,15 @@ public interface LayoutHelper {
 	int getBottom(Shape shape);
 
 	/**
+	 * Queries the height of a {@code shape}.
+	 * 
+	 * @param shape
+	 *            a shape in the diagram
+	 * @return its height
+	 */
+	int getHeight(Shape shape);
+
+	/**
 	 * Queries the vertical position (y-coördinate) of an {@code anchor} in the sequence diagram.
 	 * 
 	 * @param anchor
@@ -351,4 +360,5 @@ public interface LayoutHelper {
 	 * @return the pluggable layout constraints
 	 */
 	LayoutConstraints getConstraints();
+
 }
