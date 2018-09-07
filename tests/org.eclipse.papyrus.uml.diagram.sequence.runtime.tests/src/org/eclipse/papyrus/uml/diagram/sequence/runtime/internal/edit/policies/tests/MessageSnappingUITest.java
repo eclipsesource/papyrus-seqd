@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.tests;
 
 import static org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnetManager.MODIFIER_NO_SNAPPING;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.isPoint;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.runs;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.at;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.sized;
@@ -26,9 +27,12 @@ import static org.junit.Assume.assumeThat;
 import java.util.Arrays;
 import java.util.function.Function;
 
+import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.commands.SetBoundsCommand;
@@ -145,12 +149,15 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	public void moveSyncCallMessage() {
 		EditPart messageEP = createConnection(SequenceElementTypes.Sync_Message_Edge, at(LL1_BODY_X, 120),
 				at(LL2_BODY_X, 120));
-		assumeThat(messageEP, runs(LL1_BODY_X, 120, LL2_BODY_X, 120));
+		Point midMessage = getMessageGrabPoint(messageEP);
 
 		// The receiving end snaps to the exec start and the sending end matches
-		final int midMessage = (LL1_BODY_X + LL2_BODY_X) / 2;
 		editor.with(modifiers,
-				() -> editor.moveSelection(at(midMessage, 120), at(midMessage, withinMagnet(EXEC_START))));
+				() -> editor.moveSelection(midMessage, at(midMessage.x(), withinMagnet(EXEC_START))));
+		Point newMessageMidpoint = getMessageGrabPoint(messageEP);
+		assumeThat("Message not moved", newMessageMidpoint,
+				not(isPoint(midMessage.x(), midMessage.y(), 5)));
+
 		assertThat(messageEP, withModifiers(runs(LL1_BODY_X, execTop, LL2_BODY_X, execTop, 1)));
 	}
 
@@ -159,12 +166,11 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	public void moveReplyMessage() {
 		EditPart messageEP = createConnection(SequenceElementTypes.Reply_Message_Edge, at(LL2_BODY_X, 240),
 				at(LL1_BODY_X, 240));
-		assumeThat(messageEP, runs(LL2_BODY_X, 240, LL1_BODY_X, 240));
+		Point midMessage = getMessageGrabPoint(messageEP);
 
 		// The sending end snaps to the exec start and the receiving end matches
-		final int midMessage = (LL1_BODY_X + LL2_BODY_X) / 2;
 		editor.with(modifiers,
-				() -> editor.moveSelection(at(midMessage, 240), at(midMessage, withinMagnet(EXEC_FINISH))));
+				() -> editor.moveSelection(midMessage, at(midMessage.x(), withinMagnet(EXEC_FINISH))));
 		assertThat(messageEP, withModifiers(runs(LL2_BODY_X, execBottom, LL1_BODY_X, execBottom, 1)));
 	}
 
@@ -274,5 +280,10 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		Rectangle bounds = figure.getBounds().getCopy();
 		figure.getParent().translateToAbsolute(bounds);
 		return bounds.bottom();
+	}
+
+	static Point getMessageGrabPoint(EditPart editPart) {
+		Connection connection = (Connection) ((ConnectionEditPart) editPart).getFigure();
+		return connection.getPoints().getMidpoint();
 	}
 }
