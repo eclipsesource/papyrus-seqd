@@ -29,13 +29,8 @@ import java.util.stream.Stream;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.edit.command.AddCommand;
-import org.eclipse.emf.edit.command.CommandParameter;
 import org.eclipse.emf.edit.command.DeleteCommand;
-import org.eclipse.emf.edit.command.MoveCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
@@ -470,20 +465,10 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		return execSpec.map(exec -> {
 			boolean isStart = exec.getStart() == occurrence;
 
-			EObject owner = occurrence.eContainer();
-			EReference containment = occurrence.eContainmentFeature();
-			int index = containment.isMany() ? ((EList<?>)owner.eGet(containment)).indexOf(occurrence)
-					: CommandParameter.NO_INDEX;
-
+			// The message end was inserted already in the right index of the
+			// fragments list, relative to the execution specification. So,
+			// just delete the execution occurrence that is being replaced
 			Command result = DeleteCommand.create(getEditingDomain(), occurrence);
-
-			if (msgEnd.eContainer() == owner) {
-				result = result
-						.chain(MoveCommand.create(getEditingDomain(), owner, containment, msgEnd, index));
-			} else {
-				result = result
-						.chain(AddCommand.create(getEditingDomain(), owner, containment, msgEnd, index));
-			}
 
 			if (isStart) {
 				result = result.chain(SetCommand.create(getEditingDomain(), exec,

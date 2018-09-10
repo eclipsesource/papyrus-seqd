@@ -183,10 +183,10 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 		int index = Collections.binarySearch(timeline, searchToken, compareByTop());
 
 		if (index >= 0) {
-			// Easy case: follow the fragment currently at that Y position, which means insert
-			// before the first element following that is at a greater position
-			while ((index < size) && (timeline.get(index).getTop().orElse(-1) == yPosition)) {
-				index++;
+			// Easy case: precede the fragments currently at that Y position, which means insert
+			// before the first element following that is at this position
+			while ((index > 0) && (timeline.get(index - 1).getTop().orElse(-1) == yPosition)) {
+				index--;
 			}
 		} else {
 			// The search found an "insertion point", which is where the fragment is before which
