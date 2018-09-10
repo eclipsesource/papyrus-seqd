@@ -281,12 +281,18 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		super.showCreationFeedback(request);
 	}
 
+	@SuppressWarnings("boxing")
 	@Override
 	protected Command getReconnectSourceCommand(ReconnectRequest request) {
 		Command result = super.getReconnectSourceCommand(request);
 		ConnectionEditPart connectionEP = (ConnectionEditPart)request.getConnectionEditPart();
+		Optional<Message> message = Optional.of(connectionEP).map(ConnectionEditPart::resolveSemanticElement)
+				.filter(Message.class::isInstance).map(Message.class::cast);
 
-		if (!isForce(request)) {
+		// Of course, we don't mess with the other end of an asynchronous message
+		if (!isForce(request)
+				&& message.map(Message::getMessageSort).map(MessageUtil::isSynchronous).orElse(false)) {
+
 			// Need feedback constraints in addition to semantic constraints
 			Connection connection = (Connection)connectionEP.getFigure();
 			Point targetLocation = getLocation(connection.getTargetAnchor());
@@ -323,12 +329,18 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		return result;
 	}
 
+	@SuppressWarnings("boxing")
 	@Override
 	protected Command getReconnectTargetCommand(ReconnectRequest request) {
 		Command result = super.getReconnectTargetCommand(request);
 		ConnectionEditPart connectionEP = (ConnectionEditPart)request.getConnectionEditPart();
+		Optional<Message> message = Optional.of(connectionEP).map(ConnectionEditPart::resolveSemanticElement)
+				.filter(Message.class::isInstance).map(Message.class::cast);
 
-		if (!isForce(request)) {
+		// Of course, we don't mess with the other end of an asynchronous message
+		if (!isForce(request)
+				&& message.map(Message::getMessageSort).map(MessageUtil::isSynchronous).orElse(false)) {
+
 			// Need feedback constraints in addition to semantic constraints
 			Connection connection = (Connection)connectionEP.getFigure();
 			Point sourceLocation = getLocation(connection.getSourceAnchor());

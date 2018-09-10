@@ -22,6 +22,7 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.pol
 
 import com.google.common.eventbus.EventBus;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import org.eclipse.draw2d.ConnectionAnchor;
@@ -243,6 +244,10 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 			sourceReq.setConnectionEditPart(connection);
 			sourceReq.setLocation(sourceLocation);
 			setForce(sourceReq, true);
+
+			// In case the result of the drag moves the source end to a different edit-part
+			// (for example, a different execution specification)
+			source = retargetRequest(source, sourceReq);
 			Command updateSource = source.getCommand(sourceReq);
 
 			ReconnectRequest targetReq = new ReconnectRequest(REQ_RECONNECT_TARGET);
@@ -250,6 +255,9 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 			targetReq.setConnectionEditPart(connection);
 			targetReq.setLocation(targetLocation);
 			setForce(targetReq, true);
+
+			// In case the result of the drag moves the target end to a different edit-part
+			target = retargetRequest(target, targetReq);
 			Command updateTarget = target.getCommand(targetReq);
 
 			// Never update just one end
@@ -260,5 +268,33 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 		}
 
 		return result.unwrap();
+	}
+
+	/**
+	 * Recompute the target of a re-connection request in case the connection end is being dragged to a
+	 * different edit-part than where it connects to currently.
+	 * 
+	 * @param editPart
+	 *            the original connection source/target edit-part that is the intended target edit-part of the
+	 *            {@code request}
+	 * @param request
+	 *            the request to be sent
+	 * @return the best available edit-part to which to target the {@code request}, which if different to the
+	 *         original {@code editPart} will already be set as the {@code request}'s
+	 *         {@link ReconnectRequest#setTargetEditPart(EditPart) target}
+	 */
+	protected EditPart retargetRequest(EditPart editPart, ReconnectRequest request) {
+		EditPart result = editPart;
+
+		EditPart resolvedTarget = editPart.getViewer().findObjectAtExcluding(request.getLocation(),
+				Collections.singleton(request.getConnectionEditPart()),
+				ep -> ep.getTargetEditPart(request) != null);
+		if (resolvedTarget != null && resolvedTarget != editPart) {
+			// Ask this one for the command
+			request.setTargetEditPart(resolvedTarget);
+			result = resolvedTarget;
+		}
+
+		return result;
 	}
 }
