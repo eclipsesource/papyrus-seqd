@@ -8,3 +8,4 @@ target/
 tests/**/.metadata/
 **/src/site/resources/images/rcptt-screenshots
 .vscode
+**/.polyglot.build.properties

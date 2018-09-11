@@ -14,10 +14,12 @@ package org.eclipse.papyrus.uml.interaction.model.tests;
 
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.tests.DefaultLayoutHelperTest;
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.tests.LogicalModelAdapterTest;
+import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateExecutionTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateMessageTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateMessageTestB;
 import org.eclipse.papyrus.uml.interaction.model.tests.deletion.BasicDeletionTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.deletion.CreationMessageDeletionTest;
+import org.eclipse.papyrus.uml.interaction.model.tests.deletion.DeleteExecutionTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.deletion.DeletionMessageDeletionTest;
 import org.eclipse.papyrus.uml.interaction.model.util.tests.LogicalModelPredicatesTest;
 import org.junit.runner.RunWith;
@@ -33,6 +35,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ //
 		DefaultLayoutHelperTest.class, //
 		CreateMessageTest.class, CreateMessageTestB.class, //
+		CreateExecutionTest.class, DeleteExecutionTest.class, //
 		CreationMessageDeletionTest.class, BasicDeletionTest.class, DeletionMessageDeletionTest.class, //
 		LogicalModelAdapterTest.class, //
 		LogicalModelPredicatesTest.class, //
