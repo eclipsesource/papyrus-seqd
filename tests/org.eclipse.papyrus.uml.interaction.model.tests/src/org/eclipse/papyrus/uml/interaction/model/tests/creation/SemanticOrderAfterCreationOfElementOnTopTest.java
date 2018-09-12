@@ -1,7 +1,7 @@
 package org.eclipse.papyrus.uml.interaction.model.tests.creation;
 
 import static org.eclipse.uml2.uml.UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.everyItem;
 import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
@@ -48,7 +48,6 @@ public class SemanticOrderAfterCreationOfElementOnTopTest {
 	}
 
 	@Test
-	@SuppressWarnings({"boxing" })
 	public void addMessageOnTopFromLifeline2ToLifeline3() {
 		/* setup */
 		MLifeline lifeline2 = interaction().getLifelines().get(1);
@@ -63,18 +62,17 @@ public class SemanticOrderAfterCreationOfElementOnTopTest {
 		MMessage createdMessage = model.getMMessage(command.get()).get();
 		MMessageEnd createdSend = createdMessage.getSend().get();
 		MMessageEnd createdReceive = createdMessage.getReceive().get();
-		MMessageEnd msg1send = model.getElement(QN, "1s", MMessageEnd.class);
-		MMessageEnd msg1receive = model.getElement(QN, "1r", MMessageEnd.class);
-		MMessageEnd msg2send = model.getElement(QN, "2s", MMessageEnd.class);
-		MMessageEnd msg2receive = model.getElement(QN, "2r", MMessageEnd.class);
+		MMessageEnd msg1send = model.getElement(MMessageEnd.class, QN, "1s");
+		MMessageEnd msg1receive = model.getElement(MMessageEnd.class, QN, "1r");
+		MMessageEnd msg2send = model.getElement(MMessageEnd.class, QN, "2s");
+		MMessageEnd msg2receive = model.getElement(MMessageEnd.class, QN, "2r");
 
 		List<MMessageEnd> otherEnds = Arrays.asList(msg1send, msg1receive, msg2send, msg2receive);
-		otherEnds.forEach(other -> assertThat(model.isSemanticallyBefore(createdSend, other), is(true)));
-		otherEnds.forEach(other -> assertThat(model.isSemanticallyBefore(createdReceive, other), is(true)));
+		assertThat(otherEnds, everyItem(model.isSemanticallyAfter(createdSend)));
+		assertThat(otherEnds, everyItem(model.isSemanticallyAfter(createdReceive)));
 	}
 
 	@Test
-	@SuppressWarnings({"boxing" })
 	public void addMessageAfterFirstExistingMessageFromLifeline2ToLifeline3() {
 		/* setup */
 		MLifeline lifeline2 = interaction().getLifelines().get(1);
@@ -89,18 +87,18 @@ public class SemanticOrderAfterCreationOfElementOnTopTest {
 		MMessage createdMessage = model.getMMessage(command.get()).get();
 		MMessageEnd createdSend = createdMessage.getSend().get();
 		MMessageEnd createdReceive = createdMessage.getReceive().get();
-		MMessageEnd msg1send = model.getElement(QN, "1s", MMessageEnd.class);
-		MMessageEnd msg1receive = model.getElement(QN, "1r", MMessageEnd.class);
-		MMessageEnd msg2send = model.getElement(QN, "2s", MMessageEnd.class);
-		MMessageEnd msg2receive = model.getElement(QN, "2r", MMessageEnd.class);
+		MMessageEnd msg1send = model.getElement(MMessageEnd.class, QN, "1s");
+		MMessageEnd msg1receive = model.getElement(MMessageEnd.class, QN, "1r");
+		MMessageEnd msg2send = model.getElement(MMessageEnd.class, QN, "2s");
+		MMessageEnd msg2receive = model.getElement(MMessageEnd.class, QN, "2r");
 
 		List<MMessageEnd> endsBefore = Arrays.asList(msg1send, msg1receive);
-		endsBefore.forEach(end -> assertThat(model.isSemanticallyBefore(end, createdSend), is(true)));
-		endsBefore.forEach(end -> assertThat(model.isSemanticallyBefore(end, createdReceive), is(true)));
+		assertThat(endsBefore, everyItem(model.isSemanticallyBefore(createdSend)));
+		assertThat(endsBefore, everyItem(model.isSemanticallyBefore(createdReceive)));
 
 		List<MMessageEnd> endsAfter = Arrays.asList(msg2send, msg2receive);
-		endsAfter.forEach(end -> assertThat(model.isSemanticallyBefore(createdSend, end), is(true)));
-		endsAfter.forEach(end -> assertThat(model.isSemanticallyBefore(createdReceive, end), is(true)));
+		assertThat(endsAfter, everyItem(model.isSemanticallyAfter(createdSend)));
+		assertThat(endsAfter, everyItem(model.isSemanticallyAfter(createdReceive)));
 	}
 
 	@Test
@@ -121,7 +119,6 @@ public class SemanticOrderAfterCreationOfElementOnTopTest {
 		addAndAssertExecutionOnTopOfLifeline(lifeline3);
 	}
 
-	@SuppressWarnings("boxing")
 	private void addAndAssertExecutionOnTopOfLifeline(MLifeline lifeline) {
 		/* setup */
 		CreationCommand<ExecutionSpecification> command = lifeline.insertExecutionAfter(lifeline, 0, 20,
@@ -134,18 +131,17 @@ public class SemanticOrderAfterCreationOfElementOnTopTest {
 		MExecution createdExecution = model.getMExecution(command.get()).get();
 		MOccurrence<?> createdStart = createdExecution.getStart().get();
 		MOccurrence<?> createdFinish = createdExecution.getFinish().get();
-		MMessageEnd msg1send = model.getElement(QN, "1s", MMessageEnd.class);
-		MMessageEnd msg1receive = model.getElement(QN, "1r", MMessageEnd.class);
-		MMessageEnd msg2send = model.getElement(QN, "2s", MMessageEnd.class);
-		MMessageEnd msg2receive = model.getElement(QN, "2r", MMessageEnd.class);
+		MMessageEnd msg1send = model.getElement(MMessageEnd.class, QN, "1s");
+		MMessageEnd msg1receive = model.getElement(MMessageEnd.class, QN, "1r");
+		MMessageEnd msg2send = model.getElement(MMessageEnd.class, QN, "2s");
+		MMessageEnd msg2receive = model.getElement(MMessageEnd.class, QN, "2r");
 
 		List<MMessageEnd> otherEnds = Arrays.asList(msg1send, msg1receive, msg2send, msg2receive);
-		otherEnds.forEach(other -> assertThat(model.isSemanticallyBefore(createdStart, other), is(true)));
-		otherEnds.forEach(other -> assertThat(model.isSemanticallyBefore(createdFinish, other), is(true)));
+		assertThat(otherEnds, everyItem(model.isSemanticallyAfter(createdStart)));
+		assertThat(otherEnds, everyItem(model.isSemanticallyAfter(createdFinish)));
 	}
 
 	@Test
-	@SuppressWarnings({"boxing" })
 	public void addMessageAndExecutionOnTopOfLifeline3() {
 		/* first command to create message */
 		/* setup */
@@ -170,14 +166,14 @@ public class SemanticOrderAfterCreationOfElementOnTopTest {
 		MMessageEnd createdSend = createdMessage.getSend().get();
 		MMessageEnd createdReceive = createdMessage.getReceive().get();
 
-		MMessageEnd msg1send = model.getElement(QN, "1s", MMessageEnd.class);
-		MMessageEnd msg1receive = model.getElement(QN, "1r", MMessageEnd.class);
-		MMessageEnd msg2send = model.getElement(QN, "2s", MMessageEnd.class);
-		MMessageEnd msg2receive = model.getElement(QN, "2r", MMessageEnd.class);
+		MMessageEnd msg1send = model.getElement(MMessageEnd.class, QN, "1s");
+		MMessageEnd msg1receive = model.getElement(MMessageEnd.class, QN, "1r");
+		MMessageEnd msg2send = model.getElement(MMessageEnd.class, QN, "2s");
+		MMessageEnd msg2receive = model.getElement(MMessageEnd.class, QN, "2r");
 
 		List<MMessageEnd> otherEnds = Arrays.asList(msg1send, msg1receive, msg2send, msg2receive);
-		otherEnds.forEach(other -> assertThat(model.isSemanticallyBefore(createdSend, other), is(true)));
-		otherEnds.forEach(other -> assertThat(model.isSemanticallyBefore(createdReceive, other), is(true)));
+		assertThat(otherEnds, everyItem(model.isSemanticallyAfter(createdSend)));
+		assertThat(otherEnds, everyItem(model.isSemanticallyAfter(createdReceive)));
 
 		/*
 		 * assert: message ends of added message and all other messages are sorted in after created execution
@@ -187,10 +183,10 @@ public class SemanticOrderAfterCreationOfElementOnTopTest {
 		MOccurrence<?> createdFinish = createdExecution.getFinish().get();
 
 		List<MMessageEnd> createdEnds = Arrays.asList(createdSend, createdReceive);
-		createdEnds.forEach(other -> assertThat(model.isSemanticallyBefore(createdStart, other), is(true)));
-		createdEnds.forEach(other -> assertThat(model.isSemanticallyBefore(createdFinish, other), is(true)));
-		otherEnds.forEach(other -> assertThat(model.isSemanticallyBefore(createdStart, other), is(true)));
-		otherEnds.forEach(other -> assertThat(model.isSemanticallyBefore(createdFinish, other), is(true)));
+		assertThat(createdEnds, everyItem(model.isSemanticallyAfter(createdStart)));
+		assertThat(createdEnds, everyItem(model.isSemanticallyAfter(createdFinish)));
+		assertThat(otherEnds, everyItem(model.isSemanticallyAfter(createdStart)));
+		assertThat(otherEnds, everyItem(model.isSemanticallyAfter(createdFinish)));
 	}
 
 }
