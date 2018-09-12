@@ -66,7 +66,7 @@ public class SemanticOrderAfterCreationOfElementOnTopTest {
 		MMessageEnd msg1send = model.getElement(QN, "1s", MMessageEnd.class);
 		MMessageEnd msg1receive = model.getElement(QN, "1r", MMessageEnd.class);
 		MMessageEnd msg2send = model.getElement(QN, "2s", MMessageEnd.class);
-		MMessageEnd msg2receive = model.getElement(QN, "2s", MMessageEnd.class);
+		MMessageEnd msg2receive = model.getElement(QN, "2r", MMessageEnd.class);
 
 		List<MMessageEnd> otherEnds = Arrays.asList(msg1send, msg1receive, msg2send, msg2receive);
 		otherEnds.forEach(other -> assertThat(model.isSemanticallyBefore(createdSend, other), is(true)));
@@ -92,7 +92,7 @@ public class SemanticOrderAfterCreationOfElementOnTopTest {
 		MMessageEnd msg1send = model.getElement(QN, "1s", MMessageEnd.class);
 		MMessageEnd msg1receive = model.getElement(QN, "1r", MMessageEnd.class);
 		MMessageEnd msg2send = model.getElement(QN, "2s", MMessageEnd.class);
-		MMessageEnd msg2receive = model.getElement(QN, "2s", MMessageEnd.class);
+		MMessageEnd msg2receive = model.getElement(QN, "2r", MMessageEnd.class);
 
 		List<MMessageEnd> endsBefore = Arrays.asList(msg1send, msg1receive);
 		endsBefore.forEach(end -> assertThat(model.isSemanticallyBefore(end, createdSend), is(true)));
@@ -137,7 +137,7 @@ public class SemanticOrderAfterCreationOfElementOnTopTest {
 		MMessageEnd msg1send = model.getElement(QN, "1s", MMessageEnd.class);
 		MMessageEnd msg1receive = model.getElement(QN, "1r", MMessageEnd.class);
 		MMessageEnd msg2send = model.getElement(QN, "2s", MMessageEnd.class);
-		MMessageEnd msg2receive = model.getElement(QN, "2s", MMessageEnd.class);
+		MMessageEnd msg2receive = model.getElement(QN, "2r", MMessageEnd.class);
 
 		List<MMessageEnd> otherEnds = Arrays.asList(msg1send, msg1receive, msg2send, msg2receive);
 		otherEnds.forEach(other -> assertThat(model.isSemanticallyBefore(createdStart, other), is(true)));
@@ -173,7 +173,7 @@ public class SemanticOrderAfterCreationOfElementOnTopTest {
 		MMessageEnd msg1send = model.getElement(QN, "1s", MMessageEnd.class);
 		MMessageEnd msg1receive = model.getElement(QN, "1r", MMessageEnd.class);
 		MMessageEnd msg2send = model.getElement(QN, "2s", MMessageEnd.class);
-		MMessageEnd msg2receive = model.getElement(QN, "2s", MMessageEnd.class);
+		MMessageEnd msg2receive = model.getElement(QN, "2r", MMessageEnd.class);
 
 		List<MMessageEnd> otherEnds = Arrays.asList(msg1send, msg1receive, msg2send, msg2receive);
 		otherEnds.forEach(other -> assertThat(model.isSemanticallyBefore(createdSend, other), is(true)));
