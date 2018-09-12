@@ -153,8 +153,11 @@ public class SemanticOrderAfterCreationOfElementOnTopTest {
 		/* act */
 		execute(command);
 
-		/* second command to create execution */
-		/* setup */
+		/*
+		 * second command to create execution. The first command invalidated the logical model, so we need to
+		 * find lifeline3 again
+		 */
+		lifeline3 = interaction().getLifelines().get(2);
 		CreationCommand<ExecutionSpecification> command2 = lifeline3.insertExecutionAfter(lifeline3, 0, 20,
 				ACTION_EXECUTION_SPECIFICATION);
 

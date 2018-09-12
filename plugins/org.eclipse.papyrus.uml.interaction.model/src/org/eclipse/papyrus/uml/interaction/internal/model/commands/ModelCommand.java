@@ -29,11 +29,9 @@ import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugi
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
-import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
-import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
@@ -116,30 +114,20 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 		MElement<?> result = insertionPoint;
 
 		if (insertionPoint instanceof MMessage) {
-			// After the message is received, if it is received
+			// Before the message is sent, if it is sent
 			MMessage message = (MMessage)insertionPoint;
-			Optional<MMessageEnd> end = message.getReceive();
+			Optional<MMessageEnd> end = message.getSend();
 			if (!end.isPresent()) {
-				end = message.getSend();
+				end = message.getReceive();
 			}
 			if (end.isPresent()) {
 				result = end.get();
 			}
 		} else if (insertionPoint instanceof MMessageEnd) {
 			MMessageEnd end = (MMessageEnd)insertionPoint;
-			if (end.isSend()) {
-				// After the message is received, if it is received
+			if (end.isReceive()) {
+				// Before the message is sent, if it is sent
 				result = end.getOtherEnd().orElse(end);
-			}
-		}
-
-		if (result instanceof MOccurrence<?>) {
-			// Insert after the execution specification that it starts (if any)
-			// so that the new fragment can be grouped in that occurrence
-			MOccurrence<?> occurrence = (MOccurrence<?>)result;
-			Optional<MExecution> exec = occurrence.getStartedExecution();
-			if (exec.isPresent()) {
-				result = exec.get();
 			}
 		}
 
@@ -183,10 +171,12 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 		int index = Collections.binarySearch(timeline, searchToken, compareByTop());
 
 		if (index >= 0) {
-			// Easy case: precede the fragments currently at that Y position, which means insert
-			// before the first element following that is at this position
-			while ((index > 0) && (timeline.get(index - 1).getTop().orElse(-1) == yPosition)) {
-				index--;
+			// Easy case: precede the first fragment at a greater Y position than this element.
+			// This handles, for example, the common case of inserting an execution specification
+			// after a message receive end at offset 0, which then should not result in the
+			// execution semantically preceding that message end
+			while ((index < size) && (timeline.get(index).getTop().orElse(-1) == yPosition)) {
+				index++;
 			}
 		} else {
 			// The search found an "insertion point", which is where the fragment is before which

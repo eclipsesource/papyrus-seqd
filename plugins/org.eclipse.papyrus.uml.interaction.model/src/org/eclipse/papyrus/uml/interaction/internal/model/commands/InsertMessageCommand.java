@@ -421,7 +421,12 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				// Now we have commands to add the message specification. But, first we must make
 				// room for it in the diagram. Nudge the element that will follow the new receive event
 				int spaceRequired = 2 * sendOffset;
-				MElement<?> distanceFrom = normalizeFragmentInsertionPoint(beforeSend);
+				// If inserting after the start occurrence of an execution specification,
+				// then actually insert after the execution, itself, so that it can span
+				// the new message end
+				MElement<?> distanceFrom = (MElement<?>)Optional.of(beforeSend)
+						.filter(MOccurrence.class::isInstance).map(MOccurrence.class::cast)
+						.flatMap(MOccurrence::getStartedExecution).orElse(beforeSend);
 				Optional<Command> makeSpace = getTarget().following(distanceFrom).map(el -> {
 					OptionalInt distance = el.verticalDistance(distanceFrom);
 					return distance.isPresent() ? el.nudge(max(0, spaceRequired - distance.getAsInt()))

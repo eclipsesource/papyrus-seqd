@@ -15,7 +15,7 @@
     <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_nr7wgLA8EeiVu8M2BzYNdA" name="msg4_send" covered="_k9yvQLA8EeiVu8M2BzYNdA" message="_nr8-oLA8EeiVu8M2BzYNdA"/>
     <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_nr8XkLA8EeiVu8M2BzYNdA" name="msg4_receive" covered="_kxgmwLA8EeiVu8M2BzYNdA" message="_nr8-oLA8EeiVu8M2BzYNdA"/>
     <message xmi:type="uml:Message" xmi:id="_mX9nMLA8EeiVu8M2BzYNdA" name="msg1" receiveEvent="_mX9AILA8EeiVu8M2BzYNdA" sendEvent="_mX8ZELA8EeiVu8M2BzYNdA"/>
-    <message xmi:type="uml:Message" xmi:id="_mzCZoLA8EeiVu8M2BzYNdA" name="ms2" receiveEvent="_mzBykLA8EeiVu8M2BzYNdA" sendEvent="_mzBLgLA8EeiVu8M2BzYNdA"/>
+    <message xmi:type="uml:Message" xmi:id="_mzCZoLA8EeiVu8M2BzYNdA" name="msg2" receiveEvent="_mzBykLA8EeiVu8M2BzYNdA" sendEvent="_mzBLgLA8EeiVu8M2BzYNdA"/>
     <message xmi:type="uml:Message" xmi:id="_nM8HYrA8EeiVu8M2BzYNdA" name="msg3" receiveEvent="_nM8HYbA8EeiVu8M2BzYNdA" sendEvent="_nM8HYLA8EeiVu8M2BzYNdA"/>
     <message xmi:type="uml:Message" xmi:id="_nr8-oLA8EeiVu8M2BzYNdA" name="msg4" receiveEvent="_nr8XkLA8EeiVu8M2BzYNdA" sendEvent="_nr7wgLA8EeiVu8M2BzYNdA"/>
   </packagedElement>
