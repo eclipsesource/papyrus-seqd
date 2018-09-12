@@ -387,6 +387,13 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	}
 
 	@Override
+	public int getHeight(Shape shape) {
+		int bottom = getBottom(shape);
+		int top = getTop(shape);
+		return ((bottom == DEFAULT_BOTTOM) || (top == DEFAULT_TOP)) ? DEFAULT_HEIGHT : bottom - top;
+	}
+
+	@Override
 	public int getYPosition(Anchor anchor, Shape anchoredOn) {
 		// Anchors are point locations, so the bottom is the top is the Y position.
 		// But anchor position is relative to the attached shape

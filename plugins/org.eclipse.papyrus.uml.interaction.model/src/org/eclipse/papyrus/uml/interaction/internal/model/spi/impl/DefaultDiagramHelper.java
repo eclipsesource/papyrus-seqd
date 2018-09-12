@@ -14,10 +14,14 @@ package org.eclipse.papyrus.uml.interaction.internal.model.spi.impl;
 
 import static org.eclipse.papyrus.uml.interaction.graph.util.Suppliers.compose;
 
+import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.command.CommandWrapper;
+import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.command.DeleteCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
@@ -26,7 +30,6 @@ import org.eclipse.gmf.runtime.notation.Bounds;
 import org.eclipse.gmf.runtime.notation.Compartment;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Diagram;
-import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.gmf.runtime.notation.LayoutConstraint;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.NotationFactory;
@@ -46,6 +49,7 @@ import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
+import org.eclipse.uml2.uml.OccurrenceSpecification;
 import org.eclipse.uml2.uml.UMLPackage;
 
 /**
@@ -55,7 +59,6 @@ import org.eclipse.uml2.uml.UMLPackage;
  */
 public class DefaultDiagramHelper implements DiagramHelper {
 
-	@SuppressWarnings("unused")
 	private final EditingDomain editingDomain;
 
 	private final Supplier<SemanticHelper> semanticHelper;
@@ -134,7 +137,7 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			Shape body = (Shape)result.createChild(NotationPackage.Literals.SHAPE);
 			body.setType(ViewTypes.LIFELINE_BODY);
 			Size bodySize = NotationFactory.eINSTANCE.createSize();
-			bodySize.setWidth(layoutHelper().getConstraints().getMinimumHeight(ViewTypes.LIFELINE_BODY));
+			bodySize.setWidth(layoutHelper().getConstraints().getMinimumWidth(ViewTypes.LIFELINE_BODY));
 			bodySize.setHeight(layoutHelper().getConstraints().getMinimumHeight(ViewTypes.LIFELINE_BODY));
 			body.setLayoutConstraint(bodySize);
 
@@ -235,7 +238,8 @@ public class DefaultDiagramHelper implements DiagramHelper {
 
 	@Override
 	public Command createMessageConnector(Supplier<Message> message, Supplier<? extends View> source,
-			IntSupplier sourceY, Supplier<? extends View> target, IntSupplier targetY) {
+			IntSupplier sourceY, Supplier<? extends View> target, IntSupplier targetY,
+			BiFunction<? super OccurrenceSpecification, ? super MessageEnd, Optional<Command>> collisionHandler) {
 
 		// TODO: The Logical Model is required to have no dependencies on the diagram editor,
 		// but this is usually the responsibility of a View Provider. That should be okay ...
@@ -247,36 +251,18 @@ public class DefaultDiagramHelper implements DiagramHelper {
 
 			Shape sourceView = (Shape)source.get();
 			Shape targetView = (Shape)target.get();
-			boolean leftToRight = layoutHelper().getLeft(sourceView) <= layoutHelper().getLeft(targetView);
 
-			IdentityAnchor sourceAnchor = (IdentityAnchor)result
-					.createSourceAnchor(NotationPackage.Literals.IDENTITY_ANCHOR);
+			AnchorFactory anchorFactory = new AnchorFactory(result, layoutHelper());
+
 			int sourceDistance = sourceY.getAsInt() - layoutHelper().getTop(sourceView);
-			String sourceID = Integer.toString(sourceDistance);
-			if (sourceView.getElement() instanceof ExecutionSpecification) {
-				// Which direction?
-				if (leftToRight) {
-					sourceID = "right;" + sourceID;
-				} else {
-					sourceID = "left;" + sourceID;
-				}
-			}
-			sourceAnchor.setId(sourceID);
+			anchorFactory.builderFor(sourceView).from(sourceView).to(targetView).at(sourceDistance)
+					.sourceEnd().build();
 
-			IdentityAnchor targetAnchor = (IdentityAnchor)result
-					.createTargetAnchor(NotationPackage.Literals.IDENTITY_ANCHOR);
 			int targetDistance = targetY.getAsInt() - layoutHelper().getTop(targetView);
-			String targetID = Integer.toString(targetDistance);
-			if (targetView.getElement() instanceof ExecutionSpecification) {
-				// Which direction?
-				if (leftToRight) {
-					targetID = "left;" + targetID;
-				} else {
-					targetID = "right;" + targetID;
-				}
-			}
-			targetAnchor.setId(targetID);
+			anchorFactory.builderFor(targetView).from(sourceView).to(targetView).at(targetDistance)
+					.targetEnd().build();
 
+			// We need to have a bendpoints list, even if it's empty
 			result.createBendpoints(NotationPackage.Literals.RELATIVE_BENDPOINTS);
 
 			return result;
@@ -293,7 +279,33 @@ public class DefaultDiagramHelper implements DiagramHelper {
 		DeferredSetCommand setTarget = new DeferredSetCommand(editingDomain, createMessage,
 				NotationPackage.Literals.EDGE__TARGET, target);
 
-		return createMessage.chain(setSource).chain(setTarget);
+		Command result = createMessage.chain(setSource).chain(setTarget);
+
+		if (collisionHandler != null) {
+			CommandWrapper deferredCollisionHandler = new CommandWrapper() {
+				@Override
+				protected Command createCommand() {
+					// Do we have any collision of message end with execution start/finish?
+					Connector created = connector.get();
+					Optional<Command> replace = Optional.empty();
+					if (AnchorFactory.isExecutionSpecificationStart(created.getTargetAnchor())) {
+						// Replace the execution occurrence start occurrence
+						ExecutionSpecification exec = (ExecutionSpecification)target.get().getElement();
+						replace = collisionHandler.apply(exec.getStart(), message.get().getReceiveEvent());
+					} else if (AnchorFactory.isExecutionSpecificationFinish(created.getSourceAnchor())) {
+						// Replace the execution occurrence start occurrence
+						ExecutionSpecification exec = (ExecutionSpecification)source.get().getElement();
+						replace = collisionHandler.apply(exec.getFinish(), message.get().getSendEvent());
+					}
+
+					// If we don't have a replace command, we still need something to execute
+					return replace.orElse(IdentityCommand.INSTANCE);
+				}
+			};
+			result = result.chain(deferredCollisionHandler);
+		}
+
+		return result;
 	}
 
 	@Override

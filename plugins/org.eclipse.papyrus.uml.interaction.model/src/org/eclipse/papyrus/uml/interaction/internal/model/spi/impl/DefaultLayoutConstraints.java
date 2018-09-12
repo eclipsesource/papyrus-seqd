@@ -152,6 +152,11 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 		return slope >= 3.0;
 	}
 
+	@Override
+	public int getMagnetStrength(View view) {
+		return 15;
+	}
+
 	@SuppressWarnings("boxing")
 	private static Map<String, Integer> loadXOffsets() {
 		Map<String, Integer> result = new HashMap<>();

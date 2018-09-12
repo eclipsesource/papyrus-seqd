@@ -12,9 +12,9 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.function.Function;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
@@ -146,22 +146,19 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 			return UnexecutableCommand.INSTANCE;
 		}
 
-		MElement<? extends Element> insertionPoint = normalizeFragmentInsertionPoint(before);
-		Function<Element, CreationParameters> paramsFactory = CreationParameters::after;
-
-		if (insertionPoint instanceof MLifeline) {
-			// Insert before the first covering fragment, if any
-			Optional<MElement<? extends Element>> covering = ((MLifeline)insertionPoint)
-					.following(insertionPoint);
-			if (covering.isPresent()) {
-				insertionPoint = covering.get();
-				paramsFactory = CreationParameters::before;
-			}
-		}
+		// Determine the semantic element before which to insert the execution and its
+		// start and finish occurrences
+		List<MElement<? extends Element>> timeline = getTimeline(getTarget().getInteraction());
+		int absoluteExecY = referenceY.getAsInt() + offset;
+		Optional<MElement<? extends Element>> insertAt = getInsertionPoint(timeline, absoluteExecY)
+				.map(this::normalizeFragmentInsertionPoint);
 
 		SemanticHelper semantics = semanticHelper();
-		CreationParameters execParams = paramsFactory.apply(insertionPoint.getElement());
+		CreationParameters execParams = CreationParameters.in(getTarget().getInteraction().getElement(),
+				UMLPackage.Literals.INTERACTION__FRAGMENT);
 		execParams.setEClass(eClass);
+		execParams.setInsertBefore(
+				() -> insertAt.map(MElement::getElement).map(Element.class::cast).orElse(null));
 		resultCommand = semantics.createExecutionSpecification(specification, execParams);
 		CreationParameters startParams = CreationParameters.before(resultCommand);
 		CreationCommand<OccurrenceSpecification> start = semantics.createStart(resultCommand, startParams);
@@ -180,7 +177,8 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 
 		// Now we have commands to add the execution specification. But, first we must make
 		// room for it in the diagram. Nudge the element that will follow the new execution
-		Optional<Command> makeSpace = createNudgeCommand(insertionPoint, execParams.isInsertBefore());
+		Optional<Command> makeSpace = insertAt
+				.flatMap(insertionPoint -> createNudgeCommand(insertionPoint, execParams.isInsertBefore()));
 		if (makeSpace.isPresent()) {
 			result = makeSpace.get().chain(result);
 		}

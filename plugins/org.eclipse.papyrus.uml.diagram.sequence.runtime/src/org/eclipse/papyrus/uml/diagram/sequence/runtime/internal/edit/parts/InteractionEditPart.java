@@ -15,13 +15,19 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.AbstractBorderedShapeEditPar
 import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.InteractionFigure;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnetManager;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.MagnetManager;
 import org.eclipse.papyrus.uml.tools.utils.UMLUtil;
 import org.eclipse.uml2.uml.Interaction;
 
 public class InteractionEditPart extends AbstractBorderedShapeEditPart {
 
+	private final IMagnetManager magnetManager;
+
 	public InteractionEditPart(View view) {
 		super(view);
+
+		this.magnetManager = new MagnetManager();
 	}
 
 	@Override
@@ -31,5 +37,17 @@ public class InteractionEditPart extends AbstractBorderedShapeEditPart {
 
 	protected Interaction getInteraction() {
 		return (Interaction)UMLUtil.resolveUMLElement(this);
+	}
+
+	public IMagnetManager getMagnetManager() {
+		return magnetManager;
+	}
+
+	@Override
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class key) {
+		if (key == IMagnetManager.class) {
+			return magnetManager;
+		}
+		return super.getAdapter(key);
 	}
 }

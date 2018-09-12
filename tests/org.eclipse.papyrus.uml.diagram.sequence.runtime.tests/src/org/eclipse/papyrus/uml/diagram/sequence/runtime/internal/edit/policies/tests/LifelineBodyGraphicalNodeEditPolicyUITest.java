@@ -89,7 +89,10 @@ public class LifelineBodyGraphicalNodeEditPolicyUITest extends AbstractGraphical
 		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 130),
 				at(recvX, 115));
 
-		assertThat("Message should be horizontal", messageEP, runs(sendX, 130, recvX, 130, 2));
+		// The target to which the user draw the message should have priority over the
+		// source
+		assertThat("Message should be horizontal to the target", messageEP,
+				runs(sendX, 115, recvX, 115, 2));
 	}
 
 	@Test
@@ -110,7 +113,8 @@ public class LifelineBodyGraphicalNodeEditPolicyUITest extends AbstractGraphical
 		EditPart messageEP = createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, 115),
 				at(recvX, 130));
 
-		assertThat("Message should be horizontal", messageEP, runs(sendX, 115, recvX, 115, 2));
+		assertThat("Message should be horizontal to receive location", messageEP,
+				runs(sendX, 130, recvX, 130, 2));
 	}
 
 	@Test

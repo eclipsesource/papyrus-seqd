@@ -22,6 +22,9 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -37,10 +40,10 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
+import org.eclipse.gef.tools.ConnectionCreationTool;
 import org.eclipse.gef.tools.SelectionTool;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramEditor;
-import org.eclipse.gmf.runtime.diagram.ui.services.palette.SelectionToolEx;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.infra.core.sasheditor.di.contentprovider.utils.IPageUtils;
@@ -48,7 +51,6 @@ import org.eclipse.papyrus.infra.core.sasheditor.editor.IEditorPage;
 import org.eclipse.papyrus.infra.core.sasheditor.editor.IPage;
 import org.eclipse.papyrus.infra.core.sasheditor.editor.ISashWindowsContainer;
 import org.eclipse.papyrus.infra.core.sashwindows.di.service.IPageManager;
-import org.eclipse.papyrus.infra.gmfdiag.common.service.palette.AspectUnspecifiedTypeConnectionTool;
 import org.eclipse.papyrus.infra.gmfdiag.common.service.palette.AspectUnspecifiedTypeCreationTool;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelFixture;
 import org.eclipse.swt.SWT;
@@ -78,6 +80,9 @@ public class EditorFixture extends ModelFixture {
 	private IFile diFile;
 	private IEditorPart editor;
 	private boolean isMaximized;
+
+	private int mouseButton = 1;
+	private int modifierKeys = 0;
 
 	/**
 	 * Initializes me.
@@ -289,7 +294,8 @@ public class EditorFixture extends ModelFixture {
 		tool.mouseMove(new MouseEvent(mouse), viewer);
 
 		// Start the click
-		mouse.button = 1;
+		mouse.button = mouseButton;
+		mouse.stateMask = modifierKeys;
 		mouse.type = SWT.MouseDown;
 		tool.mouseDown(new MouseEvent(mouse), viewer);
 
@@ -365,8 +371,7 @@ public class EditorFixture extends ModelFixture {
 	private void drawConnection(IElementType type, Point start, Point finish, boolean complete) {
 		DiagramEditPart diagram = getDiagramEditPart();
 		EditPartViewer viewer = diagram.getViewer();
-		AspectUnspecifiedTypeConnectionTool tool = new AspectUnspecifiedTypeConnectionTool(
-				singletonList(type));
+		ConnectionCreationTool tool = createConnectionTool(type);
 
 		Event mouse = new Event();
 		mouse.display = editor.getSite().getShell().getDisplay();
@@ -382,7 +387,8 @@ public class EditorFixture extends ModelFixture {
 		tool.mouseMove(new MouseEvent(mouse), viewer);
 
 		// Click
-		mouse.button = 1;
+		mouse.button = mouseButton;
+		mouse.stateMask = modifierKeys;
 		mouse.type = SWT.MouseDown;
 		tool.mouseDown(new MouseEvent(mouse), viewer);
 		mouse.type = SWT.MouseUp;
@@ -400,7 +406,8 @@ public class EditorFixture extends ModelFixture {
 		flushDisplayEvents();
 
 		if (complete) {
-			mouse.button = 1;
+			mouse.button = mouseButton;
+			mouse.stateMask = modifierKeys;
 			mouse.type = SWT.MouseDown;
 			tool.mouseDown(new MouseEvent(mouse), viewer);
 			mouse.type = SWT.MouseUp;
@@ -433,7 +440,7 @@ public class EditorFixture extends ModelFixture {
 	public void escape() {
 		DiagramEditPart diagram = getDiagramEditPart();
 		EditPartViewer viewer = diagram.getViewer();
-		SelectionTool tool = new SelectionToolEx();
+		SelectionTool tool = createSelectionTool();
 
 		Event key = new Event();
 		key.display = editor.getSite().getShell().getDisplay();
@@ -465,7 +472,7 @@ public class EditorFixture extends ModelFixture {
 		DiagramEditPart diagram = getDiagramEditPart();
 		EditPartViewer viewer = diagram.getViewer();
 
-		SelectionTool tool = new SelectionToolEx();
+		SelectionTool tool = createSelectionTool();
 
 		Event mouse = new Event();
 		mouse.display = editor.getSite().getShell().getDisplay();
@@ -481,7 +488,8 @@ public class EditorFixture extends ModelFixture {
 		tool.mouseMove(new MouseEvent(mouse), viewer);
 
 		// Click to select
-		mouse.button = 1;
+		mouse.button = mouseButton;
+		mouse.stateMask = modifierKeys;
 		mouse.type = SWT.MouseDown;
 		tool.mouseDown(new MouseEvent(mouse), viewer);
 		mouse.type = SWT.MouseUp;
@@ -530,6 +538,10 @@ public class EditorFixture extends ModelFixture {
 	//
 	// Utilities
 	//
+
+	public final EditingDomain getEditingDomain() {
+		return getDiagramEditPart().getEditingDomain();
+	}
 
 	public final void flushDisplayEvents() {
 		Display display = Display.getCurrent();
@@ -598,4 +610,176 @@ public class EditorFixture extends ModelFixture {
 		return new Dimension(width, height);
 	}
 
+	/**
+	 * Run an {@code action} with {@code modifiers}.
+	 *
+	 * @param modifiers
+	 *            the modifiers to apply to the {@code action}
+	 * @param action
+	 *            an action to run under the influence of the {@code modifiers}
+	 */
+	public final void with(Modifiers modifiers, Runnable action) {
+		modifiers.apply();
+
+		try {
+			action.run();
+		} finally {
+			modifiers.unapply();
+		}
+	}
+
+	/**
+	 * Run an {@code action} computing a result with {@code modifiers}.
+	 *
+	 * @param modifiers
+	 *            the modifiers to apply to the {@code action}
+	 * @param action
+	 *            an action to run under the influence of the {@code modifiers}
+	 */
+	public final <T> T with(Modifiers modifiers, Supplier<T> action) {
+		final T result;
+
+		modifiers.apply();
+
+		try {
+			result = action.get();
+		} finally {
+			modifiers.unapply();
+		}
+
+		return result;
+	}
+
+	/**
+	 * Obtain modifiers applying a mouse button to mouse events.
+	 *
+	 * @param mouseButton
+	 *            the mouse button
+	 * @return the mouse button modifiers
+	 */
+	public Modifiers mouseButton(int mouseButton) {
+		return ModifiersImpl.withInt( //
+				() -> setMouseButton(mouseButton), //
+				this::setMouseButton);
+	}
+
+	private int setMouseButton(int mouseButton) {
+		int result = this.mouseButton;
+		this.mouseButton = mouseButton;
+		return result;
+	}
+
+	/**
+	 * Obtain modifiers applying a modifier key to mouse and keyboard events.
+	 *
+	 * @param modifierKey
+	 *            the modifier key code
+	 * @return the modifier key modifiers
+	 */
+	public Modifiers modifierKey(int modifierKey) {
+		return ModifiersImpl.withInt( //
+				() -> setModifierKeys(this.modifierKeys | modifierKey), //
+				this::setModifierKeys);
+	}
+
+	private int setModifierKeys(int modifierKeys) {
+		int result = this.modifierKeys;
+		this.modifierKeys = modifierKeys;
+		return result;
+	}
+
+	/**
+	 * Absence of modifiers, useful for clients that require some kind of modifiers
+	 * instance, even if actual modifiers are not needed.
+	 *
+	 * @return a modifiers implementation that does nothing
+	 */
+	public Modifiers unmodified() {
+		return ModifiersImpl.with(this::pass, this::pass);
+	}
+
+	private void pass() {
+		// Pass
+	}
+
+	@SuppressWarnings("restriction")
+	private SelectionTool createSelectionTool() {
+		return new org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceSelectionTool();
+	}
+
+	@SuppressWarnings("restriction")
+	private ConnectionCreationTool createConnectionTool(IElementType type) {
+		return new org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceConnectionCreationTool(
+				singletonList(type));
+	}
+
+	//
+	// Nested types
+	//
+
+	/**
+	 * Protocol for modifiers rules for interaction gestures in the diagram.
+	 */
+	public interface Modifiers {
+		/** Applies my modifiers. */
+		void apply();
+
+		/** Removes my modifiers. */
+		void unapply();
+
+		/**
+		 * Wrap another {@code modifiers} around me.
+		 *
+		 * @param modifiers
+		 *            other modifiers to apply around mine
+		 * @return the composed modifiers
+		 */
+		default Modifiers and(Modifiers modifiers) {
+			return ModifiersImpl.with( //
+					() -> {
+						modifiers.apply();
+						this.apply();
+					}, () -> {
+						this.unapply();
+						modifiers.unapply();
+					});
+		}
+	}
+
+	private static final class ModifiersImpl implements Modifiers {
+		private final Runnable apply;
+		private final Runnable unapply;
+
+		private ModifiersImpl(Runnable apply, Runnable unapply) {
+			super();
+
+			this.apply = apply;
+			this.unapply = unapply;
+		}
+
+		static Modifiers with(Runnable apply, Runnable unapply) {
+			return new ModifiersImpl(apply, unapply);
+		}
+
+		static <T> Modifiers with(Supplier<? extends T> apply, Consumer<? super T> unapply) {
+			@SuppressWarnings("unchecked")
+			final T[] holder = (T[]) new Object[1];
+			return with(() -> holder[0] = apply.get(), () -> unapply.accept(holder[0]));
+		}
+
+		static Modifiers withInt(IntSupplier apply, IntConsumer unapply) {
+			final int[] holder = { 0 };
+			return with(() -> holder[0] = apply.getAsInt(), () -> unapply.accept(holder[0]));
+		}
+
+		@Override
+		public void apply() {
+			apply.run();
+		}
+
+		@Override
+		public void unapply() {
+			unapply.run();
+		}
+	}
 }

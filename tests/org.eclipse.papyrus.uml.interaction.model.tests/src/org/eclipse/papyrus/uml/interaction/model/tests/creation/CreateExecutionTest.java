@@ -19,10 +19,9 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
-import org.eclipse.papyrus.uml.interaction.tests.rules.ModelFixture;
+import org.eclipse.papyrus.uml.interaction.model.tests.ModelEditFixture;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.eclipse.uml2.uml.ExecutionSpecification;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +33,7 @@ public class CreateExecutionTest {
 	private static final int EXECUTION_HEIGHT = 20;
 
 	@Rule
-	public final ModelFixture.Edit model = new ModelFixture.Edit();
+	public final ModelEditFixture model = new ModelEditFixture();
 
 	private MInteraction interaction;
 
@@ -56,16 +55,13 @@ public class CreateExecutionTest {
 
 	private MInteraction interaction() {
 		if (interaction == null) {
-			interaction = MInteraction.getInstance(model.getInteraction(), model.getSequenceDiagram().get());
+			interaction = model.getMInteraction();
 		}
 		return interaction;
 	}
 
 	private void execute(Command command) {
-		if (!command.canExecute()) {
-			Assert.fail("Command not executable"); //$NON-NLS-1$
-		}
-		command.execute();
+		model.execute(command);
 		/* force reinit after change */
 		interaction = null;
 	}

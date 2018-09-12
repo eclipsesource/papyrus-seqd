@@ -21,6 +21,7 @@ import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Mo
 import java.util.Optional;
 import java.util.OptionalInt;
 
+import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
@@ -28,6 +29,8 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.Request;
+import org.eclipse.gef.requests.DropRequest;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.BorderedBorderItemEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IBorderItemEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
@@ -36,6 +39,7 @@ import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.LifelineBodyFigure;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.InteractionSemanticEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineBodyDisallowMoveAndResizeEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineBodyGraphicalNodeEditPolicy;
@@ -155,5 +159,18 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart implements 
 	@Override
 	protected void addBorderItem(IFigure borderItemContainer, IBorderItemEditPart borderItemEditPart) {
 		borderItemContainer.add(borderItemEditPart.getFigure(), new OnLineBorderItemLocator(getMainFigure()));
+	}
+
+	@Override
+	public ConnectionAnchor getTargetConnectionAnchor(Request request) {
+		if (request instanceof DropRequest) {
+			Point location = ((DropRequest)request).getLocation();
+
+			// Snap the location to the nearest magnet, if any
+			Optional<IMagnet> magnet = getMagnetManager().getCapturingMagnet(location);
+			magnet.map(IMagnet::getLocation).ifPresent(location::setLocation);
+		}
+
+		return super.getTargetConnectionAnchor(request);
 	}
 }

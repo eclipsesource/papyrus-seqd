@@ -12,6 +12,10 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
+import com.google.common.eventbus.EventBus;
+
+import java.util.Optional;
+
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
@@ -19,6 +23,8 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.editpolicies.FeedbackHelper;
 import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.ISequenceAnchor;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnetManager;
 
 /**
  * Feedback helper for messages that does not allow them to slope upwards and that ensures horizontality of
@@ -28,6 +34,10 @@ class MessageFeedbackHelper extends FeedbackHelper {
 	private final Mode mode;
 
 	private final boolean synchronous;
+
+	private final IMagnetManager magnetManager;
+
+	private EventBus bus;
 
 	// In the case of moving the message, where it is grabbed
 	private Point grabbedAt;
@@ -39,12 +49,15 @@ class MessageFeedbackHelper extends FeedbackHelper {
 	 *            the feedback mode
 	 * @param synchronous
 	 *            whether the message is synchronous, requiring a horizontal alignment
+	 * @param magnetManager
+	 *            the contextual magnet manager
 	 */
-	MessageFeedbackHelper(Mode mode, boolean synchronous) {
+	MessageFeedbackHelper(Mode mode, boolean synchronous, IMagnetManager magnetManager) {
 		super();
 
 		this.mode = mode;
 		this.synchronous = synchronous;
+		this.magnetManager = magnetManager;
 
 		setMovingStartAnchor(mode.isMovingSource());
 	}
@@ -55,87 +68,76 @@ class MessageFeedbackHelper extends FeedbackHelper {
 
 	@Override
 	public void update(ConnectionAnchor _anchor, Point p) {
-		ConnectionAnchor anchor = _anchor;
-		ConnectionAnchor other = getOtherAnchor();
+		ConnectionAnchor[] anchor = {_anchor };
+		ConnectionAnchor[] other = {getOtherAnchor() };
 
-		if ((other instanceof ISequenceAnchor) && (anchor instanceof ISequenceAnchor)) {
-			ISequenceAnchor otherAnchor = (ISequenceAnchor)other;
-
-			Point thisLocation = getLocation(anchor);
-			Point otherLocation = getLocation(otherAnchor);
+		if ((other[0] instanceof ISequenceAnchor) && (anchor[0] instanceof ISequenceAnchor)) {
+			Point thisLocation = getLocation(anchor[0]);
+			Point otherLocation = getLocation(other[0]);
 
 			if (mode == Mode.MOVE_BOTH) {
 				// We maintain the slope anyways, so synchronicity doesn't matter
 				int deltaY = p.y() - grabbedAt.y();
 				if (deltaY != 0) {
 					thisLocation.translate(0, deltaY);
-					anchor = recreateAnchor(anchor, thisLocation);
+					otherLocation.translate(0, deltaY);
+					grabbedAt.translate(0, deltaY); // Prepare the next drag increment
 
-					if (!isMovingStartAnchor()) {
-						// We've moved the source and now the target, so update
-						// our reference point for the next drag increment
-						grabbedAt.translate(0, deltaY);
-					}
-				}
-			} else if (synchronous) {
-				// Constrain the message to horizontal
-				switch (mode) {
-					case CREATE:
-						// Force it horizontal
-						p.setY(otherLocation.y());
-						anchor = recreateAnchor(anchor, p);
-						break;
-					case MOVE_SOURCE:
-					case MOVE_TARGET:
-						// Bring the other end along
-						otherLocation.setY(p.y());
-						other = recreateOtherAnchor(otherAnchor, otherLocation);
-						if (mode.isMovingTarget()) {
-							getConnection().setSourceAnchor(other);
-						} else {
-							getConnection().setTargetAnchor(other);
+					// Snap each point to the nearest magnet, if any, with priority to the
+					// receiving end
+					int magnetDelta = 0;
+					Optional<IMagnet> magnet = magnetManager.getCapturingMagnet(thisLocation);
+					if (magnet.isPresent()) {
+						magnetDelta = magnet.get().getLocation().y() - thisLocation.y();
+					} else {
+						magnet = magnetManager.getCapturingMagnet(otherLocation);
+						if (magnet.isPresent()) {
+							magnetDelta = magnet.get().getLocation().y() - otherLocation.y();
 						}
-						break;
-					default:
-						// MOVE_BOTH is handled separately
-						break;
+					}
+					if (magnetDelta != 0) {
+						// Additional adjustment
+						thisLocation.translate(0, magnetDelta);
+						otherLocation.translate(0, magnetDelta);
+						grabbedAt.translate(0, magnetDelta);
+					}
+
+					recreateAnchor(anchor, thisLocation);
+					recreateOtherAnchor(other, otherLocation);
+					updateOtherAnchor(other);
 				}
 			} else {
-				// Don't permit the message to go back in time
+				// Snap the point to the nearest magnet, if any
+				Optional<IMagnet> magnet = magnetManager.getCapturingMagnet(p);
+				magnet.map(IMagnet::getLocation).ifPresent(p::setLocation);
+
+				// Don't permit the message to go back in time if it's asynchronous
 				int delta = mode.isMovingTarget() ? p.y() - otherLocation.y() : otherLocation.y() - p.y();
 
-				if (delta < 0) {
+				if (synchronous || (delta < 0)) {
+					// Constrain the message to horizontal
 					switch (mode) {
 						case CREATE:
-							// Force it horizontal
-							p.setY(otherLocation.y());
-							anchor = recreateAnchor(anchor, p);
-							break;
-						case MOVE_SOURCE:
-						case MOVE_TARGET:
-							// Bring the other end along
+							// Bring the other end along (subject to magnet constraints)
 							otherLocation.setY(p.y());
-							other = recreateOtherAnchor(otherAnchor, otherLocation);
-							if (mode.isMovingTarget()) {
-								getConnection().setSourceAnchor(other);
-							} else {
-								getConnection().setTargetAnchor(other);
-							}
-							break;
-						default:
-							// MOVE_BOTH is handled separately
-							break;
-					}
-				} else if (synchronous && (delta > 0)) {
-					switch (mode) {
-						case CREATE:
-							// Force it horizontal
-							p.setY(otherLocation.y());
-							anchor = recreateAnchor(anchor, p);
+
+							Optional<IMagnet> otherMagnet = magnetManager.getCapturingMagnet(otherLocation);
+							otherMagnet.map(IMagnet::getLocation).ifPresent(m -> {
+								// Don't move this end if the other is stuck to a magnet
+								int dy = otherLocation.y() - m.y();
+								otherLocation.setLocation(m);
+								p.translate(0, -dy);
+								recreateAnchor(anchor, p);
+							});
+
+							recreateOtherAnchor(other, otherLocation);
+							updateOtherAnchor(other);
 							break;
 						case MOVE_SOURCE:
 						case MOVE_TARGET:
-							// Let the new slope of the asynchronous message be applied
+							// Force it horizontal
+							p.setY(otherLocation.y());
+							recreateAnchor(anchor, p);
 							break;
 						default:
 							// MOVE_BOTH is handled separately
@@ -143,9 +145,17 @@ class MessageFeedbackHelper extends FeedbackHelper {
 					}
 				}
 			}
+
+			if (bus != null) {
+				if (isMovingStartAnchor()) {
+					bus.post(thisLocation);
+				} else {
+					bus.post(otherLocation);
+				}
+			}
 		}
 
-		super.update(anchor, p);
+		super.update(anchor[0], p);
 	}
 
 	private ConnectionAnchor getOtherAnchor() {
@@ -160,16 +170,34 @@ class MessageFeedbackHelper extends FeedbackHelper {
 		return anchor.getLocation(ownerOrigin);
 	}
 
-	private ConnectionAnchor recreateAnchor(ConnectionAnchor anchor, Point p) {
-		NodeFigure owner = (NodeFigure)anchor.getOwner();
-		return mode.isMovingTarget() ? owner.getTargetConnectionAnchorAt(p)
+	private void recreateAnchor(ConnectionAnchor[] anchor, Point p) {
+		NodeFigure owner = (NodeFigure)anchor[0].getOwner();
+		anchor[0] = mode.isMovingTarget() ? owner.getTargetConnectionAnchorAt(p)
 				: owner.getSourceConnectionAnchorAt(p);
 	}
 
-	private ConnectionAnchor recreateOtherAnchor(ConnectionAnchor anchor, Point p) {
-		NodeFigure owner = (NodeFigure)anchor.getOwner();
-		return mode.isMovingTarget() ? owner.getSourceConnectionAnchorAt(p)
+	private void recreateOtherAnchor(ConnectionAnchor[] anchor, Point p) {
+		NodeFigure owner = (NodeFigure)anchor[0].getOwner();
+		anchor[0] = mode.isMovingTarget() ? owner.getSourceConnectionAnchorAt(p)
 				: owner.getTargetConnectionAnchorAt(p);
+	}
+
+	void updateOtherAnchor(ConnectionAnchor[] other) {
+		if (mode.isMovingTarget()) {
+			getConnection().setSourceAnchor(other[0]);
+		} else {
+			getConnection().setTargetAnchor(other[0]);
+		}
+	}
+
+	/**
+	 * Assign a bus to which I post source location updates.
+	 * 
+	 * @param bus
+	 *            the event bus
+	 */
+	void setEventBus(EventBus bus) {
+		this.bus = bus;
 	}
 
 	//
