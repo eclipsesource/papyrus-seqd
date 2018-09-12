@@ -11,9 +11,9 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.interaction.model.tests;
 
+import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
@@ -79,9 +79,9 @@ public class ModelEditFixture extends Edit {
 	@SuppressWarnings({"boxing" })
 	public Object isSemanticallyBefore(MOccurrence<? extends Element> one,
 			MOccurrence<? extends Element> other) {
-		EList<InteractionFragment> fragments = getMInteraction().getElement().getFragments();
+		List<InteractionFragment> fragments = getMInteraction().getElement().getFragments();
 		int indexOfOne = fragments.indexOf(one.getElement());
-		int indexOfOther = getMInteraction().getElement().getFragments().indexOf(other.getElement());
+		int indexOfOther = fragments.indexOf(other.getElement());
 		return indexOfOne >= 0 && indexOfOther >= 0 && indexOfOther > indexOfOne;
 	}
 
