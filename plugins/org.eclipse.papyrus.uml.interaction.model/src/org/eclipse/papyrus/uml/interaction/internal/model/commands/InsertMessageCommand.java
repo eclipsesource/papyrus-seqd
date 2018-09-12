@@ -49,6 +49,7 @@ import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredAddCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Message;
@@ -264,6 +265,11 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 
 		switch (sort) {
 			case CREATE_MESSAGE_LITERAL:
+				/* self-creation makes no sense */
+				if (this.receiver == this.getTarget()) {
+					return UnexecutableCommand.INSTANCE;
+				}
+
 				/* receiver must have no elements before */
 				if (this.receiver.elementAt(recvOffset + relativeTopOfBefore()).isPresent()) {
 					return UnexecutableCommand.INSTANCE;
@@ -345,11 +351,22 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				break;
 
 			case DELETE_MESSAGE_LITERAL:
+				int destructionOffset = absoluteRecvY;
+
+				/* a self-destruct message requires the gap for bending around */
+				if (this.receiver.getElement() == this.getTarget().getElement()) {
+					destructionOffset = destructionOffset
+							/* this is the minimum gap in self-messages */
+							+ layoutHelper().getConstraints().getMinimumHeight(ViewTypes.MESSAGE)
+							+ (layoutHelper().getConstraints()
+									.getMinimumHeight(ViewTypes.DESTRUCTION_SPECIFICATION) / 2);
+				}
+
 				/* create destruction occurrence */
 				CreationCommand<Shape> destructionOccurrenceShape = diagramHelper()
 						.createDestructionOccurrenceShape(recvEvent,
 								diagramHelper().getLifelineBodyShape(receiver.getDiagramView()),
-								recvReferenceY.getAsInt() + recvOffset);
+								destructionOffset);
 				result = result.chain(destructionOccurrenceShape);
 				receiverView = destructionOccurrenceShape;
 				break;

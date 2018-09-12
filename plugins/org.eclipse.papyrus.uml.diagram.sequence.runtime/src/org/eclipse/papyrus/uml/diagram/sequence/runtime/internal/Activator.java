@@ -17,6 +17,7 @@ import org.eclipse.gmf.runtime.diagram.core.preferences.PreferencesHint;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.papyrus.infra.core.log.LogHelper;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
+import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
@@ -65,6 +66,17 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static Activator getDefault() {
 		return instance;
+	}
+
+	/**
+	 * Obtain the diagram helper for an editing domain.
+	 * 
+	 * @param editingDomain
+	 *            an editing domain
+	 * @return its diagram helper
+	 */
+	public DiagramHelper getDiagramHelper(EditingDomain editingDomain) {
+		return LogicalModelPlugin.INSTANCE.getDiagramHelper(editingDomain);
 	}
 
 	/**
