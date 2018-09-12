@@ -15,7 +15,6 @@ package org.eclipse.papyrus.uml.interaction.graph;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.gmf.runtime.notation.View;
@@ -100,7 +99,6 @@ public interface Vertex extends Visitable<Vertex>, Taggable {
 	 * @return whether I succeed the {@code other} in the interaction
 	 */
 	default boolean succeeds(Vertex other) {
-		predecessors().collect(Collectors.toList());
 		return predecessors().anyMatch(other::equals);
 	}
 

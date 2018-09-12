@@ -3,29 +3,23 @@ package org.eclipse.papyrus.uml.interaction.model.tests.creation;
 import static org.junit.Assert.assertEquals;
 
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
-import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
-import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
-import org.eclipse.papyrus.uml.interaction.tests.rules.ModelFixture;
+import org.eclipse.papyrus.uml.interaction.model.tests.ModelEditFixture;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageSort;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-@SuppressWarnings("restriction")
 @ModelResource({"CreateMessageTesting.uml", "CreateMessageTesting.notation" })
 public class CreateMessageTest {
 
 	@Rule
-	public final ModelFixture.Edit model = new ModelFixture.Edit();
+	public final ModelEditFixture model = new ModelEditFixture();
 
 	private MInteraction interaction;
 
@@ -57,8 +51,8 @@ public class CreateMessageTest {
 		lifeline2Top = interaction().getLifelines().get(1).getTop().getAsInt();
 		lifeline3Top = interaction().getLifelines().get(2).getTop().getAsInt();
 
-		lifeline2Header = getLifelineBodyTop(interaction().getLifelines().get(1)) - lifeline2Top;
-		lifeline3Header = getLifelineBodyTop(interaction().getLifelines().get(2)) - lifeline3Top;
+		lifeline2Header = model.getLifelineBodyTop(interaction().getLifelines().get(1)) - lifeline2Top;
+		lifeline3Header = model.getLifelineBodyTop(interaction().getLifelines().get(2)) - lifeline3Top;
 
 		message1Top = interaction().getMessages().get(0).getTop().getAsInt();
 		message2Top = interaction().getMessages().get(1).getTop().getAsInt();
@@ -74,34 +68,17 @@ public class CreateMessageTest {
 				.getAsInt();
 	}
 
-	private DiagramHelper diagramHelper() {
-		return LogicalModelPlugin.getInstance().getDiagramHelper(model.getEditingDomain());
-	}
-
-	private LayoutHelper layoutHelper() {
-		return LogicalModelPlugin.getInstance().getLayoutHelper(model.getEditingDomain());
-	}
-
-	private int getLifelineBodyTop(MLifeline lifeline) {
-		View shape = lifeline.getDiagramView().orElse(null);
-		return layoutHelper()//
-				.getTop(diagramHelper().getLifelineBodyShape(shape));
+	private void execute(Command command) {
+		model.execute(command);
+		/* force reinit after change */
+		interaction = null;
 	}
 
 	private MInteraction interaction() {
 		if (interaction == null) {
-			interaction = MInteraction.getInstance(model.getInteraction(), model.getSequenceDiagram().get());
+			interaction = model.getMInteraction();
 		}
 		return interaction;
-	}
-
-	private void execute(Command remove) {
-		if (!remove.canExecute()) {
-			Assert.fail("Command not executable"); //$NON-NLS-1$
-		}
-		remove.execute();
-		/* force reinit after change */
-		interaction = null;
 	}
 
 	@Test
@@ -135,7 +112,7 @@ public class CreateMessageTest {
 		assertEquals(lifeline3Top, interaction().getLifelines().get(2).getTop().getAsInt());
 
 		/* we drew the creation message to the middle of the side of the lifeline head */
-		int nudgedLifeline2Top = getLifelineBodyTop(interaction().getLifelines().get(0)) + 10 //
+		int nudgedLifeline2Top = model.getLifelineBodyTop(interaction().getLifelines().get(0)) + 10 //
 				- (lifeline2Header / 2);
 		assertEquals(nudgedLifeline2Top, interaction().getLifelines().get(1).getTop().getAsInt());
 
@@ -177,7 +154,7 @@ public class CreateMessageTest {
 		assertEquals(4, interaction().getMessages().size());
 		assertEquals(MessageSort.CREATE_MESSAGE_LITERAL,
 				interaction().getMessages().get(3).getElement().getMessageSort());
-		assertEquals(getLifelineBodyTop(interaction().getLifelines().get(1)) + 5,
+		assertEquals(model.getLifelineBodyTop(interaction().getLifelines().get(1)) + 5,
 				interaction().getMessages().get(3).getTop().getAsInt());
 
 		assertEquals(lifeline1Top, interaction().getLifelines().get(0).getTop().getAsInt());
