@@ -33,6 +33,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ISequenceEditPart;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
+import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.uml2.uml.Element;
@@ -55,6 +56,10 @@ public interface ISequenceEditPolicy extends EditPolicy {
 		TransactionalEditingDomain domain = __getEditingDomain(this);
 		return (domain == null) ? UnexecutableCommand.INSTANCE
 				: OperationToGEFCommandWrapper.wrap(new EMFCommandOperation(domain, emfCommand));
+	}
+
+	default DiagramHelper getDiagramHelper() {
+		return Activator.getDefault().getDiagramHelper(__getEditingDomain(this));
 	}
 
 	default LayoutHelper getLayoutHelper() {

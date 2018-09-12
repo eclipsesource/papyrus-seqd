@@ -12,6 +12,7 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
+import static java.lang.Math.abs;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.isForce;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil.getSort;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
@@ -22,7 +23,11 @@ import com.google.common.eventbus.Subscribe;
 
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.OptionalInt;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
@@ -32,14 +37,18 @@ import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.FeedbackHelper;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
+import org.eclipse.gmf.runtime.common.core.command.CommandResult;
 import org.eclipse.gmf.runtime.common.core.command.CompositeCommand;
+import org.eclipse.gmf.runtime.common.core.command.ICommand;
 import org.eclipse.gmf.runtime.diagram.core.commands.SetConnectionAnchorsCommand;
 import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.INodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewRequest;
+import org.eclipse.gmf.runtime.emf.commands.core.command.AbstractTransactionalCommand;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
+import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ISequenceEditPart;
@@ -54,6 +63,7 @@ import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Message;
@@ -310,19 +320,49 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 	}
 
 	protected Optional<Command> constrainReconnection(ReconnectRequest request, MMessageEnd end) {
-
 		Optional<Command> result = Optional.empty();
 
-		// Disallow semantic reordering below the next element on the lifeline
-		Optional<MLifeline> lifeline = end.getCovered();
-		Optional<? extends MElement<?>> successor = lifeline.flatMap(ll -> ll.following(end));
+		// Disallow semantic reordering below the next element on the lifeline.
+		// But if this is a self-message, then don't worry about crossing over the
+		// other end, because it's also moving
+		Optional<MLifeline> lifeline = getLifeline(); // The lifeline under the pointer
+		boolean selfMessage = end.getOtherEnd().flatMap(MMessageEnd::getCovered).equals(lifeline);
+		boolean wasSelfMessage = end.getOtherEnd().flatMap(MMessageEnd::getCovered).equals(end.getCovered());
+
+		Optional<? extends MElement<?>> successor = lifeline.flatMap(
+				ll -> ll.following(selfMessage && end.isSend() ? end.getOtherEnd().orElse(end) : end));
+		// To allow connection to an execution specification on another lifeline, we must
+		// compare Y positions to the start occurrence of the execution or the finish,
+		// never the execution itself
+		if (successor.filter(MExecution.class::isInstance).isPresent()) {
+			successor = successor.map(MExecution.class::cast).flatMap(MExecution::getFinish);
+		}
 		if (successor.filter(above(request.getLocation().y())).isPresent()) {
 			result = Optional.of(UnexecutableCommand.INSTANCE);
 		} else {
-			// And above the previous on the lifeline
-			Optional<? extends MElement<?>> predecessor = lifeline.flatMap(ll -> ll.preceding(end));
+			// And above the previous on the lifeline (accounting for self-message)
+			Optional<? extends MElement<?>> predecessor = lifeline.flatMap(
+					ll -> ll.preceding(selfMessage && end.isReceive() ? end.getOtherEnd().orElse(end) : end));
+			if (predecessor.filter(MExecution.class::isInstance).isPresent()) {
+				predecessor = predecessor.map(MExecution.class::cast).flatMap(MExecution::getStart);
+			}
 			if (predecessor.filter(below(request.getLocation().y())).isPresent()) {
 				result = Optional.of(UnexecutableCommand.INSTANCE);
+			}
+		}
+
+		// Also, if this is a self-message, then we have a minimal gap to maintain or if it's
+		// synchronous then the gap is fixed
+		if (selfMessage && wasSelfMessage && !result.isPresent()) {
+			if (MessageUtil.isSynchronous(end.getOwner().getElement().getMessageSort())) {
+				result = Optional.of(UnexecutableCommand.INSTANCE);
+			} else {
+				OptionalInt otherY = end.getOtherEnd().map(MElement::getTop).orElse(OptionalInt.empty());
+				if (otherY.isPresent()
+						&& (abs(request.getLocation().y() - otherY.getAsInt()) < getLayoutConstraints()
+								.getMinimumHeight(ViewTypes.MESSAGE))) {
+					result = Optional.of(UnexecutableCommand.INSTANCE);
+				}
 			}
 		}
 
@@ -354,7 +394,67 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 			scaCommand.setNewSourceTerminal(source.mapConnectionAnchorToTerminal(newSourceAnchor));
 		}
 
-		return getTargetEnd(connectionEP).flatMap(tgt -> constrainReconnection(request, tgt)).orElse(result);
+		Optional<MMessageEnd> targetEnd = getTargetEnd(connectionEP);
+		result = targetEnd.flatMap(tgt -> constrainReconnection(request, tgt)).orElse(result);
+
+		// If we're still good and we're changing a self-message to a non-self-message,
+		// then straighten the message connection
+		if (result.canExecute() && targetEnd.isPresent()) {
+			MMessageEnd end = targetEnd.get();
+			Optional<MLifeline> lifeline = getLifeline(); // The lifeline under the pointer
+			Optional<MLifeline> oldLifeline = end.getCovered();
+
+			boolean wasSelfMessage = end.getOtherEnd().flatMap(MMessageEnd::getCovered).equals(oldLifeline);
+			boolean isNowSelfMessage = end.getOtherEnd().flatMap(MMessageEnd::getCovered).equals(lifeline);
+
+			if (wasSelfMessage && !isNowSelfMessage) {
+				// Change the routing to oblique and remove any bendpoints
+				Connector connector = (Connector)connectionEP.getNotationView();
+				org.eclipse.emf.common.command.Command delegate = getDiagramHelper()
+						.configureStraightMessageConnector(message.get(), connector);
+				ICommand straighten = new AbstractTransactionalCommand(connectionEP.getEditingDomain(),
+						"Straighten Routing", null) {
+
+					@Override
+					protected CommandResult doExecuteWithResult(IProgressMonitor monitor, IAdaptable info)
+							throws ExecutionException {
+
+						if (delegate.canExecute()) {
+							delegate.execute();
+							return CommandResult.newOKCommandResult();
+						} else {
+							return CommandResult.newCancelledCommandResult();
+						}
+
+					}
+				};
+				getCompositeGMFCommand(result).add(straighten);
+			} else if (!wasSelfMessage && isNowSelfMessage) {
+				// Change the routing to rectilinear and add requisite bendpoints
+				Connector connector = (Connector)connectionEP.getNotationView();
+				org.eclipse.emf.common.command.Command delegate = getDiagramHelper()
+						.configureSelfMessageConnector(message.get(), connector);
+				ICommand selfify = new AbstractTransactionalCommand(connectionEP.getEditingDomain(),
+						"Configure Routing", null) {
+
+					@Override
+					protected CommandResult doExecuteWithResult(IProgressMonitor monitor, IAdaptable info)
+							throws ExecutionException {
+
+						if (delegate.canExecute()) {
+							delegate.execute();
+							return CommandResult.newOKCommandResult();
+						} else {
+							return CommandResult.newCancelledCommandResult();
+						}
+
+					}
+				};
+				getCompositeGMFCommand(result).add(selfify);
+			}
+		}
+
+		return result;
 	}
 
 	private Point getLocation(ConnectionAnchor anchor) {
@@ -364,8 +464,12 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		return anchor.getLocation(ownerOrigin);
 	}
 
+	CompositeCommand getCompositeGMFCommand(Command command) {
+		return (CompositeCommand)((ICommandProxy)command).getICommand();
+	}
+
 	SetConnectionAnchorsCommand getSetConnectionAnchorsCommand(Command command) {
-		CompositeCommand composite = (CompositeCommand)((ICommandProxy)command).getICommand();
+		CompositeCommand composite = getCompositeGMFCommand(command);
 		for (Iterator<?> iter = composite.iterator(); iter.hasNext();) {
 			Object next = iter.next();
 			if (next instanceof SetConnectionAnchorsCommand) {

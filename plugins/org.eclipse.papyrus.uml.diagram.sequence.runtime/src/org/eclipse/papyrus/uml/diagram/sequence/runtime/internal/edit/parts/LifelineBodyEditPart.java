@@ -50,6 +50,7 @@ import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.MessageSort;
 
@@ -107,11 +108,12 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart implements 
 		Optional<MLifeline> mLifeline = mInteraction.getElement(element).filter(MLifeline.class::isInstance)
 				.map(MLifeline.class::cast);
 		if (mLifeline.isPresent()) {
-			Optional<MMessage> end = mInteraction.getMessages().stream()//
+			Optional<MMessageEnd> end = mInteraction.getMessages().stream()//
 					.filter(m -> m.getElement().getMessageSort() == MessageSort.DELETE_MESSAGE_LITERAL)//
 					.filter(m -> m.getReceiver().isPresent())//
 					.filter(m -> m.getReceiver().get() == mLifeline.get())//
-					.findFirst();
+					.findFirst()//
+					.flatMap(MMessage::getReceive);
 			if (end.isPresent()) {
 				return end.get().getTop().orElse(0) - getLayoutHelper().getTop(shape);
 			}

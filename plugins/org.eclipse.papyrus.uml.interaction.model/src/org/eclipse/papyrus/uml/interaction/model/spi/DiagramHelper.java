@@ -20,6 +20,7 @@ import java.util.function.Supplier;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.notation.Compartment;
+import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
@@ -139,6 +140,28 @@ public interface DiagramHelper {
 			Supplier<? extends View> source, IntSupplier sourceY, //
 			Supplier<? extends View> target, IntSupplier targetY, //
 			BiFunction<? super OccurrenceSpecification, ? super MessageEnd, Optional<Command>> collisionHandler);
+
+	/**
+	 * Configure the routing of a self-message view.
+	 * 
+	 * @param message
+	 *            the self-message
+	 * @param messageView
+	 *            its diagram view
+	 * @return the routing configuration command
+	 */
+	Command configureSelfMessageConnector(Message message, Connector messageView);
+
+	/**
+	 * Configure the routing of a straight (non-self) message view.
+	 * 
+	 * @param message
+	 *            the message
+	 * @param messageView
+	 *            its diagram view
+	 * @return the routing configuration command
+	 */
+	Command configureStraightMessageConnector(Message message, Connector messageView);
 
 	/**
 	 * Obtain a command to delete a given {@code connector}.
