@@ -17,6 +17,7 @@ import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.tests.Logical
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateExecutionTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateMessageTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateMessageTestB;
+import org.eclipse.papyrus.uml.interaction.model.tests.creation.SemanticOrderAfterCreationOfElementOnTopTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.deletion.BasicDeletionTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.deletion.CreationMessageDeletionTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.deletion.DeleteExecutionTest;
@@ -37,6 +38,7 @@ import org.junit.runners.Suite.SuiteClasses;
 		CreateMessageTest.class, CreateMessageTestB.class, //
 		CreateExecutionTest.class, DeleteExecutionTest.class, //
 		CreationMessageDeletionTest.class, BasicDeletionTest.class, DeletionMessageDeletionTest.class, //
+		SemanticOrderAfterCreationOfElementOnTopTest.class, //
 		LogicalModelAdapterTest.class, //
 		LogicalModelPredicatesTest.class, //
 })

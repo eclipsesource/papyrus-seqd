@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_RYFQYLTQEeikCJquPYqrLQ" name="343-test">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_RcCjULTQEeikCJquPYqrLQ">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_YgP1wLWoEeialccYIjRT8w" name="Interaction">
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_Z8zTULWoEeialccYIjRT8w" name="Lifeline1" coveredBy="_cLEhsLWoEeialccYIjRT8w _cl_jILWoEeialccYIjRT8w"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_aFf8ULWoEeialccYIjRT8w" name="Lifeline2" coveredBy="_cLEhsbWoEeialccYIjRT8w _cl-8ELWoEeialccYIjRT8w"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_aNk6QLWoEeialccYIjRT8w" name="Lifeline3"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_cLEhsLWoEeialccYIjRT8w" name="1s" covered="_Z8zTULWoEeialccYIjRT8w" message="_cLEhsrWoEeialccYIjRT8w"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_cLEhsbWoEeialccYIjRT8w" name="1r" covered="_aFf8ULWoEeialccYIjRT8w" message="_cLEhsrWoEeialccYIjRT8w"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_cl-8ELWoEeialccYIjRT8w" name="2s" covered="_aFf8ULWoEeialccYIjRT8w" message="_cl_jIbWoEeialccYIjRT8w"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_cl_jILWoEeialccYIjRT8w" name="2r" covered="_Z8zTULWoEeialccYIjRT8w" message="_cl_jIbWoEeialccYIjRT8w"/>
+    <message xmi:type="uml:Message" xmi:id="_cLEhsrWoEeialccYIjRT8w" receiveEvent="_cLEhsbWoEeialccYIjRT8w" sendEvent="_cLEhsLWoEeialccYIjRT8w"/>
+    <message xmi:type="uml:Message" xmi:id="_cl_jIbWoEeialccYIjRT8w" receiveEvent="_cl_jILWoEeialccYIjRT8w" sendEvent="_cl-8ELWoEeialccYIjRT8w"/>
+  </packagedElement>
+</uml:Model>
