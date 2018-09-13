@@ -126,8 +126,14 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 		} else if (insertionPoint instanceof MMessageEnd) {
 			MMessageEnd end = (MMessageEnd)insertionPoint;
 			if (end.isReceive()) {
-				// Before the message is sent, if it is sent
-				result = end.getOtherEnd().orElse(end);
+				Optional<MMessageEnd> sendEnd = end.getOtherEnd();
+				if (sendEnd.isPresent()) {
+					/* check if this is a sloped message */
+					if (sendEnd.get().getTop().orElse(0) == end.getTop().orElse(0)) {
+						/* not a sloped message -> insert before send */
+						result = sendEnd.get();
+					}
+				}
 			}
 		}
 
