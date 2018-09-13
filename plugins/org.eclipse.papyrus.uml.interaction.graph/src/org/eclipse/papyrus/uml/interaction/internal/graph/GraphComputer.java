@@ -548,10 +548,5 @@ public class GraphComputer {
 
 			return result;
 		}
-
-		private Lifeline getLifeline(Vertex vertex) {
-			Element result = vertex.getInteractionElement();
-			return (result instanceof Lifeline) ? (Lifeline)result : null;
-		}
 	}
 }

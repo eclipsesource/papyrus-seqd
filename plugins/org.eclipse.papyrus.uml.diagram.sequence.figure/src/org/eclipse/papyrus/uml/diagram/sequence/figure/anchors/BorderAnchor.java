@@ -48,7 +48,7 @@ public class BorderAnchor extends AbstractConnectionAnchor implements ISequenceA
 			case PositionConstants.WEST:
 				break;
 			default:
-				throw new IllegalArgumentException("The anchor side must be one of NORTH, SOUTH, EAST, WEST");
+				throw new IllegalArgumentException("The anchor side must be one of NORTH, SOUTH, EAST, WEST"); //$NON-NLS-1$
 		}
 	}
 

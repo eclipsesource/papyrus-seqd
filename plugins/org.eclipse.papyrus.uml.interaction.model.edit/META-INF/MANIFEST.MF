@@ -20,3 +20,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.gmf.runtime.notation;visibility:=reexport,
  org.eclipse.gmf.runtime.notation.edit;visibility:=reexport
 Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: org.eclipse.papyrus.uml.interaction.model.edit

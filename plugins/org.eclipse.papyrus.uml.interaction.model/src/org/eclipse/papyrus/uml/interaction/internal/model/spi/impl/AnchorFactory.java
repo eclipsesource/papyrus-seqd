@@ -25,6 +25,14 @@ import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
  */
 class AnchorFactory {
 
+	public static final String START = "start"; //$NON-NLS-1$
+
+	public static final String END = "end"; //$NON-NLS-1$
+
+	public static final String LEFT = "left;"; //$NON-NLS-1$
+
+	public static final String RIGHT = "right;"; //$NON-NLS-1$
+
 	private NullAnchorBuilder nullAnchor;
 
 	private LifelineBodyAnchorBuilder lifelineBodyBuilder;
@@ -106,11 +114,11 @@ class AnchorFactory {
 	}
 
 	public static boolean isExecutionSpecificationStart(Anchor anchor) {
-		return (anchor instanceof IdentityAnchor) && "start".equals(((IdentityAnchor)anchor).getId());
+		return (anchor instanceof IdentityAnchor) && START.equals(((IdentityAnchor)anchor).getId());
 	}
 
 	public static boolean isExecutionSpecificationFinish(Anchor anchor) {
-		return (anchor instanceof IdentityAnchor) && "end".equals(((IdentityAnchor)anchor).getId());
+		return (anchor instanceof IdentityAnchor) && END.equals(((IdentityAnchor)anchor).getId());
 	}
 
 	//
@@ -209,9 +217,9 @@ class AnchorFactory {
 
 			// Which direction?
 			if (isLeftToRight() == isConnectionSource) {
-				result = "right;" + distance;
+				result = RIGHT + distance;
 			} else {
-				result = "left;" + distance;
+				result = LEFT + distance;
 			}
 
 			return result;
@@ -219,6 +227,7 @@ class AnchorFactory {
 	}
 
 	private final class ExecutionSpecificationAnchorBuilder extends AnchorBuilder {
+
 		private ExecutionSpecificationAnchorBuilder() {
 			super();
 		}
@@ -229,14 +238,14 @@ class AnchorFactory {
 
 			// Is it the top or bottom?
 			if (distance < 1) {
-				result = "start";
+				result = START;
 			} else if (distance >= layout.getHeight(getAnchorView())) {
-				result = "end";
+				result = END;
 			} else // Which direction?
 			if (isLeftToRight() == isConnectionSource) {
-				result = "right;" + distance;
+				result = RIGHT + distance;
 			} else {
-				result = "left;" + distance;
+				result = LEFT + distance;
 			}
 
 			return result;

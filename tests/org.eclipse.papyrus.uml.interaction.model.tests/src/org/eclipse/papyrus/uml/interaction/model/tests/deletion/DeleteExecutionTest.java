@@ -26,7 +26,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 @ModelResource({"DeleteExecutionTesting.uml", "DeleteExecutionTesting.notation" })
-@SuppressWarnings("boxing")
 public class DeleteExecutionTest {
 
 	@Rule

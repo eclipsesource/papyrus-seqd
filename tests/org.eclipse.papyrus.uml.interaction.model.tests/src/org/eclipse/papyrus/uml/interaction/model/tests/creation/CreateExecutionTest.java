@@ -27,7 +27,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 @ModelResource({"CreateExecutionTesting.uml", "CreateExecutionTesting.notation" })
-@SuppressWarnings("boxing")
 public class CreateExecutionTest {
 
 	private static final int EXECUTION_HEIGHT = 20;

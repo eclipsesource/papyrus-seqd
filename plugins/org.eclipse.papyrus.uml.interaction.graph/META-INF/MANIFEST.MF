@@ -13,3 +13,4 @@ Bundle-Localization: plugin
 Export-Package: org.eclipse.papyrus.uml.interaction.graph,
  org.eclipse.papyrus.uml.interaction.graph.util,
  org.eclipse.papyrus.uml.interaction.internal.graph;x-internal:=true
+Automatic-Module-Name: org.eclipse.papyrus.uml.interaction.graph
