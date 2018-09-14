@@ -114,6 +114,12 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		// The message receive event starts the execution
 		Message message = (Message) messageEP.getAdapter(EObject.class);
 		assertThat(exec.getStart(), withModifiers(is(message.getReceiveEvent())));
+
+		// The message send and receive both are semantically before the execution
+		assertThat("Message ends out of order", message.getSendEvent(),
+				editor.semanticallyPrecedes(message.getReceiveEvent()));
+		assertThat("Execution out of order", exec, editor.semanticallyFollows(message.getReceiveEvent()));
+		assertThat("Execution finish out of order", exec, editor.semanticallyPrecedes(exec.getFinish()));
 	}
 
 	@Test
