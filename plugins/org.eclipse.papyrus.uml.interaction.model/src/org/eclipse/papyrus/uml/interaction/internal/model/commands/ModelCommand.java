@@ -29,6 +29,8 @@ import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugi
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
+import org.eclipse.papyrus.uml.interaction.model.MExecution;
+import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
@@ -155,7 +157,45 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 	}
 
 	private static Comparator<MElement<? extends Element>> compareByTop() {
-		return Comparator.comparingInt(el -> el.getTop().orElse(-1));
+		return (e1, e2) -> {
+			int top1 = e1.getTop().orElse(-1);
+			int top2 = e2.getTop().orElse(-1);
+
+			int result = top1 - top2;
+
+			if (result == 0) {
+				// Message ends are always ordered send < recv.
+				// Message ends always precede executions and their start occurrences
+				// Executions always follow their start occurrences
+				if (e1 instanceof MMessageEnd) {
+					MMessageEnd end1 = (MMessageEnd)e1;
+					if (e2 instanceof MMessageEnd) {
+						MMessageEnd end2 = (MMessageEnd)e2;
+						if (end1.getOwner() == end2.getOwner()) {
+							result = end1.isSend() ? -1 : +1;
+						}
+					} else if (e2 instanceof MExecutionOccurrence) {
+						result = -1;
+					} else if (e2 instanceof MExecution) {
+						result = -1;
+					}
+				} else if (e1 instanceof MExecutionOccurrence) {
+					if (e2 instanceof MMessageEnd) {
+						result = +1;
+					} else if (e2 instanceof MExecution) {
+						result = -1;
+					}
+				} else if (e1 instanceof MExecution) {
+					if (e2 instanceof MMessageEnd) {
+						result = +1;
+					} else if (e2 instanceof MExecutionOccurrence) {
+						result = +1;
+					}
+				}
+			}
+
+			return result;
+		};
 	}
 
 	/**
@@ -164,26 +204,23 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 	 * 
 	 * @param timeline
 	 *            a time-ordered (from top to bottom in the Y axis) sequence of interaction fragments
-	 * @param the
-	 *            position on the Y axis at which a new interaction fragment is to be inserted
+	 * @param type
+	 *            the type of search key to fake, being the type that is to be inserted
+	 * @param yPosition
+	 *            the position on the Y axis at which a new interaction fragment is to be inserted
 	 * @return the interaction fragment before which to insert the new fragment in the semantic model, or an
 	 *         empty optional if the new fragment is to be the last fragment in the interaction
 	 */
 	protected static Optional<MElement<? extends Element>> getInsertionPoint(
-			List<? extends MElement<? extends Element>> timeline, int yPosition) {
+			List<? extends MElement<? extends Element>> timeline,
+			Class<? extends MElement<? extends Element>> type, int yPosition) {
 
-		final MElement<? extends Element> searchToken = ySearch(yPosition);
+		final MElement<? extends Element> searchToken = ySearch(type, yPosition);
 		int size = timeline.size();
 		int index = Collections.binarySearch(timeline, searchToken, compareByTop());
 
 		if (index >= 0) {
-			// Easy case: precede the first fragment at a greater Y position than this element.
-			// This handles, for example, the common case of inserting an execution specification
-			// after a message receive end at offset 0, which then should not result in the
-			// execution semantically preceding that message end
-			while ((index < size) && (timeline.get(index).getTop().orElse(-1) == yPosition)) {
-				index++;
-			}
+			// Easy case
 		} else {
 			// The search found an "insertion point", which is where the fragment is before which
 			// the new one should be inserted
@@ -201,6 +238,8 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 	 * Obtain a fake logical element representing an interaction fragment having a given {@code top} Y
 	 * position to be use as a key for searching an ordered timeline.
 	 * 
+	 * @param type
+	 *            the type of search key to fake, being the type that is to be inserted
 	 * @param top
 	 *            the Y position being searched, to publish as the "top" of a fake element
 	 * @return the search term
@@ -208,16 +247,16 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 	 * @see #getInsertionPoint(List, int)
 	 */
 	@SuppressWarnings("unchecked")
-	private static MElement<? extends Element> ySearch(int top) {
-		return (MElement<? extends Element>)Proxy.newProxyInstance(MElement.class.getClassLoader(),
-				new Class<?>[] {MElement.class }, (proxy, method, args) -> {
+	private static <T extends MElement<? extends Element>> T ySearch(Class<T> type, int top) {
+		return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type },
+				(proxy, method, args) -> {
 					switch (method.getName()) {
 						case "getTop": //$NON-NLS-1$
 							return OptionalInt.of(top);
 						default:
 							return null;
 					}
-				});
+				}));
 	}
 
 	@Override

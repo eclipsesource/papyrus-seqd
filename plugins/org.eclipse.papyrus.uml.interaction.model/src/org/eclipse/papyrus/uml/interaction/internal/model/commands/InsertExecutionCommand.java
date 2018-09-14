@@ -27,6 +27,7 @@ import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
+import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredAddCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
@@ -150,8 +151,8 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 		// start and finish occurrences
 		List<MElement<? extends Element>> timeline = getTimeline(getTarget().getInteraction());
 		int absoluteExecY = referenceY.getAsInt() + offset;
-		Optional<MElement<? extends Element>> insertAt = getInsertionPoint(timeline, absoluteExecY)
-				.map(this::normalizeFragmentInsertionPoint);
+		Optional<MElement<? extends Element>> insertAt = getInsertionPoint(timeline, MExecution.class,
+				absoluteExecY).map(this::normalizeFragmentInsertionPoint);
 
 		SemanticHelper semantics = semanticHelper();
 		CreationParameters execParams = CreationParameters.in(getTarget().getInteraction().getElement(),

@@ -44,6 +44,7 @@ import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredAddCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
@@ -292,8 +293,10 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		List<MElement<? extends Element>> timeline = getTimeline(getTarget().getInteraction());
 		int absoluteSendY = sendReferenceY.getAsInt() + sendOffset;
 		int absoluteRecvY = recvReferenceY.getAsInt() + recvOffset;
-		Optional<MElement<? extends Element>> sendInsert = getInsertionPoint(timeline, absoluteSendY);
-		Optional<MElement<? extends Element>> recvInsert = getInsertionPoint(timeline, absoluteRecvY);
+		Optional<MElement<? extends Element>> sendInsert = getInsertionPoint(timeline, MMessageEnd.class,
+				absoluteSendY);
+		Optional<MElement<? extends Element>> recvInsert = getInsertionPoint(timeline, MMessageEnd.class,
+				absoluteRecvY);
 
 		SemanticHelper semantics = semanticHelper();
 		CreationParameters sendParams = endParams(
