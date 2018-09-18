@@ -29,6 +29,7 @@ import org.eclipse.papyrus.uml.interaction.graph.GroupKind;
 import org.eclipse.papyrus.uml.interaction.graph.Tag;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Message;
 
@@ -140,7 +141,9 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 					int sourceY = layoutHelper().getYPosition(source, sourceOn);
 					int targetY = layoutHelper().getYPosition(target, targetOn);
 
-					chain(layoutHelper().setYPosition(source, sourceOn, sourceY + delta));
+					if (!skipMove(sourceOn)) {
+						chain(layoutHelper().setYPosition(source, sourceOn, sourceY + delta));
+					}
 
 					Vertex targetVtx = vertex.graph().vertex(message.getReceiveEvent());
 					if (targetVtx.hasTag(Tag.LIFELINE_CREATION)) {
@@ -159,7 +162,9 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 						});
 					} else {
 						// Ordinary message end. Move it down
-						chain(layoutHelper().setYPosition(target, targetOn, targetY + delta));
+						if (!skipMove(targetOn)) {
+							chain(layoutHelper().setYPosition(target, targetOn, targetY + delta));
+						}
 					}
 				}
 			} else if (vertex.hasTag(Tag.EXECUTION_FINISH)) {
@@ -176,6 +181,14 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 				// Can't nudge the diagram, of course
 				chain(UnexecutableCommand.INSTANCE);
 			}
+		}
+
+		/**
+		 * In case we don't want to move following elements we have to inspect the shape we are anchored on
+		 * and should only react if we are anchored on the lifeline.
+		 */
+		private boolean skipMove(Shape shape) {
+			return !following && !ViewTypes.LIFELINE_BODY.equals(shape.getType());
 		}
 	}
 
