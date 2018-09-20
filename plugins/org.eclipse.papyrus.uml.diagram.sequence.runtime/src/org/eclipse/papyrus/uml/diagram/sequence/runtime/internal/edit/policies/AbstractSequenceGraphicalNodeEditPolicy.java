@@ -191,6 +191,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 				MLifeline sender = start.sender;
 				MLifeline receiver = getLifeline().get();
+				boolean selfMessage = sender.getElement() == receiver.getElement();
 
 				MElement<?> startBefore = start.before.orElse(sender);
 				int startOffset = start.offset;
@@ -203,54 +204,48 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 				int absoluteY = location.y();
 
-				switch (start.sort) {
-					case ASYNCH_CALL_LITERAL:
-					case ASYNCH_SIGNAL_LITERAL:
-						// These can slope down
-						// but don't require such pointer exactitude of the user
-						if ((absoluteY < startLocation.y())
-								|| !getLayoutConstraints().isAsyncMessageSlope(startLocation.preciseX(),
-										startLocation.preciseY(), location.preciseX(), location.preciseY())) {
+				if (!MessageUtil.isSynchronous(start.sort) || selfMessage) {
+					// These can slope down
+					// but don't require such pointer exactitude of the user
+					if ((absoluteY < startLocation.y())
+							|| !getLayoutConstraints().isAsyncMessageSlope(startLocation.preciseX(),
+									startLocation.preciseY(), location.preciseX(), location.preciseY())) {
 
-							absoluteY = startLocation.y();
-							location.setY(absoluteY);
+						absoluteY = startLocation.y();
+						location.setY(absoluteY);
+					}
+
+					location = getRelativeLocation(location);
+
+					AnchorDescriptor anchorDesc = computeAnchoring(location);
+					result = sender.insertMessageAfter(startBefore, startOffset, receiver,
+							anchorDesc.elementBefore.orElse(receiver), anchorDesc.offset, start.sort, null);
+				} else {
+					startLocation = startLocation.getCopy();
+
+					Optional<IMagnet> otherMagnet = getMagnetManager().getCapturingMagnet(startLocation)
+							.filter(__ -> !magnet.isPresent()); // But not if the target is on a magnet
+					otherMagnet.map(IMagnet::getLocation).ifPresent(startLocation::setLocation);
+
+					// Enforce a horizontal layout (subject to magnet constraints, with the
+					// target magnet having precendence)
+					if (startLocation.y() != absoluteY || otherMagnet.isPresent()) {
+						if (!otherMagnet.isPresent()) {
+							// Update the source to match the target
+							startLocation.setY(absoluteY);
 						}
 
-						location = getRelativeLocation(location);
+						// Recompute the connection source
+						ISequenceEditPart sourceEP = (ISequenceEditPart)request.getSourceEditPart();
+						Point relative = sourceEP.getRelativeLocation(startLocation);
+						AnchorDescriptor newSourceAnchorDesc = computeAnchoring(sourceEP.getLogicalElement(),
+								relative);
 
-						AnchorDescriptor anchorDesc = computeAnchoring(location);
-						result = sender.insertMessageAfter(startBefore, startOffset, receiver,
-								anchorDesc.elementBefore.orElse(receiver), anchorDesc.offset, start.sort,
-								null);
-						break;
-					default:
-						startLocation = startLocation.getCopy();
+						startBefore = newSourceAnchorDesc.elementBefore.orElse(sender);
+						startOffset = newSourceAnchorDesc.offset;
+					}
 
-						Optional<IMagnet> otherMagnet = getMagnetManager().getCapturingMagnet(startLocation)
-								.filter(__ -> !magnet.isPresent()); // But not if the target is on a magnet
-						otherMagnet.map(IMagnet::getLocation).ifPresent(startLocation::setLocation);
-
-						// Enforce a horizontal layout (subject to magnet constraints, with the
-						// target magnet having precendence)
-						if (startLocation.y() != absoluteY || otherMagnet.isPresent()) {
-							if (!otherMagnet.isPresent()) {
-								// Update the source to match the target
-								startLocation.setY(absoluteY);
-							}
-
-							// Recompute the connection source
-							ISequenceEditPart sourceEP = (ISequenceEditPart)request.getSourceEditPart();
-							Point relative = sourceEP.getRelativeLocation(startLocation);
-							AnchorDescriptor newSourceAnchorDesc = computeAnchoring(
-									sourceEP.getLogicalElement(), relative);
-
-							startBefore = newSourceAnchorDesc.elementBefore.orElse(sender);
-							startOffset = newSourceAnchorDesc.offset;
-						}
-
-						result = sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort,
-								null);
-						break;
+					result = sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort, null);
 				}
 
 				return wrap(result);

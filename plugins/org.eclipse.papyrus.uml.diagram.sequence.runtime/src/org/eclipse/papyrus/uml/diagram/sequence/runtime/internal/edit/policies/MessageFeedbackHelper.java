@@ -22,6 +22,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.editpolicies.FeedbackHelper;
 import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.LifelineBodyFigure;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.ISequenceAnchor;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnetManager;
@@ -113,8 +114,8 @@ class MessageFeedbackHelper extends FeedbackHelper {
 
 				// Don't permit the message to go back in time if it's asynchronous
 				int delta = mode.isMovingTarget() ? p.y() - otherLocation.y() : otherLocation.y() - p.y();
-
-				if (synchronous || (delta < 0)) {
+				boolean selfMessage = onSameLifeline(anchor[0], other[0]);
+				if ((synchronous && !selfMessage) || (delta < 0)) {
 					// Constrain the message to horizontal
 					switch (mode) {
 						case CREATE:
@@ -161,6 +162,27 @@ class MessageFeedbackHelper extends FeedbackHelper {
 	private ConnectionAnchor getOtherAnchor() {
 		Connection connection = getConnection();
 		return mode.isMovingTarget() ? connection.getSourceAnchor() : connection.getTargetAnchor();
+	}
+
+	private boolean onSameLifeline(ConnectionAnchor a, ConnectionAnchor b) {
+		// Find the lifelines
+		IFigure llA = getLifelineBody(a);
+		IFigure llB = getLifelineBody(b);
+
+		return llA == llB;
+	}
+
+	private IFigure getLifelineBody(ConnectionAnchor anchor) {
+		IFigure result;
+
+		// Find the lifelines
+		for (result = anchor.getOwner(); result != null; result = result.getParent()) {
+			if (result instanceof LifelineBodyFigure) {
+				break;
+			}
+		}
+
+		return result;
 	}
 
 	static Point getLocation(ConnectionAnchor anchor) {
