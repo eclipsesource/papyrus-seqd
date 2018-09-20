@@ -23,6 +23,7 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.eclipse.uml2.uml.MessageSort;
 import org.junit.Test;
@@ -46,19 +47,27 @@ public class SelfMessageCreationTest extends AbstractGraphicalEditPolicyUITest {
 	// Horizontal position of the second lifeline's body
 	private static final int LIFELINE_2_BODY_X = 281;
 
-	private final boolean onExec;
+	// Vertical position at whhich to send the self-message
+	private static final int Y_POSITION = 185;
+
+	private static final int MINIMUM_SPAN = 20;
+	private static final int CUSTOM_SPAN = 55;
+
+	private final CreationMode mode;
 	private final MessageSort messageSort;
-	private final int messageX;
+	private final int messageX; // Where to draw the message
+	private final int messageY; // Where to complete the message
 
 	/**
 	 * Initializes me.
 	 */
-	public SelfMessageCreationTest(MessageSort sort, boolean onExec) {
+	public SelfMessageCreationTest(MessageSort sort, CreationMode mode) {
 		super();
 
 		messageSort = sort;
-		this.onExec = onExec;
-		messageX = onExec ? LIFELINE_2_BODY_X : LIFELINE_1_BODY_X;
+		this.mode = mode;
+		messageX = mode == CreationMode.ON_EXECUTION ? LIFELINE_2_BODY_X : LIFELINE_1_BODY_X;
+		messageY = Y_POSITION + (mode == CreationMode.ON_LIFELINE_TALL ? CUSTOM_SPAN : 0);
 	}
 
 	@Test
@@ -68,7 +77,7 @@ public class SelfMessageCreationTest extends AbstractGraphicalEditPolicyUITest {
 		EditPart messageEP;
 
 		try {
-			messageEP = createConnection(type, at(messageX, 185), at(messageX, 185));
+			messageEP = createConnection(type, at(messageX, Y_POSITION), at(messageX, messageY));
 		} catch (AssertionError e) {
 			// Expected for create messages
 			messageEP = null;
@@ -88,7 +97,7 @@ public class SelfMessageCreationTest extends AbstractGraphicalEditPolicyUITest {
 					2));
 			break;
 		default:
-			assertThat(messageEP, runs(x(onExec), 185, x(onExec), 205, 2));
+			assertThat(messageEP, runs(x(), top(), x(), bottom(), 2));
 			break;
 		}
 	}
@@ -97,17 +106,19 @@ public class SelfMessageCreationTest extends AbstractGraphicalEditPolicyUITest {
 	// Test framework
 	//
 
-	@Parameters(name = "{0}, execution={1}")
+	@Parameters(name = "{0}, {1}")
 	public static Iterable<Object[]> parameters() {
 		return Arrays.asList(new Object[][] { //
-				{ MessageSort.SYNCH_CALL_LITERAL, false }, //
-				{ MessageSort.SYNCH_CALL_LITERAL, true }, //
-				{ MessageSort.ASYNCH_CALL_LITERAL, false }, //
-				{ MessageSort.ASYNCH_CALL_LITERAL, true }, //
-				{ MessageSort.REPLY_LITERAL, false }, //
-				{ MessageSort.REPLY_LITERAL, true }, //
-				{ MessageSort.CREATE_MESSAGE_LITERAL, false }, //
-				{ MessageSort.DELETE_MESSAGE_LITERAL, false }, //
+				{ MessageSort.SYNCH_CALL_LITERAL, CreationMode.ON_LIFELINE }, //
+				{ MessageSort.SYNCH_CALL_LITERAL, CreationMode.ON_EXECUTION }, //
+				{ MessageSort.SYNCH_CALL_LITERAL, CreationMode.ON_LIFELINE_TALL }, //
+				{ MessageSort.ASYNCH_CALL_LITERAL, CreationMode.ON_LIFELINE }, //
+				{ MessageSort.ASYNCH_CALL_LITERAL, CreationMode.ON_EXECUTION }, //
+				{ MessageSort.ASYNCH_CALL_LITERAL, CreationMode.ON_LIFELINE_TALL }, //
+				{ MessageSort.REPLY_LITERAL, CreationMode.ON_LIFELINE }, //
+				{ MessageSort.REPLY_LITERAL, CreationMode.ON_EXECUTION }, //
+				{ MessageSort.CREATE_MESSAGE_LITERAL, CreationMode.ON_LIFELINE }, //
+				{ MessageSort.DELETE_MESSAGE_LITERAL, CreationMode.ON_LIFELINE }, //
 		});
 	}
 
@@ -115,12 +126,49 @@ public class SelfMessageCreationTest extends AbstractGraphicalEditPolicyUITest {
 	 * Compute an adjusted {@code x} coördinate based whether the message is on an
 	 * execution specification or on the lifeline stem.
 	 *
-	 * @param onExec
-	 *            whether the message is on an execution specification
-	 *
 	 * @return the adjusted X coördinate
 	 */
-	int x(boolean onExec) {
-		return messageX + (onExec ? 5 : 0);
+	int x() {
+		return messageX + (mode == CreationMode.ON_EXECUTION ? 5 : 0);
+	}
+
+	/**
+	 * Compute an adjusted {@code y} coördinate of the send event.
+	 *
+	 * @return the adjusted Y coördinate
+	 */
+	int top() {
+		return Y_POSITION;
+	}
+
+	/**
+	 * Compute an adjusted {@code y} coördinate of the send event.
+	 *
+	 * @return the adjusted Y coördinate
+	 */
+	int bottom() {
+		int gap = MINIMUM_SPAN;
+		if ((mode == CreationMode.ON_LIFELINE_TALL) && !MessageUtil.isSynchronous(messageSort)) {
+			gap = CUSTOM_SPAN;
+		}
+		return Y_POSITION + gap;
+	}
+
+	//
+	// Nested types
+	//
+
+	enum CreationMode {
+		// Create the self-message on a lifeline
+		ON_LIFELINE,
+		// Create the self-message on an execution specification
+		ON_EXECUTION,
+		// Draw a tall self-message shape (with a gap, not just in one place)
+		ON_LIFELINE_TALL;
+
+		@Override
+		public String toString() {
+			return name().toLowerCase().replace('_', '-');
+		}
 	}
 }

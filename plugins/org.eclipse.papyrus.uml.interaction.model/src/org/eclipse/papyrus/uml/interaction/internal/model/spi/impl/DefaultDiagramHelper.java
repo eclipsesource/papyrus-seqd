@@ -55,6 +55,7 @@ import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
+import org.eclipse.uml2.uml.MessageSort;
 import org.eclipse.uml2.uml.OccurrenceSpecification;
 import org.eclipse.uml2.uml.UMLPackage;
 
@@ -253,7 +254,8 @@ public class DefaultDiagramHelper implements DiagramHelper {
 		Supplier<Connector> connector = () -> {
 			Connector result = NotationFactory.eINSTANCE.createConnector();
 			result.setType(ViewTypes.MESSAGE);
-			result.setElement(message.get());
+			Message semanticMessage = message.get();
+			result.setElement(semanticMessage);
 
 			Shape sourceView = (Shape)source.get();
 			Shape targetView = (Shape)target.get();
@@ -263,6 +265,8 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			Lifeline sourceLL = getLifeline(sourceView);
 			Lifeline targetLL = getLifeline(targetView);
 			boolean selfMessage = (sourceLL != null) && (sourceLL == targetLL);
+			boolean syncMessage = semanticMessage.getMessageSort() != MessageSort.ASYNCH_CALL_LITERAL
+					&& semanticMessage.getMessageSort() != MessageSort.ASYNCH_SIGNAL_LITERAL;
 
 			AnchorFactory anchorFactory = new AnchorFactory(result, layoutHelper());
 
@@ -270,11 +274,13 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			anchorFactory.builderFor(sourceView).from(sourceView).to(targetView).at(sourceDistance)
 					.sourceEnd().build();
 
-			int targetDistance;
+			int targetDistance = targetY.getAsInt() - layoutHelper().getTop(targetView);
 			if (selfMessage) {
-				targetDistance = sourceDistance + layoutHelper().getConstraints().getMinimumHeight(result);
-			} else {
-				targetDistance = targetY.getAsInt() - layoutHelper().getTop(targetView);
+				// A self message is fixed at the minimal gap if it is of a synchronous sort
+				int minTargetDistance = sourceDistance
+						+ layoutHelper().getConstraints().getMinimumHeight(result);
+				targetDistance = syncMessage ? minTargetDistance
+						: Math.max(targetDistance, minTargetDistance);
 			}
 			anchorFactory.builderFor(targetView).from(sourceView).to(targetView).at(targetDistance)
 					.targetEnd().build();

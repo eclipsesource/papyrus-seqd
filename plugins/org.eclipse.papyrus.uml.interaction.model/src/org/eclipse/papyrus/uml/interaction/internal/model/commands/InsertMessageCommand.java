@@ -263,6 +263,9 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			return UnexecutableCommand.INSTANCE;
 		}
 
+		int absoluteSendY = sendReferenceY.getAsInt() + sendOffset;
+		int absoluteRecvY = recvReferenceY.getAsInt() + recvOffset;
+
 		switch (sort) {
 			case CREATE_MESSAGE_LITERAL:
 				/* self-creation makes no sense */
@@ -277,15 +280,13 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				break;
 			case DELETE_MESSAGE_LITERAL:
 				/* receiver must have no element after */
-				int receiverLifelineTop = layoutHelper().getBottom(this.receiver.getDiagramView().get());
-				int messageEndTopBottom = receiverLifelineTop + recvOffset;
 				List<MElement<? extends Element>> elementsBelow = new ArrayList<>();
-				findElementsBelow(messageEndTopBottom, elementsBelow,
+				findElementsBelow(absoluteRecvY, elementsBelow,
 						getTarget().getInteraction().getMessages().stream(), false);
 				if (!elementsBelow.isEmpty()) {
 					return UnexecutableCommand.INSTANCE;
 				}
-				findElementsBelow(messageEndTopBottom, elementsBelow, this.receiver.getExecutions().stream(),
+				findElementsBelow(absoluteRecvY, elementsBelow, this.receiver.getExecutions().stream(),
 						false);
 				if (!elementsBelow.isEmpty()) {
 					return UnexecutableCommand.INSTANCE;
@@ -297,8 +298,6 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 
 		// Determine the semantic elements after which to insert each message end
 		List<MElement<? extends Element>> timeline = getTimeline(getTarget().getInteraction());
-		int absoluteSendY = sendReferenceY.getAsInt() + sendOffset;
-		int absoluteRecvY = recvReferenceY.getAsInt() + recvOffset;
 		Optional<MElement<? extends Element>> sendInsert = getInsertionPoint(timeline, MMessageEnd.class,
 				absoluteSendY);
 		Optional<MElement<? extends Element>> recvInsert = getInsertionPoint(timeline, MMessageEnd.class,
