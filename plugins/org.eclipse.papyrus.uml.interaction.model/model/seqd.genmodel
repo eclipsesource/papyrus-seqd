@@ -64,10 +64,12 @@
       <genOperations ecoreOperation="seqd.ecore#//MInteraction/getLifelineAt">
         <genParameters ecoreParameter="seqd.ecore#//MInteraction/getLifelineAt/offset"/>
       </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MInteraction/getBottommostElement"/>
     </genClasses>
     <genClasses ecoreClass="seqd.ecore#//MLifeline">
       <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/executionOccurrences"/>
       <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/executions"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/destruction"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/left"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/right"/>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/getOwner"/>
@@ -75,11 +77,17 @@
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/following">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/following/element"/>
       </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/preceding">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/preceding/element"/>
+      </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/getExecutionOccurrence">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/getExecutionOccurrence/occurrence"/>
       </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/getExecution">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/getExecution/execution"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/getDestruction">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/getDestruction/destruction"/>
       </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/insertExecutionAfter">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertExecutionAfter/before"/>
@@ -152,5 +160,6 @@
         <genParameters ecoreParameter="seqd.ecore#//MMessage/getEnd/end"/>
       </genOperations>
     </genClasses>
+    <genClasses ecoreClass="seqd.ecore#//MDestruction"/>
   </genPackages>
 </genmodel:GenModel>

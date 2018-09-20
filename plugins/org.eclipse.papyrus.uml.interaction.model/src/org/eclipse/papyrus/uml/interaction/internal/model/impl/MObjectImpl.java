@@ -134,7 +134,15 @@ public abstract class MObjectImpl<T extends Element> extends MinimalEObjectImpl.
 	}
 
 	final <E extends Element, M extends MElement<E>> Optional<M> getElement(E uml, Collection<M> elements) {
-		return elements.stream().filter(m -> m.getElement() == uml).findAny();
+		return getElement(uml, elements.stream());
+	}
+
+	final <E extends Element, M extends MElement<E>> Optional<M> getElement(E uml, M element) {
+		return getElement(uml, Stream.of(element));
+	}
+
+	final <E extends Element, M extends MElement<E>> Optional<M> getElement(E uml, Stream<M> elements) {
+		return elements.filter(m -> m.getElement() == uml).findAny();
 	}
 
 	@SafeVarargs
