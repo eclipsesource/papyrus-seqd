@@ -67,13 +67,13 @@ public class MOccurrenceItemProvider extends MElementItemProvider {
 	 * @generated
 	 */
 	protected void addCoveredPropertyDescriptor(Object object) {
-		itemPropertyDescriptors
-				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
-						getResourceLocator(), getString("_UI_MOccurrence_covered_feature"), //$NON-NLS-1$
-						getString("_UI_PropertyDescriptor_description", "_UI_MOccurrence_covered_feature", //$NON-NLS-1$ //$NON-NLS-2$
-								"_UI_MOccurrence_type"), //$NON-NLS-1$
-						SequenceDiagramPackage.Literals.MOCCURRENCE__COVERED, false, false, false,
-						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MOccurrence_covered_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MOccurrence_covered_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MOccurrence_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MOCCURRENCE__COVERED, false, false, false,
+				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -83,13 +83,13 @@ public class MOccurrenceItemProvider extends MElementItemProvider {
 	 * @generated
 	 */
 	protected void addStartedExecutionPropertyDescriptor(Object object) {
-		itemPropertyDescriptors
-				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
-						getResourceLocator(), getString("_UI_MOccurrence_startedExecution_feature"), //$NON-NLS-1$
-						getString("_UI_PropertyDescriptor_description", "_UI_MOccurrence_startedExecution_feature", //$NON-NLS-1$ //$NON-NLS-2$
-								"_UI_MOccurrence_type"), //$NON-NLS-1$
-						SequenceDiagramPackage.Literals.MOCCURRENCE__STARTED_EXECUTION, false, false, false,
-						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MOccurrence_startedExecution_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MOccurrence_startedExecution_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MOccurrence_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MOCCURRENCE__STARTED_EXECUTION, false, false, false,
+				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -99,13 +99,13 @@ public class MOccurrenceItemProvider extends MElementItemProvider {
 	 * @generated
 	 */
 	protected void addFinishedExecutionPropertyDescriptor(Object object) {
-		itemPropertyDescriptors
-				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
-						getResourceLocator(), getString("_UI_MOccurrence_finishedExecution_feature"), //$NON-NLS-1$
-						getString("_UI_PropertyDescriptor_description", "_UI_MOccurrence_finishedExecution_feature", //$NON-NLS-1$ //$NON-NLS-2$
-								"_UI_MOccurrence_type"), //$NON-NLS-1$
-						SequenceDiagramPackage.Literals.MOCCURRENCE__FINISHED_EXECUTION, false, false, false,
-						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MOccurrence_finishedExecution_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MOccurrence_finishedExecution_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MOccurrence_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MOCCURRENCE__FINISHED_EXECUTION, false, false, false,
+				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -117,7 +117,7 @@ public class MOccurrenceItemProvider extends MElementItemProvider {
 	@Override
 	public String getText(Object object) {
 		String label = ((MOccurrence<?>) object).getName();
-		return label == null || label.length() == 0 ? getString("_UI_MOccurrence_type") : //$NON-NLS-1$
+		return (label == null) || (label.length() == 0) ? getString("_UI_MOccurrence_type") : //$NON-NLS-1$
 				getString("_UI_MOccurrence_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -136,7 +136,8 @@ public class MOccurrenceItemProvider extends MElementItemProvider {
 		case SequenceDiagramPackage.MOCCURRENCE__COVERED:
 		case SequenceDiagramPackage.MOCCURRENCE__STARTED_EXECUTION:
 		case SequenceDiagramPackage.MOCCURRENCE__FINISHED_EXECUTION:
-			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
+			fireNotifyChanged(
+					new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;
 		}
 		super.notifyChanged(notification);

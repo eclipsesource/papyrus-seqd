@@ -17,27 +17,24 @@ import java.util.List;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
-import org.eclipse.emf.edit.provider.ViewerNotification;
-import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
-import org.eclipse.papyrus.uml.interaction.model.MInteraction;
+import org.eclipse.papyrus.uml.interaction.model.MDestruction;
 
 /**
  * This is the item provider adapter for a
- * {@link org.eclipse.papyrus.uml.interaction.model.MInteraction} object. <!--
+ * {@link org.eclipse.papyrus.uml.interaction.model.MDestruction} object. <!--
  * begin-user-doc --> <!-- end-user-doc -->
  * 
  * @generated
  */
-public class MInteractionItemProvider extends MElementItemProvider {
+public class MDestructionItemProvider extends MMessageEndItemProvider {
 	/**
 	 * This constructs an instance from a factory and a notifier. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
-	public MInteractionItemProvider(AdapterFactory adapterFactory) {
+	public MDestructionItemProvider(AdapterFactory adapterFactory) {
 		super(adapterFactory);
 	}
 
@@ -57,46 +54,13 @@ public class MInteractionItemProvider extends MElementItemProvider {
 	}
 
 	/**
-	 * This specifies how to implement {@link #getChildren} and is used to deduce an
-	 * appropriate feature for an {@link org.eclipse.emf.edit.command.AddCommand},
-	 * {@link org.eclipse.emf.edit.command.RemoveCommand} or
-	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
-		if (childrenFeatures == null) {
-			super.getChildrenFeatures(object);
-			childrenFeatures.add(SequenceDiagramPackage.Literals.MINTERACTION__LIFELINES);
-			childrenFeatures.add(SequenceDiagramPackage.Literals.MINTERACTION__MESSAGES);
-		}
-		return childrenFeatures;
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	protected EStructuralFeature getChildFeature(Object object, Object child) {
-		// Check the type of the specified child object and return the proper feature to
-		// use for
-		// adding (see {@link AddCommand}) it as a child.
-
-		return super.getChildFeature(object, child);
-	}
-
-	/**
-	 * This returns MInteraction.gif. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * This returns MDestruction.gif. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	@Override
 	public Object getImage(Object object) {
-		return overlayImage(object, getResourceLocator().getImage("full/obj16/MInteraction")); //$NON-NLS-1$
+		return overlayImage(object, getResourceLocator().getImage("full/obj16/MDestruction")); //$NON-NLS-1$
 	}
 
 	/**
@@ -107,9 +71,9 @@ public class MInteractionItemProvider extends MElementItemProvider {
 	 */
 	@Override
 	public String getText(Object object) {
-		String label = ((MInteraction) object).getName();
-		return (label == null) || (label.length() == 0) ? getString("_UI_MInteraction_type") : //$NON-NLS-1$
-				getString("_UI_MInteraction_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
+		String label = ((MDestruction) object).getName();
+		return (label == null) || (label.length() == 0) ? getString("_UI_MDestruction_type") : //$NON-NLS-1$
+				getString("_UI_MDestruction_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
@@ -122,14 +86,6 @@ public class MInteractionItemProvider extends MElementItemProvider {
 	@Override
 	public void notifyChanged(Notification notification) {
 		updateChildren(notification);
-
-		switch (notification.getFeatureID(MInteraction.class)) {
-		case SequenceDiagramPackage.MINTERACTION__LIFELINES:
-		case SequenceDiagramPackage.MINTERACTION__MESSAGES:
-			fireNotifyChanged(
-					new ViewerNotification(notification, notification.getNotifier(), true, false));
-			return;
-		}
 		super.notifyChanged(notification);
 	}
 

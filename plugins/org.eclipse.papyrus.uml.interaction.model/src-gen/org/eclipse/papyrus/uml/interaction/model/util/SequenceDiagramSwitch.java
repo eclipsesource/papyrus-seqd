@@ -16,6 +16,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.util.Switch;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
+import org.eclipse.papyrus.uml.interaction.model.MDestruction;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
@@ -85,75 +86,109 @@ public class SequenceDiagramSwitch<T1> extends Switch<T1> {
 			case SequenceDiagramPackage.MELEMENT: {
 				MElement<?> mElement = (MElement<?>)theEObject;
 				T1 result = caseMElement(mElement);
-				if (result == null)
+				if (result == null) {
 					result = defaultCase(theEObject);
+				}
 				return result;
 			}
 			case SequenceDiagramPackage.MINTERACTION: {
 				MInteraction mInteraction = (MInteraction)theEObject;
 				T1 result = caseMInteraction(mInteraction);
-				if (result == null)
+				if (result == null) {
 					result = caseMElement(mInteraction);
-				if (result == null)
+				}
+				if (result == null) {
 					result = defaultCase(theEObject);
+				}
 				return result;
 			}
 			case SequenceDiagramPackage.MLIFELINE: {
 				MLifeline mLifeline = (MLifeline)theEObject;
 				T1 result = caseMLifeline(mLifeline);
-				if (result == null)
+				if (result == null) {
 					result = caseMElement(mLifeline);
-				if (result == null)
+				}
+				if (result == null) {
 					result = defaultCase(theEObject);
+				}
 				return result;
 			}
 			case SequenceDiagramPackage.MEXECUTION: {
 				MExecution mExecution = (MExecution)theEObject;
 				T1 result = caseMExecution(mExecution);
-				if (result == null)
+				if (result == null) {
 					result = caseMElement(mExecution);
-				if (result == null)
+				}
+				if (result == null) {
 					result = defaultCase(theEObject);
+				}
 				return result;
 			}
 			case SequenceDiagramPackage.MOCCURRENCE: {
 				MOccurrence<?> mOccurrence = (MOccurrence<?>)theEObject;
 				T1 result = caseMOccurrence(mOccurrence);
-				if (result == null)
+				if (result == null) {
 					result = caseMElement(mOccurrence);
-				if (result == null)
+				}
+				if (result == null) {
 					result = defaultCase(theEObject);
+				}
 				return result;
 			}
 			case SequenceDiagramPackage.MEXECUTION_OCCURRENCE: {
 				MExecutionOccurrence mExecutionOccurrence = (MExecutionOccurrence)theEObject;
 				T1 result = caseMExecutionOccurrence(mExecutionOccurrence);
-				if (result == null)
+				if (result == null) {
 					result = caseMOccurrence(mExecutionOccurrence);
-				if (result == null)
+				}
+				if (result == null) {
 					result = caseMElement(mExecutionOccurrence);
-				if (result == null)
+				}
+				if (result == null) {
 					result = defaultCase(theEObject);
+				}
 				return result;
 			}
 			case SequenceDiagramPackage.MMESSAGE_END: {
 				MMessageEnd mMessageEnd = (MMessageEnd)theEObject;
 				T1 result = caseMMessageEnd(mMessageEnd);
-				if (result == null)
+				if (result == null) {
 					result = caseMOccurrence(mMessageEnd);
-				if (result == null)
+				}
+				if (result == null) {
 					result = caseMElement(mMessageEnd);
-				if (result == null)
+				}
+				if (result == null) {
 					result = defaultCase(theEObject);
+				}
 				return result;
 			}
 			case SequenceDiagramPackage.MMESSAGE: {
 				MMessage mMessage = (MMessage)theEObject;
 				T1 result = caseMMessage(mMessage);
-				if (result == null)
+				if (result == null) {
 					result = caseMElement(mMessage);
-				if (result == null)
+				}
+				if (result == null) {
 					result = defaultCase(theEObject);
+				}
+				return result;
+			}
+			case SequenceDiagramPackage.MDESTRUCTION: {
+				MDestruction mDestruction = (MDestruction)theEObject;
+				T1 result = caseMDestruction(mDestruction);
+				if (result == null) {
+					result = caseMMessageEnd(mDestruction);
+				}
+				if (result == null) {
+					result = caseMOccurrence(mDestruction);
+				}
+				if (result == null) {
+					result = caseMElement(mDestruction);
+				}
+				if (result == null) {
+					result = defaultCase(theEObject);
+				}
 				return result;
 			}
 			default:
@@ -278,6 +313,21 @@ public class SequenceDiagramSwitch<T1> extends Switch<T1> {
 	 * @generated
 	 */
 	public T1 caseMMessage(MMessage object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>MDestruction</em>'. <!--
+	 * begin-user-doc --> This implementation returns null; returning a non-null result will terminate the
+	 * switch. <!-- end-user-doc -->
+	 * 
+	 * @param object
+	 *            the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>MDestruction</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T1 caseMDestruction(MDestruction object) {
 		return null;
 	}
 

@@ -19,6 +19,7 @@ import java.util.OptionalInt;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.Shape;
+import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
@@ -76,6 +77,33 @@ public interface MLifeline extends MElement<Lifeline> {
 	 * @generated
 	 */
 	List<MExecution> getExecutions();
+
+	/**
+	 * Returns the value of the '<em><b>Destruction</b></em>' containment reference. <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Destruction</em>' containment reference isn't clear, there really should be
+	 * more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Destruction</em>' containment reference.
+	 * @see #setDestruction(MDestruction)
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMLifeline_Destruction()
+	 * @model containment="true"
+	 * @generated
+	 */
+	MDestruction getDestruction();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getDestruction
+	 * <em>Destruction</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Destruction</em>' containment reference.
+	 * @see #getDestruction()
+	 * @generated
+	 */
+	void setDestruction(MDestruction value);
 
 	/**
 	 * Returns the value of the '<em><b>Left</b></em>' attribute. <!-- begin-user-doc -->
@@ -164,6 +192,15 @@ public interface MLifeline extends MElement<Lifeline> {
 	 * @generated
 	 */
 	Optional<MExecution> getExecution(ExecutionSpecification execution);
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Optional&lt;org.eclipse.papyrus.uml.interaction.model.MDestruction&gt;"
+	 *        required="true" destructionRequired="true"
+	 * @generated
+	 */
+	Optional<MDestruction> getDestruction(DestructionOccurrenceSpecification destruction);
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->

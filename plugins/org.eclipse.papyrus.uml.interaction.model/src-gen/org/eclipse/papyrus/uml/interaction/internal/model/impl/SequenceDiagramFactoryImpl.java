@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramFactory;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
+import org.eclipse.papyrus.uml.interaction.model.MDestruction;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
@@ -80,6 +81,8 @@ public class SequenceDiagramFactoryImpl extends EFactoryImpl implements Sequence
 				return (EObject)createMMessageEnd();
 			case SequenceDiagramPackage.MMESSAGE:
 				return (EObject)createMMessage();
+			case SequenceDiagramPackage.MDESTRUCTION:
+				return (EObject)createMDestruction();
 			default:
 				throw new IllegalArgumentException(
 						"The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -178,6 +181,17 @@ public class SequenceDiagramFactoryImpl extends EFactoryImpl implements Sequence
 	public MMessage createMMessage() {
 		MMessageImpl mMessage = new MMessageImpl();
 		return mMessage;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public MDestruction createMDestruction() {
+		MDestructionImpl mDestruction = new MDestructionImpl();
+		return mDestruction;
 	}
 
 	/**

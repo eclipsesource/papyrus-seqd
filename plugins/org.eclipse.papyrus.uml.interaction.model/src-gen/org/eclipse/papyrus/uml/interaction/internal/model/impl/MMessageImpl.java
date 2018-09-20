@@ -14,6 +14,7 @@ package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Notification;
@@ -30,6 +31,7 @@ import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
 
@@ -390,8 +392,11 @@ public class MMessageImpl extends MElementImpl<Message> implements MMessage {
 	}
 
 	MMessageEndImpl setReceive(MessageEnd newReceive) {
-		return setReceive(getEnd(newReceive).map(MMessageEndImpl.class::cast)
-				.orElseGet(() -> new MMessageEndImpl(this, newReceive)));
+		Supplier<? extends MMessageEndImpl> messageEndFactory = newReceive instanceof DestructionOccurrenceSpecification
+				? () -> new MDestructionImpl(this, (DestructionOccurrenceSpecification)newReceive)
+				: () -> new MMessageEndImpl(this, newReceive);
+
+		return setReceive(getEnd(newReceive).map(MMessageEndImpl.class::cast).orElseGet(messageEndFactory));
 	}
 
 	MMessageEndImpl setReceive(MMessageEndImpl newReceive) {

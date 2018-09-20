@@ -319,8 +319,17 @@ public class DefaultLayoutHelper implements LayoutHelper {
 			result = (bottom == DEFAULT_BOTTOM) ? OptionalInt.empty() : OptionalInt.of(bottom);
 		} else if (view instanceof Edge) {
 			Edge edge = (Edge)view;
-			// All edges in a sequence diagram slope down if they are not horizontal
-			int anchorY = getYPosition(edge.getTargetAnchor(), (Shape)edge.getTarget());
+			// All edges in a sequence diagram slope down if they are not horizontal.
+			// And in the case of a delete message, the target is anchored to a distinct
+			// shape, not to the lifeline
+			int anchorY;
+			Shape target = (Shape)edge.getTarget();
+			if (ViewTypes.DESTRUCTION_SPECIFICATION.equals(target.getType())) {
+				// Center of the X shape
+				anchorY = (getBottom(target) + getTop(target)) / 2;
+			} else {
+				anchorY = getYPosition(edge.getTargetAnchor(), (Shape)edge.getTarget());
+			}
 
 			if (anchorY == DEFAULT_BOTTOM) {
 				result = OptionalInt.empty();

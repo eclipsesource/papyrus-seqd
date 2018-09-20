@@ -187,6 +187,12 @@
       </eGenericType>
       <eParameters name="execution" lowerBound="1" eType="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//ExecutionSpecification"/>
     </eOperations>
+    <eOperations name="getDestruction" lowerBound="1">
+      <eGenericType eClassifier="#//Optional">
+        <eTypeArguments eClassifier="#//MDestruction"/>
+      </eGenericType>
+      <eParameters name="destruction" lowerBound="1" eType="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//DestructionOccurrenceSpecification"/>
+    </eOperations>
     <eOperations name="insertExecutionAfter" lowerBound="1">
       <eGenericType eClassifier="#//CreationCommand">
         <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//ExecutionSpecification"/>
@@ -323,6 +329,8 @@
         eType="#//MExecutionOccurrence" changeable="false" containment="true" resolveProxies="false"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="executions" upperBound="-1"
         eType="#//MExecution" changeable="false" containment="true" resolveProxies="false"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="destruction" eType="#//MDestruction"
+        containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="left" lowerBound="1" eType="#//OptionalInt"
         changeable="false" volatile="true" transient="true" derived="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="right" lowerBound="1" eType="#//OptionalInt"
@@ -488,4 +496,5 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="EObject" instanceClassName="org.eclipse.emf.ecore.EObject"
       serializable="false"/>
+  <eClassifiers xsi:type="ecore:EClass" name="MDestruction" eSuperTypes="#//MMessageEnd"/>
 </ecore:EPackage>
