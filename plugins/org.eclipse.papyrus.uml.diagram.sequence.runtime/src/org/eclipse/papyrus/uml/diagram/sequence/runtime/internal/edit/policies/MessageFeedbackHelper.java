@@ -155,9 +155,7 @@ class MessageFeedbackHelper extends FeedbackHelper {
 				}
 			}
 		}
-		if (anchor[0] != null) {
-			super.update(anchor[0], p);
-		}
+		super.update(anchor[0], p);
 	}
 
 	private ConnectionAnchor getOtherAnchor() {
