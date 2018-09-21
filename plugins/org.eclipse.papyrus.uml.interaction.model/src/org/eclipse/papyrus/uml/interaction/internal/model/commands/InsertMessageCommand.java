@@ -352,9 +352,12 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			case DELETE_MESSAGE_LITERAL:
 				int destructionOffset = absoluteRecvY;
 
-				/* a self-destruct message requires the gap for bending around */
+				/*
+				 * a self-destruct message requires the gap for bending around and, because it's a synchronous
+				 * message, has fixed size
+				 */
 				if (this.receiver.getElement() == this.getTarget().getElement()) {
-					destructionOffset = destructionOffset
+					destructionOffset = absoluteSendY
 							/* this is the minimum gap in self-messages */
 							+ layoutHelper().getConstraints().getMinimumHeight(ViewTypes.MESSAGE)
 							+ (layoutHelper().getConstraints()

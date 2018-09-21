@@ -274,7 +274,10 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			anchorFactory.builderFor(sourceView).from(sourceView).to(targetView).at(sourceDistance)
 					.sourceEnd().build();
 
-			int targetDistance = targetY.getAsInt() - layoutHelper().getTop(targetView);
+			int targetDistance = targetY.getAsInt()
+					- layoutHelper().getTop(ViewTypes.DESTRUCTION_SPECIFICATION.equals(targetView.getType())
+							? (Shape)targetView.eContainer() // Calculate relative to the lifeline
+							: targetView);
 			if (selfMessage) {
 				// A self message is fixed at the minimal gap if it is of a synchronous sort
 				int minTargetDistance = sourceDistance

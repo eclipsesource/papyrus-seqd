@@ -38,7 +38,7 @@ class AnchorFactory {
 
 	public static final String END = "end"; //$NON-NLS-1$
 
-	private static final String SLIDEABLE_CENTER = "(0.5,0.5)"; //$NON-NLS-1$
+	private static final String DESTRUCTION = "(0.9,0.5)"; //$NON-NLS-1$
 
 	private NullAnchorBuilder nullAnchor;
 
@@ -302,7 +302,7 @@ class AnchorFactory {
 
 		@Override
 		public String computeIdentity() {
-			return SLIDEABLE_CENTER;
+			return DESTRUCTION;
 		}
 	}
 }

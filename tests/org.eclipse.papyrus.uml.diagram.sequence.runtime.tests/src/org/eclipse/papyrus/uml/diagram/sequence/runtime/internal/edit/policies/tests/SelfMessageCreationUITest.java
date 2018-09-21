@@ -93,7 +93,7 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 			assertThat(messageEP, runs(LIFELINE_1_BODY_X, 185, //
 					// Account for the attachment to the side of the destruction occurrence
 					// specification and extra space made for the destruction
-					LIFELINE_1_BODY_X + 10, 210, //
+					LIFELINE_1_BODY_X + 10, 215, //
 					2));
 			break;
 		default:
