@@ -131,12 +131,12 @@ public class MessageEditPart extends ConnectionNodeEditPart implements ISequence
 
 	@Override
 	public ConnectionAnchor getSourceConnectionAnchor(Request request) {
-		return super.getSourceConnectionAnchor(request);
+		return null; // super.getSourceConnectionAnchor(request);
 	}
 
 	@Override
 	public ConnectionAnchor getTargetConnectionAnchor(Request request) {
-		return super.getTargetConnectionAnchor(request);
+		return null; // super.getTargetConnectionAnchor(request);
 	}
 
 	@Override
