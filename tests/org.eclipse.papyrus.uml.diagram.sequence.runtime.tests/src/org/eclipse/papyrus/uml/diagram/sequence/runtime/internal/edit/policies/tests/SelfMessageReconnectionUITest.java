@@ -50,7 +50,7 @@ import org.junit.runners.Parameterized.Parameters;
 @ModelResource("one-exec.di")
 @Maximized
 @RunWith(Parameterized.class)
-public class SelfMessageReconnectionTest extends AbstractGraphicalEditPolicyUITest {
+public class SelfMessageReconnectionUITest extends AbstractGraphicalEditPolicyUITest {
 	// Horizontal position of the first lifeline's body
 	private static final int LIFELINE_1_BODY_X = 121;
 
@@ -70,7 +70,7 @@ public class SelfMessageReconnectionTest extends AbstractGraphicalEditPolicyUITe
 	/**
 	 * Initializes me.
 	 */
-	public SelfMessageReconnectionTest(MessageSort sort, ReconnectionMode mode) {
+	public SelfMessageReconnectionUITest(MessageSort sort, ReconnectionMode mode) {
 		super();
 
 		messageSort = sort;
