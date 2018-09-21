@@ -131,12 +131,12 @@ public class MessageEditPart extends ConnectionNodeEditPart implements ISequence
 
 	@Override
 	public ConnectionAnchor getSourceConnectionAnchor(Request request) {
-		return null; // super.getSourceConnectionAnchor(request);
+		return super.getSourceConnectionAnchor(request);
 	}
 
 	@Override
 	public ConnectionAnchor getTargetConnectionAnchor(Request request) {
-		return null; // super.getTargetConnectionAnchor(request);
+		return super.getTargetConnectionAnchor(request);
 	}
 
 	@Override
@@ -152,6 +152,7 @@ public class MessageEditPart extends ConnectionNodeEditPart implements ISequence
 	@Override
 	protected void createDefaultEditPolicies() {
 		super.createDefaultEditPolicies();
+		removeEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE);
 		installEditPolicy(EditPolicyRoles.SEMANTIC_ROLE, new LogicalModelElementSemanticEditPolicy());
 		installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE, new MessageEndpointEditPolicy(bus));
 		installEditPolicy(EditPolicy.CONNECTION_BENDPOINTS_ROLE, new MessageBendpointsEditPolicy());

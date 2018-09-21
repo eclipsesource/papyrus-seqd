@@ -97,7 +97,6 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 			Message message = (Message)((IGraphicalEditPart)getHost()).resolveSemanticElement();
 			boolean synch = MessageUtil.isSynchronous(message.getMessageSort());
 			boolean source = request.isMovingStartAnchor();
-
 			feedbackHelper = new MessageFeedbackHelper(source ? Mode.MOVE_SOURCE : Mode.MOVE_TARGET, synch,
 					getMagnetManager());
 			feedbackHelper.setConnection(getConnection());
