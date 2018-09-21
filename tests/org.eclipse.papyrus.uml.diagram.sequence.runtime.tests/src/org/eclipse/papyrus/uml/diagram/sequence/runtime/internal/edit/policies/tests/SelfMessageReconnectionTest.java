@@ -60,6 +60,8 @@ public class SelfMessageReconnectionTest extends AbstractGraphicalEditPolicyUITe
 	private static final int SEND_Y = 185;
 	private static final int RECV_Y = SEND_Y + 20;
 
+	private static final int SELF_MESSAGE_WIDTH = 40;
+
 	private final MessageSort messageSort;
 	private final ReconnectionMode reconnectionMode;
 
@@ -82,15 +84,43 @@ public class SelfMessageReconnectionTest extends AbstractGraphicalEditPolicyUITe
 		int grabY = RECV_Y;
 		int dropX;
 		int dropY;
+		int delta = +10;
 
 		switch (reconnectionMode) {
+		case SLIDE_SEND_UP:
+			grabY = SEND_Y;
+			dropX = LIFELINE_1_BODY_X;
+			delta = -10;
+			dropY = SEND_Y + delta;
+			break;
+		case SLIDE_SEND_DOWN:
+			grabY = SEND_Y;
+			dropX = LIFELINE_1_BODY_X;
+			dropY = SEND_Y + delta;
+			break;
 		case SLIDE_RECEIVE_UP:
 			dropX = LIFELINE_1_BODY_X;
-			dropY = RECV_Y - 10;
+			delta = -10;
+			dropY = RECV_Y + delta;
 			break;
 		case SLIDE_RECEIVE_DOWN:
 			dropX = LIFELINE_1_BODY_X;
-			dropY = RECV_Y + 10;
+			dropY = RECV_Y + delta;
+			break;
+		case MOVE_UP:
+			// Grab the spine of the message
+			grabX = LIFELINE_1_BODY_X + SELF_MESSAGE_WIDTH;
+			grabY = (SEND_Y + RECV_Y) / 2;
+			dropX = grabX;
+			delta = -10;
+			dropY = grabY + delta;
+			break;
+		case MOVE_DOWN:
+			// Grab the spine of the message
+			grabX = LIFELINE_1_BODY_X + SELF_MESSAGE_WIDTH;
+			grabY = (SEND_Y + RECV_Y) / 2;
+			dropX = grabX;
+			dropY = grabY + delta;
 			break;
 		case RECEIVE_ON_OTHER_LIFELINE:
 			dropX = LIFELINE_2_BODY_X;
@@ -109,6 +139,16 @@ public class SelfMessageReconnectionTest extends AbstractGraphicalEditPolicyUITe
 		editor.moveSelection(at(grabX, grabY), at(dropX, dropY));
 
 		switch (reconnectionMode) {
+		case SLIDE_SEND_UP:
+			if (async) {
+				assertThat("Send end not moved as expected", messageEP,
+						runs(sendX(), dropY, recvX(), RECV_Y, 2));
+			} else {
+				assertThat("Synchronous message was reshaped", messageEP,
+						runs(sendX(), SEND_Y, recvX(), RECV_Y, 2));
+			}
+			break;
+		case SLIDE_SEND_DOWN:
 		case SLIDE_RECEIVE_UP:
 			if (async) {
 				assertThat("Minimum gap not maintained", messageEP,
@@ -126,6 +166,11 @@ public class SelfMessageReconnectionTest extends AbstractGraphicalEditPolicyUITe
 				assertThat("Synchronous message was reshaped", messageEP,
 						runs(sendX(), SEND_Y, recvX(), RECV_Y, 2));
 			}
+			break;
+		case MOVE_UP:
+		case MOVE_DOWN:
+			assertThat("Message not moved as expected", messageEP,
+					runs(sendX(), SEND_Y + delta, recvX(), RECV_Y + delta, 2));
 			break;
 		case RECEIVE_ON_OTHER_LIFELINE: {
 			assertThat("Lifeline and slope incorrect", messageEP, runs(sendX(), SEND_Y, recvX(),
@@ -230,10 +275,18 @@ public class SelfMessageReconnectionTest extends AbstractGraphicalEditPolicyUITe
 	//
 
 	enum ReconnectionMode {
+		/** Slide the sending end of a self-message down on the same lifeline. */
+		SLIDE_SEND_DOWN,
+		/** Slide the sending end of a self-message up on the same lifeline. */
+		SLIDE_SEND_UP,
 		/** Slide the receiving end of a self-message down on the same lifeline. */
 		SLIDE_RECEIVE_DOWN,
 		/** Slide the receiving end of a self-message up on the same lifeline. */
 		SLIDE_RECEIVE_UP,
+		/** Grab the self-message and move it down on the same lifeline. */
+		MOVE_DOWN,
+		/** Grab the self-message abd move it up on the same lifeline. */
+		MOVE_UP,
 		/** Re-connect a receiving end of a self-message to some other lifeline. */
 		RECEIVE_ON_OTHER_LIFELINE,
 		/**

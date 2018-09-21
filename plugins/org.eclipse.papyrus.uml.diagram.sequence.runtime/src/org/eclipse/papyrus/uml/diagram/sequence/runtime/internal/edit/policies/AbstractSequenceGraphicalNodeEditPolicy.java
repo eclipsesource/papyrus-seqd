@@ -347,8 +347,9 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		}
 
 		// Also, if this is a self-message, then we have a minimal gap to maintain or if it's
-		// synchronous then the gap is fixed
-		if (selfMessage && wasSelfMessage && !result.isPresent()) {
+		// synchronous then the gap is fixed. Unless, of course, we're moving both ends of
+		// the message (which is the force mode of the request)
+		if (selfMessage && wasSelfMessage && !result.isPresent() && !isForce(request)) {
 			if (MessageUtil.isSynchronous(end.getOwner().getElement().getMessageSort())) {
 				result = Optional.of(UnexecutableCommand.INSTANCE);
 			} else {
