@@ -40,7 +40,7 @@ import org.junit.runners.Parameterized.Parameters;
 @ModelResource("one-exec.di")
 @Maximized
 @RunWith(Parameterized.class)
-public class SelfMessageCreationTest extends AbstractGraphicalEditPolicyUITest {
+public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest {
 	// Horizontal position of the first lifeline's body
 	private static final int LIFELINE_1_BODY_X = 121;
 
@@ -61,7 +61,7 @@ public class SelfMessageCreationTest extends AbstractGraphicalEditPolicyUITest {
 	/**
 	 * Initializes me.
 	 */
-	public SelfMessageCreationTest(MessageSort sort, CreationMode mode) {
+	public SelfMessageCreationUITest(MessageSort sort, CreationMode mode) {
 		super();
 
 		messageSort = sort;
