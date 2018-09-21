@@ -279,14 +279,19 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				}
 				break;
 			case DELETE_MESSAGE_LITERAL:
-				/* receiver must have no element after */
+				/*
+				 * receiver must have no element after. Use the sending location because deletes are
+				 * synchronous (horizontal) except in the case of self-destruct, in which case the recv
+				 * visually is later but semantically is at the send
+				 */
+				int absoluteDeleteY = absoluteSendY;
 				List<MElement<? extends Element>> elementsBelow = new ArrayList<>();
-				findElementsBelow(absoluteRecvY, elementsBelow,
+				findElementsBelow(absoluteDeleteY, elementsBelow,
 						getTarget().getInteraction().getMessages().stream(), false);
 				if (!elementsBelow.isEmpty()) {
 					return UnexecutableCommand.INSTANCE;
 				}
-				findElementsBelow(absoluteRecvY, elementsBelow, this.receiver.getExecutions().stream(),
+				findElementsBelow(absoluteDeleteY, elementsBelow, this.receiver.getExecutions().stream(),
 						false);
 				if (!elementsBelow.isEmpty()) {
 					return UnexecutableCommand.INSTANCE;

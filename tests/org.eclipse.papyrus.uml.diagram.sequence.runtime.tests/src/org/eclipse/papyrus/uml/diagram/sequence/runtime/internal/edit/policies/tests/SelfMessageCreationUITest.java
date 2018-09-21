@@ -26,6 +26,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.eclipse.uml2.uml.MessageSort;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -67,7 +68,7 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 		messageSort = sort;
 		this.mode = mode;
 		messageX = mode == CreationMode.ON_EXECUTION ? LIFELINE_2_BODY_X : LIFELINE_1_BODY_X;
-		messageY = Y_POSITION + (mode == CreationMode.ON_LIFELINE_TALL ? CUSTOM_SPAN : 0);
+		messageY = Y_POSITION + (mode.isTall() ? CUSTOM_SPAN : 0);
 	}
 
 	@Test
@@ -88,13 +89,18 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 			assertThat("Self-creation was permitted", messageEP, nullValue());
 			break;
 		case DELETE_MESSAGE_LITERAL:
-			// These have a slightly different shape, owing to connection to
-			// the destruction occurrence specification
-			assertThat(messageEP, runs(LIFELINE_1_BODY_X, 185, //
-					// Account for the attachment to the side of the destruction occurrence
-					// specification and extra space made for the destruction
-					LIFELINE_1_BODY_X + 10, 215, //
-					2));
+			if (mode == CreationMode.AROUND_OCCURRENCE) {
+				// This isn't permitted
+				assertThat("Delete message created around an existing occurrence", messageEP, nullValue());
+			} else {
+				// These have a slightly different shape, owing to connection to
+				// the destruction occurrence specification
+				assertThat(messageEP, runs(LIFELINE_1_BODY_X, 185, //
+						// Account for the attachment to the side of the destruction occurrence
+						// specification and extra space made for the destruction
+						LIFELINE_1_BODY_X + 10, 215, //
+						2));
+			}
 			break;
 		default:
 			assertThat(messageEP, runs(x(), top(), x(), bottom(), 2));
@@ -119,7 +125,21 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 				{ MessageSort.REPLY_LITERAL, CreationMode.ON_EXECUTION }, //
 				{ MessageSort.CREATE_MESSAGE_LITERAL, CreationMode.ON_LIFELINE }, //
 				{ MessageSort.DELETE_MESSAGE_LITERAL, CreationMode.ON_LIFELINE }, //
+				{ MessageSort.DELETE_MESSAGE_LITERAL, CreationMode.AROUND_OCCURRENCE }, //
 		});
+	}
+
+	/**
+	 * If a test needs it, set up an existing occurrence around which to draw the
+	 * self-message.
+	 */
+	@Before
+	public void createOccurrence() {
+		if (mode == CreationMode.AROUND_OCCURRENCE) {
+			int insideY = Y_POSITION + 7;
+			editor.createConnection(SequenceElementTypes.Async_Message_Edge, //
+					at(LIFELINE_2_BODY_X, insideY), at(LIFELINE_1_BODY_X, insideY));
+		}
 	}
 
 	/**
@@ -164,11 +184,17 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 		// Create the self-message on an execution specification
 		ON_EXECUTION,
 		// Draw a tall self-message shape (with a gap, not just in one place)
-		ON_LIFELINE_TALL;
+		ON_LIFELINE_TALL,
+		// Draw a self-message around an existing execution occurrence
+		AROUND_OCCURRENCE;
 
 		@Override
 		public String toString() {
 			return name().toLowerCase().replace('_', '-');
+		}
+
+		boolean isTall() {
+			return (this == ON_LIFELINE_TALL) || (this == AROUND_OCCURRENCE);
 		}
 	}
 }
