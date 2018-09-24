@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandWrapper;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.graph.Graph;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
@@ -257,6 +258,38 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 							return null;
 					}
 				}));
+	}
+
+	/**
+	 * Tries to obtain a {@link View} for the given {@link MElement}. This might require mapping elements
+	 * which are points to the View they are located on (e.g. occurrences being mapped to their executions or
+	 * messages).
+	 * 
+	 * @param element
+	 *            the element for which a {@link View} is required
+	 * @return the view if found
+	 */
+	static Optional<View> getDiagramView(MElement<?> element) {
+		MElement<?> mapped;
+		if (element instanceof MExecutionOccurrence) {
+			MExecutionOccurrence executionOccurrence = MExecutionOccurrence.class.cast(element);
+			Optional<MExecution> startedExecution = executionOccurrence.getStartedExecution();
+			Optional<MExecution> finishedExecution = executionOccurrence.getFinishedExecution();
+			if (startedExecution.isPresent()) {
+				mapped = startedExecution.get();
+			} else if (finishedExecution.isPresent()) {
+				mapped = finishedExecution.get();
+			} else {
+				mapped = element;
+			}
+		} else if (element instanceof MMessageEnd) {
+			mapped = MMessageEnd.class.cast(element).getOwner();
+		} else {
+			mapped = element;
+		}
+		return mapped.getDiagramView()//
+				.filter(View.class::isInstance)//
+				.map(View.class::cast);
 	}
 
 	@Override

@@ -49,7 +49,7 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 	private static final int LIFELINE_2_BODY_X = 281;
 
 	// Vertical position at whhich to send the self-message
-	private static final int Y_POSITION = 185;
+	private static final int Y_POSITION = 195;
 
 	private static final int MINIMUM_SPAN = 20;
 	private static final int CUSTOM_SPAN = 55;
@@ -95,10 +95,10 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 			} else {
 				// These have a slightly different shape, owing to connection to
 				// the destruction occurrence specification
-				assertThat(messageEP, runs(LIFELINE_1_BODY_X, 185, //
+				assertThat(messageEP, runs(LIFELINE_1_BODY_X, 195, //
 						// Account for the attachment to the side of the destruction occurrence
 						// specification and extra space made for the destruction
-						LIFELINE_1_BODY_X + 10, 215, //
+						LIFELINE_1_BODY_X + 10, 225, //
 						2));
 			}
 			break;

@@ -383,16 +383,16 @@ public class MLifelineTest extends MElementTest {
 		MLifeline receiver = interaction.getLifelines().get(0);
 		MMessage reply = interaction.getMessages().get(1);
 		Operation operation = findUMLElement("AnchorsModel::Foo::doIt", Operation.class);
-		CreationCommand<Message> command = getFixture().insertMessageAfter(reply, 15, receiver,
+		CreationCommand<Message> command = getFixture().insertMessageAfter(reply, 25, receiver,
 				MessageSort.SYNCH_CALL_LITERAL, operation);
 
 		assertThat(command, executable());
 		Message umlMessage = create(command);
 		MMessage message = interaction.getMessage(umlMessage).get();
 
-		// 267 {message} + 15 {offset}
-		assertThat(message.getTop(), isPresent(282));
-		assertThat(message.getBottom(), isPresent(282));
+		// 267 {message} + 25 {offset}
+		assertThat(message.getTop(), isPresent(292));
+		assertThat(message.getBottom(), isPresent(292));
 		assertThat(umlMessage.getSignature(), is(operation));
 		assertThat(umlMessage.getMessageSort(), is(MessageSort.SYNCH_CALL_LITERAL));
 		assertThat(umlMessage.getMessageKind(), is(MessageKind.COMPLETE_LITERAL));
@@ -432,15 +432,15 @@ public class MLifelineTest extends MElementTest {
 		MLifeline receiver = interaction.getLifelines().get(0);
 		MMessage reply = interaction.getMessages().get(1);
 		Operation operation = findUMLElement("AnchorsModel::Foo::doIt", Operation.class);
-		CreationCommand<Message> command = getFixture().insertMessageAfter(reply.getSend().get(), 15,
+		CreationCommand<Message> command = getFixture().insertMessageAfter(reply.getSend().get(), 25,
 				receiver, reply.getReceive().get(), 45, MessageSort.ASYNCH_SIGNAL_LITERAL, operation);
 
 		assertThat(command, executable());
 		Message umlMessage = create(command);
 		MMessage message = interaction.getMessage(umlMessage).get();
 
-		// 267 {message} + 15 {offset}
-		assertThat(message.getTop(), isPresent(282));
+		// 267 {message} + 25 {offset}
+		assertThat(message.getTop(), isPresent(292));
 		// 30 pixels of slope
 		assertThat(message.getBottom(), isPresent(312));
 		assertThat(umlMessage.getSignature(), is(operation));

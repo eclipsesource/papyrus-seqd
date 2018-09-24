@@ -13,16 +13,17 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import static java.lang.Integer.MAX_VALUE;
-import static java.lang.Math.max;
 import static org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil.invertSingle;
 import static org.eclipse.papyrus.uml.interaction.graph.util.Suppliers.compose;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,14 +45,17 @@ import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredAddCommand;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
+import org.eclipse.uml2.uml.InteractionFragment;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
 import org.eclipse.uml2.uml.MessageSort;
@@ -386,10 +390,39 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				break;
 		}
 
+		/* Make sure we keep enough distance to the elements before us */
+		int additionalOffset = getAdditionalOffSet(timeline, //
+				sendInsert, absoluteSendY, //
+				recvInsert, absoluteRecvY);
+
+		/*
+		 * check if we can actually change the insertion offset or if we have to nudge the executions we are
+		 * connecting to instead
+		 */
+		Optional<MElement<?>> nudgeToEnforcePadding = Optional.empty();
+		int distanceToEnforcePadding = 0;
+		if (additionalOffset > 0) {
+			Set<MElement<?>> elementToNudge = new LinkedHashSet<MElement<?>>();
+			validateOffsetChange(sendingExec, absoluteSendY, additionalOffset, elementToNudge);
+			validateOffsetChange(receivingExec, absoluteRecvY, additionalOffset, elementToNudge);
+			if (!elementToNudge.isEmpty()) {
+				/* we need to to nudge instead of changing the insertion offset */
+				distanceToEnforcePadding = additionalOffset;
+				additionalOffset = 0;
+				nudgeToEnforcePadding = timeline.stream()//
+						.filter(elementToNudge::contains)//
+						.findFirst();
+			}
+		}
+
 		/* create message */
+		int additionalOffsetSend = additionalOffset
+				+ (sendingExec.isPresent() ? 0 : distanceToEnforcePadding);
+		int additionalOffsetRecv = additionalOffset
+				+ (receivingExec.isPresent() ? 0 : distanceToEnforcePadding);
 		result = result.chain(diagramHelper().createMessageConnector(resultCommand, //
-				senderView, () -> sendReferenceY.getAsInt() + sendOffset, //
-				receiverView, () -> recvReferenceY.getAsInt() + recvOffset, //
+				senderView, () -> sendReferenceY.getAsInt() + sendOffset + additionalOffsetSend, //
+				receiverView, () -> recvReferenceY.getAsInt() + recvOffset + additionalOffsetRecv, //
 				this::replace));
 
 		switch (sort) {
@@ -400,7 +433,6 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				int receiverBodyTop = layoutHelper()
 						.getTop(diagramHelper().getLifelineBodyShape(receiverShape));
 				int receiverLifelineTop = this.receiver.getTop().orElse(0);
-
 				/* first make room to move created lifeline down by nudging all required elements down */
 				int creationMessageTop = recvReferenceY.getAsInt() + recvOffset;
 				List<MElement<? extends Element>> elementsToNudge = new ArrayList<>();
@@ -408,7 +440,7 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				int movedReceiverlifelineTop = creationMessageTop
 						- ((receiverBodyTop - receiverLifelineTop) / 2);
 
-				int receiverDeltaY = movedReceiverlifelineTop - receiverLifelineTop;
+				int receiverDeltaY = movedReceiverlifelineTop - receiverLifelineTop + additionalOffsetRecv;
 				int receiverDeltaYFinal = receiverDeltaY;
 
 				/* collect elements below */
@@ -451,21 +483,234 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				// If inserting after the start occurrence of an execution specification,
 				// then actually insert after the execution, itself, so that it can span
 				// the new message end
-				MElement<?> distanceFrom = (MElement<?>)Optional.of(beforeSend)
-						.filter(MOccurrence.class::isInstance).map(MOccurrence.class::cast)
-						.flatMap(MOccurrence::getStartedExecution).orElse(beforeSend);
-				Optional<Command> makeSpace = getTarget().following(distanceFrom).map(el -> {
-					OptionalInt distance = el.verticalDistance(distanceFrom);
-					return distance.isPresent() ? el.nudge(max(0, spaceRequired - distance.getAsInt()))
-							: null;
-				});
+				Optional<Command> makeSpace = createNudgeCommandForFollowingElements(timeline, spaceRequired, //
+						sendInsert, sendingExec,
+						sendReferenceY.getAsInt() + sendOffset + additionalOffsetSend, //
+						recvInsert, receivingExec,
+						recvReferenceY.getAsInt() + recvOffset + additionalOffsetRecv);
 				if (makeSpace.isPresent()) {
 					result = makeSpace.get().chain(result);
 				}
 				break;
 		}
 
+		if (nudgeToEnforcePadding.isPresent()) {
+			result = result.chain(nudgeToEnforcePadding.get().nudge(distanceToEnforcePadding));
+		}
+
 		return result;
+	}
+
+	private void validateOffsetChange(Optional<MExecution> exec, int absoluteY, int additionalOffset,
+			Set<MElement<?>> elementToNudge) {
+		if (exec.isPresent()) {
+			OptionalInt top = exec.get().getTop();
+			if (top.isPresent() && (absoluteY == top.getAsInt())) {
+				// we are connecting to the top of the execution
+				// -> nudge start instead
+				exec.get().getStart().ifPresent(elementToNudge::add);
+			}
+
+			// check if we have place on the execution
+			OptionalInt bottom = exec.get().getBottom();
+			if (bottom.isPresent() && ((bottom.getAsInt() - absoluteY - additionalOffset) < 0)) {
+				// we would move over the end of the execution
+				// -> nudge finish instead
+				exec.get().getFinish().ifPresent(elementToNudge::add);
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Optional<Command> createNudgeCommandForFollowingElements(
+			List<MElement<? extends Element>> timeline, int spaceRequired,
+			Optional<MElement<? extends Element>> sendInsert, //
+			Optional<MExecution> sendingExec, int sendYPosition, //
+			Optional<MElement<? extends Element>> recvInsert, //
+			Optional<MExecution> receivingExec, int recvYPosition) {
+
+		if (sendingExec.isPresent() || receivingExec.isPresent()) {
+			return Optional.empty();
+		}
+
+		/* check if we are too close to following elements on send and/or receive side */
+		int additionalSendNudge = missingPadding(sendInsert, sendYPosition);
+		int additionalRecvNudge = missingPadding(recvInsert, recvYPosition);
+		int minNudge = Math.max(0, Math.max(additionalSendNudge, additionalRecvNudge));
+
+		MElement<?> distanceFrom = (MElement<?>)Optional.of(beforeSend).filter(MOccurrence.class::isInstance)
+				.map(MOccurrence.class::cast).flatMap(MOccurrence::getStartedExecution).orElse(beforeSend);
+		Optional<Command> makeSpace = getFollowingElement(timeline, distanceFrom, sendYPosition).map(el -> {
+			OptionalInt distance = el.verticalDistance(distanceFrom);
+			if (distance.isPresent()) {
+				return el.nudge(Math.max(minNudge, spaceRequired - distance.getAsInt()));
+			} else {
+				return null;
+			}
+		});
+
+		/*
+		 * check if we did create a nudge command based on measured distance and the required space. if not,
+		 * but we need to enforce padding, create it based on insertion point
+		 */
+		if (!makeSpace.isPresent() && minNudge > 0) {
+			MElement<? extends Element> toNudge = additionalSendNudge > additionalRecvNudge ? sendInsert.get()
+					: recvInsert.get();
+			return Optional.of(toNudge.nudge(minNudge));
+		}
+		return makeSpace;
+	}
+
+	private Optional<MElement<? extends Element>> getFollowingElement(
+			List<MElement<? extends Element>> fragments, MElement<?> distanceFrom, int yPosition) {
+		int index = fragments.indexOf(distanceFrom);
+		if (index == -1) {
+			if (distanceFrom instanceof MLifeline) {
+				// get the first element which comes after
+				return fragments.stream()//
+						.filter(e -> {
+							return e.getTop().orElse(yPosition) >= yPosition;
+						})//
+						.findFirst();
+			}
+			return getTarget().following(distanceFrom);
+		}
+		if (index + 1 < fragments.size()) {
+			return Optional.of(fragments.get(index + 1));
+		}
+		return getTarget().following(distanceFrom);
+	}
+
+	private int getAdditionalOffSet(List<MElement<? extends Element>> timeline, //
+			Optional<MElement<? extends Element>> elementAfterSend, int absoluteSendY, //
+			Optional<MElement<? extends Element>> elementAfterRecv, int absoluteRecvY) {
+		int additionalOffsetSend = getAdditionalOffset(timeline, elementAfterSend, absoluteSendY, beforeSend);
+		int additionalOffsetReceive = getAdditionalOffset(timeline, elementAfterRecv, absoluteRecvY,
+				beforeRecv);
+		return Math.max(additionalOffsetSend, additionalOffsetReceive);
+	}
+
+	private int getAdditionalOffset(List<MElement<? extends Element>> timeline,
+			Optional<MElement<? extends Element>> elementAfterMe, int absoluteY, MElement<?> before) {
+		MElement<? extends Element> elementBeforeMe = getElementBeforeMe(timeline, elementAfterMe, before);
+		Optional<View> diagramView = getDiagramView(elementBeforeMe);
+		if (!diagramView.isPresent()) {
+			return 0;
+		}
+		int curPadding = absoluteY - elementBeforeMe.getBottom().orElse(0);
+		int reqPadding = layoutHelper().getConstraints().getPadding(RelativePosition.BOTTOM,
+				diagramView.get())
+				+ layoutHelper().getConstraints().getPadding(RelativePosition.TOP, ViewTypes.MESSAGE);
+		if (curPadding < reqPadding) {
+			return reqPadding - curPadding;
+		} else {
+			return 0;
+		}
+	}
+
+	/**
+	 * Returns for how many pixels the {@link MElement element after me} has to be nudged in order to fulfill
+	 * padding requirements.
+	 * 
+	 * @param elementAfterMe
+	 *            the element following me
+	 * @param myYPosition
+	 *            my insertion position
+	 * @return distance required to fulfil
+	 */
+	private int missingPadding(Optional<MElement<? extends Element>> elementAfterMe, int myYPosition) {
+		if (!elementAfterMe.isPresent()) {
+			return 0;
+		}
+		MElement<? extends Element> insertionPoint = elementAfterMe.get();
+		Optional<View> diagramView = getDiagramView(insertionPoint);
+		if (!diagramView.isPresent()) {
+			return 0;
+		}
+		int curPadding = insertionPoint.getTop().orElse(0) - myYPosition;
+		int reqPadding = layoutHelper().getConstraints().getPadding(RelativePosition.BOTTOM,
+				ViewTypes.MESSAGE)
+				+ layoutHelper().getConstraints().getPadding(RelativePosition.TOP, diagramView.get());
+		if (curPadding < reqPadding) {
+			return reqPadding - curPadding;
+		} else {
+			return 0;
+		}
+	}
+
+	/**
+	 * Returns the element before me based on the element after me.
+	 */
+	private MElement<? extends Element> getElementBeforeMe(List<MElement<? extends Element>> timeline,
+			Optional<MElement<? extends Element>> elementAfterMe, MElement<?> before) {
+
+		MElement<? extends Element> fragmentBeforeMe = getFragmentBeforeMe(timeline, elementAfterMe, before);
+
+		/* for create messages we want to use the lifeline as a reference element */
+		if (fragmentBeforeMe instanceof MMessageEnd) {
+			MMessage message = MMessageEnd.class.cast(fragmentBeforeMe).getOwner();
+			if (message.getElement().getMessageSort() == MessageSort.CREATE_MESSAGE_LITERAL) {
+				Optional<MLifeline> createdLifeline = message.getReceiver();
+				if (createdLifeline.isPresent()) {
+					return createdLifeline.get();
+				}
+			}
+		}
+
+		return fragmentBeforeMe;
+	}
+
+	private MElement<? extends Element> getFragmentBeforeMe(List<MElement<? extends Element>> timeline,
+			Optional<MElement<? extends Element>> elementAfterMe, MElement<?> before) {
+
+		if (!elementAfterMe.isPresent()) {
+			if (before instanceof MLifeline) {
+				Optional<MElement<? extends Element>> after = getLastElementOnThisLifeline(timeline, before);
+				return after.orElse(before);
+			}
+			return before;
+		}
+
+		/* get the element based on timeline */
+		MElement<? extends Element> insertionPoint = elementAfterMe.get();
+		int index = timeline.indexOf(insertionPoint) - 1;
+		if (index >= 0 && index < timeline.size()) {
+			/* there is an earlier element in the timline */
+			MElement<? extends Element> element = timeline.get(index);
+			if (element instanceof MExecution) {
+				Optional<MOccurrence<?>> start = MExecution.class.cast(element).getStart();
+				if (start.isPresent()) {
+					return start.get();
+				}
+			}
+			return element;
+		} else if (index == -2 && before instanceof MLifeline) {
+			/*
+			 * we could not find an element in the timeline. since our fallback element is a lifeline and we
+			 * want to return fragment preferably, get the last fragment in this lifeline
+			 */
+			Optional<MElement<? extends Element>> after = getLastElementOnThisLifeline(timeline, before);
+			return after.orElse(before);
+		} else if (index == -1 && insertionPoint instanceof MOccurrence) {
+			@SuppressWarnings("unchecked")
+			Optional<MLifeline> covered = MOccurrence.class.cast(insertionPoint).getCovered();
+			if (covered.isPresent()) {
+				return covered.get();
+			}
+		}
+
+		/* fallback */
+		return before;
+	}
+
+	private Optional<MElement<? extends Element>> getLastElementOnThisLifeline(
+			List<MElement<? extends Element>> timeline, MElement<?> before) {
+		Set<InteractionFragment> covered = new LinkedHashSet<>(
+				MLifeline.class.cast(before).getElement().getCoveredBys());
+		Optional<MElement<? extends Element>> after = timeline.stream()//
+				.filter(e -> covered.contains(e.getElement()))//
+				.reduce((a, b) -> b);
+		return after;
 	}
 
 	private int relativeTopOfBefore() {
