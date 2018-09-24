@@ -20,6 +20,8 @@ import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateMessageTes
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateMessageTestB;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.SemanticOrderAfterCreationOfElementOnTopTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.SemanticOrderAfterInsertingBetweenMsgStartAndFinishTest;
+import org.eclipse.papyrus.uml.interaction.model.tests.creation.padding.CreateExecutionPaddingTest;
+import org.eclipse.papyrus.uml.interaction.model.tests.creation.padding.CreateMessagePaddingTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.deletion.BasicDeletionTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.deletion.CreationMessageDeletionTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.deletion.DeleteExecutionTest;
@@ -44,6 +46,7 @@ import org.junit.runners.Suite.SuiteClasses;
 		SemanticOrderAfterInsertingBetweenMsgStartAndFinishTest.class, //
 		LogicalModelAdapterTest.class, //
 		LogicalModelPredicatesTest.class, //
+		CreateExecutionPaddingTest.class, CreateMessagePaddingTest.class//
 })
 
 public class SeqDCustomTests {

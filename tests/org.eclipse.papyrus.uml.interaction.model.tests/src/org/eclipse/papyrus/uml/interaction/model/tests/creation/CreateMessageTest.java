@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
-import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.tests.ModelEditFixture;
@@ -86,7 +85,7 @@ public class CreateMessageTest {
 		/* setup */
 		MLifeline lifeline1 = interaction().getLifelines().get(0);
 		MLifeline lifeline2 = interaction().getLifelines().get(1);
-		CreationCommand<Message> command = lifeline1.insertMessageAfter(lifeline1, 10, lifeline2,
+		CreationCommand<Message> command = lifeline1.insertMessageAfter(lifeline1, 25, lifeline2,
 				MessageSort.CREATE_MESSAGE_LITERAL, null);
 
 		/* act */
@@ -99,20 +98,14 @@ public class CreateMessageTest {
 		assertEquals(3, interaction().getMessages().size());
 		assertEquals(MessageSort.CREATE_MESSAGE_LITERAL,
 				interaction().getMessages().get(2).getElement().getMessageSort());
-
-		/*
-		 * we created this message sending from the start of an execution, so if that execution was nudged
-		 * down, then the message will have followed. Therefore, assert the message location based on the
-		 * sending execution
-		 */
-		MExecution exec = lifeline1.getExecutions().get(0);
-		assertEquals(exec.getTop().getAsInt(), interaction().getMessages().get(2).getTop().getAsInt());
+		assertEquals(model.getLifelineBodyTop(interaction().getLifelines().get(0)) + 25,
+				interaction().getMessages().get(2).getTop().getAsInt());
 
 		assertEquals(lifeline1Top, interaction().getLifelines().get(0).getTop().getAsInt());
 		assertEquals(lifeline3Top, interaction().getLifelines().get(2).getTop().getAsInt());
 
 		/* we drew the creation message to the middle of the side of the lifeline head */
-		int nudgedLifeline2Top = model.getLifelineBodyTop(interaction().getLifelines().get(0)) + 10 //
+		int nudgedLifeline2Top = model.getLifelineBodyTop(interaction().getLifelines().get(0)) + 25 //
 				- (lifeline2Header / 2);
 		assertEquals(nudgedLifeline2Top, interaction().getLifelines().get(1).getTop().getAsInt());
 
@@ -137,10 +130,13 @@ public class CreateMessageTest {
 
 		/* reinit before */
 		before();
+		int lifeline2Bottom = interaction().getLifelines().get(1).getBottom().getAsInt();
+		int expectedCreationMessageTop = lifeline2Bottom + 25;
 
 		/* setup */
 		MLifeline lifeline2 = interaction().getLifelines().get(1);
 		MLifeline lifeline3 = interaction().getLifelines().get(2);
+
 		command = lifeline2.insertMessageAfter(lifeline2, 5, lifeline3, MessageSort.CREATE_MESSAGE_LITERAL,
 				null);
 
@@ -154,8 +150,7 @@ public class CreateMessageTest {
 		assertEquals(4, interaction().getMessages().size());
 		assertEquals(MessageSort.CREATE_MESSAGE_LITERAL,
 				interaction().getMessages().get(3).getElement().getMessageSort());
-		assertEquals(model.getLifelineBodyTop(interaction().getLifelines().get(1)) + 5,
-				interaction().getMessages().get(3).getTop().getAsInt());
+		assertEquals(expectedCreationMessageTop, interaction().getMessages().get(3).getTop().getAsInt());
 
 		assertEquals(lifeline1Top, interaction().getLifelines().get(0).getTop().getAsInt());
 		assertEquals(lifeline2Top, interaction().getLifelines().get(1).getTop().getAsInt());

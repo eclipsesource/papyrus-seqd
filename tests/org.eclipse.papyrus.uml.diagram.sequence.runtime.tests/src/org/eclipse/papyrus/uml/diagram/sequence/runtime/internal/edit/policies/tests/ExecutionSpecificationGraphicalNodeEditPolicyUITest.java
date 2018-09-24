@@ -69,18 +69,16 @@ public class ExecutionSpecificationGraphicalNodeEditPolicyUITest extends Abstrac
 
 	@Test
 	public void createAsyncMessage() {
-		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 185),
-				at(recvX, 185));
+		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 195), at(recvX, 195));
 
-		assertThat(messageEP, runs(x(SENDER), 185, x(RECEIVER), 185, 2));
+		assertThat(messageEP, runs(x(SENDER), 195, x(RECEIVER), 195, 2));
 	}
 
 	@Test
 	public void createSyncMessage() {
-		EditPart messageEP = createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, 185),
-				at(recvX, 185));
+		EditPart messageEP = createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, 195), at(recvX, 195));
 
-		assertThat(messageEP, runs(x(SENDER), 185, x(RECEIVER), 185, 2));
+		assertThat(messageEP, runs(x(SENDER), 195, x(RECEIVER), 195, 2));
 	}
 
 	//
@@ -100,8 +98,7 @@ public class ExecutionSpecificationGraphicalNodeEditPolicyUITest extends Abstrac
 	 * directionality and whether that end is at an execution specification or a
 	 * lifeline stem.
 	 *
-	 * @param source
-	 *            whether this is the source end of the message
+	 * @param source whether this is the source end of the message
 	 *
 	 * @return the adjusted X coördinate
 	 */

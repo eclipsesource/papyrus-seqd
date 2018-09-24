@@ -174,10 +174,18 @@ public class MMessageEndImpl extends MOccurrenceImpl<MessageEnd> implements MMes
 		return result;
 	}
 
+	@SuppressWarnings("boxing")
 	@Override
 	public Command nudge(int deltaY) {
-		// If I am the receiving end of a message, don't reorient me, so instead
-		// move the sending end. Unless I'm a found message, of course
+		/*
+		 * If I am the receiving end of a message, only reorient me if I am a found message or if I am part of
+		 * a sloped message. Otherwise move the sending end.
+		 */
+		if (getTop().orElse(0) != getOtherEnd().map(me -> me.getTop().orElse(0)).orElse(0)) {
+			/* part of sloped message, move me */
+			return new NudgeCommand(this, deltaY);
+		}
+
 		MMessageEndImpl end = getOtherEnd().filter(MMessageEnd::isSend).map(MMessageEndImpl.class::cast)
 				.orElse(this);
 		return new NudgeCommand(end, deltaY);
