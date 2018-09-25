@@ -282,6 +282,36 @@ public interface MLifeline extends MElement<Lifeline> {
 			MElement<?> beforeRecv, int recvOffset, MessageSort sort, NamedElement signature);
 
 	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * 
+	 * @param before
+	 *            The element after which to insert the message. If it is an interaction fragment on this
+	 *            lifeline, then the new message’s send event is inserted after this element. If it is a
+	 *            message, then the new message’s send event is inserted after the referenced message’s end
+	 *            that covers this lifeline.
+	 * @param offset
+	 *            Vertical offset of the message from the element {@code before} it.
+	 * @param receiver
+	 *            The lifeline to receive the message. May be the same as is sending it (this lifeline).
+	 * @param sort
+	 *            The sort of message to create.
+	 * @param signature
+	 *            An optional message signature, either a signal or an operation.
+	 * @param createReply
+	 *            Specifies whether or not to create a reply message, if the message to be created is a
+	 *            synchronous message.
+	 * @param executionType
+	 *            Specifies the type of the execution specification to be created, if the message to be
+	 *            created is a synchronous message. <!-- end-model-doc -->
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.CreationCommand&lt;org.eclipse.uml2.uml.Message&gt;"
+	 *        required="true" beforeRequired="true" offsetRequired="true" receiverRequired="true"
+	 *        sortRequired="true"
+	 * @generated
+	 */
+	CreationCommand<Message> insertMessageAfter(MElement<?> before, int offset, MLifeline receiver,
+			MessageSort sort, NamedElement signature, boolean createReply, EClass executionType);
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> Query the element covering this
 	 * lifeline that is at, or the nearest element before, a given y-coördinate {@code offset}.
 	 * 

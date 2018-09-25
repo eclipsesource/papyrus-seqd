@@ -118,4 +118,10 @@ public class Messages extends NLS {
 	public static String UMLModelingAssistantProviderTitle;
 
 	public static String UMLModelingAssistantProviderMessage;
+
+	public static String SynchronousMessagePreferencesLabel;
+
+	public static String CreateReplyMessageAutomaticallyLabel;
+
+	public static String CreateExecutionAfterSyncMessageAutomaticallyLabel;
 }

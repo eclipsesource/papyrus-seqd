@@ -22,11 +22,15 @@ import static org.junit.Assume.assumeThat;
 import java.util.Arrays;
 
 import org.eclipse.gef.EditPart;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineBodyGraphicalNodeEditPolicy;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.preferences.LightweightSequenceDiagramPreferences;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.Figures;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -66,6 +70,18 @@ public class LifelineBodyGraphicalNodeEditPolicyUITest extends AbstractGraphical
 			sendX = LIFELINE_1_BODY_X;
 			recvX = LIFELINE_2_BODY_X;
 		}
+	}
+
+	@BeforeClass
+	public static void turnOffAutoCreationOfExecutions() {
+		Activator.getDefault().getPreferenceStore()
+				.setValue(LightweightSequenceDiagramPreferences.AUTO_CREATE_EXEC_AFTER_SYNC_MESSAGE, false);
+	}
+
+	@AfterClass
+	public static void resetAutoCreationOfExecutions() {
+		Activator.getDefault().getPreferenceStore()
+				.setToDefault(LightweightSequenceDiagramPreferences.AUTO_CREATE_EXEC_AFTER_SYNC_MESSAGE);
 	}
 
 	@Test

@@ -51,8 +51,10 @@ import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ISequenceEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageFeedbackHelper.Mode;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.preferences.LightweightSequenceDiagramPreferences;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.WeakEventBusDelegator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.CreateRequestSwitch;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
@@ -68,6 +70,7 @@ import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageSort;
+import org.eclipse.uml2.uml.UMLPackage;
 
 /**
  * Abstract implementation of a graphical node edit policy supporting message connections in the sequence
@@ -252,7 +255,15 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 						startOffset = newSourceAnchorDesc.offset;
 					}
 
-					result = sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort, null);
+					if (shouldCreateExecution()) {
+						// TODO ask user which type of execution to create
+						result = sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort,
+								null, shouldCreateReply(),
+								UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION);
+					} else {
+						result = sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort,
+								null);
+					}
 				}
 
 				return wrap(result);
@@ -499,6 +510,16 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				.map(msg -> MInteraction.getInstance(msg.getInteraction(), diagram));
 		return interaction.flatMap(in -> in.getMessage(message.get()))
 				.flatMap(source ? MMessage::getSend : MMessage::getReceive);
+	}
+
+	protected boolean shouldCreateReply() {
+		return Activator.getDefault().getPreferenceStore()
+				.getBoolean(LightweightSequenceDiagramPreferences.AUTO_CREATE_REPLY_MESSAGE);
+	}
+
+	protected boolean shouldCreateExecution() {
+		return Activator.getDefault().getPreferenceStore()
+				.getBoolean(LightweightSequenceDiagramPreferences.AUTO_CREATE_EXEC_AFTER_SYNC_MESSAGE);
 	}
 
 	//

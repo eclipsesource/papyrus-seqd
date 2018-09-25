@@ -298,6 +298,49 @@
         </eAnnotations>
       </eParameters>
     </eOperations>
+    <eOperations name="insertMessageAfter" lowerBound="1">
+      <eGenericType eClassifier="#//CreationCommand">
+        <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Message"/>
+      </eGenericType>
+      <eParameters name="before" lowerBound="1">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The element after which to insert the message.  If it is an interaction fragment on this lifeline, then the new message’s send event is inserted after this element.  If it is a message, then the new message’s send event is inserted after the referenced message’s end that covers this lifeline."/>
+        </eAnnotations>
+        <eGenericType eClassifier="#//MElement">
+          <eTypeArguments/>
+        </eGenericType>
+      </eParameters>
+      <eParameters name="offset" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Vertical offset of the message from the element {@code before} it."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="receiver" lowerBound="1" eType="#//MLifeline">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The lifeline to receive the message.  May be the same as is sending it (this lifeline)."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="sort" lowerBound="1" eType="ecore:EEnum platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//MessageSort">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The sort of message to create."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="signature" eType="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//NamedElement">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="An optional message signature, either a signal or an operation."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="createReply" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Specifies whether or not to create a reply message, if the message to be created is a synchronous message."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="executionType" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EClass">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Specifies the type of the execution specification to be created, if the message to be created is a synchronous message."/>
+        </eAnnotations>
+      </eParameters>
+    </eOperations>
     <eOperations name="elementAt" lowerBound="1">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="documentation" value="Query the element covering this lifeline that is at, or the nearest element before, a given y-coördinate {@code offset}."/>

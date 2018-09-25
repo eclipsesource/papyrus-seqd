@@ -157,7 +157,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	@Override
 	public List<MExecutionOccurrence> getExecutionOccurrences() {
 		if (executionOccurrences == null) {
-			executionOccurrences = new EObjectContainmentEList<>(MExecutionOccurrence.class, this,
+			executionOccurrences = new EObjectContainmentEList<MExecutionOccurrence>(
+					MExecutionOccurrence.class, this,
 					SequenceDiagramPackage.MLIFELINE__EXECUTION_OCCURRENCES);
 		}
 		return executionOccurrences;
@@ -171,7 +172,7 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	@Override
 	public List<MExecution> getExecutions() {
 		if (executions == null) {
-			executions = new EObjectContainmentEList<>(MExecution.class, this,
+			executions = new EObjectContainmentEList<MExecution>(MExecution.class, this,
 					SequenceDiagramPackage.MLIFELINE__EXECUTIONS);
 		}
 		return executions;
@@ -358,6 +359,19 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 * @generated NOT
 	 */
 	@Override
+	public CreationCommand<Message> insertMessageAfter(MElement<?> before, int offset, MLifeline receiver,
+			MessageSort sort, NamedElement signature, boolean createReply, EClass executionType) {
+
+		return new InsertMessageCommand(this, before, offset, receiver, sort, signature, createReply,
+				executionType);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
 	public Optional<MElement<? extends Element>> elementAt(int offset) {
 		int lifelineTop = layoutHelper().getTop(diagramHelper().getLifelineBodyShape(getShape(getElement())));
 
@@ -475,9 +489,9 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case SequenceDiagramPackage.MLIFELINE__EXECUTION_OCCURRENCES:
-				return (executionOccurrences != null) && !executionOccurrences.isEmpty();
+				return executionOccurrences != null && !executionOccurrences.isEmpty();
 			case SequenceDiagramPackage.MLIFELINE__EXECUTIONS:
-				return (executions != null) && !executions.isEmpty();
+				return executions != null && !executions.isEmpty();
 			case SequenceDiagramPackage.MLIFELINE__DESTRUCTION:
 				return destruction != null;
 			case SequenceDiagramPackage.MLIFELINE__LEFT:
@@ -525,6 +539,10 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return insertMessageAfter((MElement<?>)arguments.get(0), (Integer)arguments.get(1),
 						(MLifeline)arguments.get(2), (MElement<?>)arguments.get(3), (Integer)arguments.get(4),
 						(MessageSort)arguments.get(5), (NamedElement)arguments.get(6));
+			case SequenceDiagramPackage.MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MESSAGESORT_NAMEDELEMENT_BOOLEAN_ECLASS:
+				return insertMessageAfter((MElement<?>)arguments.get(0), (Integer)arguments.get(1),
+						(MLifeline)arguments.get(2), (MessageSort)arguments.get(3),
+						(NamedElement)arguments.get(4), (Boolean)arguments.get(5), (EClass)arguments.get(6));
 			case SequenceDiagramPackage.MLIFELINE___ELEMENT_AT__INT:
 				return elementAt((Integer)arguments.get(0));
 			case SequenceDiagramPackage.MLIFELINE___NUDGE_HORIZONTALLY__INT:

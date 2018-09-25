@@ -176,6 +176,12 @@ public class DefaultDiagramHelper implements DiagramHelper {
 	@Override
 	public CreationCommand<Shape> createExecutionShape(Supplier<? extends ExecutionSpecification> execution,
 			Shape lifelineBody, int yPosition, int height) {
+		return createExecutionShape(execution, lifelineBody, () -> yPosition, height);
+	}
+
+	@Override
+	public CreationCommand<Shape> createExecutionShape(Supplier<? extends ExecutionSpecification> execution,
+			Shape lifelineBody, IntSupplier yPosition, int height) {
 
 		// TODO: The Logical Model is required to have no dependencies on the diagram editor,
 		// but this is usually the responsibility of a View Provider. That should be okay ...
@@ -194,8 +200,9 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			result.setElement(execution.get());
 
 			Bounds bounds = NotationFactory.eINSTANCE.createBounds();
-			bounds.setX((width - execWidth) / 2); // Relative to the parent
-			bounds.setY(layoutHelper().toRelativeY(result, lifelineBody, yPosition)); // Relative to parent
+			// x and y relative to the parent
+			bounds.setX((width - execWidth) / 2);
+			bounds.setY(layoutHelper().toRelativeY(result, lifelineBody, yPosition.getAsInt()));
 			bounds.setWidth(execWidth);
 			bounds.setHeight(height);
 			result.setLayoutConstraint(bounds);
