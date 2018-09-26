@@ -50,7 +50,6 @@ import org.eclipse.uml2.uml.Message;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -81,9 +80,8 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	private final EditorFixture.Modifiers modifiers;
 	private final Function<Matcher<?>, Matcher<?>> modifiersMatcherFunction;
+	private EditPart execEP;
 	private ExecutionSpecification exec;
-	private int execTop;
-	private int execBottom;
 
 	/**
 	 * Initializes me.
@@ -109,6 +107,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 						at(LL2_BODY_X, withinMagnet(EXEC_START))));
 
 		// The receiving end snaps to the exec start and the sending end matches
+		int execTop = getTop(execEP);
 		assertThat(messageEP, withModifiers(runs(LL1_BODY_X, execTop, LL2_BODY_X, execTop, 1)));
 
 		// The message receive event starts the execution
@@ -129,6 +128,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 						at(LL2_BODY_X, withinMagnet(EXEC_START))));
 
 		// The receiving end snaps to the exec start. The sending end doesn't match
+		int execTop = getTop(execEP);
 		assertThat(messageEP, withModifiers(runs(LL1_BODY_X, 120, LL2_BODY_X, execTop, 1)));
 
 		// The message receive event starts the execution
@@ -144,6 +144,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 						at(LL1_BODY_X, withinMagnet(EXEC_FINISH))));
 
 		// The sending end snaps to the exec start and the receiving end matches
+		int execBottom = getBottom(execEP);
 		assertThat(messageEP, withModifiers(runs(LL2_BODY_X, execBottom, LL1_BODY_X, execBottom, 1)));
 
 		// The message send event finishes the execution
@@ -164,10 +165,10 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		assumeThat("Message not moved", newMessageMidpoint,
 				not(isPoint(midMessage.x(), midMessage.y(), 5)));
 
+		int execTop = getTop(execEP);
 		assertThat(messageEP, withModifiers(runs(LL1_BODY_X, execTop, LL2_BODY_X, execTop, 1)));
 	}
 
-	@Ignore("Logical model not calculating bottom of execution correctly.")
 	@Test
 	public void moveReplyMessage() {
 		EditPart messageEP = createConnection(SequenceElementTypes.Reply_Message_Edge, at(LL2_BODY_X, 240),
@@ -177,6 +178,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		// The sending end snaps to the exec start and the receiving end matches
 		editor.with(modifiers,
 				() -> editor.moveSelection(midMessage, at(midMessage.x(), withinMagnet(EXEC_FINISH))));
+		int execBottom = getBottom(execEP);
 		assertThat(messageEP, withModifiers(runs(LL2_BODY_X, execBottom, LL1_BODY_X, execBottom, 1)));
 	}
 
@@ -191,6 +193,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 
 		// First, extend the bottom edge of the execution specification. Have to
 		// subtract 1 to grab on (inside-ish) the actual bottom edge
+		int execBottom = getBottom(execEP);
 		editor.moveSelection(at(LL2_BODY_X, execBottom - 1), at(LL2_BODY_X, execBottom + 100));
 
 		int newBottomY = getBottom(getLastCreatedEditPart());
@@ -225,7 +228,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		editor.getDiagramEditPart().getDiagramEditDomain().getDiagramCommandStack()
 				.execute(GMFtoGEFCommandWrapper.wrap(command));
 
-		int newTopY = execTop + 100;
+		int newTopY = getTop(execEP);
 
 		EditPart messageEP = editor.with(modifiers,
 				() -> createConnection(SequenceElementTypes.Reply_Message_Edge, //
@@ -249,16 +252,11 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	@Before
 	public void createExecutionSpecification() {
-		EditPart exec = createShape(SequenceElementTypes.Behavior_Execution_Shape,
+		execEP = createShape(SequenceElementTypes.Behavior_Execution_Shape, //
 				at(LL2_BODY_X, EXEC_START_Y), sized(0, EXEC_HEIGHT));
-		assumeThat("Execution specification not created", exec, notNullValue());
+		assumeThat("Execution specification not created", execEP, notNullValue());
 
-		this.exec = (ExecutionSpecification) exec.getAdapter(EObject.class);
-
-		// Get the top and bottom of the execution as realized in the diagram editor,
-		// which may differ slightly from the expectation in a platform-dependent way
-		this.execTop = getTop(exec);
-		this.execBottom = getBottom(exec);
+		exec = (ExecutionSpecification) execEP.getAdapter(EObject.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -267,7 +265,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	}
 
 	int withinMagnet(boolean execStart) {
-		return withinMagnet(execStart ? execTop : execBottom, execStart);
+		return withinMagnet(execStart ? getTop(execEP) : getBottom(execEP), execStart);
 	}
 
 	int withinMagnet(int y, boolean execStart) {

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:style="http://www.eclipse.org/papyrus/infra/gmfdiag/style" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_nieKUMGGEeiBUataQqP5Qw" type="LightweightSequenceDiagram" name="scenario" measurementUnit="Pixel">
+  <children xmi:type="notation:Shape" xmi:id="_nieKUcGGEeiBUataQqP5Qw" type="Shape_Interaction">
+    <children xmi:type="notation:DecorationNode" xmi:id="_nieKUsGGEeiBUataQqP5Qw" type="Label_Interaction_Name"/>
+    <children xmi:type="notation:Compartment" xmi:id="_nieKU8GGEeiBUataQqP5Qw" type="Interaction_Contents">
+      <children xmi:type="notation:Shape" xmi:id="_phL5wMGGEeiBUataQqP5Qw" type="Shape_Lifeline_Header">
+        <children xmi:type="notation:Shape" xmi:id="_phL5wcGGEeiBUataQqP5Qw" type="Compartment_Lifeline_Header"/>
+        <children xmi:type="notation:Shape" xmi:id="_phL5wsGGEeiBUataQqP5Qw" type="Label_Lifeline_Name"/>
+        <children xmi:type="notation:Shape" xmi:id="_phL5w8GGEeiBUataQqP5Qw" type="Shape_Lifeline_Body">
+          <children xmi:type="notation:Shape" xmi:id="_BRwzAMGHEeiBUataQqP5Qw" type="Shape_Execution_Specification">
+            <element xmi:type="uml:BehaviorExecutionSpecification" href="kitchen-sink.uml#_BPmP0MGHEeiBUataQqP5Qw"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_BRwzAcGHEeiBUataQqP5Qw" x="-4" y="138" width="10" height="80"/>
+          </children>
+          <layoutConstraint xmi:type="notation:Size" xmi:id="_phL5xMGGEeiBUataQqP5Qw" width="2" height="150"/>
+        </children>
+        <element xmi:type="uml:Lifeline" href="kitchen-sink.uml#_pcNTIMGGEeiBUataQqP5Qw"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_phL5xcGGEeiBUataQqP5Qw" x="61" y="25" width="100" height="28"/>
+      </children>
+      <children xmi:type="notation:Shape" xmi:id="_qA2RQMGGEeiBUataQqP5Qw" type="Shape_Lifeline_Header">
+        <children xmi:type="notation:Shape" xmi:id="_qA2RQcGGEeiBUataQqP5Qw" type="Compartment_Lifeline_Header"/>
+        <children xmi:type="notation:Shape" xmi:id="_qA2RQsGGEeiBUataQqP5Qw" type="Label_Lifeline_Name"/>
+        <children xmi:type="notation:Shape" xmi:id="_qA2RQ8GGEeiBUataQqP5Qw" type="Shape_Lifeline_Body">
+          <children xmi:type="notation:Shape" xmi:id="_wjrFEMGGEeiBUataQqP5Qw" type="Shape_Execution_Specification">
+            <element xmi:type="uml:ActionExecutionSpecification" href="kitchen-sink.uml#_walagMGGEeiBUataQqP5Qw"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_wjrFEcGGEeiBUataQqP5Qw" x="-4" y="60" width="10" height="40"/>
+          </children>
+          <layoutConstraint xmi:type="notation:Size" xmi:id="_qA2RRMGGEeiBUataQqP5Qw" width="2" height="150"/>
+        </children>
+        <element xmi:type="uml:Lifeline" href="kitchen-sink.uml#_p-qf8MGGEeiBUataQqP5Qw"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_qA2RRcGGEeiBUataQqP5Qw" x="198" y="25" width="100" height="28"/>
+      </children>
+      <children xmi:type="notation:Shape" xmi:id="_NLtcgMGHEeiBUataQqP5Qw" type="Shape_Lifeline_Header">
+        <children xmi:type="notation:Shape" xmi:id="_NLtcgcGHEeiBUataQqP5Qw" type="Compartment_Lifeline_Header"/>
+        <children xmi:type="notation:Shape" xmi:id="_NLtcgsGHEeiBUataQqP5Qw" type="Label_Lifeline_Name"/>
+        <children xmi:type="notation:Shape" xmi:id="_NLtcg8GHEeiBUataQqP5Qw" type="Shape_Lifeline_Body">
+          <children xmi:type="notation:Shape" xmi:id="_Vulcg8GHEeiBUataQqP5Qw" type="Shape_Destruction_Specification">
+            <element xmi:type="uml:DestructionOccurrenceSpecification" href="kitchen-sink.uml#_VulcgcGHEeiBUataQqP5Qw"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_VulchMGHEeiBUataQqP5Qw" x="-9" y="41" width="20" height="20"/>
+          </children>
+          <layoutConstraint xmi:type="notation:Size" xmi:id="_NLtchMGHEeiBUataQqP5Qw" width="2" height="150"/>
+        </children>
+        <element xmi:type="uml:Lifeline" href="kitchen-sink.uml#_NK150MGHEeiBUataQqP5Qw"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_NLtchcGHEeiBUataQqP5Qw" x="340" y="268" width="100" height="28"/>
+      </children>
+    </children>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_nieKVMGGEeiBUataQqP5Qw" x="37" y="12" width="600" height="450"/>
+  </children>
+  <styles xmi:type="notation:StringValueStyle" xmi:id="_nieKVcGGEeiBUataQqP5Qw" name="diagram_compatibility_version" stringValue="1.3.0"/>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_nieKVsGGEeiBUataQqP5Qw"/>
+  <styles xmi:type="style:PapyrusDiagramStyle" xmi:id="_nieKV8GGEeiBUataQqP5Qw" diagramKindId="org.eclipse.papyrus.uml.diagram.lightweightsequence">
+    <owner xmi:type="uml:Interaction" href="kitchen-sink.uml#_mWGd0MGGEeiBUataQqP5Qw"/>
+  </styles>
+  <element xmi:type="uml:Interaction" href="kitchen-sink.uml#_mWGd0MGGEeiBUataQqP5Qw"/>
+  <edges xmi:type="notation:Connector" xmi:id="_1rVicMGGEeiBUataQqP5Qw" type="Edge_Message" source="_phL5w8GGEeiBUataQqP5Qw" target="_wjrFEMGGEeiBUataQqP5Qw">
+    <element xmi:type="uml:Message" href="kitchen-sink.uml#_1rU7YsGGEeiBUataQqP5Qw"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_1rViccGGEeiBUataQqP5Qw"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_1rVicsGGEeiBUataQqP5Qw" id="60"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_1rVic8GGEeiBUataQqP5Qw" id="start"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_8U4CQMGGEeiBUataQqP5Qw" type="Edge_Message" source="_wjrFEMGGEeiBUataQqP5Qw" target="_phL5w8GGEeiBUataQqP5Qw">
+    <element xmi:type="uml:Message" href="kitchen-sink.uml#_8U3bMsGGEeiBUataQqP5Qw"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_8U4CQcGGEeiBUataQqP5Qw"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_8U4CQsGGEeiBUataQqP5Qw" id="end"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_8U4CQ8GGEeiBUataQqP5Qw" id="100"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_Hy6y48GHEeiBUataQqP5Qw" type="Edge_Message" source="_BRwzAMGHEeiBUataQqP5Qw" target="_qA2RQ8GGEeiBUataQqP5Qw">
+    <element xmi:type="uml:Message" href="kitchen-sink.uml#_Hy6y4sGHEeiBUataQqP5Qw"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_Hy6y5MGHEeiBUataQqP5Qw"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Hy6y5cGHEeiBUataQqP5Qw" id="right;35"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Hy6y5sGHEeiBUataQqP5Qw" id="204"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_Uhk208GHEeiBUataQqP5Qw" type="Edge_Message" source="_qA2RQ8GGEeiBUataQqP5Qw" target="_NLtcgMGHEeiBUataQqP5Qw">
+    <element xmi:type="uml:Message" href="kitchen-sink.uml#_Uhk20sGHEeiBUataQqP5Qw"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_Uhk21MGHEeiBUataQqP5Qw"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Uhk21cGHEeiBUataQqP5Qw" id="229"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Uhk21sGHEeiBUataQqP5Qw" id="left;14"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_VulchcGHEeiBUataQqP5Qw" type="Edge_Message" source="_qA2RQ8GGEeiBUataQqP5Qw" target="_Vulcg8GHEeiBUataQqP5Qw">
+    <element xmi:type="uml:Message" href="kitchen-sink.uml#_VulcgsGHEeiBUataQqP5Qw"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_VulchsGHEeiBUataQqP5Qw"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Vulch8GHEeiBUataQqP5Qw" id="294"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_VulciMGHEeiBUataQqP5Qw" id="(0.9,0.5)"/>
+  </edges>
+</notation:Diagram>
