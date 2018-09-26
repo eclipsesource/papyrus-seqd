@@ -218,7 +218,16 @@ public class EditorFixture extends ModelFixture {
 
 	protected IProject getProject(Description description) {
 		if (project == null) {
-			project = ResourcesPlugin.getWorkspace().getRoot().getProject(description.getMethodName());
+			String projectName = description.getMethodName();
+			if (projectName == null) {
+				// It's a class rule, then
+				projectName = description.getDisplayName();
+				// Note that if there's no dot, this gets the substring from zero
+				projectName = projectName.substring(projectName.lastIndexOf('.') + 1);
+				// Strip out all non-letters
+				projectName = projectName.replaceAll("\\P{L}", "");
+			}
+			project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 
 			try {
 				if (!project.exists()) {

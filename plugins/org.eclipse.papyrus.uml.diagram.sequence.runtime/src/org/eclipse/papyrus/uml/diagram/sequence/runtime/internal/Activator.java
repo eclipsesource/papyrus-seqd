@@ -16,6 +16,7 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.core.preferences.PreferencesHint;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.papyrus.infra.core.log.LogHelper;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.layout.DiagramFontHelper;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
@@ -51,6 +52,8 @@ public class Activator extends AbstractUIPlugin {
 		instance = this;
 		PreferencesHint.registerPreferenceStore(DIAGRAM_PREFERENCES_HINT, getPreferenceStore());
 		log = new LogHelper(instance);
+
+		LogicalModelPlugin.getInstance().setFontHelperFactory(DiagramFontHelper::new);
 	}
 
 	@Override

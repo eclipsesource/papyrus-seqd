@@ -219,13 +219,14 @@ public class MLifelineTest extends MElementTest {
 
 	@Override
 	public void testGetTop() {
-		assertThat(getFixture().getTop(), isPresent(67)); // 12 {frame} + 30 {title} + {25} y
+		// Note that this diagram has no interaction name label!
+		assertThat(getFixture().getTop(), isPresent(42)); // 12 {frame} + 5 {insets} + {25} y
 	}
 
 	@Override
 	public void testGetBottom() {
 		// The lifeline header has a specified height
-		assertThat(getFixture().getBottom(), isPresent(92)); // 67 {top} + 25 {height}
+		assertThat(getFixture().getBottom(), isPresent(67)); // 42 {top} + 25 {height}
 	}
 
 	@Override
@@ -335,9 +336,9 @@ public class MLifelineTest extends MElementTest {
 		ExecutionSpecification execSpec = create(command);
 		MExecution exec = getFixture().getExecution(execSpec).get();
 
-		// 267 {message} + 15 {offset}
-		assertThat(exec.getTop(), isPresent(282));
-		assertThat(exec.getBottom(), isPresent(332));
+		// 242 {message} + 15 {offset}
+		assertThat(exec.getTop(), isPresent(257));
+		assertThat(exec.getBottom(), isPresent(307));
 		assertThat(exec.getElement(), instanceOf(ActionExecutionSpecification.class));
 		assertThat(((ActionExecutionSpecification)exec.getElement()).getAction(), is(action));
 	}
@@ -360,9 +361,9 @@ public class MLifelineTest extends MElementTest {
 		ExecutionSpecification execSpec = create(command);
 		MExecution exec = getFixture().getExecution(execSpec).get();
 
-		// 267 {message} + 15 {offset}
-		assertThat(exec.getTop(), isPresent(282));
-		assertThat(exec.getBottom(), isPresent(332));
+		// 242 {message} + 15 {offset}
+		assertThat(exec.getTop(), isPresent(257));
+		assertThat(exec.getBottom(), isPresent(307));
 		assertThat(exec.getElement(), instanceOf(ActionExecutionSpecification.class));
 
 		// We didn't actually supply the action, as such
@@ -390,9 +391,9 @@ public class MLifelineTest extends MElementTest {
 		Message umlMessage = create(command);
 		MMessage message = interaction.getMessage(umlMessage).get();
 
-		// 267 {message} + 25 {offset}
-		assertThat(message.getTop(), isPresent(292));
-		assertThat(message.getBottom(), isPresent(292));
+		// 242 {message} + 25 {offset}
+		assertThat(message.getTop(), isPresent(267));
+		assertThat(message.getBottom(), isPresent(267));
 		assertThat(umlMessage.getSignature(), is(operation));
 		assertThat(umlMessage.getMessageSort(), is(MessageSort.SYNCH_CALL_LITERAL));
 		assertThat(umlMessage.getMessageKind(), is(MessageKind.COMPLETE_LITERAL));
@@ -439,10 +440,10 @@ public class MLifelineTest extends MElementTest {
 		Message umlMessage = create(command);
 		MMessage message = interaction.getMessage(umlMessage).get();
 
-		// 267 {message} + 25 {offset}
-		assertThat(message.getTop(), isPresent(292));
-		// 30 pixels of slope
-		assertThat(message.getBottom(), isPresent(312));
+		// 242 {message} + 25 {offset}
+		assertThat(message.getTop(), isPresent(267));
+		// 20 pixels of slope
+		assertThat(message.getBottom(), isPresent(287));
 		assertThat(umlMessage.getSignature(), is(operation));
 		assertThat(umlMessage.getMessageSort(), is(MessageSort.ASYNCH_SIGNAL_LITERAL));
 		assertThat(umlMessage.getMessageKind(), is(MessageKind.COMPLETE_LITERAL));

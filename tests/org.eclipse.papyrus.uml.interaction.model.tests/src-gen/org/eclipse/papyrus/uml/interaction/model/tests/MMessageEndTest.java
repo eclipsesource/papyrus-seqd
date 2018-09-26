@@ -121,8 +121,9 @@ public class MMessageEndTest extends MOccurrenceTest {
 
 	@Override
 	public void testGetTop() {
-		// 12 {frame} + 30 {title} + 25 {lifeline} + 25 {head} + 25 {anchor}
-		assertThat(getFixture().getTop(), isPresent(117));
+		// Note that this diagram has no interaction name label!
+		// 12 {frame} + 5 {insets} + 25 {lifeline} + 25 {head} + 25 {anchor}
+		assertThat(getFixture().getTop(), isPresent(92));
 	}
 
 	@Override

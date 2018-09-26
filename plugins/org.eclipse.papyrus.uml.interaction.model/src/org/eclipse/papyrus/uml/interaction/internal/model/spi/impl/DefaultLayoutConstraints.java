@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.spi.impl;
 
 import static java.lang.Math.abs;
+import static org.eclipse.gmf.runtime.diagram.core.util.ViewUtil.getContainerView;
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.applyModifier;
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.ANCHOR;
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.ARROW;
@@ -24,9 +25,14 @@ import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Re
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.notation.Compartment;
+import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 
 /**
@@ -48,6 +54,10 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 
 	private final Map<String, Integer> standardPaddings;
 
+	private final Map<String, Integer> standardTopInsets;
+
+	private final Map<String, Integer> standardBottomInsets;
+
 	/**
 	 * Initializes me.
 	 */
@@ -59,6 +69,8 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 		standardHeights = loadHeights();
 		standardWidths = loadWidths();
 		standardPaddings = loadPaddings();
+		standardTopInsets = loadTopInsets();
+		standardBottomInsets = loadBottomInsets();
 	}
 
 	@Override
@@ -73,7 +85,22 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 
 	@Override
 	public int getYOffset(Compartment shapeCompartment) {
-		return getYOffset(shapeCompartment.getType());
+		int result = getYOffset(shapeCompartment.getType());
+
+		if (ViewTypes.INTERACTION_CONTENTS.equals(shapeCompartment.getType())) {
+			// Add the height of the name label above it
+			LayoutHelper layout = LogicalModelPlugin.getInstance()
+					.getLayoutHelper(AdapterFactoryEditingDomain.getEditingDomainFor(shapeCompartment));
+			if (layout != null) {
+				Node nameLabel = (Node)ViewUtil.getChildBySemanticHint(getContainerView(shapeCompartment),
+						ViewTypes.INTERACTION_NAME);
+				if (nameLabel != null) {
+					result = result + layout.getHeight(nameLabel);
+				}
+			}
+		}
+
+		return result;
 	}
 
 	@Override
@@ -158,11 +185,21 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 		return 15;
 	}
 
+	@Override
+	public int getTopInset(String viewType) {
+		return standardTopInsets.getOrDefault(viewType, ZERO).intValue();
+	}
+
+	@Override
+	public int getBottomInset(String viewType) {
+		return standardBottomInsets.getOrDefault(viewType, ZERO).intValue();
+	}
+
 	@SuppressWarnings("boxing")
 	private static Map<String, Integer> loadXOffsets() {
 		Map<String, Integer> result = new HashMap<>();
 
-		// Inset of the viewpoint figure
+		// Inset of the viewport figure
 		result.put(ViewTypes.INTERACTION_CONTENTS, 5);
 
 		return result;
@@ -172,9 +209,29 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 	private static Map<String, Integer> loadYOffsets() {
 		Map<String, Integer> result = new HashMap<>();
 
-		// The size of the interaction frame's pentagon label
-		result.put(ViewTypes.INTERACTION_CONTENTS, 30);
+		// Inset of the viewport figure
+		result.put(ViewTypes.INTERACTION_CONTENTS, 5);
 		result.put(ViewTypes.LIFELINE_HEADER, 25);
+		return result;
+	}
+
+	@SuppressWarnings("boxing")
+	private static Map<String, Integer> loadTopInsets() {
+		Map<String, Integer> result = new HashMap<>();
+
+		// Inset of the label figure
+		result.put(ViewTypes.INTERACTION_NAME, 5);
+
+		return result;
+	}
+
+	@SuppressWarnings("boxing")
+	private static Map<String, Integer> loadBottomInsets() {
+		Map<String, Integer> result = new HashMap<>();
+
+		// Inset of the label figure
+		result.put(ViewTypes.INTERACTION_NAME, 6);
+
 		return result;
 	}
 

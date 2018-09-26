@@ -49,7 +49,7 @@ public interface LayoutHelper {
 	 *            a shape in the sequence diagram
 	 * @return its top position
 	 */
-	int getTop(Shape shape);
+	int getTop(Node shape);
 
 	/**
 	 * Queries the bottom (y-coördinate) of the diagram visual element associated with a vertex in the graph.
@@ -67,7 +67,7 @@ public interface LayoutHelper {
 	 *            a shape in the sequence diagram
 	 * @return its bottom position
 	 */
-	int getBottom(Shape shape);
+	int getBottom(Node shape);
 
 	/**
 	 * Queries the height of a {@code shape}.
@@ -76,7 +76,7 @@ public interface LayoutHelper {
 	 *            a shape in the diagram
 	 * @return its height
 	 */
-	int getHeight(Shape shape);
+	int getHeight(Node shape);
 
 	/**
 	 * Queries the vertical position (y-coördinate) of an {@code anchor} in the sequence diagram.
@@ -105,7 +105,7 @@ public interface LayoutHelper {
 	 *            a shape in the sequence diagram
 	 * @return its left position
 	 */
-	int getLeft(Shape shape);
+	int getLeft(Node shape);
 
 	/**
 	 * Queries the right (x-coördinate) of the diagram visual element associated with a vertex in the graph.
@@ -123,7 +123,7 @@ public interface LayoutHelper {
 	 *            a shape in the sequence diagram
 	 * @return its right position
 	 */
-	int getRight(Shape shape);
+	int getRight(Node shape);
 
 	/**
 	 * Obtains a command that sets the top (y-coördinate) of the diagram visual element associated with a
@@ -146,7 +146,7 @@ public interface LayoutHelper {
 	 *            the new top position to set
 	 * @return the command, which may not be executable but will not be {@code null}
 	 */
-	Command setTop(Shape shape, int yPosition);
+	Command setTop(Node shape, int yPosition);
 
 	/**
 	 * Obtains a command that sets the bottom (y-coördinate) of the diagram visual element associated with a
@@ -169,7 +169,7 @@ public interface LayoutHelper {
 	 *            the new bottom position to set
 	 * @return the command, which may not be executable but will not be {@code null}
 	 */
-	Command setBottom(Shape shape, int yPosition);
+	Command setBottom(Node shape, int yPosition);
 
 	/**
 	 * Obtains a command that sets the vertical position (y-coördinate) of an {@code anchor} in the sequence
@@ -206,7 +206,7 @@ public interface LayoutHelper {
 	 *            the new left position to set
 	 * @return the command, which may not be executable but will not be {@code null}
 	 */
-	Command setLeft(Shape shape, int xPosition);
+	Command setLeft(Node shape, int xPosition);
 
 	/**
 	 * Returns the bounds for a new representation, given the proposed bounds.
@@ -246,7 +246,7 @@ public interface LayoutHelper {
 	 *            an X position in relative coördinate space of the {@code parent}
 	 * @return the corresponding position in absolute coördinate space
 	 */
-	int toAbsoluteX(Shape shape, View parent, int x);
+	int toAbsoluteX(Node shape, View parent, int x);
 
 	/**
 	 * Obtain an {@code x} coördinate in absolute space from one that is relative to the parent of a
@@ -258,7 +258,7 @@ public interface LayoutHelper {
 	 *            an X position in relative coördinate space of the {@code shape}'s parent
 	 * @return the corresponding position in absolute coördinate space, or the relative {@code x} if none
 	 */
-	default int toAbsoluteX(Shape shape, int x) {
+	default int toAbsoluteX(Node shape, int x) {
 		EObject container = shape.eContainer();
 		return (container instanceof View) ? toAbsoluteX(shape, (View)container, x) : x;
 	}
@@ -275,7 +275,7 @@ public interface LayoutHelper {
 	 *            an X position in absolute coördinate space
 	 * @return the corresponding position in the {@code parent}'s space
 	 */
-	int toRelativeX(Shape shape, View parent, int x);
+	int toRelativeX(Node shape, View parent, int x);
 
 	/**
 	 * Obtain an {@code x} coördinate in the space of the parent of a {@code shape}, if it has one, from one
@@ -289,7 +289,7 @@ public interface LayoutHelper {
 	 *         none
 	 * @see #toRelativeX(Shape, View, int)
 	 */
-	default int toRelativeX(Shape shape, int x) {
+	default int toRelativeX(Node shape, int x) {
 		EObject container = shape.eContainer();
 		return (container instanceof View) ? toRelativeX(shape, (View)container, x) : x;
 	}
@@ -306,7 +306,7 @@ public interface LayoutHelper {
 	 *            a Y position in relative coördinate space of the {@code parent}
 	 * @return the corresponding position in absolute coördinate space
 	 */
-	int toAbsoluteY(Shape shape, View parent, int y);
+	int toAbsoluteY(Node shape, View parent, int y);
 
 	/**
 	 * Obtain a {@code y} coördinate in absolute space from one that is relative to the parent of a
@@ -318,7 +318,7 @@ public interface LayoutHelper {
 	 *            a Y position in relative coördinate space of the {@code shape}'s parent
 	 * @return the corresponding position in absolute coördinate space, or the relative {@code x} if none
 	 */
-	default int toAbsoluteY(Shape shape, int y) {
+	default int toAbsoluteY(Node shape, int y) {
 		EObject container = shape.eContainer();
 		return (container instanceof View) ? toAbsoluteY(shape, (View)container, y) : y;
 	}
@@ -335,7 +335,7 @@ public interface LayoutHelper {
 	 *            a Y position in absolute coördinate space
 	 * @return the corresponding position in the {@code parent}'s space
 	 */
-	int toRelativeY(Shape shape, View parent, int y);
+	int toRelativeY(Node shape, View parent, int y);
 
 	/**
 	 * Obtain a {@code y} coördinate in the space of the parent of a {@code shape}, if it has one, from one
@@ -349,7 +349,7 @@ public interface LayoutHelper {
 	 *         none
 	 * @see #toRelativeY(Shape, View, int)
 	 */
-	default int toRelativeY(Shape shape, int y) {
+	default int toRelativeY(Node shape, int y) {
 		EObject container = shape.eContainer();
 		return (container instanceof View) ? toRelativeY(shape, (View)container, y) : y;
 	}
@@ -361,4 +361,10 @@ public interface LayoutHelper {
 	 */
 	LayoutConstraints getConstraints();
 
+	/**
+	 * Obtain the font helper for label calculations.
+	 * 
+	 * @return the pluggable font helper
+	 */
+	FontHelper getFontHelper();
 }

@@ -46,7 +46,7 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 	// Horizontal position of the second lifeline's body
 	private static final int LIFELINE_2_BODY_X = 281;
 
-	private static final int INITIAL_Y = 170;
+	private static final int INITIAL_Y = 200;
 
 	private final int sendX;
 
@@ -110,9 +110,11 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 	@Test
 	public void attemptToMoveAsyncMessageAcrossAnother() {
 		final int slopeY = INITIAL_Y + 80;
-		final int otherY = moveDown ? INITIAL_Y + 80 + 15 : INITIAL_Y - 15;
+		final int otherY = moveDown ? INITIAL_Y + 80 + 30 : INITIAL_Y - 30;
 
-		if (!moveDown) { // Be sure to create messages in top-down order to avoid nudging
+		// Be sure to create messages in top-down order to avoid nudging and
+		// far enough apart to avoid padding
+		if (!moveDown) {
 			createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, otherY), at(recvX, otherY));
 		}
 
@@ -120,11 +122,13 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 				at(recvX, slopeY)); // always sloping down, of course
 		assumeThat(messageEP, runs(sendX, INITIAL_Y, recvX, slopeY));
 
-		if (moveDown) { // Be sure to create messages in top-down order to avoid nudging
+		// Be sure to create messages in top-down order to avoid nudging and
+		// far enough apart to avoid padding
+		if (moveDown) {
 			createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, otherY), at(recvX, otherY));
 		}
 
-		int delta = moveDown ? 30 : -30;
+		int delta = moveDown ? 60 : -60;
 		int x = (sendX + recvX) / 2;
 		int grabY = (INITIAL_Y + slopeY) / 2;
 		int y = grabY + delta;
