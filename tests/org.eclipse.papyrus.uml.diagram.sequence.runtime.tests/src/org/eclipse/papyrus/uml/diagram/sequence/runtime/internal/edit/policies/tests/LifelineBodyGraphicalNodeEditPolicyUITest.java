@@ -83,12 +83,19 @@ public class LifelineBodyGraphicalNodeEditPolicyUITest extends AbstractGraphical
 	}
 
 	@Test
-	public void attemptBackwardSlopedAsyncMessage() {
-		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 140), at(recvX, 125));
+	public void attemptBackwardSlopedAsyncMessage_allowed() {
+		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 140), at(recvX, 138));
 
 		// The target to which the user draw the message should have priority over the
 		// source
-		assertThat("Message should be horizontal to the target", messageEP, runs(sendX, 125, recvX, 125, 2));
+		assertThat("Message should be horizontal to the target", messageEP, runs(sendX, 140, recvX, 140, 2));
+	}
+
+	@Test(expected = AssertionError.class)
+	public void attemptBackwardSlopedAsyncMessage_disallowed() {
+		// causes assertion error as no edit part will be found since he creation is not
+		// possible
+		createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 140), at(recvX, 125));
 	}
 
 	@Test
@@ -129,12 +136,24 @@ public class LifelineBodyGraphicalNodeEditPolicyUITest extends AbstractGraphical
 	}
 
 	@Test
-	public void backwardSlopeFeedback() {
-		editor.hoverConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 130), at(recvX, 115));
+	public void backwardSlopeFeedback_allowed() {
+		editor.hoverConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 130), at(recvX, 128));
 
 		try {
 			assertThat("Connection feedback should be horizontal", editor.getDiagramEditPart(),
-					feedbackThat(Figures.isHorizontal()));
+					feedbackThat(Figures.runs(sendX, 130, recvX, 130)));
+		} finally {
+			editor.escape();
+		}
+	}
+
+	@Test
+	public void backwardSlopeFeedback_disallowed() {
+		editor.hoverConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 130), at(recvX, 115));
+
+		try {
+			assertThat("Connection should show backward slope, but command not executable.",
+					editor.getDiagramEditPart(), feedbackThat(Figures.runs(sendX, 130, recvX, 115)));
 		} finally {
 			editor.escape();
 		}

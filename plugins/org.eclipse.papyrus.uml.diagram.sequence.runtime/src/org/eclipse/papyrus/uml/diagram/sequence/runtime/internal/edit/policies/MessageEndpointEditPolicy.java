@@ -98,7 +98,7 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 			boolean synch = MessageUtil.isSynchronous(message.getMessageSort());
 			boolean source = request.isMovingStartAnchor();
 			feedbackHelper = new MessageFeedbackHelper(source ? Mode.MOVE_SOURCE : Mode.MOVE_TARGET, synch,
-					getMagnetManager());
+					getMagnetManager(), getLayoutConstraints());
 			feedbackHelper.setConnection(getConnection());
 		}
 		return feedbackHelper;
@@ -177,7 +177,8 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 			Message message = (Message)((IGraphicalEditPart)getHost()).resolveSemanticElement();
 			boolean synch = MessageUtil.isSynchronous(message.getMessageSort());
 
-			feedbackHelper = new MessageFeedbackHelper(Mode.MOVE_BOTH, synch, getMagnetManager());
+			feedbackHelper = new MessageFeedbackHelper(Mode.MOVE_BOTH, synch, getMagnetManager(),
+					getLayoutConstraints());
 			feedbackHelper.setConnection(getConnection());
 
 			Point grabbedAt = lastMouseLocation;

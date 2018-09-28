@@ -210,9 +210,16 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 					if ((absoluteY < startLocation.y())
 							|| !getLayoutConstraints().isAsyncMessageSlope(startLocation.preciseX(),
 									startLocation.preciseY(), location.preciseX(), location.preciseY())) {
-
-						absoluteY = startLocation.y();
-						location.setY(absoluteY);
+						// user attempts an async slope up
+						if (startLocation.y() - absoluteY < getLayoutConstraints()
+								.getAsyncMessageSlopeThreshold()) {
+							// create horizontally of below threshold
+							absoluteY = startLocation.y();
+							location.setY(absoluteY);
+						} else {
+							// disallow if slope up too big
+							return UnexecutableCommand.INSTANCE;
+						}
 					}
 
 					location = getRelativeLocation(location);
@@ -264,7 +271,8 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		if (feedbackHelper == null) {
 			MessageFeedbackHelper helper = new MessageFeedbackHelper(Mode.CREATE,
-					MessageUtil.isSynchronousMessageConnection(request), getMagnetManager());
+					MessageUtil.isSynchronousMessageConnection(request), getMagnetManager(),
+					getLayoutConstraints());
 			helper.setEventBus(bus);
 
 			feedbackHelper = helper;
