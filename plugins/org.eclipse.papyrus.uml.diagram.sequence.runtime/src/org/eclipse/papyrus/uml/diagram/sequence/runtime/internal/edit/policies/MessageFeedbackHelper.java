@@ -26,6 +26,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.figure.LifelineBodyFigure;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.ISequenceAnchor;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnetManager;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 
 /**
  * Feedback helper for messages that does not allow them to slope upwards and that ensures horizontality of
@@ -43,6 +44,8 @@ class MessageFeedbackHelper extends FeedbackHelper {
 	// In the case of moving the message, where it is grabbed
 	private Point grabbedAt;
 
+	private LayoutConstraints layoutConstraints;
+
 	/**
 	 * Initializes me.
 	 *
@@ -53,12 +56,14 @@ class MessageFeedbackHelper extends FeedbackHelper {
 	 * @param magnetManager
 	 *            the contextual magnet manager
 	 */
-	MessageFeedbackHelper(Mode mode, boolean synchronous, IMagnetManager magnetManager) {
+	MessageFeedbackHelper(Mode mode, boolean synchronous, IMagnetManager magnetManager,
+			LayoutConstraints layoutConstraints) {
 		super();
 
 		this.mode = mode;
 		this.synchronous = synchronous;
 		this.magnetManager = magnetManager;
+		this.layoutConstraints = layoutConstraints;
 
 		setMovingStartAnchor(mode.isMovingSource());
 	}
@@ -119,8 +124,20 @@ class MessageFeedbackHelper extends FeedbackHelper {
 					// Constrain the message to horizontal
 					switch (mode) {
 						case CREATE:
-							// Bring the other end along (subject to magnet constraints)
-							otherLocation.setY(p.y());
+							if (!synchronous && delta < 0) {
+								/*
+								 * do not move an async message send up, because it can't be moved down since
+								 * we allow down-sloping. If slope up is small, allows horizontal creation
+								 * though
+								 */
+								if (Math.abs(delta) < layoutConstraints.getAsyncMessageSlopeThreshold()) {
+									thisLocation.setY(otherLocation.y());
+									recreateAnchor(anchor, thisLocation);
+								}
+							} else {
+								// Bring the other end along (subject to magnet constraints)
+								otherLocation.setY(p.y());
+							}
 
 							Optional<IMagnet> otherMagnet = magnetManager.getCapturingMagnet(otherLocation);
 							otherMagnet.map(IMagnet::getLocation).ifPresent(m -> {
