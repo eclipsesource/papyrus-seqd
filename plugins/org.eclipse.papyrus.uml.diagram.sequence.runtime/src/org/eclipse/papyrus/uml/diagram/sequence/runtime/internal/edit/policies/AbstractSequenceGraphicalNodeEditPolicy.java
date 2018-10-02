@@ -17,11 +17,15 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.pol
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil.getSort;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
+import static org.eclipse.uml2.uml.UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION;
+import static org.eclipse.uml2.uml.UMLPackage.Literals.BEHAVIOR_EXECUTION_SPECIFICATION;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 
@@ -50,8 +54,11 @@ import org.eclipse.gmf.runtime.emf.commands.core.command.AbstractTransactionalCo
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.papyrus.infra.emf.gmf.command.GMFtoEMFCommandWrapper;
+import org.eclipse.papyrus.infra.gmfdiag.common.commands.SelectAndExecuteCommand;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Messages;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ISequenceEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageFeedbackHelper.Mode;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.WeakEventBusDelegator;
@@ -66,10 +73,10 @@ import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageSort;
-import org.eclipse.uml2.uml.UMLPackage;
 
 /**
  * Abstract implementation of a graphical node edit policy supporting message connections in the sequence
@@ -257,10 +264,22 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 					}
 
 					if (shouldCreateExecution()) {
-						// TODO ask user which type of execution to create
-						result = sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort,
-								null, shouldCreateReply(),
-								UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION);
+
+						List<Command> createExecutionCommands = new ArrayList<>();
+
+						CreationCommand<Message> msgWithActionExecution = sender.insertMessageAfter(
+								startBefore, startOffset, receiver, start.sort, null, shouldCreateReply(),
+								ACTION_EXECUTION_SPECIFICATION);
+						createExecutionCommands.add(wrap(msgWithActionExecution));
+						CreationCommand<Message> msgWithBehaviorExecution = sender.insertMessageAfter(
+								startBefore, startOffset, receiver, start.sort, null, shouldCreateReply(),
+								BEHAVIOR_EXECUTION_SPECIFICATION);
+						createExecutionCommands.add(wrap(msgWithBehaviorExecution));
+
+						return wrap(new GMFtoEMFCommandWrapper(new SelectAndExecuteCommand(
+								Messages.CreateSynchronousMessagePopupCommandLabel,
+								Display.getCurrent().getActiveShell(), createExecutionCommands)));
+
 					} else {
 						result = sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort,
 								null);

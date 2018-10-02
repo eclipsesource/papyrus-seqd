@@ -16,6 +16,7 @@ import static java.lang.Integer.MAX_VALUE;
 import static org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil.invertSingle;
 import static org.eclipse.papyrus.uml.interaction.graph.util.Suppliers.compose;
 import static org.eclipse.uml2.uml.MessageSort.REPLY_LITERAL;
+import static org.eclipse.uml2.uml.UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.BEHAVIOR_EXECUTION_SPECIFICATION;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.EXECUTION_SPECIFICATION__FINISH;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.EXECUTION_SPECIFICATION__START;
@@ -23,6 +24,7 @@ import static org.eclipse.uml2.uml.UMLPackage.Literals.INTERACTION__FRAGMENT;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.INTERACTION__MESSAGE;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.LIFELINE__COVERED_BY;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -49,6 +51,7 @@ import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugi
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MObjectImpl;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.Messages;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
@@ -221,6 +224,42 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		this.executionType = executionType;
 	}
 
+	@Override
+	public String getLabel() {
+		if (createExecution) {
+			return MessageFormat.format(Messages.CreateMessageWithExecution, messageSortLabel(),
+					executionTypeLabel());
+		} else {
+			return MessageFormat.format(Messages.Create, messageSortLabel());
+		}
+	}
+
+	private String messageSortLabel() {
+		switch (sort) {
+			case ASYNCH_SIGNAL_LITERAL:
+				return Messages.SyncSignal;
+			case SYNCH_CALL_LITERAL:
+				return Messages.SyncCall;
+			case CREATE_MESSAGE_LITERAL:
+				return Messages.CreateMessage;
+			case DELETE_MESSAGE_LITERAL:
+				return Messages.DeleteMessage;
+			case REPLY_LITERAL:
+				return Messages.ReplyMessage;
+			case ASYNCH_CALL_LITERAL:
+			default:
+				return Messages.AsyncCall;
+		}
+	}
+
+	private Object executionTypeLabel() {
+		if (executionType.equals(ACTION_EXECUTION_SPECIFICATION)) {
+			return Messages.ActionExecutionSpecification;
+		} else {
+			return Messages.BehaviorExecutionSpecification;
+		}
+	}
+
 	/**
 	 * Compute the offset on the receiver of horizontal message based on the sending {@code offset} from its
 	 * reference point.
@@ -274,8 +313,8 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				: beforeSend.getTop().orElse(llTopSend) - llTopSend + sendOffset;
 		Optional<MExecution> sendingExec = getTarget().elementAt(whereSend).flatMap(this::getExecution)
 				.filter(exec -> //
-		((exec.getBottom().orElse(-1) - llTopSend) >= whereSend) //
-				&& ((exec.getTop().orElse(MAX_VALUE) - llTopSend) <= whereSend));
+				((exec.getBottom().orElse(-1) - llTopSend) >= whereSend) //
+						&& ((exec.getTop().orElse(MAX_VALUE) - llTopSend) <= whereSend));
 		Vertex sender = sendingExec.map(this::vertex).orElseGet(this::vertex);
 		if (sender == null || sender.getDiagramView() == null) {
 			return UnexecutableCommand.INSTANCE;

@@ -89,15 +89,14 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	private EditPart execEP;
 	private ExecutionSpecification exec;
 
-	private int execTop;
-	private int execBottom;
-
 	/**
 	 * Initializes me.
 	 *
-	 * @param withSnap   whether to allow snapping ({@code true}) or suppress it
-	 *                   ({@code false})
-	 * @param snapString a string representation of {@code withSnap}
+	 * @param withSnap
+	 *            whether to allow snapping ({@code true}) or suppress it
+	 *            ({@code false})
+	 * @param snapString
+	 *            a string representation of {@code withSnap}
 	 */
 	public MessageSnappingUITest(boolean withSnap, String snapString) {
 		super();
@@ -108,8 +107,10 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	@Test
 	public void createSyncCallMessage() {
-		EditPart messageEP = editor.with(modifiers, () -> createConnection(SequenceElementTypes.Sync_Message_Edge,
-				at(LL1_BODY_X, withinMagnet(EXEC_START)), at(LL2_BODY_X, withinMagnet(EXEC_START))));
+		EditPart messageEP = editor.with(modifiers,
+				() -> createConnection(SequenceElementTypes.Sync_Message_Edge,
+						at(LL1_BODY_X, withinMagnet(EXEC_START)),
+						at(LL2_BODY_X, withinMagnet(EXEC_START))));
 
 		// The receiving end snaps to the exec start and the sending end matches
 		int execTop = getTop(execEP);
@@ -128,8 +129,9 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	@Test
 	public void createAsyncCallMessage() {
-		EditPart messageEP = editor.with(modifiers, () -> createConnection(SequenceElementTypes.Async_Message_Edge,
-				at(LL1_BODY_X, 120), at(LL2_BODY_X, withinMagnet(EXEC_START))));
+		EditPart messageEP = editor.with(modifiers,
+				() -> createConnection(SequenceElementTypes.Async_Message_Edge, at(LL1_BODY_X, 120),
+						at(LL2_BODY_X, withinMagnet(EXEC_START))));
 
 		// The receiving end snaps to the exec start. The sending end doesn't match
 		int execTop = getTop(execEP);
@@ -142,8 +144,10 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	@Test
 	public void createReplyMessage() {
-		EditPart messageEP = editor.with(modifiers, () -> createConnection(SequenceElementTypes.Reply_Message_Edge,
-				at(LL2_BODY_X, withinMagnet(EXEC_FINISH)), at(LL1_BODY_X, withinMagnet(EXEC_FINISH))));
+		EditPart messageEP = editor.with(modifiers,
+				() -> createConnection(SequenceElementTypes.Reply_Message_Edge,
+						at(LL2_BODY_X, withinMagnet(EXEC_FINISH)),
+						at(LL1_BODY_X, withinMagnet(EXEC_FINISH))));
 
 		// The sending end snaps to the exec start and the receiving end matches
 		int execBottom = getBottom(execEP);
@@ -161,9 +165,11 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		Point midMessage = getMessageGrabPoint(messageEP);
 
 		// The receiving end snaps to the exec start and the sending end matches
-		editor.with(modifiers, () -> editor.moveSelection(midMessage, at(midMessage.x(), withinMagnet(EXEC_START))));
+		editor.with(modifiers,
+				() -> editor.moveSelection(midMessage, at(midMessage.x(), withinMagnet(EXEC_START))));
 		Point newMessageMidpoint = getMessageGrabPoint(messageEP);
-		assumeThat("Message not moved", newMessageMidpoint, not(isPoint(midMessage.x(), midMessage.y(), 5)));
+		assumeThat("Message not moved", newMessageMidpoint,
+				not(isPoint(midMessage.x(), midMessage.y(), 5)));
 
 		int execTop = getTop(execEP);
 		assertThat(messageEP, withModifiers(runs(LL1_BODY_X, execTop, LL2_BODY_X, execTop, 1)));
@@ -176,7 +182,8 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		Point midMessage = getMessageGrabPoint(messageEP);
 
 		// The sending end snaps to the exec start and the receiving end matches
-		editor.with(modifiers, () -> editor.moveSelection(midMessage, at(midMessage.x(), withinMagnet(EXEC_FINISH))));
+		editor.with(modifiers,
+				() -> editor.moveSelection(midMessage, at(midMessage.x(), withinMagnet(EXEC_FINISH))));
 		int execBottom = getBottom(execEP);
 		assertThat(messageEP, withModifiers(runs(LL2_BODY_X, execBottom, LL1_BODY_X, execBottom, 1)));
 	}
@@ -198,9 +205,10 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		int newBottomY = getBottom(getLastCreatedEditPart());
 		assumeThat("Execution not stretched", newBottomY, not(isNear(execBottom, 5)));
 
-		EditPart messageEP = editor.with(modifiers, () -> createConnection(SequenceElementTypes.Reply_Message_Edge, //
-				at(LL2_BODY_X, withinMagnet(newBottomY, EXEC_FINISH)),
-				at(LL1_BODY_X, withinMagnet(newBottomY, EXEC_FINISH))));
+		EditPart messageEP = editor.with(modifiers,
+				() -> createConnection(SequenceElementTypes.Reply_Message_Edge, //
+						at(LL2_BODY_X, withinMagnet(newBottomY, EXEC_FINISH)),
+						at(LL1_BODY_X, withinMagnet(newBottomY, EXEC_FINISH))));
 		assertThat("No snap: infer that magnet not moved", messageEP,
 				runs(LL2_BODY_X, newBottomY, LL1_BODY_X, newBottomY, 1));
 	}
@@ -221,14 +229,17 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		Node execView = (Node) execEP.getModel();
 		Location location = (Location) execView.getLayoutConstraint();
 		SetBoundsCommand command = new SetBoundsCommand(editor.getDiagramEditPart().getEditingDomain(),
-				"Move execution down", new EObjectAdapter(execView), at(location.getX(), location.getY() + 100));
+				"Move execution down", new EObjectAdapter(execView),
+				at(location.getX(), location.getY() + 100));
 		editor.getDiagramEditPart().getDiagramEditDomain().getDiagramCommandStack()
 				.execute(GMFtoGEFCommandWrapper.wrap(command));
 
 		int newTopY = getTop(execEP);
 
-		EditPart messageEP = editor.with(modifiers, () -> createConnection(SequenceElementTypes.Reply_Message_Edge, //
-				at(LL2_BODY_X, withinMagnet(newTopY, EXEC_START)), at(LL1_BODY_X, withinMagnet(newTopY, EXEC_START))));
+		EditPart messageEP = editor.with(modifiers,
+				() -> createConnection(SequenceElementTypes.Reply_Message_Edge, //
+						at(LL2_BODY_X, withinMagnet(newTopY, EXEC_START)),
+						at(LL1_BODY_X, withinMagnet(newTopY, EXEC_START))));
 		assertThat("No snap: infer that magnet not moved", messageEP,
 				runs(LL2_BODY_X, newTopY, LL1_BODY_X, newTopY, 1));
 	}
