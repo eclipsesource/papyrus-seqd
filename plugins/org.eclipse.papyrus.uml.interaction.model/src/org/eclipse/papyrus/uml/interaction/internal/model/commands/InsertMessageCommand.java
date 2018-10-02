@@ -531,10 +531,10 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				break;
 
 			case SYNCH_CALL_LITERAL:
-				/* if there is no execution yet and this is no self message, create one for sync calls */
-				if (createExecution && !receivingExec.isPresent() && !isSelfMessage()) {
+				/* if there is no execution yet, create one for sync calls */
+				if (createExecution && !receivingExec.isPresent()) {
 					result = result.chain(
-							createAdditionalSyncMessageCommand(sendEvent, recvEvent, senderY, receiverY));
+							createAdditionalSyncMessageCommands(sendEvent, recvEvent, senderY, receiverY));
 					/* Fall through to create nudge command, but extend nudge height by execMinHeight */
 					recvYPosition += layoutConstraints().getMinimumHeight(ViewTypes.EXECUTION_SPECIFICATION);
 				}
@@ -565,7 +565,7 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		return this.receiver.getElement() == this.getTarget().getElement();
 	}
 
-	private Command createAdditionalSyncMessageCommand(Supplier<MessageEnd> sendEvent,
+	private Command createAdditionalSyncMessageCommands(Supplier<MessageEnd> sendEvent,
 			CreationCommand<MessageEnd> receiveEvent, IntSupplier senderY, IntSupplier receiverY) {
 
 		/* for sync calls, we want to create an execution specification */

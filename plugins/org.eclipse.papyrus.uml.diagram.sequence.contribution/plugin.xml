@@ -120,9 +120,19 @@
     <page
           class="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.preferences.LightweightSequenceDiagramEditingPreferencePage"
           id="org.eclipse.papyrus.uml.diagram.sequence.contribution.editingPreferencePage"
-          name="Lightweight Sequence Diagram Editing"
-          category="org.eclipse.papyrus.infra.gmfdiag.preferences.diagrams">
+          name="Editing"
+          category="org.eclipse.papyrus.uml.diagram.sequence.contribution.preferencePage">
+       <keywordReference
+             id="org.eclipse.papyrus.uml.diagram.sequence.contribution.keywords">
+       </keywordReference>
     </page>
+ </extension>
+ <extension
+       point="org.eclipse.ui.keywords">
+    <keyword
+          id="org.eclipse.papyrus.uml.diagram.sequence.contribution.keywords"
+          label="lightweight sequence">
+    </keyword>
  </extension>
  <extension
        name="Lightweight Sequence Diagram" 

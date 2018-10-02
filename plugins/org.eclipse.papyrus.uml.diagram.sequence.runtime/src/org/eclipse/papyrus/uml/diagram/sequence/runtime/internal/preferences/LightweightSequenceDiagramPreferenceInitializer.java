@@ -41,8 +41,8 @@ public class LightweightSequenceDiagramPreferenceInitializer extends AbstractPre
 		AppearancePreferencePage.initDefaults(store);
 		ConnectionsPreferencePage.initDefaults(store);
 		PrintingPreferencePage.initDefaults(store);
-		store.setDefault(LightweightSequenceDiagramPreferences.AUTO_CREATE_REPLY_MESSAGE, true);
-		store.setDefault(LightweightSequenceDiagramPreferences.AUTO_CREATE_EXEC_AFTER_SYNC_MESSAGE, true);
+		store.setDefault(LightweightSequenceDiagramPreferences.CREATE_REPLY_MESSAGE_FOR_SYNC_CALL, true);
+		store.setDefault(LightweightSequenceDiagramPreferences.CREATE_EXEC_FOR_SYNC_MESSAGE, true);
 	}
 
 }

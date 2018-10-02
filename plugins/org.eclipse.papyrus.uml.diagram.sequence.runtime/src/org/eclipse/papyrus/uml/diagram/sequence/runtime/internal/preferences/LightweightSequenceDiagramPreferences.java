@@ -12,10 +12,26 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.preferences;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+
 public final class LightweightSequenceDiagramPreferences {
 
-	public final static String AUTO_CREATE_EXEC_AFTER_SYNC_MESSAGE = "create-execution-after-syncmessage-message-automatically"; //$NON-NLS-1$
+	public final static String CREATE_EXEC_FOR_SYNC_MESSAGE = "create-execution-for-sync-message"; //$NON-NLS-1$
 
-	public final static String AUTO_CREATE_REPLY_MESSAGE = "create-reply-message-automatically"; //$NON-NLS-1$
+	public final static String CREATE_REPLY_MESSAGE_FOR_SYNC_CALL = "create-reply-message-for-sync-call"; //$NON-NLS-1$
+
+	private IPreferenceStore preferenceStore;
+
+	public LightweightSequenceDiagramPreferences(IPreferenceStore preferenceStore) {
+		this.preferenceStore = preferenceStore;
+	}
+
+	public boolean isAutoCreateExecutionForSyncMessage() {
+		return preferenceStore.getBoolean(CREATE_EXEC_FOR_SYNC_MESSAGE);
+	}
+
+	public boolean isAutoCreateReplyForSyncCall() {
+		return preferenceStore.getBoolean(CREATE_REPLY_MESSAGE_FOR_SYNC_CALL);
+	}
 
 }

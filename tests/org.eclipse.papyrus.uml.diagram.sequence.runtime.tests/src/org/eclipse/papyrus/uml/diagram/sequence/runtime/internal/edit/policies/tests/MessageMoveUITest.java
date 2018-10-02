@@ -20,14 +20,12 @@ import static org.junit.Assume.assumeThat;
 import java.util.Arrays;
 
 import org.eclipse.gef.EditPart;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageEndpointEditPolicy;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.preferences.LightweightSequenceDiagramPreferences;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -44,6 +42,10 @@ import org.junit.runners.Parameterized.Parameters;
 @Maximized
 @RunWith(Parameterized.class)
 public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
+
+	@ClassRule
+	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs().dontCreateExecutionsForSyncMessages();
+
 	// Horizontal position of the first lifeline's body
 	private static final int LIFELINE_1_BODY_X = 121;
 
@@ -74,18 +76,6 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 		}
 
 		this.moveDown = moveDown;
-	}
-
-	@BeforeClass
-	public static void turnOffAutoCreationOfExecutions() {
-		Activator.getDefault().getPreferenceStore()
-				.setValue(LightweightSequenceDiagramPreferences.AUTO_CREATE_EXEC_AFTER_SYNC_MESSAGE, false);
-	}
-
-	@AfterClass
-	public static void resetAutoCreationOfExecutions() {
-		Activator.getDefault().getPreferenceStore()
-				.setToDefault(LightweightSequenceDiagramPreferences.AUTO_CREATE_EXEC_AFTER_SYNC_MESSAGE);
 	}
 
 	@Test

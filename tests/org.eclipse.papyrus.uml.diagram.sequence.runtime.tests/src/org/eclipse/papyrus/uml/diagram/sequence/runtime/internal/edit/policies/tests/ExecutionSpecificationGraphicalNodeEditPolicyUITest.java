@@ -19,14 +19,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.Arrays;
 
 import org.eclipse.gef.EditPart;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.ExecutionSpecificationGraphicalNodeEditPolicy;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.preferences.LightweightSequenceDiagramPreferences;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -43,6 +41,10 @@ import org.junit.runners.Parameterized.Parameters;
 @Maximized
 @RunWith(Parameterized.class)
 public class ExecutionSpecificationGraphicalNodeEditPolicyUITest extends AbstractGraphicalEditPolicyUITest {
+
+	@ClassRule
+	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs().dontCreateExecutionsForSyncMessages();
+
 	// Horizontal position of the first lifeline's body
 	private static final int LIFELINE_1_BODY_X = 121;
 
@@ -69,18 +71,6 @@ public class ExecutionSpecificationGraphicalNodeEditPolicyUITest extends Abstrac
 			sendX = LIFELINE_1_BODY_X;
 			recvX = LIFELINE_2_BODY_X;
 		}
-	}
-
-	@BeforeClass
-	public static void turnOffAutoCreationOfExecutions() {
-		Activator.getDefault().getPreferenceStore()
-				.setValue(LightweightSequenceDiagramPreferences.AUTO_CREATE_EXEC_AFTER_SYNC_MESSAGE, false);
-	}
-
-	@AfterClass
-	public static void resetAutoCreationOfExecutions() {
-		Activator.getDefault().getPreferenceStore()
-				.setToDefault(LightweightSequenceDiagramPreferences.AUTO_CREATE_EXEC_AFTER_SYNC_MESSAGE);
 	}
 
 	@Test
@@ -114,8 +104,7 @@ public class ExecutionSpecificationGraphicalNodeEditPolicyUITest extends Abstrac
 	 * directionality and whether that end is at an execution specification or a
 	 * lifeline stem.
 	 *
-	 * @param source
-	 *            whether this is the source end of the message
+	 * @param source whether this is the source end of the message
 	 *
 	 * @return the adjusted X coördinate
 	 */

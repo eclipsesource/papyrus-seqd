@@ -54,7 +54,6 @@ import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ISequenceEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageFeedbackHelper.Mode;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.preferences.LightweightSequenceDiagramPreferences;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.WeakEventBusDelegator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.CreateRequestSwitch;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
@@ -226,6 +225,8 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 					}
 
 					location = getRelativeLocation(location);
+
+					// TODO add support for self sync message
 
 					AnchorDescriptor anchorDesc = computeAnchoring(location);
 					result = sender.insertMessageAfter(startBefore, startOffset, receiver,
@@ -512,14 +513,12 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				.flatMap(source ? MMessage::getSend : MMessage::getReceive);
 	}
 
-	protected boolean shouldCreateReply() {
-		return Activator.getDefault().getPreferenceStore()
-				.getBoolean(LightweightSequenceDiagramPreferences.AUTO_CREATE_REPLY_MESSAGE);
+	protected boolean shouldCreateExecution() {
+		return Activator.getDefault().getPreferences().isAutoCreateExecutionForSyncMessage();
 	}
 
-	protected boolean shouldCreateExecution() {
-		return Activator.getDefault().getPreferenceStore()
-				.getBoolean(LightweightSequenceDiagramPreferences.AUTO_CREATE_EXEC_AFTER_SYNC_MESSAGE);
+	protected boolean shouldCreateReply() {
+		return Activator.getDefault().getPreferences().isAutoCreateReplyForSyncCall();
 	}
 
 	//
