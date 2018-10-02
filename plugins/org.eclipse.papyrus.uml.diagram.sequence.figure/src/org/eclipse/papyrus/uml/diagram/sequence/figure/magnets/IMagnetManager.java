@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.diagram.sequence.figure.magnets;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.Adapters;
@@ -59,7 +60,9 @@ public interface IMagnetManager {
 	 *            a location in the diagram, in absolute coördinates
 	 * @return the magnets whose influence is felt at that {@code location}
 	 */
-	Stream<IMagnet> getMagnets(Point location);
+	default Stream<IMagnet> getMagnets(Point location) {
+		return getMagnets(location, __ -> false);
+	}
 
 	/**
 	 * Find the magnet that captures a {@code location}.
@@ -68,7 +71,34 @@ public interface IMagnetManager {
 	 *            a location, in absolute coördinates
 	 * @return the magnet that captures the {@code location}
 	 */
-	Optional<IMagnet> getCapturingMagnet(Point location);
+	default Optional<IMagnet> getCapturingMagnet(Point location) {
+		return getCapturingMagnet(location, __ -> false);
+	}
+
+	/**
+	 * Find the magnets within whose influence the given {@code location} lies, with exclusions, in increasing
+	 * order of distance from that location (and so decreasing order of influence).
+	 * 
+	 * @param location
+	 *            a location in the diagram, in absolute coördinates
+	 * @param excluding
+	 *            an exclusion filter for magnets that should not be considered, for example because they are
+	 *            on a shape being moved that should not snap to itself
+	 * @return the magnets whose influence is felt at that {@code location}
+	 */
+	Stream<IMagnet> getMagnets(Point location, Predicate<? super IMagnet> excluding);
+
+	/**
+	 * Find the magnet that captures a {@code location}, with exclusions.
+	 * 
+	 * @param location
+	 *            a location, in absolute coördinates
+	 * @param excluding
+	 *            an exclusion filter for magnets that should not be considered, for example because they are
+	 *            on a shape being moved that should not snap to itself
+	 * @return the magnet that captures the {@code location}
+	 */
+	Optional<IMagnet> getCapturingMagnet(Point location, Predicate<? super IMagnet> excluding);
 
 	/**
 	 * Queries whether the magnet manager is currently enabled. When it is not enabled, then snapping

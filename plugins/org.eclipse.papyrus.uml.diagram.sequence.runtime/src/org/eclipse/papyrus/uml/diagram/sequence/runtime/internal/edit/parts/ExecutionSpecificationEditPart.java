@@ -18,8 +18,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -33,10 +32,9 @@ import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.ExecutionSpecificationFigure;
-import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.DefaultMagnet;
-import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnetManager;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.NodeFigureMagnetHelper;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.ExecutionSpecificationGraphicalNodeEditPolicy;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.InteractionSemanticEditPolicy;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.ExecutionSpecificationSemanticEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.ResizableBorderItemPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.locators.ExecutionSpecificationBorderItemLocator;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
@@ -49,9 +47,9 @@ import org.eclipse.papyrus.uml.interaction.model.MLifeline;
  */
 public class ExecutionSpecificationEditPart extends BorderedBorderItemEditPart implements ISequenceEditPart {
 
-	private DefaultMagnet startMagnet;
+	private static final int[] MAGNET_POSITIONS = {PositionConstants.NORTH, PositionConstants.SOUTH };
 
-	private DefaultMagnet finishMagnet;
+	private NodeFigureMagnetHelper magnetHelper;
 
 	public ExecutionSpecificationEditPart(View view) {
 		super(view);
@@ -59,15 +57,9 @@ public class ExecutionSpecificationEditPart extends BorderedBorderItemEditPart i
 
 	@Override
 	public void deactivate() {
-		IMagnetManager mgr = IMagnetManager.get(this);
-
-		if (startMagnet != null) {
-			mgr.removeMagnet(startMagnet);
-			startMagnet = null;
-		}
-		if (finishMagnet != null) {
-			mgr.removeMagnet(finishMagnet);
-			finishMagnet = null;
+		if (magnetHelper != null) {
+			magnetHelper.dispose();
+			magnetHelper = null;
 		}
 
 		super.deactivate();
@@ -80,10 +72,21 @@ public class ExecutionSpecificationEditPart extends BorderedBorderItemEditPart i
 	}
 
 	@Override
+	protected NodeFigure createNodeFigure() {
+		NodeFigure result = super.createNodeFigure();
+
+		// Configure magnets
+		magnetHelper = new NodeFigureMagnetHelper(result, getMagnetManager(), getMagnetStrength())
+				.registerMagnets(MAGNET_POSITIONS);
+
+		return result;
+	}
+
+	@Override
 	protected void createDefaultEditPolicies() {
 		super.createDefaultEditPolicies();
 		installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, new ResizableBorderItemPolicy());
-		installEditPolicy(EditPolicyRoles.SEMANTIC_ROLE, new InteractionSemanticEditPolicy());
+		installEditPolicy(EditPolicyRoles.SEMANTIC_ROLE, new ExecutionSpecificationSemanticEditPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
 				new ExecutionSpecificationGraphicalNodeEditPolicy());
 	}
@@ -95,14 +98,6 @@ public class ExecutionSpecificationEditPart extends BorderedBorderItemEditPart i
 		if (locator != null) {
 			locator.relocate(getFigure());
 		}
-
-		updateMagnets();
-		// super.refreshBounds();
-	}
-
-	@Override
-	public IBorderItemLocator getBorderItemLocator() {
-		return super.getBorderItemLocator();
 	}
 
 	@Override
@@ -149,31 +144,4 @@ public class ExecutionSpecificationEditPart extends BorderedBorderItemEditPart i
 		}
 	}
 
-	protected void updateMagnets() {
-		IMagnetManager mgr = IMagnetManager.get(this);
-
-		Rectangle rect = getFigure().getBounds().getCopy();
-		getFigure().getParent().translateToAbsolute(rect);
-
-		Point start = rect.getTop();
-		Point finish = rect.getBottom();
-
-		startMagnet = createOrUpdate(mgr, startMagnet, start);
-		finishMagnet = createOrUpdate(mgr, finishMagnet, finish);
-	}
-
-	private DefaultMagnet createOrUpdate(IMagnetManager mgr, DefaultMagnet magnet, Point location) {
-		DefaultMagnet result = magnet;
-
-		if (result != null) {
-			// Update it
-			result.setLocation(location);
-		} else {
-			result = new DefaultMagnet(getLayoutConstraints().getMagnetStrength(getNotationView()));
-			result.setLocation(location);
-			mgr.addMagnet(result);
-		}
-
-		return result;
-	}
 }

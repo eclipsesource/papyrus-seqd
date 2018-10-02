@@ -92,11 +92,13 @@ class MessageFeedbackHelper extends FeedbackHelper {
 					// Snap each point to the nearest magnet, if any, with priority to the
 					// receiving end
 					int magnetDelta = 0;
-					Optional<IMagnet> magnet = magnetManager.getCapturingMagnet(thisLocation);
+					Optional<IMagnet> magnet = magnetManager.getCapturingMagnet(thisLocation,
+							IMagnet.ownedBy(getConnection()));
 					if (magnet.isPresent()) {
 						magnetDelta = magnet.get().getLocation().y() - thisLocation.y();
 					} else {
-						magnet = magnetManager.getCapturingMagnet(otherLocation);
+						magnet = magnetManager.getCapturingMagnet(otherLocation,
+								IMagnet.ownedBy(getConnection()));
 						if (magnet.isPresent()) {
 							magnetDelta = magnet.get().getLocation().y() - otherLocation.y();
 						}
@@ -114,7 +116,8 @@ class MessageFeedbackHelper extends FeedbackHelper {
 				}
 			} else {
 				// Snap the point to the nearest magnet, if any
-				Optional<IMagnet> magnet = magnetManager.getCapturingMagnet(p);
+				Optional<IMagnet> magnet = magnetManager.getCapturingMagnet(p,
+						IMagnet.ownedBy(getConnection()));
 				magnet.map(IMagnet::getLocation).ifPresent(p::setLocation);
 
 				// Don't permit the message to go back in time if it's asynchronous
@@ -139,7 +142,8 @@ class MessageFeedbackHelper extends FeedbackHelper {
 								otherLocation.setY(p.y());
 							}
 
-							Optional<IMagnet> otherMagnet = magnetManager.getCapturingMagnet(otherLocation);
+							Optional<IMagnet> otherMagnet = magnetManager.getCapturingMagnet(otherLocation,
+									IMagnet.ownedBy(getConnection()));
 							otherMagnet.map(IMagnet::getLocation).ifPresent(m -> {
 								// Don't move this end if the other is stuck to a magnet
 								int dy = otherLocation.y() - m.y();

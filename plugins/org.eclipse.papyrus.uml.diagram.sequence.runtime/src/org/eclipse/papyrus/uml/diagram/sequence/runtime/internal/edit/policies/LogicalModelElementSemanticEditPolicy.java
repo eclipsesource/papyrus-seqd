@@ -19,6 +19,7 @@ import org.eclipse.emf.workspace.EMFCommandOperation;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.SemanticEditPolicy;
 import org.eclipse.gmf.runtime.emf.type.core.requests.DestroyRequest;
 import org.eclipse.gmf.runtime.emf.type.core.requests.IEditCommandRequest;
@@ -61,6 +62,14 @@ public class LogicalModelElementSemanticEditPolicy extends SemanticEditPolicy {
 					new EMFCommandOperation(TransactionUtil.getEditingDomain(interaction.get()), emfCommand));
 		}
 		return super.getSemanticCommand(request);
+	}
+
+	IGraphicalEditPart getGraphicalHost() {
+		return (IGraphicalEditPart)getHost();
+	}
+
+	MInteraction getInteraction() {
+		return MInteraction.getInstance(getGraphicalHost().getNotationView().getDiagram());
 	}
 
 }

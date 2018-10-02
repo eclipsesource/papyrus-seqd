@@ -12,6 +12,9 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.factories;
 
+import static org.eclipse.papyrus.infra.gmfdiag.common.utils.DiagramEditPartsUtil.getAllContents;
+
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -66,7 +69,8 @@ public class SequenceEditPartAdapterFactory implements IAdapterFactory {
 		} else {
 			// How to step "up" the edit-part hierarchy
 			UnaryOperator<EditPart> step = ep -> (ep instanceof ConnectionEditPart)
-					? ((ConnectionEditPart)ep).getSource()
+					// Connections are children of the root edit-part
+					? findInteraction(ep.getRoot())
 					: ep.getParent();
 
 			for (result = editPart; result != null; result = step.apply(result)) {
@@ -77,6 +81,19 @@ public class SequenceEditPartAdapterFactory implements IAdapterFactory {
 		}
 
 		return Optional.ofNullable(result);
+	}
+
+	static EditPart findInteraction(EditPart root) {
+		EditPart result = null;
+
+		for (Iterator<EditPart> iter = getAllContents(root, false); (result == null) && iter.hasNext();) {
+			EditPart next = iter.next();
+			if (next instanceof InteractionEditPart) {
+				result = next;
+			}
+		}
+
+		return result;
 	}
 
 	static <T> Function<IAdaptable, T> adapt(Class<T> type) {
