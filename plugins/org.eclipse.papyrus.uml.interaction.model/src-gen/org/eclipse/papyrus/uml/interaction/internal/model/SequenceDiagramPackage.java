@@ -624,8 +624,18 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MESSAGESORT_NAMEDELEMENT_BOOLEAN_ECLASS = MELEMENT_OPERATION_COUNT
+	int MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MELEMENT_INT_MESSAGESORT_NAMEDELEMENT_EXECUTIONCREATIONCONFIG = MELEMENT_OPERATION_COUNT
 			+ 11;
+
+	/**
+	 * The operation id for the '<em>Insert Message After</em>' operation. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MESSAGESORT_NAMEDELEMENT_EXECUTIONCREATIONCONFIG = MELEMENT_OPERATION_COUNT
+			+ 12;
 
 	/**
 	 * The operation id for the '<em>Element At</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -633,7 +643,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE___ELEMENT_AT__INT = MELEMENT_OPERATION_COUNT + 12;
+	int MLIFELINE___ELEMENT_AT__INT = MELEMENT_OPERATION_COUNT + 13;
 
 	/**
 	 * The operation id for the '<em>Nudge Horizontally</em>' operation. <!-- begin-user-doc --> <!--
@@ -642,7 +652,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE___NUDGE_HORIZONTALLY__INT = MELEMENT_OPERATION_COUNT + 13;
+	int MLIFELINE___NUDGE_HORIZONTALLY__INT = MELEMENT_OPERATION_COUNT + 14;
 
 	/**
 	 * The number of operations of the '<em>MLifeline</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
@@ -651,7 +661,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 14;
+	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 15;
 
 	/**
 	 * The meta object id for the
@@ -1670,6 +1680,16 @@ public interface SequenceDiagramPackage extends EPackage {
 	int EOBJECT = 13;
 
 	/**
+	 * The meta object id for the '<em>Execution Creation Config</em>' data type. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getExecutionCreationConfig()
+	 * @generated
+	 */
+	int EXECUTION_CREATION_CONFIG = 14;
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MElement
 	 * <em>MElement</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2111,16 +2131,32 @@ public interface SequenceDiagramPackage extends EPackage {
 
 	/**
 	 * Returns the meta object for the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement, boolean, org.eclipse.emf.ecore.EClass)
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement, org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig)
+	 * <em>Insert Message After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Insert Message After</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement,
+	 *      int, org.eclipse.papyrus.uml.interaction.model.MLifeline,
+	 *      org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.uml2.uml.MessageSort,
+	 *      org.eclipse.uml2.uml.NamedElement,
+	 *      org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig)
+	 * @generated
+	 */
+	EOperation getMLifeline__InsertMessageAfter__MElement_int_MLifeline_MElement_int_MessageSort_NamedElement_ExecutionCreationConfig();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement, org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig)
 	 * <em>Insert Message After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @return the meta object for the '<em>Insert Message After</em>' operation.
 	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement,
 	 *      int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.uml2.uml.MessageSort,
-	 *      org.eclipse.uml2.uml.NamedElement, boolean, org.eclipse.emf.ecore.EClass)
+	 *      org.eclipse.uml2.uml.NamedElement,
+	 *      org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig)
 	 * @generated
 	 */
-	EOperation getMLifeline__InsertMessageAfter__MElement_int_MLifeline_MessageSort_NamedElement_boolean_EClass();
+	EOperation getMLifeline__InsertMessageAfter__MElement_int_MLifeline_MessageSort_NamedElement_ExecutionCreationConfig();
 
 	/**
 	 * Returns the meta object for the
@@ -2527,6 +2563,19 @@ public interface SequenceDiagramPackage extends EPackage {
 	EDataType getEObject();
 
 	/**
+	 * Returns the meta object for data type
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig <em>Execution Creation
+	 * Config</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for data type '<em>Execution Creation Config</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig
+	 * @model instanceClass="org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig"
+	 *        serializeable="false"
+	 * @generated
+	 */
+	EDataType getExecutionCreationConfig();
+
+	/**
 	 * Returns the factory that creates the instances of the model. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
@@ -2884,8 +2933,17 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EOperation MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MESSAGESORT_NAMEDELEMENT_BOOLEAN_ECLASS = eINSTANCE
-				.getMLifeline__InsertMessageAfter__MElement_int_MLifeline_MessageSort_NamedElement_boolean_EClass();
+		EOperation MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MELEMENT_INT_MESSAGESORT_NAMEDELEMENT_EXECUTIONCREATIONCONFIG = eINSTANCE
+				.getMLifeline__InsertMessageAfter__MElement_int_MLifeline_MElement_int_MessageSort_NamedElement_ExecutionCreationConfig();
+
+		/**
+		 * The meta object literal for the '<em><b>Insert Message After</b></em>' operation. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MESSAGESORT_NAMEDELEMENT_EXECUTIONCREATIONCONFIG = eINSTANCE
+				.getMLifeline__InsertMessageAfter__MElement_int_MLifeline_MessageSort_NamedElement_ExecutionCreationConfig();
 
 		/**
 		 * The meta object literal for the '<em><b>Element At</b></em>' operation. <!-- begin-user-doc -->
@@ -3203,6 +3261,16 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EDataType EOBJECT = eINSTANCE.getEObject();
+
+		/**
+		 * The meta object literal for the '<em>Execution Creation Config</em>' data type. <!-- begin-user-doc
+		 * --> <!-- end-user-doc -->
+		 * 
+		 * @see org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig
+		 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getExecutionCreationConfig()
+		 * @generated
+		 */
+		EDataType EXECUTION_CREATION_CONFIG = eINSTANCE.getExecutionCreationConfig();
 
 	}
 

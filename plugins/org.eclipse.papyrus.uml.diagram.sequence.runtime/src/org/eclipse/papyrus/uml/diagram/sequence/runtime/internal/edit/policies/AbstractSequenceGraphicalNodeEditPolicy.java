@@ -23,11 +23,12 @@ import static org.eclipse.uml2.uml.UMLPackage.Literals.BEHAVIOR_EXECUTION_SPECIF
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -71,9 +72,11 @@ import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageSort;
@@ -233,11 +236,26 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 					location = getRelativeLocation(location);
 
-					// TODO add support for self sync message
-
 					AnchorDescriptor anchorDesc = computeAnchoring(location);
-					result = sender.insertMessageAfter(startBefore, startOffset, receiver,
-							anchorDesc.elementBefore.orElse(receiver), anchorDesc.offset, start.sort, null);
+
+					if (MessageUtil.isSynchronous(start.sort) && selfMessage && shouldCreateExecution()) {
+
+						CreationCommand<Message> msgWithActionExecution = sender.insertMessageAfter(
+								startBefore, startOffset, receiver, anchorDesc.elementBefore.orElse(receiver),
+								anchorDesc.offset, start.sort, null, new ExecutionCreationConfig(true,
+										shouldCreateReply(), ACTION_EXECUTION_SPECIFICATION));
+						CreationCommand<Message> msgWithBehaviorExecution = sender.insertMessageAfter(
+								startBefore, startOffset, receiver, anchorDesc.elementBefore.orElse(receiver),
+								anchorDesc.offset, start.sort, null, new ExecutionCreationConfig(true,
+										shouldCreateReply(), BEHAVIOR_EXECUTION_SPECIFICATION));
+
+						return createSelectionCommand(msgWithActionExecution, msgWithBehaviorExecution);
+
+					} else {
+						result = sender.insertMessageAfter(startBefore, startOffset, receiver,
+								anchorDesc.elementBefore.orElse(receiver), anchorDesc.offset, start.sort,
+								null);
+					}
 				} else {
 					startLocation = startLocation.getCopy();
 
@@ -265,20 +283,16 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 					if (shouldCreateExecution()) {
 
-						List<Command> createExecutionCommands = new ArrayList<>();
-
 						CreationCommand<Message> msgWithActionExecution = sender.insertMessageAfter(
-								startBefore, startOffset, receiver, start.sort, null, shouldCreateReply(),
-								ACTION_EXECUTION_SPECIFICATION);
-						createExecutionCommands.add(wrap(msgWithActionExecution));
+								startBefore, startOffset, receiver, start.sort, null,
+								new ExecutionCreationConfig(true, shouldCreateReply(),
+										ACTION_EXECUTION_SPECIFICATION));
 						CreationCommand<Message> msgWithBehaviorExecution = sender.insertMessageAfter(
-								startBefore, startOffset, receiver, start.sort, null, shouldCreateReply(),
-								BEHAVIOR_EXECUTION_SPECIFICATION);
-						createExecutionCommands.add(wrap(msgWithBehaviorExecution));
+								startBefore, startOffset, receiver, start.sort, null,
+								new ExecutionCreationConfig(true, shouldCreateReply(),
+										BEHAVIOR_EXECUTION_SPECIFICATION));
 
-						return wrap(new GMFtoEMFCommandWrapper(new SelectAndExecuteCommand(
-								Messages.CreateSynchronousMessagePopupCommandLabel,
-								Display.getCurrent().getActiveShell(), createExecutionCommands)));
+						return createSelectionCommand(msgWithActionExecution, msgWithBehaviorExecution);
 
 					} else {
 						result = sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort,
@@ -289,6 +303,15 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				return wrap(result);
 			}
 		}.doSwitch(request);
+	}
+
+	protected Command createSelectionCommand(CreationCommand<?>... commands) {
+		Shell shell = Display.getCurrent().getActiveShell();
+		List<Command> wrappedCommands = Arrays.asList(commands).stream().map(this::wrap)
+				.collect(Collectors.toList());
+		SelectAndExecuteCommand selectAndExecuteCommand = new SelectAndExecuteCommand(
+				Messages.CreateSynchronousMessagePopupCommandLabel, shell, wrappedCommands);
+		return wrap(new GMFtoEMFCommandWrapper(selectAndExecuteCommand));
 	}
 
 	/**

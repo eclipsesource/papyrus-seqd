@@ -302,6 +302,57 @@
       <eGenericType eClassifier="#//CreationCommand">
         <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Message"/>
       </eGenericType>
+      <eParameters name="beforeSend" lowerBound="1">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The element after which to insert the message send event.  If it is an interaction fragment on this lifeline, then the new message’s send event is inserted after this element.  If it is a message, then the new message’s send event is inserted after the referenced message’s end that covers this lifeline."/>
+        </eAnnotations>
+        <eGenericType eClassifier="#//MElement">
+          <eTypeArguments/>
+        </eGenericType>
+      </eParameters>
+      <eParameters name="sendOffset" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Vertical offset of the send event from the element before it, or from the lifeline head if none."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="receiver" lowerBound="1" eType="#//MLifeline">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The lifeline to receive the message.  May be the same as is sending it (this lifeline)."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="beforeRecv" lowerBound="1">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The element after which to insert the message receive event.  If it is an interaction fragment on the {@code receiver}, then the new message’s receive event is inserted after this element.  If it is a message, then the new message’s receive event is inserted after the referenced message’s end that covers this lifeline."/>
+        </eAnnotations>
+        <eGenericType eClassifier="#//MElement">
+          <eTypeArguments/>
+        </eGenericType>
+      </eParameters>
+      <eParameters name="recvOffset" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Vertical offset of the receive end from the element before it, or from the lifeline head if none."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="sort" lowerBound="1" eType="ecore:EEnum platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//MessageSort">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The sort of message to create."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="signature" eType="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//NamedElement">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="An optional message signature, either a signal or an operation."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="executionCreationConfig" eType="#//ExecutionCreationConfig">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The configuration specifying details about the creation of an execution associated for the message."/>
+        </eAnnotations>
+      </eParameters>
+    </eOperations>
+    <eOperations name="insertMessageAfter" lowerBound="1">
+      <eGenericType eClassifier="#//CreationCommand">
+        <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Message"/>
+      </eGenericType>
       <eParameters name="before" lowerBound="1">
         <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
           <details key="documentation" value="The element after which to insert the message.  If it is an interaction fragment on this lifeline, then the new message’s send event is inserted after this element.  If it is a message, then the new message’s send event is inserted after the referenced message’s end that covers this lifeline."/>
@@ -330,14 +381,9 @@
           <details key="documentation" value="An optional message signature, either a signal or an operation."/>
         </eAnnotations>
       </eParameters>
-      <eParameters name="createReply" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eParameters name="executionCreationConfig" eType="#//ExecutionCreationConfig">
         <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="Specifies whether or not to create a reply message, if the message to be created is a synchronous message."/>
-        </eAnnotations>
-      </eParameters>
-      <eParameters name="executionType" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EClass">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="Specifies the type of the execution specification to be created, if the message to be created is a synchronous message."/>
+          <details key="documentation" value="The configuration specifying details about the creation of an execution associated for the message."/>
         </eAnnotations>
       </eParameters>
     </eOperations>
@@ -538,6 +584,8 @@
     </eTypeParameters>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="EObject" instanceClassName="org.eclipse.emf.ecore.EObject"
+      serializable="false"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="ExecutionCreationConfig" instanceClassName="org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig"
       serializable="false"/>
   <eClassifiers xsi:type="ecore:EClass" name="MDestruction" eSuperTypes="#//MMessageEnd"/>
 </ecore:EPackage>

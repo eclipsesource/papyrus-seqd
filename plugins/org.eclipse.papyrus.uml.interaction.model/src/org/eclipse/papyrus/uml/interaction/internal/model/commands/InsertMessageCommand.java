@@ -17,7 +17,6 @@ import static org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil.
 import static org.eclipse.papyrus.uml.interaction.graph.util.Suppliers.compose;
 import static org.eclipse.uml2.uml.MessageSort.REPLY_LITERAL;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION;
-import static org.eclipse.uml2.uml.UMLPackage.Literals.BEHAVIOR_EXECUTION_SPECIFICATION;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.EXECUTION_SPECIFICATION__FINISH;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.EXECUTION_SPECIFICATION__START;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.INTERACTION__FRAGMENT;
@@ -40,7 +39,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.command.DeleteCommand;
 import org.eclipse.emf.edit.command.SetCommand;
@@ -62,6 +60,7 @@ import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredAddCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredSetCommand;
+import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
@@ -104,11 +103,7 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 
 	private CreationCommand<Message> resultCommand;
 
-	private boolean createReply;
-
-	private EClass executionType;
-
-	private boolean createExecution = false;
+	private ExecutionCreationConfig executionCreationConfig;
 
 	/**
 	 * Initializes me.
@@ -150,17 +145,14 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	 *            the message sort
 	 * @param signature
 	 *            the message signature, if any
-	 * @param createReply
-	 *            specifies whether or not to create a reply message, if a sync message is to be created
-	 * @param executionType
-	 *            specifies the type of execution to be created, if a sync message is to be created
+	 * @param executionCreationConfig
+	 *            the configuration for creating executions for the sync message to be created
 	 */
 	public InsertMessageCommand(MLifelineImpl sender, MElement<?> before, int offset, MLifeline receiver,
-			MessageSort sort, NamedElement signature, boolean createReply, EClass executionType) {
+			MessageSort sort, NamedElement signature, ExecutionCreationConfig executionCreationConfig) {
 
 		this(sender, before, offset, receiver, receiver, receiverOffset(before, offset, receiver), sort,
-				signature, createReply, executionType);
-		this.createExecution = true;
+				signature, executionCreationConfig);
 	}
 
 	/**
@@ -189,13 +181,13 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			MLifeline receiver, MElement<?> beforeRecv, int recvOffset, MessageSort sort,
 			NamedElement signature) {
 
-		this(sender, beforeSend, sendOffset, receiver, beforeRecv, recvOffset, sort, signature, true,
-				BEHAVIOR_EXECUTION_SPECIFICATION);
+		this(sender, beforeSend, sendOffset, receiver, beforeRecv, recvOffset, sort, signature,
+				new ExecutionCreationConfig());
 	}
 
 	public InsertMessageCommand(MLifelineImpl sender, MElement<?> beforeSend, int sendOffset,
 			MLifeline receiver, MElement<?> beforeRecv, int recvOffset, MessageSort sort,
-			NamedElement signature, boolean createReply, EClass executionType) {
+			NamedElement signature, ExecutionCreationConfig executionCreationConfig) {
 		super(sender);
 
 		checkInteraction(beforeSend);
@@ -220,13 +212,12 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		this.recvOffset = recvOffset;
 		this.sort = sort;
 		this.signature = signature;
-		this.createReply = createReply;
-		this.executionType = executionType;
+		this.executionCreationConfig = executionCreationConfig;
 	}
 
 	@Override
 	public String getLabel() {
-		if (createExecution) {
+		if (executionCreationConfig.isCreateExecution()) {
 			return MessageFormat.format(Messages.CreateMessageWithExecution, messageSortLabel(),
 					executionTypeLabel());
 		} else {
@@ -253,7 +244,7 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	}
 
 	private Object executionTypeLabel() {
-		if (executionType.equals(ACTION_EXECUTION_SPECIFICATION)) {
+		if (executionCreationConfig.getExecutionType().equals(ACTION_EXECUTION_SPECIFICATION)) {
 			return Messages.ActionExecutionSpecification;
 		} else {
 			return Messages.BehaviorExecutionSpecification;
@@ -366,7 +357,7 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		switch (sort) {
 			case CREATE_MESSAGE_LITERAL:
 				/* self-creation makes no sense */
-				if (this.receiver == this.getTarget()) {
+				if (isSelfMessage()) {
 					return UnexecutableCommand.INSTANCE;
 				}
 
@@ -571,11 +562,19 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 
 			case SYNCH_CALL_LITERAL:
 				/* if there is no execution yet, create one for sync calls */
-				if (createExecution && !receivingExec.isPresent()) {
+				if (!receivingExec.isPresent() && executionCreationConfig.isCreateExecution()) {
 					result = result.chain(
 							createAdditionalSyncMessageCommands(sendEvent, recvEvent, senderY, receiverY));
 					/* Fall through to create nudge command, but extend nudge height by execMinHeight */
 					recvYPosition += layoutConstraints().getMinimumHeight(ViewTypes.EXECUTION_SPECIFICATION);
+
+					if (isSelfMessage()) {
+						/* Make additional room for the one or even two self messages */
+						recvYPosition += layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE);
+						if (executionCreationConfig.isCreateReply()) {
+							recvYPosition += layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE);
+						}
+					}
 				}
 
 			default:
@@ -601,17 +600,30 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	}
 
 	protected boolean isSelfMessage() {
-		return this.receiver.getElement() == this.getTarget().getElement();
+		return receiver.getElement() == getTarget().getElement();
 	}
 
 	private Command createAdditionalSyncMessageCommands(Supplier<MessageEnd> sendEvent,
 			CreationCommand<MessageEnd> receiveEvent, IntSupplier senderY, IntSupplier receiverY) {
 
+		/* correct why positions if this is a self message */
+		IntSupplier actualReceiverY;
+		IntSupplier actualSenderY;
+		if (isSelfMessage()) {
+			actualReceiverY = () -> senderY.getAsInt()
+					+ layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE);
+			actualSenderY = () -> senderY.getAsInt()
+					+ layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE);
+		} else {
+			actualReceiverY = receiverY;
+			actualSenderY = senderY;
+		}
+
 		/* for sync calls, we want to create an execution specification */
 		List<Command> additionalCommands = new ArrayList<>();
 		CreationCommand<ExecutionSpecification> execution;
 		CreationParameters execParams = CreationParameters.in(interaction(), INTERACTION__FRAGMENT);
-		execParams.setEClass(executionType);
+		execParams.setEClass(executionCreationConfig.getExecutionType());
 		execParams.setInsertAfter(receiveEvent);
 		execution = semanticHelper().createExecutionSpecification(null, execParams);
 		Command setStart = new DeferredSetCommand(getEditingDomain(), execution,
@@ -619,9 +631,9 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		additionalCommands.add(execution);
 		additionalCommands.add(setStart);
 
-		if (createReply) {
-			additionalCommands
-					.addAll(createAutomaticReplyMessageCommands(sendEvent, execution, senderY, receiverY));
+		if (executionCreationConfig.isCreateReply()) {
+			additionalCommands.addAll(createAutomaticReplyMessageCommands(sendEvent, execution, actualSenderY,
+					actualReceiverY));
 		} else {
 			CreationCommand<OccurrenceSpecification> finish = semanticHelper().createFinish(execution,
 					CreationParameters.after(execution));
@@ -636,7 +648,7 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		View recShape = receiver.getDiagramView().orElse(null);
 		int execMinHeight = layoutConstraints().getMinimumHeight(ViewTypes.EXECUTION_SPECIFICATION);
 		Shape receiverBody = diagramHelper().getLifelineBodyShape(recShape);
-		executionShape = diagramHelper().createExecutionShape(execution, receiverBody, receiverY,
+		executionShape = diagramHelper().createExecutionShape(execution, receiverBody, actualReceiverY,
 				execMinHeight);
 		additionalCommands.add(executionShape);
 

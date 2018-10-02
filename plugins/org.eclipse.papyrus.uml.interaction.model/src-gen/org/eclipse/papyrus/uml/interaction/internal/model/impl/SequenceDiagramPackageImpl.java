@@ -40,6 +40,7 @@ import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig;
 import org.eclipse.uml2.types.TypesPackage;
 import org.eclipse.uml2.uml.UMLPackage;
 
@@ -148,6 +149,13 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	private EDataType eObjectEDataType = null;
 
 	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	private EDataType executionCreationConfigEDataType = null;
+
+	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
 	 * {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} by the package package URI value.
 	 * <p>
@@ -190,9 +198,10 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 					.getEPackage(SequenceDiagramPackage.eNS_URI);
 
 		// Obtain or create and register package
-		SequenceDiagramPackageImpl theSequenceDiagramPackage = (SequenceDiagramPackageImpl)(EPackage.Registry.INSTANCE
-				.get(eNS_URI) instanceof SequenceDiagramPackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI)
-						: new SequenceDiagramPackageImpl());
+		Object registeredSequenceDiagramPackage = EPackage.Registry.INSTANCE.get(eNS_URI);
+		SequenceDiagramPackageImpl theSequenceDiagramPackage = registeredSequenceDiagramPackage instanceof SequenceDiagramPackageImpl
+				? (SequenceDiagramPackageImpl)registeredSequenceDiagramPackage
+				: new SequenceDiagramPackageImpl();
 
 		isInited = true;
 
@@ -612,7 +621,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
-	public EOperation getMLifeline__InsertMessageAfter__MElement_int_MLifeline_MessageSort_NamedElement_boolean_EClass() {
+	public EOperation getMLifeline__InsertMessageAfter__MElement_int_MLifeline_MElement_int_MessageSort_NamedElement_ExecutionCreationConfig() {
 		return mLifelineEClass.getEOperations().get(11);
 	}
 
@@ -622,7 +631,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
-	public EOperation getMLifeline__ElementAt__int() {
+	public EOperation getMLifeline__InsertMessageAfter__MElement_int_MLifeline_MessageSort_NamedElement_ExecutionCreationConfig() {
 		return mLifelineEClass.getEOperations().get(12);
 	}
 
@@ -632,8 +641,18 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
-	public EOperation getMLifeline__NudgeHorizontally__int() {
+	public EOperation getMLifeline__ElementAt__int() {
 		return mLifelineEClass.getEOperations().get(13);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMLifeline__NudgeHorizontally__int() {
+		return mLifelineEClass.getEOperations().get(14);
 	}
 
 	/**
@@ -982,6 +1001,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EDataType getExecutionCreationConfig() {
+		return executionCreationConfigEDataType;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public SequenceDiagramFactory getSequenceDiagramFactory() {
 		return (SequenceDiagramFactory)getEFactoryInstance();
 	}
@@ -1050,7 +1079,9 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEOperation(mLifelineEClass,
 				MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MELEMENT_INT_MESSAGESORT_NAMEDELEMENT);
 		createEOperation(mLifelineEClass,
-				MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MESSAGESORT_NAMEDELEMENT_BOOLEAN_ECLASS);
+				MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MELEMENT_INT_MESSAGESORT_NAMEDELEMENT_EXECUTIONCREATIONCONFIG);
+		createEOperation(mLifelineEClass,
+				MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MESSAGESORT_NAMEDELEMENT_EXECUTIONCREATIONCONFIG);
 		createEOperation(mLifelineEClass, MLIFELINE___ELEMENT_AT__INT);
 		createEOperation(mLifelineEClass, MLIFELINE___NUDGE_HORIZONTALLY__INT);
 
@@ -1095,6 +1126,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		commandEDataType = createEDataType(COMMAND);
 		creationCommandEDataType = createEDataType(CREATION_COMMAND);
 		eObjectEDataType = createEDataType(EOBJECT);
+		executionCreationConfigEDataType = createEDataType(EXECUTION_CREATION_CONFIG);
 	}
 
 	/**
@@ -1465,7 +1497,30 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		initEOperation(op, g1);
 
 		op = initEOperation(
-				getMLifeline__InsertMessageAfter__MElement_int_MLifeline_MessageSort_NamedElement_boolean_EClass(),
+				getMLifeline__InsertMessageAfter__MElement_int_MLifeline_MElement_int_MessageSort_NamedElement_ExecutionCreationConfig(),
+				null, "insertMessageAfter", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getMElement());
+		g2 = createEGenericType();
+		g1.getETypeArguments().add(g2);
+		addEParameter(op, g1, "beforeSend", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, ecorePackage.getEInt(), "sendOffset", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, this.getMLifeline(), "receiver", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getMElement());
+		g2 = createEGenericType();
+		g1.getETypeArguments().add(g2);
+		addEParameter(op, g1, "beforeRecv", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, ecorePackage.getEInt(), "recvOffset", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, theUMLPackage.getMessageSort(), "sort", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, theUMLPackage.getNamedElement(), "signature", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, this.getExecutionCreationConfig(), "executionCreationConfig", 0, 1, IS_UNIQUE, //$NON-NLS-1$
+				IS_ORDERED);
+		g1 = createEGenericType(this.getCreationCommand());
+		g2 = createEGenericType(theUMLPackage.getMessage());
+		g1.getETypeArguments().add(g2);
+		initEOperation(op, g1);
+
+		op = initEOperation(
+				getMLifeline__InsertMessageAfter__MElement_int_MLifeline_MessageSort_NamedElement_ExecutionCreationConfig(),
 				null, "insertMessageAfter", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 		g1 = createEGenericType(this.getMElement());
 		g2 = createEGenericType();
@@ -1475,8 +1530,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		addEParameter(op, this.getMLifeline(), "receiver", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 		addEParameter(op, theUMLPackage.getMessageSort(), "sort", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 		addEParameter(op, theUMLPackage.getNamedElement(), "signature", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
-		addEParameter(op, ecorePackage.getEBoolean(), "createReply", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
-		addEParameter(op, theEcorePackage.getEClass(), "executionType", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, this.getExecutionCreationConfig(), "executionCreationConfig", 0, 1, IS_UNIQUE, //$NON-NLS-1$
+				IS_ORDERED);
 		g1 = createEGenericType(this.getCreationCommand());
 		g2 = createEGenericType(theUMLPackage.getMessage());
 		g1.getETypeArguments().add(g2);
@@ -1641,6 +1696,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 				!IS_GENERATED_INSTANCE_CLASS);
 		initEDataType(eObjectEDataType, EObject.class, "EObject", !IS_SERIALIZABLE, //$NON-NLS-1$
 				!IS_GENERATED_INSTANCE_CLASS);
+		initEDataType(executionCreationConfigEDataType, ExecutionCreationConfig.class,
+				"ExecutionCreationConfig", !IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 
 		// Create resource
 		createResource(eNS_URI);
