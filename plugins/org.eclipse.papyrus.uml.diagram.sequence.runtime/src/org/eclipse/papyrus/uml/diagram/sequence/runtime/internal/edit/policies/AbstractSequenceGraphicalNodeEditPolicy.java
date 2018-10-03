@@ -17,13 +17,18 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.pol
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil.getSort;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
+import static org.eclipse.uml2.uml.UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION;
+import static org.eclipse.uml2.uml.UMLPackage.Literals.BEHAVIOR_EXECUTION_SPECIFICATION;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -50,7 +55,11 @@ import org.eclipse.gmf.runtime.emf.commands.core.command.AbstractTransactionalCo
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.papyrus.infra.emf.gmf.command.GMFtoEMFCommandWrapper;
+import org.eclipse.papyrus.infra.gmfdiag.common.commands.SelectAndExecuteCommand;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Messages;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ISequenceEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageFeedbackHelper.Mode;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.WeakEventBusDelegator;
@@ -63,8 +72,11 @@ import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageSort;
@@ -225,8 +237,25 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 					location = getRelativeLocation(location);
 
 					AnchorDescriptor anchorDesc = computeAnchoring(location);
-					result = sender.insertMessageAfter(startBefore, startOffset, receiver,
-							anchorDesc.elementBefore.orElse(receiver), anchorDesc.offset, start.sort, null);
+
+					if (MessageUtil.isSynchronousCall(start.sort) && selfMessage && shouldCreateExecution()) {
+
+						CreationCommand<Message> msgWithActionExecution = sender.insertMessageAfter(
+								startBefore, startOffset, receiver, anchorDesc.elementBefore.orElse(receiver),
+								anchorDesc.offset, start.sort, null, new ExecutionCreationCommandParameter(
+										true, shouldCreateReply(), ACTION_EXECUTION_SPECIFICATION));
+						CreationCommand<Message> msgWithBehaviorExecution = sender.insertMessageAfter(
+								startBefore, startOffset, receiver, anchorDesc.elementBefore.orElse(receiver),
+								anchorDesc.offset, start.sort, null, new ExecutionCreationCommandParameter(
+										true, shouldCreateReply(), BEHAVIOR_EXECUTION_SPECIFICATION));
+
+						return createSelectionCommand(msgWithActionExecution, msgWithBehaviorExecution);
+
+					} else {
+						result = sender.insertMessageAfter(startBefore, startOffset, receiver,
+								anchorDesc.elementBefore.orElse(receiver), anchorDesc.offset, start.sort,
+								null);
+					}
 				} else {
 					startLocation = startLocation.getCopy();
 
@@ -252,12 +281,37 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 						startOffset = newSourceAnchorDesc.offset;
 					}
 
-					result = sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort, null);
+					if (MessageUtil.isSynchronousCall(start.sort) && shouldCreateExecution()) {
+
+						CreationCommand<Message> msgWithActionExecution = sender.insertMessageAfter(
+								startBefore, startOffset, receiver, start.sort, null,
+								new ExecutionCreationCommandParameter(true, shouldCreateReply(),
+										ACTION_EXECUTION_SPECIFICATION));
+						CreationCommand<Message> msgWithBehaviorExecution = sender.insertMessageAfter(
+								startBefore, startOffset, receiver, start.sort, null,
+								new ExecutionCreationCommandParameter(true, shouldCreateReply(),
+										BEHAVIOR_EXECUTION_SPECIFICATION));
+
+						return createSelectionCommand(msgWithActionExecution, msgWithBehaviorExecution);
+
+					} else {
+						result = sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort,
+								null);
+					}
 				}
 
 				return wrap(result);
 			}
 		}.doSwitch(request);
+	}
+
+	protected Command createSelectionCommand(CreationCommand<?>... commands) {
+		Shell shell = Display.getCurrent().getActiveShell();
+		List<Command> wrappedCommands = Arrays.asList(commands).stream().map(this::wrap)
+				.collect(Collectors.toList());
+		SelectAndExecuteCommand selectAndExecuteCommand = new SelectAndExecuteCommand(
+				Messages.CreateSynchronousMessagePopupCommandLabel, shell, wrappedCommands);
+		return wrap(new GMFtoEMFCommandWrapper(selectAndExecuteCommand));
 	}
 
 	/**
@@ -499,6 +553,14 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				.map(msg -> MInteraction.getInstance(msg.getInteraction(), diagram));
 		return interaction.flatMap(in -> in.getMessage(message.get()))
 				.flatMap(source ? MMessage::getSend : MMessage::getReceive);
+	}
+
+	protected boolean shouldCreateExecution() {
+		return Activator.getDefault().getPreferences().isAutoCreateExecutionForSyncMessage();
+	}
+
+	protected boolean shouldCreateReply() {
+		return Activator.getDefault().getPreferences().isAutoCreateReplyForSyncCall();
 	}
 
 	//

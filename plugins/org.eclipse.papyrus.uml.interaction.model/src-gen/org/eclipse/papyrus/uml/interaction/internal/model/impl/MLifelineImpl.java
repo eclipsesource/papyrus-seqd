@@ -44,6 +44,7 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
@@ -157,7 +158,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	@Override
 	public List<MExecutionOccurrence> getExecutionOccurrences() {
 		if (executionOccurrences == null) {
-			executionOccurrences = new EObjectContainmentEList<>(MExecutionOccurrence.class, this,
+			executionOccurrences = new EObjectContainmentEList<MExecutionOccurrence>(
+					MExecutionOccurrence.class, this,
 					SequenceDiagramPackage.MLIFELINE__EXECUTION_OCCURRENCES);
 		}
 		return executionOccurrences;
@@ -171,7 +173,7 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	@Override
 	public List<MExecution> getExecutions() {
 		if (executions == null) {
-			executions = new EObjectContainmentEList<>(MExecution.class, this,
+			executions = new EObjectContainmentEList<MExecution>(MExecution.class, this,
 					SequenceDiagramPackage.MLIFELINE__EXECUTIONS);
 		}
 		return executions;
@@ -198,11 +200,10 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
 					SequenceDiagramPackage.MLIFELINE__DESTRUCTION, oldDestruction, newDestruction);
-			if (msgs == null) {
+			if (msgs == null)
 				msgs = notification;
-			} else {
+			else
 				msgs.add(notification);
-			}
 		}
 		return msgs;
 	}
@@ -216,22 +217,18 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	public void setDestruction(MDestruction newDestruction) {
 		if (newDestruction != destruction) {
 			NotificationChain msgs = null;
-			if (destruction != null) {
+			if (destruction != null)
 				msgs = ((InternalEObject)destruction).eInverseRemove(this,
 						EOPPOSITE_FEATURE_BASE - SequenceDiagramPackage.MLIFELINE__DESTRUCTION, null, msgs);
-			}
-			if (newDestruction != null) {
+			if (newDestruction != null)
 				msgs = ((InternalEObject)newDestruction).eInverseAdd(this,
 						EOPPOSITE_FEATURE_BASE - SequenceDiagramPackage.MLIFELINE__DESTRUCTION, null, msgs);
-			}
 			msgs = basicSetDestruction(newDestruction, msgs);
-			if (msgs != null) {
+			if (msgs != null)
 				msgs.dispatch();
-			}
-		} else if (eNotificationRequired()) {
+		} else if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
 					SequenceDiagramPackage.MLIFELINE__DESTRUCTION, newDestruction, newDestruction));
-		}
 	}
 
 	/**
@@ -344,12 +341,40 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 * @generated NOT
 	 */
 	@Override
+	public CreationCommand<Message> insertMessageAfter(MElement<?> before, int offset, MLifeline receiver,
+			MessageSort sort, NamedElement signature,
+			ExecutionCreationCommandParameter executionCreationConfig) {
+
+		return new InsertMessageCommand(this, before, offset, receiver, sort, signature,
+				executionCreationConfig);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
 	public CreationCommand<Message> insertMessageAfter(MElement<?> beforeSend, int sendOffset,
 			MLifeline receiver, MElement<?> beforeRecv, int recvOffset, MessageSort sort,
 			NamedElement signature) {
 
+		return insertMessageAfter(beforeSend, sendOffset, receiver, beforeRecv, recvOffset, sort, signature,
+				new ExecutionCreationCommandParameter());
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public CreationCommand<Message> insertMessageAfter(MElement<?> beforeSend, int sendOffset,
+			MLifeline receiver, MElement<?> beforeRecv, int recvOffset, MessageSort sort,
+			NamedElement signature, ExecutionCreationCommandParameter executionCreationConfig) {
+
 		return new InsertMessageCommand(this, beforeSend, sendOffset, receiver, beforeRecv, recvOffset, sort,
-				signature);
+				signature, executionCreationConfig);
 	}
 
 	/**
@@ -475,9 +500,9 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case SequenceDiagramPackage.MLIFELINE__EXECUTION_OCCURRENCES:
-				return (executionOccurrences != null) && !executionOccurrences.isEmpty();
+				return executionOccurrences != null && !executionOccurrences.isEmpty();
 			case SequenceDiagramPackage.MLIFELINE__EXECUTIONS:
-				return (executions != null) && !executions.isEmpty();
+				return executions != null && !executions.isEmpty();
 			case SequenceDiagramPackage.MLIFELINE__DESTRUCTION:
 				return destruction != null;
 			case SequenceDiagramPackage.MLIFELINE__LEFT:
@@ -525,6 +550,15 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return insertMessageAfter((MElement<?>)arguments.get(0), (Integer)arguments.get(1),
 						(MLifeline)arguments.get(2), (MElement<?>)arguments.get(3), (Integer)arguments.get(4),
 						(MessageSort)arguments.get(5), (NamedElement)arguments.get(6));
+			case SequenceDiagramPackage.MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MELEMENT_INT_MESSAGESORT_NAMEDELEMENT_EXECUTIONCREATIONCONFIG:
+				return insertMessageAfter((MElement<?>)arguments.get(0), (Integer)arguments.get(1),
+						(MLifeline)arguments.get(2), (MElement<?>)arguments.get(3), (Integer)arguments.get(4),
+						(MessageSort)arguments.get(5), (NamedElement)arguments.get(6),
+						(ExecutionCreationCommandParameter)arguments.get(7));
+			case SequenceDiagramPackage.MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MESSAGESORT_NAMEDELEMENT_EXECUTIONCREATIONCONFIG:
+				return insertMessageAfter((MElement<?>)arguments.get(0), (Integer)arguments.get(1),
+						(MLifeline)arguments.get(2), (MessageSort)arguments.get(3),
+						(NamedElement)arguments.get(4), (ExecutionCreationCommandParameter)arguments.get(5));
 			case SequenceDiagramPackage.MLIFELINE___ELEMENT_AT__INT:
 				return elementAt((Integer)arguments.get(0));
 			case SequenceDiagramPackage.MLIFELINE___NUDGE_HORIZONTALLY__INT:

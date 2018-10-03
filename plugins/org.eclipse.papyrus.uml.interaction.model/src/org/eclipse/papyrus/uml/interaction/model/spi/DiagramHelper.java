@@ -103,6 +103,23 @@ public interface DiagramHelper {
 			Shape lifeline, int yPosition, int height);
 
 	/**
+	 * Obtain a command to create a shape for the given {@code execution} specification as a child of a
+	 * {@link lifeline} shape in the diagram.
+	 * 
+	 * @param execution
+	 *            an execution specification to be visualized in the diagram
+	 * @param lifeline
+	 *            the lifeline shape in which to create the {@code execution} shape
+	 * @param yPosition
+	 *            the vertical position of the {@code execution} shape to create
+	 * @param height
+	 *            the vertical extent of the {@code execution} shape to create
+	 * @return the execution shape creation command
+	 */
+	CreationCommand<Shape> createExecutionShape(Supplier<? extends ExecutionSpecification> execution,
+			Shape lifelineBody, IntSupplier yPosition, int height);
+
+	/**
 	 * Obtain a command to create a shape for the given {@code destruction} specification as a child of a
 	 * {@link lifeline} shape in the diagram.
 	 * 
@@ -171,5 +188,4 @@ public interface DiagramHelper {
 	 * @return the deletion command
 	 */
 	Command deleteView(EObject diagramView);
-
 }
