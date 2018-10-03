@@ -32,7 +32,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
+import java.util.function.BinaryOperator;
 import java.util.function.IntSupplier;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -600,7 +602,7 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		return result;
 	}
 
-	protected boolean isSelfMessage() {
+	private boolean isSelfMessage() {
 		return receiver.getElement() == getTarget().getElement();
 	}
 
@@ -716,7 +718,6 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private Optional<Command> createNudgeCommandForFollowingElements(
 			List<MElement<? extends Element>> timeline, int spaceRequired,
 			Optional<MElement<? extends Element>> sendInsert, //
@@ -733,16 +734,16 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		int additionalRecvNudge = missingPadding(recvInsert, recvYPosition);
 		int minNudge = Math.max(0, Math.max(additionalSendNudge, additionalRecvNudge));
 
-		MElement<?> distanceFrom = (MElement<?>)Optional.of(beforeSend).filter(MOccurrence.class::isInstance)
-				.map(MOccurrence.class::cast).flatMap(MOccurrence::getStartedExecution).orElse(beforeSend);
-		Optional<Command> makeSpace = getFollowingElement(timeline, distanceFrom, sendYPosition).map(el -> {
-			OptionalInt distance = el.verticalDistance(distanceFrom);
-			if (distance.isPresent()) {
-				return el.nudge(Math.max(minNudge, spaceRequired - distance.getAsInt()));
-			} else {
-				return null;
-			}
-		});
+		MElement<?> latestElementBeforeY = getLatestElementBeforeY(beforeSend, sendYPosition, timeline);
+		Optional<Command> makeSpace = getFollowingElement(timeline, latestElementBeforeY, sendYPosition)
+				.map(el -> {
+					OptionalInt distance = el.verticalDistance(latestElementBeforeY);
+					if (distance.isPresent()) {
+						return el.nudge(Math.max(minNudge, spaceRequired - distance.getAsInt()));
+					} else {
+						return null;
+					}
+				});
 
 		/*
 		 * check if we did create a nudge command based on measured distance and the required space. if not,
@@ -754,6 +755,33 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			return Optional.of(toNudge.nudge(minNudge));
 		}
 		return makeSpace;
+	}
+
+	/**
+	 * Returns the latest element (wrt <code>timeline</code>) starting from <code>referenceElement</code> that
+	 * is still graphically before the specified <code>yPosition</code>.
+	 */
+	protected MElement<?> getLatestElementBeforeY(MElement<?> referenceElement, int yPosition,
+			List<MElement<? extends Element>> timeline) {
+		/* timeline after element before send or entire list, if element before send isn't included */
+		List<MElement<?>> elementsLaterThanBeforeSend = timeline
+				.subList(timeline.indexOf(referenceElement) + 1, timeline.size());
+		return elementsLaterThanBeforeSend.stream() //
+				.filter(isGraphicallyBefore(yPosition)) //
+				.reduce(last(timeline)) //
+				.orElse(referenceElement);
+	}
+
+	protected Predicate<? super MElement<?>> isGraphicallyBefore(int yPosition) {
+		return isGraphicallyBefore(OptionalInt.of(yPosition));
+	}
+
+	protected Predicate<? super MElement<?>> isGraphicallyBefore(OptionalInt yPosition) {
+		return e -> e.getBottom().orElse(Integer.MAX_VALUE) < yPosition.orElse(Integer.MAX_VALUE);
+	}
+
+	protected BinaryOperator<MElement<? extends Element>> last(List<MElement<? extends Element>> timeline) {
+		return (e1, e2) -> timeline.indexOf(e1) > timeline.indexOf(e1) ? e1 : e2;
 	}
 
 	private Optional<MElement<? extends Element>> getFollowingElement(
