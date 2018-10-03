@@ -238,16 +238,16 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 					AnchorDescriptor anchorDesc = computeAnchoring(location);
 
-					if (MessageUtil.isSynchronous(start.sort) && selfMessage && shouldCreateExecution()) {
+					if (MessageUtil.isSynchronousCall(start.sort) && selfMessage && shouldCreateExecution()) {
 
 						CreationCommand<Message> msgWithActionExecution = sender.insertMessageAfter(
 								startBefore, startOffset, receiver, anchorDesc.elementBefore.orElse(receiver),
-								anchorDesc.offset, start.sort, null, new ExecutionCreationCommandParameter(true,
-										shouldCreateReply(), ACTION_EXECUTION_SPECIFICATION));
+								anchorDesc.offset, start.sort, null, new ExecutionCreationCommandParameter(
+										true, shouldCreateReply(), ACTION_EXECUTION_SPECIFICATION));
 						CreationCommand<Message> msgWithBehaviorExecution = sender.insertMessageAfter(
 								startBefore, startOffset, receiver, anchorDesc.elementBefore.orElse(receiver),
-								anchorDesc.offset, start.sort, null, new ExecutionCreationCommandParameter(true,
-										shouldCreateReply(), BEHAVIOR_EXECUTION_SPECIFICATION));
+								anchorDesc.offset, start.sort, null, new ExecutionCreationCommandParameter(
+										true, shouldCreateReply(), BEHAVIOR_EXECUTION_SPECIFICATION));
 
 						return createSelectionCommand(msgWithActionExecution, msgWithBehaviorExecution);
 
@@ -281,7 +281,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 						startOffset = newSourceAnchorDesc.offset;
 					}
 
-					if (shouldCreateExecution()) {
+					if (MessageUtil.isSynchronousCall(start.sort) && shouldCreateExecution()) {
 
 						CreationCommand<Message> msgWithActionExecution = sender.insertMessageAfter(
 								startBefore, startOffset, receiver, start.sort, null,
