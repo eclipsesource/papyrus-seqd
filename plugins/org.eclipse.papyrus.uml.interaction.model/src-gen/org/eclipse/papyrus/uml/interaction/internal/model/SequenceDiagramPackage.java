@@ -1680,14 +1680,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int EOBJECT = 13;
 
 	/**
-	 * The meta object id for the '<em>Execution Creation Config</em>' data type. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * The meta object id for the '<em>Execution Creation Command Parameter</em>' data type. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @see org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig
-	 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getExecutionCreationConfig()
+	 * @see org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getExecutionCreationCommandParameter()
 	 * @generated
 	 */
-	int EXECUTION_CREATION_CONFIG = 14;
+	int EXECUTION_CREATION_COMMAND_PARAMETER = 14;
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MElement
@@ -2131,7 +2131,7 @@ public interface SequenceDiagramPackage extends EPackage {
 
 	/**
 	 * Returns the meta object for the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement, org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig)
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement, org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter)
 	 * <em>Insert Message After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @return the meta object for the '<em>Insert Message After</em>' operation.
@@ -2139,21 +2139,21 @@ public interface SequenceDiagramPackage extends EPackage {
 	 *      int, org.eclipse.papyrus.uml.interaction.model.MLifeline,
 	 *      org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.uml2.uml.MessageSort,
 	 *      org.eclipse.uml2.uml.NamedElement,
-	 *      org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig)
+	 *      org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter)
 	 * @generated
 	 */
 	EOperation getMLifeline__InsertMessageAfter__MElement_int_MLifeline_MElement_int_MessageSort_NamedElement_ExecutionCreationConfig();
 
 	/**
 	 * Returns the meta object for the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement, org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig)
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement, org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter)
 	 * <em>Insert Message After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @return the meta object for the '<em>Insert Message After</em>' operation.
 	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement,
 	 *      int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.uml2.uml.MessageSort,
 	 *      org.eclipse.uml2.uml.NamedElement,
-	 *      org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig)
+	 *      org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter)
 	 * @generated
 	 */
 	EOperation getMLifeline__InsertMessageAfter__MElement_int_MLifeline_MessageSort_NamedElement_ExecutionCreationConfig();
@@ -2564,16 +2564,16 @@ public interface SequenceDiagramPackage extends EPackage {
 
 	/**
 	 * Returns the meta object for data type
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig <em>Execution Creation
-	 * Config</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter <em>Execution
+	 * Creation Command Parameter</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @return the meta object for data type '<em>Execution Creation Config</em>'.
-	 * @see org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig
-	 * @model instanceClass="org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig"
+	 * @return the meta object for data type '<em>Execution Creation Command Parameter</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter
+	 * @model instanceClass="org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter"
 	 *        serializeable="false"
 	 * @generated
 	 */
-	EDataType getExecutionCreationConfig();
+	EDataType getExecutionCreationCommandParameter();
 
 	/**
 	 * Returns the factory that creates the instances of the model. <!-- begin-user-doc --> <!-- end-user-doc
@@ -3263,14 +3263,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		EDataType EOBJECT = eINSTANCE.getEObject();
 
 		/**
-		 * The meta object literal for the '<em>Execution Creation Config</em>' data type. <!-- begin-user-doc
-		 * --> <!-- end-user-doc -->
+		 * The meta object literal for the '<em>Execution Creation Command Parameter</em>' data type. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
 		 * 
-		 * @see org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig
-		 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getExecutionCreationConfig()
+		 * @see org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter
+		 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getExecutionCreationCommandParameter()
 		 * @generated
 		 */
-		EDataType EXECUTION_CREATION_CONFIG = eINSTANCE.getExecutionCreationConfig();
+		EDataType EXECUTION_CREATION_COMMAND_PARAMETER = eINSTANCE.getExecutionCreationCommandParameter();
 
 	}
 

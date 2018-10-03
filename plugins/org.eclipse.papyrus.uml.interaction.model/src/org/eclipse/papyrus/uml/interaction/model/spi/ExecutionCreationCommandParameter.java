@@ -15,7 +15,7 @@ import static org.eclipse.uml2.uml.UMLPackage.Literals.ACTION_EXECUTION_SPECIFIC
 
 import org.eclipse.emf.ecore.EClass;
 
-public class ExecutionCreationConfig {
+public class ExecutionCreationCommandParameter {
 
 	private boolean createExecution = false;
 
@@ -23,11 +23,11 @@ public class ExecutionCreationConfig {
 
 	private EClass executionType = ACTION_EXECUTION_SPECIFICATION;
 
-	public ExecutionCreationConfig() {
+	public ExecutionCreationCommandParameter() {
 		super();
 	}
 
-	public ExecutionCreationConfig(boolean createExecution, boolean createReply, EClass executionType) {
+	public ExecutionCreationCommandParameter(boolean createExecution, boolean createReply, EClass executionType) {
 		super();
 		this.createExecution = createExecution;
 		this.createReply = createReply;

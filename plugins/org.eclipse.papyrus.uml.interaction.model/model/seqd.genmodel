@@ -24,7 +24,7 @@
       <genTypeParameters ecoreTypeParameter="seqd.ecore#//CreationCommand/T"/>
     </genDataTypes>
     <genDataTypes ecoreDataType="seqd.ecore#//EObject"/>
-    <genDataTypes ecoreDataType="seqd.ecore#//ExecutionCreationConfig"/>
+    <genDataTypes ecoreDataType="seqd.ecore#//ExecutionCreationCommandParameter"/>
     <genClasses image="false" ecoreClass="seqd.ecore#//MElement">
       <genTypeParameters ecoreTypeParameter="seqd.ecore#//MElement/T"/>
       <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MElement/interaction"/>
@@ -126,7 +126,7 @@
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.2/recvOffset"/>
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.2/sort"/>
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.2/signature"/>
-        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.2/executionCreationConfig"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.2/executionCreationCommandParameter"/>
       </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/insertMessageAfter.3">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.3/before"/>
@@ -134,7 +134,7 @@
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.3/receiver"/>
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.3/sort"/>
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.3/signature"/>
-        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.3/executionCreationConfig"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.3/executionCreationCommandParameter"/>
       </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/elementAt">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/elementAt/offset"/>

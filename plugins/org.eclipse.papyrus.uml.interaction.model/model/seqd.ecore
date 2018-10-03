@@ -343,7 +343,7 @@
           <details key="documentation" value="An optional message signature, either a signal or an operation."/>
         </eAnnotations>
       </eParameters>
-      <eParameters name="executionCreationConfig" eType="#//ExecutionCreationConfig">
+      <eParameters name="executionCreationCommandParameter" eType="#//ExecutionCreationCommandParameter">
         <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
           <details key="documentation" value="The configuration specifying details about the creation of an execution associated for the message."/>
         </eAnnotations>
@@ -381,7 +381,7 @@
           <details key="documentation" value="An optional message signature, either a signal or an operation."/>
         </eAnnotations>
       </eParameters>
-      <eParameters name="executionCreationConfig" eType="#//ExecutionCreationConfig">
+      <eParameters name="executionCreationCommandParameter" eType="#//ExecutionCreationCommandParameter">
         <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
           <details key="documentation" value="The configuration specifying details about the creation of an execution associated for the message."/>
         </eAnnotations>
@@ -585,7 +585,8 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="EObject" instanceClassName="org.eclipse.emf.ecore.EObject"
       serializable="false"/>
-  <eClassifiers xsi:type="ecore:EDataType" name="ExecutionCreationConfig" instanceClassName="org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig"
+  <eClassifiers xsi:type="ecore:EDataType" name="ExecutionCreationCommandParameter"
+      instanceClassName="org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter"
       serializable="false"/>
   <eClassifiers xsi:type="ecore:EClass" name="MDestruction" eSuperTypes="#//MMessageEnd"/>
 </ecore:EPackage>

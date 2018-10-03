@@ -72,7 +72,7 @@ import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
-import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig;
+import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
 import org.eclipse.swt.widgets.Display;
@@ -242,11 +242,11 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 						CreationCommand<Message> msgWithActionExecution = sender.insertMessageAfter(
 								startBefore, startOffset, receiver, anchorDesc.elementBefore.orElse(receiver),
-								anchorDesc.offset, start.sort, null, new ExecutionCreationConfig(true,
+								anchorDesc.offset, start.sort, null, new ExecutionCreationCommandParameter(true,
 										shouldCreateReply(), ACTION_EXECUTION_SPECIFICATION));
 						CreationCommand<Message> msgWithBehaviorExecution = sender.insertMessageAfter(
 								startBefore, startOffset, receiver, anchorDesc.elementBefore.orElse(receiver),
-								anchorDesc.offset, start.sort, null, new ExecutionCreationConfig(true,
+								anchorDesc.offset, start.sort, null, new ExecutionCreationCommandParameter(true,
 										shouldCreateReply(), BEHAVIOR_EXECUTION_SPECIFICATION));
 
 						return createSelectionCommand(msgWithActionExecution, msgWithBehaviorExecution);
@@ -285,11 +285,11 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 						CreationCommand<Message> msgWithActionExecution = sender.insertMessageAfter(
 								startBefore, startOffset, receiver, start.sort, null,
-								new ExecutionCreationConfig(true, shouldCreateReply(),
+								new ExecutionCreationCommandParameter(true, shouldCreateReply(),
 										ACTION_EXECUTION_SPECIFICATION));
 						CreationCommand<Message> msgWithBehaviorExecution = sender.insertMessageAfter(
 								startBefore, startOffset, receiver, start.sort, null,
-								new ExecutionCreationConfig(true, shouldCreateReply(),
+								new ExecutionCreationCommandParameter(true, shouldCreateReply(),
 										BEHAVIOR_EXECUTION_SPECIFICATION));
 
 						return createSelectionCommand(msgWithActionExecution, msgWithBehaviorExecution);

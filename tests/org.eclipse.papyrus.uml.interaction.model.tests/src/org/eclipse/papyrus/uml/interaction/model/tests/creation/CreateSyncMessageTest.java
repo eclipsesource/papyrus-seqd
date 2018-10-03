@@ -29,7 +29,7 @@ import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
-import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig;
+import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.papyrus.uml.interaction.model.tests.ModelEditFixture;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.eclipse.uml2.uml.BehaviorExecutionSpecification;
@@ -69,7 +69,7 @@ public class CreateSyncMessageTest {
 		MLifeline lifeline2 = interaction().getLifelines().get(1);
 		CreationCommand<Message> command = lifeline1.insertMessageAfter(lifeline1, 20, lifeline2,
 				MessageSort.SYNCH_CALL_LITERAL, null,
-				new ExecutionCreationConfig(true, false, BEHAVIOR_EXECUTION_SPECIFICATION));
+				new ExecutionCreationCommandParameter(true, false, BEHAVIOR_EXECUTION_SPECIFICATION));
 
 		/* act */
 		execute(command);
@@ -100,7 +100,7 @@ public class CreateSyncMessageTest {
 		MLifeline lifeline2 = interaction().getLifelines().get(1);
 		CreationCommand<Message> command = lifeline1.insertMessageAfter(lifeline1, 20, lifeline2,
 				MessageSort.SYNCH_CALL_LITERAL, null,
-				new ExecutionCreationConfig(true, true, BEHAVIOR_EXECUTION_SPECIFICATION));
+				new ExecutionCreationCommandParameter(true, true, BEHAVIOR_EXECUTION_SPECIFICATION));
 
 		/* act */
 		execute(command);
@@ -144,7 +144,7 @@ public class CreateSyncMessageTest {
 		MLifeline lifeline2 = interaction().getLifelines().get(1);
 		CreationCommand<Message> command1 = lifeline1.insertMessageAfter(lifeline1, 50, lifeline2,
 				MessageSort.SYNCH_CALL_LITERAL, null,
-				new ExecutionCreationConfig(true, true, BEHAVIOR_EXECUTION_SPECIFICATION));
+				new ExecutionCreationCommandParameter(true, true, BEHAVIOR_EXECUTION_SPECIFICATION));
 
 		/* act */
 		execute(command1);
@@ -154,7 +154,7 @@ public class CreateSyncMessageTest {
 		lifeline2 = interaction().getLifelines().get(1);
 		CreationCommand<Message> command2 = lifeline2.insertMessageAfter(lifeline2, 10, lifeline1,
 				MessageSort.SYNCH_CALL_LITERAL, null,
-				new ExecutionCreationConfig(true, true, ACTION_EXECUTION_SPECIFICATION));
+				new ExecutionCreationCommandParameter(true, true, ACTION_EXECUTION_SPECIFICATION));
 
 		/* act */
 		execute(command2);

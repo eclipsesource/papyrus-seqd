@@ -40,7 +40,7 @@ import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
-import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationConfig;
+import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.uml2.types.TypesPackage;
 import org.eclipse.uml2.uml.UMLPackage;
 
@@ -153,7 +153,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * 
 	 * @generated
 	 */
-	private EDataType executionCreationConfigEDataType = null;
+	private EDataType executionCreationCommandParameterEDataType = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -1001,8 +1001,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
-	public EDataType getExecutionCreationConfig() {
-		return executionCreationConfigEDataType;
+	public EDataType getExecutionCreationCommandParameter() {
+		return executionCreationCommandParameterEDataType;
 	}
 
 	/**
@@ -1126,7 +1126,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		commandEDataType = createEDataType(COMMAND);
 		creationCommandEDataType = createEDataType(CREATION_COMMAND);
 		eObjectEDataType = createEDataType(EOBJECT);
-		executionCreationConfigEDataType = createEDataType(EXECUTION_CREATION_CONFIG);
+		executionCreationCommandParameterEDataType = createEDataType(EXECUTION_CREATION_COMMAND_PARAMETER);
 	}
 
 	/**
@@ -1512,8 +1512,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		addEParameter(op, ecorePackage.getEInt(), "recvOffset", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 		addEParameter(op, theUMLPackage.getMessageSort(), "sort", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 		addEParameter(op, theUMLPackage.getNamedElement(), "signature", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
-		addEParameter(op, this.getExecutionCreationConfig(), "executionCreationConfig", 0, 1, IS_UNIQUE, //$NON-NLS-1$
-				IS_ORDERED);
+		addEParameter(op, this.getExecutionCreationCommandParameter(), "executionCreationCommandParameter", 0, //$NON-NLS-1$
+				1, IS_UNIQUE, IS_ORDERED);
 		g1 = createEGenericType(this.getCreationCommand());
 		g2 = createEGenericType(theUMLPackage.getMessage());
 		g1.getETypeArguments().add(g2);
@@ -1530,8 +1530,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		addEParameter(op, this.getMLifeline(), "receiver", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 		addEParameter(op, theUMLPackage.getMessageSort(), "sort", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 		addEParameter(op, theUMLPackage.getNamedElement(), "signature", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
-		addEParameter(op, this.getExecutionCreationConfig(), "executionCreationConfig", 0, 1, IS_UNIQUE, //$NON-NLS-1$
-				IS_ORDERED);
+		addEParameter(op, this.getExecutionCreationCommandParameter(), "executionCreationCommandParameter", 0, //$NON-NLS-1$
+				1, IS_UNIQUE, IS_ORDERED);
 		g1 = createEGenericType(this.getCreationCommand());
 		g2 = createEGenericType(theUMLPackage.getMessage());
 		g1.getETypeArguments().add(g2);
@@ -1696,8 +1696,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 				!IS_GENERATED_INSTANCE_CLASS);
 		initEDataType(eObjectEDataType, EObject.class, "EObject", !IS_SERIALIZABLE, //$NON-NLS-1$
 				!IS_GENERATED_INSTANCE_CLASS);
-		initEDataType(executionCreationConfigEDataType, ExecutionCreationConfig.class,
-				"ExecutionCreationConfig", !IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+		initEDataType(executionCreationCommandParameterEDataType, ExecutionCreationCommandParameter.class,
+				"ExecutionCreationCommandParameter", !IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 
 		// Create resource
 		createResource(eNS_URI);
