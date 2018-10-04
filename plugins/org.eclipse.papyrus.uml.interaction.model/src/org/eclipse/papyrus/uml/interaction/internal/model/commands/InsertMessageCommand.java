@@ -759,8 +759,9 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		int additionalRecvNudge = missingPadding(recvInsert, recvYPosition);
 		int minNudge = Math.max(0, Math.max(additionalSendNudge, additionalRecvNudge));
 
-		MElement<?> latestElementBeforeY = getLatestElementBeforeY(beforeSend, sendYPosition, timeline);
-		Optional<Command> makeSpace = getFollowingElement(timeline, latestElementBeforeY, sendYPosition)
+		int absoluteY = absoluteSendYReference().getAsInt();
+		MElement<?> latestElementBeforeY = getLatestElementBeforeY(beforeSend, absoluteY, timeline);
+		Optional<Command> makeSpace = getFollowingElement(timeline, latestElementBeforeY, absoluteY)
 				.map(el -> {
 					MElement<? extends Element> toNudge = el;
 					if (el instanceof MExecution) {
@@ -812,7 +813,10 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	}
 
 	protected Predicate<? super MElement<?>> isGraphicallyBefore(OptionalInt yPosition) {
-		return e -> e.getBottom().orElse(Integer.MAX_VALUE) < yPosition.orElse(Integer.MAX_VALUE);
+		return e -> {
+			System.out.println("existing at " + e.getBottom() + " ref: " + yPosition);
+			return e.getBottom().orElse(Integer.MAX_VALUE) < yPosition.orElse(Integer.MAX_VALUE);
+		};
 	}
 
 	protected BinaryOperator<MElement<? extends Element>> last(List<MElement<? extends Element>> timeline) {
