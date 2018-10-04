@@ -107,6 +107,10 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 
 	private ExecutionCreationCommandParameter executionCreationParameter;
 
+	private OptionalInt sendYReference;
+
+	private OptionalInt receiveYReference;
+
 	/**
 	 * Initializes me.
 	 * 
@@ -288,17 +292,13 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		return (resultCommand == null) ? null : resultCommand.getNewObject();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected Command createCommand() {
-		Vertex sendReference = vertex(beforeSend);
-		if (sendReference == null) {
+		if (!absoluteSendYReference().isPresent() || !absoluteReceiveYReference().isPresent()) {
 			return UnexecutableCommand.INSTANCE;
 		}
-		Vertex recvReference = vertex(beforeRecv);
-		if (recvReference == null) {
-			return UnexecutableCommand.INSTANCE;
-		}
+		int absoluteSendY = absoluteSendYReference().getAsInt();
+		int absoluteRecvY = absoluteReceiveYReference().getAsInt();
 
 		// Send: Is there actually an execution occurrence here?
 		int llTopSend = layoutHelper().getBottom(getTarget().getDiagramView().get());
@@ -338,24 +338,6 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		if (receiver == null || receiver.getDiagramView() == null) {
 			return UnexecutableCommand.INSTANCE;
 		}
-
-		OptionalInt sendReferenceY = beforeSend == getTarget() ? layoutHelper().getBottom(sendReference)
-				// Reference from the top of an execution specification to allow
-				// connections within its extent
-				: layoutHelper().getTop(sendReference);
-		if (!sendReferenceY.isPresent()) {
-			return UnexecutableCommand.INSTANCE;
-		}
-		OptionalInt recvReferenceY = beforeRecv == this.receiver ? layoutHelper().getBottom(recvReference)
-				// Reference from the top of an execution specification to allow
-				// connections within its extent
-				: layoutHelper().getTop(recvReference);
-		if (!recvReferenceY.isPresent()) {
-			return UnexecutableCommand.INSTANCE;
-		}
-
-		int absoluteSendY = sendReferenceY.getAsInt() + sendOffset;
-		int absoluteRecvY = recvReferenceY.getAsInt() + recvOffset;
 
 		switch (sort) {
 			case CREATE_MESSAGE_LITERAL:
@@ -505,12 +487,12 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				+ (sendingExec.isPresent() ? 0 : distanceToEnforcePadding);
 		int additionalOffsetRecv = additionalOffset
 				+ (receivingExec.isPresent() ? 0 : distanceToEnforcePadding);
-		IntSupplier senderY = () -> sendReferenceY.getAsInt() + sendOffset + additionalOffsetSend;
-		IntSupplier receiverY = () -> recvReferenceY.getAsInt() + recvOffset + additionalOffsetRecv;
+		IntSupplier senderY = () -> absoluteSendY + additionalOffsetSend;
+		IntSupplier receiverY = () -> absoluteRecvY + additionalOffsetRecv;
 		result = result.chain(diagramHelper().createMessageConnector(resultCommand, senderView, senderY,
 				receiverView, receiverY, this::replace));
-		int sendYPosition = sendReferenceY.getAsInt() + sendOffset + additionalOffsetSend;
-		int recvYPosition = recvReferenceY.getAsInt() + recvOffset + additionalOffsetRecv;
+
+		int recvYPosition = absoluteRecvY + additionalOffsetRecv;
 
 		switch (sort) {
 			case CREATE_MESSAGE_LITERAL:
@@ -521,26 +503,22 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				int receiverBodyTop = layoutHelper().getTop(receivingLifelineBodyShape);
 				int receiverLifelineTop = this.receiver.getTop().orElse(0);
 				/* first make room to move created lifeline down by nudging all required elements down */
-				int creationMessageTop = recvReferenceY.getAsInt() + recvOffset;
 				List<MElement<? extends Element>> elementsToNudge = new ArrayList<>();
 
-				int movedReceiverlifelineTop = creationMessageTop
-						- ((receiverBodyTop - receiverLifelineTop) / 2);
-
+				int movedReceiverlifelineTop = absoluteRecvY - ((receiverBodyTop - receiverLifelineTop) / 2);
 				int receiverDeltaY = movedReceiverlifelineTop - receiverLifelineTop + additionalOffsetRecv;
 				int receiverDeltaYFinal = receiverDeltaY;
 
 				/* collect elements below */
-				findElementsBelow(creationMessageTop, elementsToNudge,
+				findElementsBelow(absoluteRecvY, elementsToNudge,
 						getTarget().getInteraction().getMessages().stream(), true);
-				findElementsBelow(creationMessageTop, elementsToNudge,
+				findElementsBelow(absoluteRecvY, elementsToNudge,
 						getTarget().getInteraction().getLifelines().stream()//
-								.filter(m -> m.getTop().orElse(0) < creationMessageTop)//
+								.filter(m -> m.getTop().orElse(0) < absoluteRecvY)//
 								.flatMap(l -> l.getExecutions().stream()),
 						true);
 				Collections.sort(elementsToNudge,
-						Comparator.comparingInt(e -> ((MElementImpl<? extends Element>)e).getTop().orElse(0))
-								.reversed());
+						Comparator.comparingInt(e -> ((MElementImpl<?>)e).getTop().orElse(0)).reversed());
 				List<Command> nudgeCommands = new ArrayList<>(elementsToNudge.size());
 				for (int i = 0; i < elementsToNudge.size(); i++) {
 					MElement<? extends Element> element = elementsToNudge.get(i);
@@ -588,7 +566,8 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				// then actually insert after the execution, itself, so that it can span
 				// the new message end
 				Optional<Command> makeSpace = createNudgeCommandForFollowingElements(timeline, spaceRequired,
-						sendInsert, sendingExec, sendYPosition, recvInsert, receivingExec, recvYPosition);
+						sendInsert, sendingExec, senderY.getAsInt(), recvInsert, receivingExec,
+						recvYPosition);
 				if (makeSpace.isPresent()) {
 					result = makeSpace.get().chain(result);
 				}
@@ -600,6 +579,52 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		}
 
 		return result;
+	}
+
+	private OptionalInt absoluteSendYReference() {
+		OptionalInt yReference = getSendYReference();
+		if (!yReference.isPresent()) {
+			return OptionalInt.empty();
+		}
+		return OptionalInt.of(yReference.getAsInt() + sendOffset);
+	}
+
+	private OptionalInt absoluteReceiveYReference() {
+		OptionalInt yReference = getReceiveYReference();
+		if (!yReference.isPresent()) {
+			return OptionalInt.empty();
+		}
+		return OptionalInt.of(yReference.getAsInt() + recvOffset);
+	}
+
+	private OptionalInt getSendYReference() {
+		if (sendYReference == null) {
+			Vertex sendReference = vertex(beforeSend);
+			if (sendReference == null) {
+				sendYReference = OptionalInt.empty();
+			} else {
+				sendYReference = beforeSend == getTarget() ? layoutHelper().getBottom(sendReference)
+						// Reference from the top of an execution specification to allow
+						// connections within its extent
+						: layoutHelper().getTop(vertex(beforeSend));
+			}
+		}
+		return sendYReference;
+	}
+
+	private OptionalInt getReceiveYReference() {
+		if (receiveYReference == null) {
+			Vertex receiveReference = vertex(beforeRecv);
+			if (receiveReference == null) {
+				receiveYReference = OptionalInt.empty();
+			} else {
+				receiveYReference = beforeRecv == this.receiver ? layoutHelper().getBottom(receiveReference)
+						// Reference from the top of an execution specification to allow
+						// connections within its extent
+						: layoutHelper().getTop(vertex(beforeRecv));
+			}
+		}
+		return receiveYReference;
 	}
 
 	private boolean isSelfMessage() {
