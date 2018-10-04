@@ -288,7 +288,9 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 						startOffset = newSourceAnchorDesc.offset;
 					}
 
-					if (MessageUtil.isSynchronousCall(start.sort) && shouldCreateExecution()) {
+					if (MessageUtil.isSynchronousCall(start.sort) && shouldCreateExecution()
+					// But not if we are binding sensibly to an execution specification
+							&& !getExecutionStart(receiver, request.getLocation()).isPresent()) {
 
 						CreationCommand<Message> msgWithActionExecution = sender.insertMessageAfter(
 								startBefore, startOffset, receiver, start.sort, null,
@@ -603,8 +605,12 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 	private Optional<? extends MOccurrence<?>> getExecutionStart(MMessageEnd msgEnd,
 			ReconnectRequest request) {
 
-		OptionalInt y = OptionalInt.of(request.getLocation().y());
-		return msgEnd.getCovered()
+		return msgEnd.getCovered().flatMap(ll -> getExecutionStart(ll, request.getLocation()));
+	}
+
+	private Optional<? extends MOccurrence<?>> getExecutionStart(MLifeline lifeline, Point location) {
+		OptionalInt y = OptionalInt.of(location.y());
+		return Optional.of(lifeline)
 				.flatMap(ll -> ll.getExecutions().stream()
 						.filter(exec -> exec.getDiagramView().isPresent() && exec.getTop().equals(y))
 						.findFirst())
@@ -622,8 +628,12 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 	private Optional<? extends MOccurrence<?>> getExecutionFinish(MMessageEnd msgEnd,
 			ReconnectRequest request) {
 
-		OptionalInt y = OptionalInt.of(request.getLocation().y());
-		return msgEnd.getCovered()
+		return msgEnd.getCovered().flatMap(ll -> getExecutionFinish(ll, request.getLocation()));
+	}
+
+	private Optional<? extends MOccurrence<?>> getExecutionFinish(MLifeline lifeline, Point location) {
+		OptionalInt y = OptionalInt.of(location.y());
+		return Optional.of(lifeline)
 				.flatMap(ll -> ll.getExecutions().stream()
 						.filter(exec -> exec.getDiagramView().isPresent() && exec.getBottom().equals(y))
 						.findFirst())
@@ -709,6 +719,10 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		int offset() {
 			return offset;
+		}
+
+		Point location() {
+			return location;
 		}
 
 		void updateLocation(Point absoluteLocation) {
