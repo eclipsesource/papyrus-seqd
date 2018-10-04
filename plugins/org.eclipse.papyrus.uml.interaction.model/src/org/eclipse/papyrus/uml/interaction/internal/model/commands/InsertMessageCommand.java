@@ -737,9 +737,19 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		MElement<?> latestElementBeforeY = getLatestElementBeforeY(beforeSend, sendYPosition, timeline);
 		Optional<Command> makeSpace = getFollowingElement(timeline, latestElementBeforeY, sendYPosition)
 				.map(el -> {
-					OptionalInt distance = el.verticalDistance(latestElementBeforeY);
+					MElement<? extends Element> toNudge = el;
+					if (el instanceof MExecution) {
+						// We are inserting within the vertical span of an execution
+						// specification. Don't nudge the top of the execution, but
+						// rather the bottom (the finish occurrence), to make space
+						MExecution exec = (MExecution)el;
+						if (exec.getFinish().isPresent()) {
+							toNudge = exec.getFinish().get();
+						}
+					}
+					OptionalInt distance = toNudge.verticalDistance(latestElementBeforeY);
 					if (distance.isPresent()) {
-						return el.nudge(Math.max(minNudge, spaceRequired - distance.getAsInt()));
+						return toNudge.nudge(Math.max(minNudge, spaceRequired - distance.getAsInt()));
 					} else {
 						return null;
 					}
