@@ -4,7 +4,6 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GE
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.at;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assume.assumeThat;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
@@ -36,33 +35,35 @@ public class MessageReconnectionConstraintsUITest extends AbstractGraphicalEditP
 	public void reconnectTargetToMessageNotAllowed() {
 		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge,
 				at(LIFELINE_1_BODY_X, MSG1_Y), at(LIFELINE_2_BODY_X, MSG1_Y));
-		assumeThat(messageEP, runs(LIFELINE_1_BODY_X, MSG1_Y, LIFELINE_2_BODY_X, MSG1_Y));
+		int msg1Y = getSourceY(messageEP);
 
+		// always sloping down, of course
 		EditPart messageEP2 = createConnection(SequenceElementTypes.Async_Message_Edge,
-				at(LIFELINE_1_BODY_X, MSG2_Y), at(LIFELINE_2_BODY_X, MSG2_Y + 50)); // always sloping down,
-																					// of course
-		assumeThat(messageEP2, runs(LIFELINE_1_BODY_X, MSG2_Y, LIFELINE_2_BODY_X, MSG2_Y + 50));
+				at(LIFELINE_1_BODY_X, MSG2_Y), at(LIFELINE_2_BODY_X, MSG2_Y + 50));
+		int msg2SendY = getSourceY(messageEP2);
+		int msg2RecvY = getTargetY(messageEP2);
 
 		int middleX = (LIFELINE_2_BODY_X + LIFELINE_1_BODY_X) / 2;
-		editor.moveSelection(at(LIFELINE_2_BODY_X, MSG2_Y + 50), at(middleX, MSG1_Y));
+		editor.moveSelection(at(LIFELINE_2_BODY_X, msg2RecvY), at(middleX, msg1Y));
 
-		assertThat(messageEP, not(runs(LIFELINE_1_BODY_X, MSG2_Y + 50, middleX, MSG1_Y)));
+		assertThat(messageEP, not(runs(LIFELINE_1_BODY_X, msg2SendY, middleX, msg1Y)));
 	}
 
 	@Test
 	public void reconnectSourceToMessageNotAllowed() {
 		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge,
 				at(LIFELINE_1_BODY_X, MSG1_Y), at(LIFELINE_2_BODY_X, MSG1_Y));
-		assumeThat(messageEP, runs(LIFELINE_1_BODY_X, MSG1_Y, LIFELINE_2_BODY_X, MSG1_Y));
+		int msg1Y = getSourceY(messageEP);
 
+		// always sloping down, of course
 		EditPart messageEP2 = createConnection(SequenceElementTypes.Async_Message_Edge,
-				at(LIFELINE_1_BODY_X, MSG2_Y), at(LIFELINE_2_BODY_X, MSG2_Y + 50)); // always sloping down,
-																					// of course
-		assumeThat(messageEP2, runs(LIFELINE_1_BODY_X, MSG2_Y, LIFELINE_2_BODY_X, MSG2_Y + 50));
+				at(LIFELINE_1_BODY_X, MSG2_Y), at(LIFELINE_2_BODY_X, MSG2_Y + 50));
+		int msg2SendY = getSourceY(messageEP2);
+		int msg2RecvY = getTargetY(messageEP2);
 
 		int middleX = (LIFELINE_2_BODY_X + LIFELINE_1_BODY_X) / 2;
-		editor.moveSelection(at(LIFELINE_1_BODY_X, MSG2_Y), at(middleX, MSG1_Y));
+		editor.moveSelection(at(LIFELINE_1_BODY_X, msg2SendY), at(middleX, msg1Y));
 
-		assertThat(messageEP, not(runs(middleX, MSG1_Y, LIFELINE_2_BODY_X, MSG2_Y + 50)));
+		assertThat(messageEP, not(runs(middleX, msg1Y, LIFELINE_2_BODY_X, msg2RecvY)));
 	}
 }

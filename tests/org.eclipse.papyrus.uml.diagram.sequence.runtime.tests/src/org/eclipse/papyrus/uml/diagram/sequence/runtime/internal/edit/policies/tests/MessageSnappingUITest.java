@@ -28,13 +28,10 @@ import java.util.Arrays;
 import java.util.function.Function;
 
 import org.eclipse.draw2d.Connection;
-import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
-import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.commands.SetBoundsCommand;
 import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
 import org.eclipse.gmf.runtime.notation.Location;
@@ -276,20 +273,6 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	int withinMagnet(int y, boolean execStart) {
 		return execStart ? y - 9 : y + 9;
-	}
-
-	static int getTop(EditPart editPart) {
-		IFigure figure = ((GraphicalEditPart) editPart).getFigure();
-		Rectangle bounds = figure.getBounds().getCopy();
-		figure.getParent().translateToAbsolute(bounds);
-		return bounds.y();
-	}
-
-	static int getBottom(EditPart editPart) {
-		IFigure figure = ((GraphicalEditPart) editPart).getFigure();
-		Rectangle bounds = figure.getBounds().getCopy();
-		figure.getParent().translateToAbsolute(bounds);
-		return bounds.bottom();
 	}
 
 	static Point getMessageGrabPoint(EditPart editPart) {

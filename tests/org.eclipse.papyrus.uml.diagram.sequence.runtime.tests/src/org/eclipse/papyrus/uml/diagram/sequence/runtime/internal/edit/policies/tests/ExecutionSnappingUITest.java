@@ -21,14 +21,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assume.assumeThat;
 
-import org.eclipse.draw2d.Connection;
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.geometry.PointList;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
-import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.papyrus.infra.gmfdiag.common.utils.DiagramEditPartsUtil;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.ExecutionSpecificationSemanticEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
@@ -136,13 +130,16 @@ public class ExecutionSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		int msgY = EXEC_FINISH_Y + 20;
 		EditPart messageEP = editor.createConnection(SequenceElementTypes.Reply_Message_Edge,
 				at(LL1_BODY_X, msgY), at(LL2_BODY_X, msgY));
-		msgY = getTargetY(messageEP); // Find where it actually ended up
+
+		// Find where things actually ended up
+		msgY = getTargetY(messageEP);
+		int execBottom = getBottom(execEP);
 
 		// The bottom of the execution snaps to the message end. Offset by one to click
 		// on the execution figure's edge
-		editor.moveSelection(at(LL2_BODY_X, EXEC_FINISH_Y - 1), at(LL2_BODY_X, withinMagnet(msgY, ABOVE)));
+		editor.moveSelection(at(LL2_BODY_X, execBottom - 1), at(LL2_BODY_X, withinMagnet(msgY, ABOVE)));
 
-		int execBottom = getBottom(execEP);
+		execBottom = getBottom(execEP);
 
 		assertThat("Execution specification did not snap to message end", execBottom, isNear(msgY));
 
@@ -159,13 +156,14 @@ public class ExecutionSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		int msgY = EXEC_FINISH_Y + 20;
 		EditPart messageEP = editor.createConnection(SequenceElementTypes.Reply_Message_Edge,
 				at(LL2_BODY_X, msgY), at(LL1_BODY_X, msgY));
-		msgY = getSourceY(messageEP); // Find where it actually ended up
 
+		// Find where things actually ended up
+		msgY = getTargetY(messageEP);
 		int execBottom = getBottom(execEP);
 
 		// The bottom of the execution snaps to the message end. Offset by one to click
 		// on the execution figure's edge
-		editor.moveSelection(at(LL2_BODY_X, EXEC_FINISH_Y - 1), at(LL2_BODY_X, withinMagnet(msgY, ABOVE)));
+		editor.moveSelection(at(LL2_BODY_X, execBottom - 1), at(LL2_BODY_X, withinMagnet(msgY, ABOVE)));
 
 		execBottom = getBottom(execEP);
 
@@ -199,34 +197,6 @@ public class ExecutionSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	int withinMagnet(int y, boolean above) {
 		return above ? y - 9 : y + 9;
-	}
-
-	static int getTop(EditPart editPart) {
-		IFigure figure = ((GraphicalEditPart) editPart).getFigure();
-		Rectangle bounds = figure.getBounds().getCopy();
-		figure.getParent().translateToAbsolute(bounds);
-		return bounds.y();
-	}
-
-	static int getBottom(EditPart editPart) {
-		IFigure figure = ((GraphicalEditPart) editPart).getFigure();
-		Rectangle bounds = figure.getBounds().getCopy();
-		figure.getParent().translateToAbsolute(bounds);
-		return bounds.bottom();
-	}
-
-	static int getSourceY(EditPart connectionEditPart) {
-		Connection connection = (Connection) ((ConnectionEditPart) connectionEditPart).getFigure();
-		PointList points = connection.getPoints().getCopy();
-		connection.getParent().translateToAbsolute(points);
-		return points.getFirstPoint().y();
-	}
-
-	static int getTargetY(EditPart connectionEditPart) {
-		Connection connection = (Connection) ((ConnectionEditPart) connectionEditPart).getFigure();
-		PointList points = connection.getPoints().getCopy();
-		connection.getParent().translateToAbsolute(points);
-		return points.getLastPoint().y();
 	}
 
 }
