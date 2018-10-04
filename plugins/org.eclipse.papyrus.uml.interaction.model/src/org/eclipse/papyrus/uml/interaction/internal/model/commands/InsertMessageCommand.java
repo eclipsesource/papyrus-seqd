@@ -813,10 +813,7 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	}
 
 	protected Predicate<? super MElement<?>> isGraphicallyBefore(OptionalInt yPosition) {
-		return e -> {
-			System.out.println("existing at " + e.getBottom() + " ref: " + yPosition);
-			return e.getBottom().orElse(Integer.MAX_VALUE) < yPosition.orElse(Integer.MAX_VALUE);
-		};
+		return e -> e.getBottom().orElse(Integer.MAX_VALUE) < yPosition.orElse(Integer.MAX_VALUE);
 	}
 
 	protected BinaryOperator<MElement<? extends Element>> last(List<MElement<? extends Element>> timeline) {
