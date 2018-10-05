@@ -261,7 +261,7 @@ public class MInteractionTest extends MElementTest {
 	 * Bottommost Element</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @see org.eclipse.papyrus.uml.interaction.model.MInteraction#getBottommostElement()
-	 * @generated
+	 * @generated NOT
 	 */
 	public void testGetBottommostElement() {
 		Optional<? extends MElement<?>> element = getFixture()
