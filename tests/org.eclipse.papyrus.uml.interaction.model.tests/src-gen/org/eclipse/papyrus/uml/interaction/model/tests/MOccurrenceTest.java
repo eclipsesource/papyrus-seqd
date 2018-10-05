@@ -12,9 +12,15 @@
  */
 package org.eclipse.papyrus.uml.interaction.model.tests;
 
+import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.List;
+import java.util.OptionalInt;
+
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.uml2.uml.InteractionFragment;
 import org.eclipse.uml2.uml.Lifeline;
@@ -117,6 +123,30 @@ public abstract class MOccurrenceTest extends MElementTest {
 	 */
 	public void testGetFinishedExecution() {
 		fail("Must be tested by subclasses.");
+	}
+
+	/**
+	 * Tests the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#setCovered(org.eclipse.papyrus.uml.interaction.model.MLifeline, java.util.OptionalInt)
+	 * <em>Set Covered</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MOccurrence#setCovered(org.eclipse.papyrus.uml.interaction.model.MLifeline,
+	 *      java.util.OptionalInt)
+	 * @generated NOT
+	 */
+	public void testSetCovered__MLifeline_OptionalInt() {
+		List<MLifeline> lifelines = getFixture().getInteraction().getLifelines();
+		MLifeline current = getFixture().getCovered().get();
+		MLifeline other = lifelines.get(1 - lifelines.indexOf(current));
+
+		InteractionFragment uml = (InteractionFragment)getFixture().getElement();
+		Lifeline umlOther = other.getElement();
+
+		Command setCovered = getFixture().setCovered(other, OptionalInt.empty());
+		assertThat("Not executable", setCovered.canExecute(), is(true));
+		setCovered.execute();
+
+		assertThat("Wrong coverage", uml.getCovereds(), is(singletonList(umlOther)));
 	}
 
 } // MOccurrenceTest

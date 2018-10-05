@@ -135,6 +135,23 @@ public interface DiagramHelper {
 			Shape lifeline, int yPosition);
 
 	/**
+	 * Obtain a command that moves a destruction occurrence shape to another lifeline and re-connects the
+	 * delete message to it.
+	 * 
+	 * @param destructionView
+	 *            a destruction occurrence shape to move
+	 * @param messageView
+	 *            the delete message view (or {@code null} for a spontaneous destruction)
+	 * @param newLifeline
+	 *            the lifeline to which to move the destruction view
+	 * @param yPosition
+	 *            the Y position on the lifeline at which to put the destruction view
+	 * @return the command to effect the destruction re-connection
+	 */
+	Command reconnectDestructionOccurrenceShape(Shape destructionView, Connector messageView,
+			Shape newLifeline, int yPosition);
+
+	/**
 	 * Obtain a command to create a shape for the given {@code message} as an edge of a {@link diagram}.
 	 * 
 	 * @param message
@@ -181,6 +198,32 @@ public interface DiagramHelper {
 	Command configureStraightMessageConnector(Message message, Connector messageView);
 
 	/**
+	 * Obtain a command that reconnects the source end of a {@code connector}.
+	 * 
+	 * @param connector
+	 *            the connector to reconnect at its source end
+	 * @param newSource
+	 *            the new source-attached view for the connector
+	 * @param yPosition
+	 *            the Y position on the source shape at which to anchor the {@code connector}
+	 * @return the command to effect the source end re-connection
+	 */
+	Command reconnectSource(Connector connector, Shape newSource, int yPosition);
+
+	/**
+	 * Obtain a command that reconnects the target end of a {@code connector}.
+	 * 
+	 * @param connector
+	 *            the connector to reconnect at its target end
+	 * @param newTarget
+	 *            the new target-attached view for the connector
+	 * @param yPosition
+	 *            the Y position on the target shape at which to anchor the {@code connector}
+	 * @return the command to effect the target end re-connection
+	 */
+	Command reconnectTarget(Connector connector, Shape newSource, int yPosition);
+
+	/**
 	 * Obtain a command to delete a given {@code connector}.
 	 * 
 	 * @param diagramView
@@ -188,4 +231,15 @@ public interface DiagramHelper {
 	 * @return the deletion command
 	 */
 	Command deleteView(EObject diagramView);
+
+	/**
+	 * Obtain a command that re-parents a view.
+	 * 
+	 * @param view
+	 *            a view to reparent
+	 * @param newParent
+	 *            the new parent view to which to move the {@code view}
+	 * @return a command to effect the re-parenting of the {@code view}
+	 */
+	Command reparentView(View view, View newParent);
 }

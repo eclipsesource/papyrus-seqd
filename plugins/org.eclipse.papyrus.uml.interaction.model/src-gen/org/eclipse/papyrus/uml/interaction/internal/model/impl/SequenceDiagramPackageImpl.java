@@ -722,6 +722,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EOperation getMExecution__SetOwner__MLifeline_OptionalInt() {
+		return mExecutionEClass.getEOperations().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EClass getMOccurrence() {
 		return mOccurrenceEClass;
 	}
@@ -774,6 +784,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	@Override
 	public EAttribute getMOccurrence_FinishedExecution() {
 		return (EAttribute)mOccurrenceEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMOccurrence__SetCovered__MLifeline_OptionalInt() {
+		return mOccurrenceEClass.getEOperations().get(0);
 	}
 
 	/**
@@ -1123,6 +1143,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEAttribute(mExecutionEClass, MEXECUTION__FINISH);
 		createEOperation(mExecutionEClass, MEXECUTION___GET_OWNER);
 		createEOperation(mExecutionEClass, MEXECUTION___GET_DIAGRAM_VIEW);
+		createEOperation(mExecutionEClass, MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT);
 
 		mOccurrenceEClass = createEClass(MOCCURRENCE);
 		createEAttribute(mOccurrenceEClass, MOCCURRENCE__COVERED);
@@ -1130,6 +1151,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEAttribute(mOccurrenceEClass, MOCCURRENCE__STARTED_EXECUTION);
 		createEAttribute(mOccurrenceEClass, MOCCURRENCE__FINISH);
 		createEAttribute(mOccurrenceEClass, MOCCURRENCE__FINISHED_EXECUTION);
+		createEOperation(mOccurrenceEClass, MOCCURRENCE___SET_COVERED__MLIFELINE_OPTIONALINT);
 
 		mExecutionOccurrenceEClass = createEClass(MEXECUTION_OCCURRENCE);
 		createEOperation(mExecutionOccurrenceEClass, MEXECUTION_OCCURRENCE___GET_OWNER);
@@ -1621,6 +1643,11 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		g1.getETypeArguments().add(g2);
 		initEOperation(op, g1);
 
+		op = initEOperation(getMExecution__SetOwner__MLifeline_OptionalInt(), this.getCommand(), "setOwner", //$NON-NLS-1$
+				1, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getMLifeline(), "newOwner", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, this.getOptionalInt(), "yPosition", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
 		initEClass(mOccurrenceEClass, MOccurrence.class, "MOccurrence", IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);
 		g1 = createEGenericType(this.getOptional());
@@ -1646,6 +1673,11 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		initEAttribute(getMOccurrence_FinishedExecution(), g1, "finishedExecution", null, 1, 1, //$NON-NLS-1$
 				MOccurrence.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
 				IS_UNIQUE, IS_DERIVED, IS_ORDERED);
+
+		op = initEOperation(getMOccurrence__SetCovered__MLifeline_OptionalInt(), this.getCommand(),
+				"setCovered", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, this.getMLifeline(), "lifeline", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, this.getOptionalInt(), "yPosition", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(mExecutionOccurrenceEClass, MExecutionOccurrence.class, "MExecutionOccurrence", //$NON-NLS-1$
 				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

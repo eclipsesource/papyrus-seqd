@@ -12,15 +12,21 @@
  */
 package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.function.Function;
 
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.papyrus.uml.interaction.graph.GraphPredicates;
 import org.eclipse.papyrus.uml.interaction.graph.Tag;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.DependencyContext;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.SetCoveredCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
@@ -160,6 +166,19 @@ public abstract class MOccurrenceImpl<T extends Element> extends MElementImpl<T>
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Command setCovered(MLifeline lifeline, OptionalInt yPosition) {
+		// Avoid cycling through this occurrence again
+		return DependencyContext.getDynamic()
+				.apply(this, SetCoveredCommand.class, occ -> new SetCoveredCommand(occ, lifeline, yPosition))
+				.orElse(null);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -199,6 +218,20 @@ public abstract class MOccurrenceImpl<T extends Element> extends MElementImpl<T>
 				return getFinishedExecution() != null;
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
+		switch (operationID) {
+			case SequenceDiagramPackage.MOCCURRENCE___SET_COVERED__MLIFELINE_OPTIONALINT:
+				return setCovered((MLifeline)arguments.get(0), (OptionalInt)arguments.get(1));
+		}
+		return super.eInvoke(operationID, arguments);
 	}
 
 	protected Optional<IdentityAnchor> getAnchor(OccurrenceSpecification occurrence) {

@@ -446,6 +446,14 @@
         <eTypeArguments eClassifier="ecore:EClass ../../org.eclipse.gmf.runtime.notation/model/notation.ecore#//Shape"/>
       </eGenericType>
     </eOperations>
+    <eOperations name="setOwner" lowerBound="1" eType="#//Command">
+      <eParameters name="newOwner" lowerBound="1" eType="#//MLifeline"/>
+      <eParameters name="yPosition" lowerBound="1" eType="#//OptionalInt">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="the absolute Y position at which to place the top of the execution on the lifeline, or empty to maintain the current Y position."/>
+        </eAnnotations>
+      </eParameters>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="start" lowerBound="1" changeable="false"
         volatile="true" transient="true" derived="true">
       <eGenericType eClassifier="#//Optional">
@@ -470,6 +478,14 @@
     <eTypeParameters name="T">
       <eBounds eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
     </eTypeParameters>
+    <eOperations name="setCovered" lowerBound="1" eType="#//Command">
+      <eParameters name="lifeline" lowerBound="1" eType="#//MLifeline"/>
+      <eParameters name="yPosition" lowerBound="1" eType="#//OptionalInt">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="the absolute Y position at which to place the occurrence on the lifeline, or empty to maintain the current Y position."/>
+        </eAnnotations>
+      </eParameters>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="covered" lowerBound="1"
         changeable="false" volatile="true" transient="true" derived="true">
       <eGenericType eClassifier="#//Optional">

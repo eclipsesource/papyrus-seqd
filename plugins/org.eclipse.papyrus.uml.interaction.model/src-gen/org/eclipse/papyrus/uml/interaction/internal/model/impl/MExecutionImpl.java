@@ -14,13 +14,16 @@ package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.DependencyContext;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.RemoveExecutionCommand;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.SetOwnerCommand;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
@@ -110,6 +113,19 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Command setOwner(MLifeline newOwner, OptionalInt yPosition) {
+		// Avoid cycling through this execution again
+		return DependencyContext.getDynamic()
+				.apply(this, SetOwnerCommand.class, exec -> new SetOwnerCommand(exec, newOwner, yPosition)) //
+				.orElse(null);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -151,6 +167,8 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 				return getOwner();
 			case SequenceDiagramPackage.MEXECUTION___GET_DIAGRAM_VIEW:
 				return getDiagramView();
+			case SequenceDiagramPackage.MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT:
+				return setOwner((MLifeline)arguments.get(0), (OptionalInt)arguments.get(1));
 		}
 		return super.eInvoke(operationID, arguments);
 	}
