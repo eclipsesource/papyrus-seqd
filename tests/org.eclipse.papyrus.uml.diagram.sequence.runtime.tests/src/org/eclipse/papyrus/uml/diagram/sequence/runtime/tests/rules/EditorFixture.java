@@ -15,10 +15,14 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.util.Collections.singletonList;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -28,13 +32,20 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.IOperationHistory;
+import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gef.ConnectionEditPart;
@@ -64,6 +75,10 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.operations.IWorkbenchOperationSupport;
+import org.eclipse.uml2.uml.GeneralOrdering;
+import org.eclipse.uml2.uml.Message;
+import org.eclipse.uml2.uml.MessageSort;
 import org.junit.runner.Description;
 
 /**
@@ -71,7 +86,7 @@ import org.junit.runner.Description;
  *
  * @author Christian W. Damus
  */
-public class EditorFixture extends ModelFixture {
+public class EditorFixture extends ModelFixture.Edit {
 
 	/** Default size of a shape to create or set. */
 	public static final Dimension DEFAULT_SIZE = null;
@@ -364,17 +379,39 @@ public class EditorFixture extends ModelFixture {
 
 		drawConnection(type, start, finish, true);
 
-		// Find the new edit-part
+		// Find the new edit-part. If we're creating a sync call message with reply,
+		// then be careful to get the request message, not the reply
 		@SuppressWarnings("unchecked")
 		Set<EditPart> newEditParts = new HashSet<EditPart>(viewer.getEditPartRegistry().values());
 		newEditParts.removeAll(originalEditParts);
 		while (newEditParts.removeIf(ep -> !(ep instanceof ConnectionEditPart))) {
-			// Keep only the topmost new edit-parts (that aren't nested in other new
-			// edit-parts)
+			// Keep only the new connections, not any shapes
 		}
 
-		return newEditParts.stream().findFirst()
+		return newEditParts.stream().map(ConnectionEditPart.class::cast)
+				.sorted(Comparator.comparing(this::connectionCategory)).findFirst()
 				.orElseGet(failOnAbsence("New connection edit-part not found"));
+	}
+
+	/**
+	 * Obtain a category by which connection edit-parts can be sorted for priority
+	 * in searching within the diagram.
+	 *
+	 * @param ep
+	 *            a connection edit-part
+	 * @return its connection category, in decreasing order of priority (smaller
+	 *         values more important)
+	 */
+	private int connectionCategory(ConnectionEditPart ep) {
+		EObject semantic = ep.getAdapter(EObject.class);
+		if (semantic instanceof Message) {
+			// These are the highest priority categories (negative values in enum order)
+			return ((Message) semantic).getMessageSort().ordinal() - (MessageSort.VALUES.size() + 1);
+		} else if (semantic instanceof GeneralOrdering) {
+			return 0;
+		} else {
+			return Integer.MAX_VALUE;
+		}
 	}
 
 	private void drawConnection(IElementType type, Point start, Point finish, boolean complete) {
@@ -544,10 +581,53 @@ public class EditorFixture extends ModelFixture {
 		flushDisplayEvents();
 	}
 
+	@Override
+	public void undo() {
+		IOperationHistory history = editor.getSite().getService(IWorkbenchOperationSupport.class)
+				.getOperationHistory();
+		IUndoContext ctx = editor.getAdapter(IUndoContext.class);
+
+		IUndoableOperation operation = history.getUndoOperation(ctx);
+
+		assertThat("no command to undo", operation, notNullValue());
+		assertThat("command is not undoable", operation.canUndo(), is(true));
+
+		try {
+			history.undo(ctx, new NullProgressMonitor(), null);
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+			fail("Undo failed: " + e.getLocalizedMessage());
+		}
+
+		flushDisplayEvents();
+	}
+
+	@Override
+	public void redo() {
+		IOperationHistory history = editor.getSite().getService(IWorkbenchOperationSupport.class)
+				.getOperationHistory();
+		IUndoContext ctx = editor.getAdapter(IUndoContext.class);
+
+		IUndoableOperation operation = history.getRedoOperation(ctx);
+
+		assertThat("no command to redo", operation, notNullValue());
+		assertThat("command is not redoable", operation.canRedo(), is(true));
+
+		try {
+			history.redo(ctx, new NullProgressMonitor(), null);
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+			fail("Undo failed: " + e.getLocalizedMessage());
+		}
+
+		flushDisplayEvents();
+	}
+
 	//
 	// Utilities
 	//
 
+	@Override
 	public final EditingDomain getEditingDomain() {
 		return getDiagramEditPart().getEditingDomain();
 	}
@@ -676,6 +756,16 @@ public class EditorFixture extends ModelFixture {
 		int result = this.mouseButton;
 		this.mouseButton = mouseButton;
 		return result;
+	}
+
+	/**
+	 * Obtain modifiers applying the option to allow semantic re-ordering (which is
+	 * <tt>Command</tt> on Mac and <tt>Ctrl</tt> on other platforms).
+	 *
+	 * @return the modifier key modifiers
+	 */
+	public Modifiers allowSemanticReordering() {
+		return modifierKey(Platform.OS_MACOSX.equals(Platform.getOS()) ? SWT.COMMAND : SWT.CTRL);
 	}
 
 	/**

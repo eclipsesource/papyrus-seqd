@@ -77,7 +77,7 @@ import org.eclipse.uml2.uml.NamedElement;
  *
  * @generated
  */
-@SuppressWarnings({"hiding", "boxing" })
+@SuppressWarnings("boxing")
 public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	/**
 	 * The cached value of the '{@link #getExecutionOccurrences() <em>Execution Occurrences</em>}' containment

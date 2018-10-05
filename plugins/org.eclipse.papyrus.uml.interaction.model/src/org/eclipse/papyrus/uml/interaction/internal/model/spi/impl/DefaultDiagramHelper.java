@@ -25,7 +25,9 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandWrapper;
 import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.DeleteCommand;
+import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
@@ -33,6 +35,7 @@ import org.eclipse.gmf.runtime.notation.Bounds;
 import org.eclipse.gmf.runtime.notation.Compartment;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.gmf.runtime.notation.LayoutConstraint;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.NotationFactory;
@@ -251,6 +254,22 @@ public class DefaultDiagramHelper implements DiagramHelper {
 	}
 
 	@Override
+	public Command reconnectDestructionOccurrenceShape(Shape destructionView, Connector messageView,
+			Shape newLifeline, int yPosition) {
+
+		// Move the X shape. Note that the new lifeline may be at a different Y position
+		// due to creation message, so we need to set again the absolute Y position of
+		// the X shape
+		Command result = reparentView(destructionView, newLifeline);
+		result = result.chain(layoutHelper().setTop(destructionView,
+				yPosition - layoutHelper().getHeight(destructionView) / 2));
+
+		// The message remains anchored to the X shape
+
+		return result;
+	}
+
+	@Override
 	public Command createMessageConnector(Supplier<Message> message, Supplier<? extends View> source,
 			IntSupplier sourceY, Supplier<? extends View> target, IntSupplier targetY,
 			BiFunction<? super OccurrenceSpecification, ? super MessageEnd, Optional<Command>> collisionHandler) {
@@ -401,8 +420,51 @@ public class DefaultDiagramHelper implements DiagramHelper {
 	}
 
 	@Override
+	public Command reconnectSource(Connector connector, Shape newSource, int yPosition) {
+		Command result = (connector.getSource() == newSource) ? IdentityCommand.INSTANCE
+				: SetCommand.create(editingDomain, connector, NotationPackage.Literals.EDGE__SOURCE,
+						newSource);
+
+		// Anchor the connector onto the shape
+		int yOffset = yPosition - layoutHelper().getTop(newSource);
+		IdentityAnchor anchor = (IdentityAnchor)connector.getSourceAnchor();
+		String newID = new AnchorFactory(connector, layoutHelper()).builderFor(newSource).from(newSource)
+				.to((Shape)connector.getTarget()).sourceEnd().at(yOffset).computeIdentity();
+		result = result.chain(SetCommand.create(editingDomain, anchor,
+				NotationPackage.Literals.IDENTITY_ANCHOR__ID, newID));
+
+		return result;
+	}
+
+	@Override
+	public Command reconnectTarget(Connector connector, Shape newTarget, int yPosition) {
+		Command result = (connector.getTarget() == newTarget) ? IdentityCommand.INSTANCE
+				: SetCommand.create(editingDomain, connector, NotationPackage.Literals.EDGE__TARGET,
+						newTarget);
+
+		// Anchor the connector onto the shape
+		int yOffset = yPosition - layoutHelper().getTop(newTarget);
+		IdentityAnchor anchor = (IdentityAnchor)connector.getTargetAnchor();
+		String newID = new AnchorFactory(connector, layoutHelper()).builderFor(newTarget)
+				.from((Shape)connector.getSource()).to(newTarget).targetEnd().at(yOffset).computeIdentity();
+		result = result.chain(SetCommand.create(editingDomain, anchor,
+				NotationPackage.Literals.IDENTITY_ANCHOR__ID, newID));
+
+		return result;
+	}
+
+	@Override
 	public Command deleteView(EObject diagramView) {
 		return DeleteCommand.create(editingDomain, diagramView);
+	}
+
+	@Override
+	public Command reparentView(View view, View newParent) {
+		// First record the original containment by removing the view
+		Command result = RemoveCommand.create(editingDomain, view);
+		result = result.chain(AddCommand.create(editingDomain, newParent,
+				NotationPackage.Literals.VIEW__PERSISTED_CHILDREN, view));
+		return result;
 	}
 
 	protected final SemanticHelper semanticHelper() {

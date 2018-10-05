@@ -12,8 +12,11 @@
 
 package org.eclipse.papyrus.uml.interaction.model.util;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.uml2.uml.Element;
 
@@ -43,6 +46,10 @@ public class LogicalModelPredicates {
 
 	public static Predicate<MElement<? extends Element>> below(MElement<?> other) {
 		return below(other.getBottom().orElse(Integer.MAX_VALUE));
+	}
+
+	public static Predicate<MElement<? extends Element>> where(EStructuralFeature feature, Object value) {
+		return elem -> Objects.equals(((EObject)elem).eGet(feature), value);
 	}
 
 }

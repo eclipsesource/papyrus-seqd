@@ -12,8 +12,10 @@
 
 package org.eclipse.papyrus.uml.interaction.model.util.tests;
 
+import static org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage.Literals.MELEMENT__NAME;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.where;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -66,4 +68,11 @@ public class LogicalModelPredicatesTest {
 		assertThat(below(replySend).test(requestRecv), is(false));
 	}
 
+	@Test
+	public void where_EStructuralFeature_Object() {
+		MElement<?> requestRecv = model.getElement(QN, "request-recv");
+		MElement<?> replySend = model.getElement(QN, "reply-send");
+		assertThat(where(MELEMENT__NAME, "request-recv").test(requestRecv), is(true));
+		assertThat(where(MELEMENT__NAME, "request-recv").test(replySend), is(false));
+	}
 }

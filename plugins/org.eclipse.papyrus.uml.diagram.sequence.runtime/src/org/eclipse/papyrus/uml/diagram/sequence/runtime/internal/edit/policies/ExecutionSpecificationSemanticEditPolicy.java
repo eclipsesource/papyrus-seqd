@@ -12,8 +12,8 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
-import static org.eclipse.papyrus.uml.diagram.sequence.runtime.util.Optionals.as;
-import static org.eclipse.papyrus.uml.diagram.sequence.runtime.util.Optionals.mapPresent;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.mapPresent;
 
 import java.util.ArrayList;
 import java.util.List;

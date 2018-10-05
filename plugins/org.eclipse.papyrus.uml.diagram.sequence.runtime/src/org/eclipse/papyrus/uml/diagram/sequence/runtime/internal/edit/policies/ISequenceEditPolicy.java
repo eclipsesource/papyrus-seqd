@@ -14,6 +14,7 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
 import java.util.Optional;
 
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.ecore.EObject;
@@ -55,7 +56,11 @@ public interface ISequenceEditPolicy extends EditPolicy {
 	default Command wrap(org.eclipse.emf.common.command.Command emfCommand) {
 		TransactionalEditingDomain domain = __getEditingDomain(this);
 		return (domain == null) ? UnexecutableCommand.INSTANCE
-				: OperationToGEFCommandWrapper.wrap(new EMFCommandOperation(domain, emfCommand));
+				: wrap(new EMFCommandOperation(domain, emfCommand));
+	}
+
+	default Command wrap(IUndoableOperation operation) {
+		return OperationToGEFCommandWrapper.wrap(operation);
 	}
 
 	default DiagramHelper getDiagramHelper() {

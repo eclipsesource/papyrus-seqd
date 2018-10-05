@@ -13,7 +13,9 @@
 package org.eclipse.papyrus.uml.interaction.model;
 
 import java.util.Optional;
+import java.util.OptionalInt;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.uml2.uml.Element;
 
 /**
@@ -114,5 +116,19 @@ public interface MOccurrence<T extends Element> extends MElement<T> {
 	 * @generated
 	 */
 	Optional<MExecution> getFinishedExecution();
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * 
+	 * @param yPosition
+	 *            the absolute Y position at which to place the occurrence on the lifeline, or empty to
+	 *            maintain the current Y position. <!-- end-model-doc -->
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Command" required="true"
+	 *        lifelineRequired="true"
+	 *        yPositionDataType="org.eclipse.papyrus.uml.interaction.model.OptionalInt"
+	 *        yPositionRequired="true"
+	 * @generated
+	 */
+	Command setCovered(MLifeline lifeline, OptionalInt yPosition);
 
 } // MOccurrence

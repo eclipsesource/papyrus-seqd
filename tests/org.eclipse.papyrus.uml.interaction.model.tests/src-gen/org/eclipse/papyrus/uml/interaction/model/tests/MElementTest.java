@@ -59,6 +59,7 @@ import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.util.UMLUtil;
 import org.hamcrest.CustomTypeSafeMatcher;
 import org.hamcrest.Description;
+import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
@@ -353,6 +354,15 @@ public abstract class MElementTest extends TestCase {
 			@Override
 			protected boolean matchesSafely(Command item) {
 				return item.canExecute();
+			}
+		};
+	}
+
+	protected Matcher<MElement<?>> named(String name) {
+		return new FeatureMatcher<MElement<?>, String>(is(name), "name", "name") {
+			@Override
+			protected String featureValueOf(MElement<?> actual) {
+				return actual.getName();
 			}
 		};
 	}
