@@ -32,7 +32,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
+import java.util.function.BinaryOperator;
 import java.util.function.IntSupplier;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -104,6 +106,10 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	private CreationCommand<Message> resultCommand;
 
 	private ExecutionCreationCommandParameter executionCreationParameter;
+
+	private OptionalInt sendYReference;
+
+	private OptionalInt receiveYReference;
 
 	/**
 	 * Initializes me.
@@ -286,17 +292,13 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		return (resultCommand == null) ? null : resultCommand.getNewObject();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected Command createCommand() {
-		Vertex sendReference = vertex(beforeSend);
-		if (sendReference == null) {
+		if (!absoluteSendYReference().isPresent() || !absoluteReceiveYReference().isPresent()) {
 			return UnexecutableCommand.INSTANCE;
 		}
-		Vertex recvReference = vertex(beforeRecv);
-		if (recvReference == null) {
-			return UnexecutableCommand.INSTANCE;
-		}
+		int absoluteSendY = absoluteSendYReference().getAsInt();
+		int absoluteRecvY = absoluteReceiveYReference().getAsInt();
 
 		// Send: Is there actually an execution occurrence here?
 		int llTopSend = layoutHelper().getBottom(getTarget().getDiagramView().get());
@@ -336,24 +338,6 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		if (receiver == null || receiver.getDiagramView() == null) {
 			return UnexecutableCommand.INSTANCE;
 		}
-
-		OptionalInt sendReferenceY = beforeSend == getTarget() ? layoutHelper().getBottom(sendReference)
-				// Reference from the top of an execution specification to allow
-				// connections within its extent
-				: layoutHelper().getTop(sendReference);
-		if (!sendReferenceY.isPresent()) {
-			return UnexecutableCommand.INSTANCE;
-		}
-		OptionalInt recvReferenceY = beforeRecv == this.receiver ? layoutHelper().getBottom(recvReference)
-				// Reference from the top of an execution specification to allow
-				// connections within its extent
-				: layoutHelper().getTop(recvReference);
-		if (!recvReferenceY.isPresent()) {
-			return UnexecutableCommand.INSTANCE;
-		}
-
-		int absoluteSendY = sendReferenceY.getAsInt() + sendOffset;
-		int absoluteRecvY = recvReferenceY.getAsInt() + recvOffset;
 
 		switch (sort) {
 			case CREATE_MESSAGE_LITERAL:
@@ -503,12 +487,12 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				+ (sendingExec.isPresent() ? 0 : distanceToEnforcePadding);
 		int additionalOffsetRecv = additionalOffset
 				+ (receivingExec.isPresent() ? 0 : distanceToEnforcePadding);
-		IntSupplier senderY = () -> sendReferenceY.getAsInt() + sendOffset + additionalOffsetSend;
-		IntSupplier receiverY = () -> recvReferenceY.getAsInt() + recvOffset + additionalOffsetRecv;
+		IntSupplier senderY = () -> absoluteSendY + additionalOffsetSend;
+		IntSupplier receiverY = () -> absoluteRecvY + additionalOffsetRecv;
 		result = result.chain(diagramHelper().createMessageConnector(resultCommand, senderView, senderY,
 				receiverView, receiverY, this::replace));
-		int sendYPosition = sendReferenceY.getAsInt() + sendOffset + additionalOffsetSend;
-		int recvYPosition = recvReferenceY.getAsInt() + recvOffset + additionalOffsetRecv;
+
+		int recvYPosition = absoluteRecvY + additionalOffsetRecv;
 
 		switch (sort) {
 			case CREATE_MESSAGE_LITERAL:
@@ -519,26 +503,22 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				int receiverBodyTop = layoutHelper().getTop(receivingLifelineBodyShape);
 				int receiverLifelineTop = this.receiver.getTop().orElse(0);
 				/* first make room to move created lifeline down by nudging all required elements down */
-				int creationMessageTop = recvReferenceY.getAsInt() + recvOffset;
 				List<MElement<? extends Element>> elementsToNudge = new ArrayList<>();
 
-				int movedReceiverlifelineTop = creationMessageTop
-						- ((receiverBodyTop - receiverLifelineTop) / 2);
-
+				int movedReceiverlifelineTop = absoluteRecvY - ((receiverBodyTop - receiverLifelineTop) / 2);
 				int receiverDeltaY = movedReceiverlifelineTop - receiverLifelineTop + additionalOffsetRecv;
 				int receiverDeltaYFinal = receiverDeltaY;
 
 				/* collect elements below */
-				findElementsBelow(creationMessageTop, elementsToNudge,
+				findElementsBelow(absoluteRecvY, elementsToNudge,
 						getTarget().getInteraction().getMessages().stream(), true);
-				findElementsBelow(creationMessageTop, elementsToNudge,
+				findElementsBelow(absoluteRecvY, elementsToNudge,
 						getTarget().getInteraction().getLifelines().stream()//
-								.filter(m -> m.getTop().orElse(0) < creationMessageTop)//
+								.filter(m -> m.getTop().orElse(0) < absoluteRecvY)//
 								.flatMap(l -> l.getExecutions().stream()),
 						true);
 				Collections.sort(elementsToNudge,
-						Comparator.comparingInt(e -> ((MElementImpl<? extends Element>)e).getTop().orElse(0))
-								.reversed());
+						Comparator.comparingInt(e -> ((MElementImpl<?>)e).getTop().orElse(0)).reversed());
 				List<Command> nudgeCommands = new ArrayList<>(elementsToNudge.size());
 				for (int i = 0; i < elementsToNudge.size(); i++) {
 					MElement<? extends Element> element = elementsToNudge.get(i);
@@ -586,7 +566,8 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				// then actually insert after the execution, itself, so that it can span
 				// the new message end
 				Optional<Command> makeSpace = createNudgeCommandForFollowingElements(timeline, spaceRequired,
-						sendInsert, sendingExec, sendYPosition, recvInsert, receivingExec, recvYPosition);
+						sendInsert, sendingExec, senderY.getAsInt(), recvInsert, receivingExec,
+						recvYPosition);
 				if (makeSpace.isPresent()) {
 					result = makeSpace.get().chain(result);
 				}
@@ -600,7 +581,53 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		return result;
 	}
 
-	protected boolean isSelfMessage() {
+	private OptionalInt absoluteSendYReference() {
+		OptionalInt yReference = getSendYReference();
+		if (!yReference.isPresent()) {
+			return OptionalInt.empty();
+		}
+		return OptionalInt.of(yReference.getAsInt() + sendOffset);
+	}
+
+	private OptionalInt absoluteReceiveYReference() {
+		OptionalInt yReference = getReceiveYReference();
+		if (!yReference.isPresent()) {
+			return OptionalInt.empty();
+		}
+		return OptionalInt.of(yReference.getAsInt() + recvOffset);
+	}
+
+	private OptionalInt getSendYReference() {
+		if (sendYReference == null) {
+			Vertex sendReference = vertex(beforeSend);
+			if (sendReference == null) {
+				sendYReference = OptionalInt.empty();
+			} else {
+				sendYReference = beforeSend == getTarget() ? layoutHelper().getBottom(sendReference)
+						// Reference from the top of an execution specification to allow
+						// connections within its extent
+						: layoutHelper().getTop(vertex(beforeSend));
+			}
+		}
+		return sendYReference;
+	}
+
+	private OptionalInt getReceiveYReference() {
+		if (receiveYReference == null) {
+			Vertex receiveReference = vertex(beforeRecv);
+			if (receiveReference == null) {
+				receiveYReference = OptionalInt.empty();
+			} else {
+				receiveYReference = beforeRecv == this.receiver ? layoutHelper().getBottom(receiveReference)
+						// Reference from the top of an execution specification to allow
+						// connections within its extent
+						: layoutHelper().getTop(vertex(beforeRecv));
+			}
+		}
+		return receiveYReference;
+	}
+
+	private boolean isSelfMessage() {
 		return receiver.getElement() == getTarget().getElement();
 	}
 
@@ -716,7 +743,6 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private Optional<Command> createNudgeCommandForFollowingElements(
 			List<MElement<? extends Element>> timeline, int spaceRequired,
 			Optional<MElement<? extends Element>> sendInsert, //
@@ -733,16 +759,27 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		int additionalRecvNudge = missingPadding(recvInsert, recvYPosition);
 		int minNudge = Math.max(0, Math.max(additionalSendNudge, additionalRecvNudge));
 
-		MElement<?> distanceFrom = (MElement<?>)Optional.of(beforeSend).filter(MOccurrence.class::isInstance)
-				.map(MOccurrence.class::cast).flatMap(MOccurrence::getStartedExecution).orElse(beforeSend);
-		Optional<Command> makeSpace = getFollowingElement(timeline, distanceFrom, sendYPosition).map(el -> {
-			OptionalInt distance = el.verticalDistance(distanceFrom);
-			if (distance.isPresent()) {
-				return el.nudge(Math.max(minNudge, spaceRequired - distance.getAsInt()));
-			} else {
-				return null;
-			}
-		});
+		int absoluteY = absoluteSendYReference().getAsInt();
+		MElement<?> latestElementBeforeY = getLatestElementBeforeY(beforeSend, absoluteY, timeline);
+		Optional<Command> makeSpace = getFollowingElement(timeline, latestElementBeforeY, absoluteY)
+				.map(el -> {
+					MElement<? extends Element> toNudge = el;
+					if (el instanceof MExecution) {
+						// We are inserting within the vertical span of an execution
+						// specification. Don't nudge the top of the execution, but
+						// rather the bottom (the finish occurrence), to make space
+						MExecution exec = (MExecution)el;
+						if (exec.getFinish().isPresent()) {
+							toNudge = exec.getFinish().get();
+						}
+					}
+					OptionalInt distance = toNudge.verticalDistance(latestElementBeforeY);
+					if (distance.isPresent()) {
+						return toNudge.nudge(Math.max(minNudge, spaceRequired - distance.getAsInt()));
+					} else {
+						return null;
+					}
+				});
 
 		/*
 		 * check if we did create a nudge command based on measured distance and the required space. if not,
@@ -754,6 +791,33 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			return Optional.of(toNudge.nudge(minNudge));
 		}
 		return makeSpace;
+	}
+
+	/**
+	 * Returns the latest element (wrt <code>timeline</code>) starting from <code>referenceElement</code> that
+	 * is still graphically before the specified <code>yPosition</code>.
+	 */
+	protected MElement<?> getLatestElementBeforeY(MElement<?> referenceElement, int yPosition,
+			List<MElement<? extends Element>> timeline) {
+		/* timeline after element before send or entire list, if element before send isn't included */
+		List<MElement<?>> elementsLaterThanBeforeSend = timeline
+				.subList(timeline.indexOf(referenceElement) + 1, timeline.size());
+		return elementsLaterThanBeforeSend.stream() //
+				.filter(isGraphicallyBefore(yPosition)) //
+				.reduce(last(timeline)) //
+				.orElse(referenceElement);
+	}
+
+	protected Predicate<? super MElement<?>> isGraphicallyBefore(int yPosition) {
+		return isGraphicallyBefore(OptionalInt.of(yPosition));
+	}
+
+	protected Predicate<? super MElement<?>> isGraphicallyBefore(OptionalInt yPosition) {
+		return e -> e.getBottom().orElse(Integer.MAX_VALUE) < yPosition.orElse(Integer.MAX_VALUE);
+	}
+
+	protected BinaryOperator<MElement<? extends Element>> last(List<MElement<? extends Element>> timeline) {
+		return (e1, e2) -> timeline.indexOf(e1) > timeline.indexOf(e1) ? e1 : e2;
 	}
 
 	private Optional<MElement<? extends Element>> getFollowingElement(
