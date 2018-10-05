@@ -399,14 +399,20 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 	}
 
 	protected Optional<Command> constrainReconnection(ReconnectRequest request, MMessageEnd end) {
-		Optional<Command> result = Optional.empty();
-
 		// Disallow semantic reordering below the next element on the lifeline.
 		// But if this is a self-message, then don't worry about crossing over the
 		// other end, because it's also moving
 		Optional<MLifeline> lifeline = getLifeline(); // The lifeline under the pointer
 		boolean selfMessage = end.getOtherEnd().flatMap(MMessageEnd::getCovered).equals(lifeline);
 		boolean wasSelfMessage = end.getOtherEnd().flatMap(MMessageEnd::getCovered).equals(end.getCovered());
+
+		// Don't allow reconnection to another lifeline unless user requests it with modifier key
+		if (!isForce(request) && getLifeline().isPresent() && !end.getCovered().equals(getLifeline())//
+				&& !PrivateRequestUtils.isAllowSemanticReordering(request) //
+				&& getLifeline().isPresent() && !end.getCovered().equals(getLifeline())) {
+
+			return Optional.of(bomb());
+		}
 
 		Optional<? extends MElement<?>> successor = lifeline.flatMap(
 				ll -> ll.following(selfMessage && end.isSend() ? end.getOtherEnd().orElse(end) : end));
@@ -417,7 +423,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 			successor = successor.map(MExecution.class::cast).flatMap(MExecution::getFinish);
 		}
 		if (successor.filter(above(request.getLocation().y())).isPresent()) {
-			result = Optional.of(bomb());
+			return Optional.of(bomb());
 		} else {
 			// And above the previous on the lifeline (accounting for self-message)
 			Optional<? extends MElement<?>> predecessor = lifeline.flatMap(
@@ -426,27 +432,27 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				predecessor = predecessor.map(MExecution.class::cast).flatMap(MExecution::getStart);
 			}
 			if (predecessor.filter(below(request.getLocation().y())).isPresent()) {
-				result = Optional.of(bomb());
+				return Optional.of(bomb());
 			}
 		}
 
 		// Also, if this is a self-message, then we have a minimal gap to maintain or if it's
 		// synchronous then the gap is fixed. Unless, of course, we're moving both ends of
 		// the message (which is the force mode of the request)
-		if (selfMessage && wasSelfMessage && !result.isPresent() && !isForce(request)) {
+		if (selfMessage && wasSelfMessage && !isForce(request)) {
 			if (MessageUtil.isSynchronous(end.getOwner().getElement().getMessageSort())) {
-				result = Optional.of(bomb());
+				return Optional.of(bomb());
 			} else {
 				OptionalInt otherY = end.getOtherEnd().map(MElement::getTop).orElse(OptionalInt.empty());
 				if (otherY.isPresent()
 						&& (abs(request.getLocation().y() - otherY.getAsInt()) < getLayoutConstraints()
 								.getMinimumHeight(ViewTypes.MESSAGE))) {
-					result = Optional.of(bomb());
+					return Optional.of(bomb());
 				}
 			}
 		}
 
-		return result;
+		return Optional.empty();
 	}
 
 	static Command bomb() {
@@ -460,6 +466,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		ConnectionEditPart connectionEP = (ConnectionEditPart)request.getConnectionEditPart();
 		Optional<Message> message = Optional.of(connectionEP).map(ConnectionEditPart::resolveSemanticElement)
 				.filter(Message.class::isInstance).map(Message.class::cast);
+		Optional<MMessage> mMessage = message.flatMap(getInteraction()::getMessage);
 
 		// Of course, we don't mess with the other end of an asynchronous message
 		if (!isForce(request)

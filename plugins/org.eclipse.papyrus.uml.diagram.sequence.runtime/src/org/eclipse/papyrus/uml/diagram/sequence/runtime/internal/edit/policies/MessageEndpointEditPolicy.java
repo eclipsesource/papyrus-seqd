@@ -22,10 +22,13 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.pol
 
 import com.google.common.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.draw2d.ConnectionAnchor;
+import org.eclipse.draw2d.ConnectionLocator;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.Request;
@@ -33,6 +36,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.gef.editpolicies.FeedbackHelper;
+import org.eclipse.gef.handles.ConnectionHandle;
 import org.eclipse.gef.requests.BendpointRequest;
 import org.eclipse.gef.requests.LocationRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
@@ -40,6 +44,7 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageFeedbackHelper.Mode;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.handles.SequenceConnectionEndpointHandle;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.CommandCreatedEvent;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
 import org.eclipse.uml2.uml.Message;
@@ -297,6 +302,16 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 			result = resolvedTarget;
 		}
 
+		return result;
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected List createSelectionHandles() {
+		List<ConnectionHandle> result = new ArrayList<>(2);
+		ConnectionEditPart host = (ConnectionEditPart)getHost();
+		result.add(new SequenceConnectionEndpointHandle(host, ConnectionLocator.SOURCE));
+		result.add(new SequenceConnectionEndpointHandle(host, ConnectionLocator.TARGET));
 		return result;
 	}
 }

@@ -20,7 +20,7 @@ import org.eclipse.gef.Request;
 /**
  * Utilities for working with private {@link Request}s and/or private details of {@code Request}s.
  */
-final class PrivateRequestUtils {
+public final class PrivateRequestUtils {
 	private static final String FORCE_PARAMETER = "__force__"; //$NON-NLS-1$
 
 	private static final String ORIGINAL_MOUSE_PARAMETER = "__orig_mouse__"; //$NON-NLS-1$
@@ -28,6 +28,8 @@ final class PrivateRequestUtils {
 	private static final String ORIGINAL_SOURCE_PARAMETER = "__orig_source__"; //$NON-NLS-1$
 
 	private static final String ORIGINAL_TARGET_PARAMETER = "__orig_target__"; //$NON-NLS-1$
+
+	private static final String ALLOW_SEMANTIC_REORDERING_PARAMETER = "__allow_semantic_reordering__"; //$NON-NLS-1$
 
 	/**
 	 * Not instantiable by clients.
@@ -128,6 +130,29 @@ final class PrivateRequestUtils {
 	 */
 	static void setOriginalTargetLocation(Request request, Point location) {
 		setParameter(request, ORIGINAL_TARGET_PARAMETER, location);
+	}
+
+	/**
+	 * Queries whether a {@code request} has the <em>allow semantic reordering</em> option set.
+	 * 
+	 * @param request
+	 *            a request
+	 * @return whether it allows semantic reordering
+	 */
+	public static boolean isAllowSemanticReordering(Request request) {
+		return getBoolean(request, ALLOW_SEMANTIC_REORDERING_PARAMETER);
+	}
+
+	/**
+	 * Sets the <em>allow semantic reordering</em> option of a {@code request}.
+	 * 
+	 * @param request
+	 *            a request
+	 * @param force
+	 *            whether it allows semantic reordering
+	 */
+	public static void setAllowSemanticReordering(Request request, boolean allowSemanticReordering) {
+		setParameter(request, ALLOW_SEMANTIC_REORDERING_PARAMETER, Boolean.valueOf(allowSemanticReordering));
 	}
 
 	static boolean getBoolean(Request request, Object parameterKey) {
