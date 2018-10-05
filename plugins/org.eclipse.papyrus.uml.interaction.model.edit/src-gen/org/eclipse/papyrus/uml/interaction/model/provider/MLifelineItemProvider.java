@@ -55,10 +55,27 @@ public class MLifelineItemProvider extends MElementItemProvider {
 		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
+			addDestructionPropertyDescriptor(object);
 			addLeftPropertyDescriptor(object);
 			addRightPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
+	}
+
+	/**
+	 * This adds a property descriptor for the Destruction feature. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	protected void addDestructionPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MLifeline_destruction_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_destruction_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MLifeline_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MLIFELINE__DESTRUCTION, false, false, false,
+				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -109,7 +126,6 @@ public class MLifelineItemProvider extends MElementItemProvider {
 			childrenFeatures.add(SequenceDiagramPackage.Literals.MLIFELINE__EXECUTION_OCCURRENCES);
 			childrenFeatures.add(SequenceDiagramPackage.Literals.MLIFELINE__EXECUTIONS);
 			childrenFeatures.add(SequenceDiagramPackage.Literals.MLIFELINE__OWNED_DESTRUCTION);
-			childrenFeatures.add(SequenceDiagramPackage.Literals.MLIFELINE__DESTRUCTION);
 		}
 		return childrenFeatures;
 	}
@@ -163,6 +179,7 @@ public class MLifelineItemProvider extends MElementItemProvider {
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(MLifeline.class)) {
+		case SequenceDiagramPackage.MLIFELINE__DESTRUCTION:
 		case SequenceDiagramPackage.MLIFELINE__LEFT:
 		case SequenceDiagramPackage.MLIFELINE__RIGHT:
 			fireNotifyChanged(
@@ -171,7 +188,6 @@ public class MLifelineItemProvider extends MElementItemProvider {
 		case SequenceDiagramPackage.MLIFELINE__EXECUTION_OCCURRENCES:
 		case SequenceDiagramPackage.MLIFELINE__EXECUTIONS:
 		case SequenceDiagramPackage.MLIFELINE__OWNED_DESTRUCTION:
-		case SequenceDiagramPackage.MLIFELINE__DESTRUCTION:
 			fireNotifyChanged(
 					new ViewerNotification(notification, notification.getNotifier(), true, false));
 			return;
@@ -193,10 +209,6 @@ public class MLifelineItemProvider extends MElementItemProvider {
 		newChildDescriptors
 				.add(createChildParameter(SequenceDiagramPackage.Literals.MLIFELINE__OWNED_DESTRUCTION,
 						SequenceDiagramFactory.eINSTANCE.createMDestruction()));
-
-		newChildDescriptors.add(createChildParameter(SequenceDiagramPackage.Literals.MLIFELINE__DESTRUCTION,
-				SequenceDiagramFactory.eINSTANCE.createFromString(SequenceDiagramPackage.Literals.OPTIONAL,
-						null))); // TODO: ensure this is a valid literal value
 	}
 
 }

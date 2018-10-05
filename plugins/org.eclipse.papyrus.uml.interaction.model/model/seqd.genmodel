@@ -71,7 +71,7 @@
       <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/executionOccurrences"/>
       <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/executions"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/ownedDestruction"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/destruction"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/destruction"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/left"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/right"/>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/getOwner"/>
