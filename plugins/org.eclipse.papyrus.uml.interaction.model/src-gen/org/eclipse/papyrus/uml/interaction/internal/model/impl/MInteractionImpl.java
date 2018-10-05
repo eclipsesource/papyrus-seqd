@@ -352,15 +352,21 @@ public class MInteractionImpl extends MElementImpl<Interaction> implements MInte
 		Stream<MMessageEnd> messageEnds = getMessages().stream()
 				.flatMap((m) -> Stream.of(m.getSend(), m.getReceive())).filter(Optional::isPresent)
 				.map(Optional::get);
-		Stream<MOccurrence<?>> occurrances = getLifelines().stream()
+		Stream<MOccurrence<?>> occurrences = getLifelines().stream()
 				.flatMap((lifeline) -> lifeline.getExecutions().stream())
 				.flatMap((e) -> Stream.of(e.getStart(), e.getFinish())).filter(Optional::isPresent)
 				.map(Optional::get);
-		return Stream.concat(messageEnds, occurrances).max(Comparator.comparingInt(this::bottomOfMElement));
+		return Stream.concat(messageEnds, occurrences)
+				.max(Comparator.comparingInt(this::bottomOfMElement).thenComparing(this::messageEndness));
 	}
 
 	private int bottomOfMElement(MElement<? extends Element> mElement) {
 		return mElement.getBottom().orElse(-1);
+	}
+
+	private int messageEndness(MElement<? extends Element> mElement) {
+		// a message receive event is always after a message send, even synchronous
+		return ((mElement instanceof MMessageEnd) && ((MMessageEnd)mElement).isReceive()) ? 1 : 0;
 	}
 
 } // MInteractionImpl

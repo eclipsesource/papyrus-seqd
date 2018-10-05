@@ -32,8 +32,10 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ActionExecutionSpecification;
+import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.InteractionFragment;
@@ -53,6 +55,7 @@ import junit.textui.TestRunner;
  * <p>
  * The following features are tested:
  * <ul>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getDestruction() <em>Destruction</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getLeft() <em>Left</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getRight() <em>Right</em>}</li>
  * </ul>
@@ -71,6 +74,8 @@ import junit.textui.TestRunner;
  * <em>Get Execution Occurrence</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getExecution(org.eclipse.uml2.uml.ExecutionSpecification)
  * <em>Get Execution</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getDestruction(org.eclipse.uml2.uml.DestructionOccurrenceSpecification)
+ * <em>Get Destruction</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, int, org.eclipse.uml2.uml.Element)
  * <em>Insert Execution After</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, int, org.eclipse.emf.ecore.EClass)
@@ -78,6 +83,10 @@ import junit.textui.TestRunner;
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement)
  * <em>Insert Message After</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement)
+ * <em>Insert Message After</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement, org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter)
+ * <em>Insert Message After</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement, org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter)
  * <em>Insert Message After</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#elementAt(int) <em>Element At</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#nudgeHorizontally(int) <em>Nudge
@@ -158,6 +167,19 @@ public class MLifelineTest extends MElementTest {
 	}
 
 	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getDestruction()
+	 * <em>Destruction</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getDestruction()
+	 * @generated NOT
+	 */
+	public void testGetDestruction() {
+		DestructionOccurrenceSpecification destruction = (DestructionOccurrenceSpecification)umlInteraction
+				.getFragment("deleted");
+		assertThat(getFixture().getDestruction(), isPresent(wraps(destruction)));
+	}
+
+	/**
 	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getLeft() <em>Left</em>}' feature
 	 * getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -186,6 +208,9 @@ public class MLifelineTest extends MElementTest {
 				return "ExecutionSpecificationSideAnchors";
 			case "testNudgeHorizontally__int":
 				return "LifelineHeaderAnchor";
+			case "testGetDestruction__DestructionOccurrenceSpecification":
+			case "testGetDestruction":
+				return "LifelineBodyAnchors";
 			default:
 				return super.getInteractionName();
 		}
@@ -319,6 +344,20 @@ public class MLifelineTest extends MElementTest {
 
 	/**
 	 * Tests the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getDestruction(org.eclipse.uml2.uml.DestructionOccurrenceSpecification)
+	 * <em>Get Destruction</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getDestruction(org.eclipse.uml2.uml.DestructionOccurrenceSpecification)
+	 * @generated NOT
+	 */
+	public void testGetDestruction__DestructionOccurrenceSpecification() {
+		DestructionOccurrenceSpecification destruction = (DestructionOccurrenceSpecification)umlInteraction
+				.getFragment("deleted");
+		assertThat(getFixture().getDestruction(destruction), isPresent(wraps(destruction)));
+	}
+
+	/**
+	 * Tests the
 	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, int, org.eclipse.uml2.uml.Element)
 	 * <em>Insert Execution After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
@@ -389,6 +428,10 @@ public class MLifelineTest extends MElementTest {
 
 		assertThat(command, executable());
 		Message umlMessage = create(command);
+		verifyMessage(umlMessage, receiver, operation);
+	}
+
+	private void verifyMessage(Message umlMessage, MLifeline receiver, Operation operation) {
 		MMessage message = interaction.getMessage(umlMessage).get();
 
 		// 242 {message} + 25 {offset}
@@ -438,6 +481,10 @@ public class MLifelineTest extends MElementTest {
 
 		assertThat(command, executable());
 		Message umlMessage = create(command);
+		verifyMessage2(umlMessage, receiver, operation);
+	}
+
+	private void verifyMessage2(Message umlMessage, MLifeline receiver, Operation operation) {
 		MMessage message = interaction.getMessage(umlMessage).get();
 
 		// 242 {message} + 25 {offset}
@@ -468,6 +515,66 @@ public class MLifelineTest extends MElementTest {
 		assertThat(edge.getTarget().getElement(), is(receiver.getElement()));
 	}
 
+	/**
+	 * Tests the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement, org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter)
+	 * <em>Insert Message After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement,
+	 *      int, org.eclipse.papyrus.uml.interaction.model.MLifeline,
+	 *      org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.uml2.uml.MessageSort,
+	 *      org.eclipse.uml2.uml.NamedElement,
+	 *      org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter)
+	 * @generated NOT
+	 */
+	public void testInsertMessageAfter__MElement_int_MLifeline_MElement_int_MessageSort_NamedElement_ExecutionCreationCommandParameter() {
+		MLifeline receiver = interaction.getLifelines().get(0);
+		MMessage reply = interaction.getMessages().get(1);
+		Operation operation = findUMLElement("AnchorsModel::Foo::doIt", Operation.class);
+		CreationCommand<Message> command = getFixture().insertMessageAfter(reply, 25, receiver,
+				MessageSort.SYNCH_CALL_LITERAL, operation, new ExecutionCreationCommandParameter(true, true,
+						UMLPackage.Literals.BEHAVIOR_EXECUTION_SPECIFICATION));
+
+		assertThat(command, executable());
+		Message umlMessage = create(command);
+		verifyMessage(umlMessage, receiver, operation);
+
+		MMessageEnd start = interaction.getMessage(umlMessage).get().getReceive().get();
+		assertThat(start.getStartedExecution(), isPresent());
+		MExecution exec = start.getStartedExecution().get();
+		assertThat(exec.getFinish(), isPresent(instanceOf(MMessageEnd.class)));
+		MMessageEnd finish = (MMessageEnd)exec.getFinish().get();
+		assertThat(finish.getOwner().getElement().getMessageSort(), is(MessageSort.REPLY_LITERAL));
+		reply = finish.getOwner();
+		assertThat(reply.getReceiver(), isPresent(is(getFixture())));
+	}
+
+	/**
+	 * Tests the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.uml2.uml.MessageSort, org.eclipse.uml2.uml.NamedElement, org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter)
+	 * <em>Insert Message After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#insertMessageAfter(org.eclipse.papyrus.uml.interaction.model.MElement,
+	 *      int, org.eclipse.papyrus.uml.interaction.model.MLifeline, org.eclipse.uml2.uml.MessageSort,
+	 *      org.eclipse.uml2.uml.NamedElement,
+	 *      org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter)
+	 * @generated NOT
+	 */
+	public void testInsertMessageAfter__MElement_int_MLifeline_MessageSort_NamedElement_ExecutionCreationCommandParameter() {
+		MLifeline receiver = interaction.getLifelines().get(0);
+		MMessage reply = interaction.getMessages().get(1);
+		Operation operation = findUMLElement("AnchorsModel::Foo::doIt", Operation.class);
+		CreationCommand<Message> command = getFixture().insertMessageAfter(reply.getSend().get(), 25,
+				receiver, reply.getReceive().get(), 45, MessageSort.ASYNCH_SIGNAL_LITERAL, operation,
+				new ExecutionCreationCommandParameter(true, true,
+						UMLPackage.Literals.BEHAVIOR_EXECUTION_SPECIFICATION));
+
+		assertThat(command, executable());
+		Message umlMessage = create(command);
+		verifyMessage2(umlMessage, receiver, operation);
+	}
+
+	@Override
 	public void testRemove() {
 		MLifeline lifeline = getFixture();
 

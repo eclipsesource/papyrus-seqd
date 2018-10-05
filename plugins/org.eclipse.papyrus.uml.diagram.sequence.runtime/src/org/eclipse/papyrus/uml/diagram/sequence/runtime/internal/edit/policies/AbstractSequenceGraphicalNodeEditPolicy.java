@@ -654,6 +654,12 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 			return org.eclipse.gmf.runtime.common.core.command.UnexecutableCommand.INSTANCE;
 		}
 
+		// Moreover, it does not make sense to replace an execution start by a message send
+		// nor an execution finish by a message receive
+		if ((occurrence.isStart() != msgEnd.isReceive()) || (occurrence.isFinish() != msgEnd.isSend())) {
+			return org.eclipse.gmf.runtime.common.core.command.UnexecutableCommand.INSTANCE;
+		}
+
 		return new AbstractTransactionalCommand(domain, "Replace Execution Occurrence", null) { //$NON-NLS-1$
 
 			@Override

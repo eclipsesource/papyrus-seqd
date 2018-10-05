@@ -86,6 +86,7 @@ import junit.framework.TestCase;
  * <em>Vertical Distance</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#following() <em>Following</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#nudge(int) <em>Nudge</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#remove() <em>Remove</em>}</li>
  * </ul>
  * </p>
  * 
@@ -185,30 +186,29 @@ public abstract class MElementTest extends TestCase {
 				isPresent());
 		return result.get();
 	}
-	
+
 	protected Optional<View> findTypeInChildren(View shape, String type) {
 		TreeIterator<EObject> contents = shape.eAllContents();
-		while(contents.hasNext()) {
+		while (contents.hasNext()) {
 			EObject next = contents.next();
-			if(View.class.isInstance(next)) {
+			if (View.class.isInstance(next)) {
 				View view = View.class.cast(next);
-				if(type.equals(view.getType())) {
+				if (type.equals(view.getType())) {
 					return Optional.of(view);
 				}
 			}
 		}
 		return Optional.empty();
 	}
-	
 
 	protected int countTypesInChildren(View shape, String type) {
 		int found = 0;
 		TreeIterator<EObject> contents = shape.eAllContents();
-		while(contents.hasNext()) {
+		while (contents.hasNext()) {
 			EObject next = contents.next();
-			if(View.class.isInstance(next)) {
+			if (View.class.isInstance(next)) {
 				View view = View.class.cast(next);
-				if(type.equals(view.getType())) {
+				if (type.equals(view.getType())) {
 					found++;
 				}
 			}
@@ -508,6 +508,20 @@ public abstract class MElementTest extends TestCase {
 			OptionalInt newTop = getFixture().getTop();
 			assertThat("Nudge missed the mark", newTop, isPresent(oldY + 15));
 		}
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#remove() <em>Remove</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#remove()
+	 * @generated NOT
+	 */
+	public void testRemove() {
+		// In the general case, remove is not implemented
+		Command remove = getFixture().remove();
+		assertThat(remove, notNullValue());
+		assertThat(remove.canExecute(), is(false));
 	}
 
 } // MElementTest

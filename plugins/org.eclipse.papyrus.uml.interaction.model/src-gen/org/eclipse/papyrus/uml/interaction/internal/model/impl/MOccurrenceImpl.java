@@ -39,8 +39,12 @@ import org.eclipse.uml2.uml.OccurrenceSpecification;
  * <ul>
  * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MOccurrenceImpl#getCovered
  * <em>Covered</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MOccurrenceImpl#isStart
+ * <em>Start</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MOccurrenceImpl#getStartedExecution
  * <em>Started Execution</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MOccurrenceImpl#isFinish
+ * <em>Finish</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MOccurrenceImpl#getFinishedExecution
  * <em>Finished Execution</em>}</li>
  * </ul>
@@ -48,6 +52,26 @@ import org.eclipse.uml2.uml.OccurrenceSpecification;
  * @generated
  */
 public abstract class MOccurrenceImpl<T extends Element> extends MElementImpl<T> implements MOccurrence<T> {
+	/**
+	 * The default value of the '{@link #isStart() <em>Start</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @see #isStart()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean START_EDEFAULT = false;
+
+	/**
+	 * The default value of the '{@link #isFinish() <em>Finish</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @see #isFinish()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean FINISH_EDEFAULT = false;
+
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -89,8 +113,28 @@ public abstract class MOccurrenceImpl<T extends Element> extends MElementImpl<T>
 	 * @generated NOT
 	 */
 	@Override
+	public boolean isStart() {
+		return getStartedExecution().isPresent();
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
 	public Optional<MExecution> getStartedExecution() {
 		return getExecution(Tag.EXECUTION_START);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public boolean isFinish() {
+		return getFinishedExecution().isPresent();
 	}
 
 	private Optional<MExecution> getExecution(Tag tag) {
@@ -123,8 +167,12 @@ public abstract class MOccurrenceImpl<T extends Element> extends MElementImpl<T>
 		switch (featureID) {
 			case SequenceDiagramPackage.MOCCURRENCE__COVERED:
 				return getCovered();
+			case SequenceDiagramPackage.MOCCURRENCE__START:
+				return isStart();
 			case SequenceDiagramPackage.MOCCURRENCE__STARTED_EXECUTION:
 				return getStartedExecution();
+			case SequenceDiagramPackage.MOCCURRENCE__FINISH:
+				return isFinish();
 			case SequenceDiagramPackage.MOCCURRENCE__FINISHED_EXECUTION:
 				return getFinishedExecution();
 		}
@@ -141,8 +189,12 @@ public abstract class MOccurrenceImpl<T extends Element> extends MElementImpl<T>
 		switch (featureID) {
 			case SequenceDiagramPackage.MOCCURRENCE__COVERED:
 				return getCovered() != null;
+			case SequenceDiagramPackage.MOCCURRENCE__START:
+				return isStart() != START_EDEFAULT;
 			case SequenceDiagramPackage.MOCCURRENCE__STARTED_EXECUTION:
 				return getStartedExecution() != null;
+			case SequenceDiagramPackage.MOCCURRENCE__FINISH:
+				return isFinish() != FINISH_EDEFAULT;
 			case SequenceDiagramPackage.MOCCURRENCE__FINISHED_EXECUTION:
 				return getFinishedExecution() != null;
 		}

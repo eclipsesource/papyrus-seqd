@@ -3,10 +3,13 @@ package org.eclipse.papyrus.uml.interaction.model.tests.creation.padding;
 import static org.junit.Assert.assertEquals;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.gmf.runtime.notation.Node;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.tests.ModelEditFixture;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.eclipse.uml2.uml.Message;
@@ -58,6 +61,14 @@ public class CreateMessagePaddingTest {
 
 	private MMessage messageX(int index) {
 		return interaction().getMessages().get(index);
+	}
+
+	private LayoutHelper layoutHelper() {
+		return LogicalModelPlugin.INSTANCE.getLayoutHelper(model.getEditingDomain());
+	}
+
+	private int lifelineBodyTop(MLifeline lifeline) {
+		return layoutHelper().getBottom((Node)model.vertex(lifeline.getElement()).getDiagramView());
 	}
 
 	@Test
@@ -187,10 +198,11 @@ public class CreateMessagePaddingTest {
 		int execution1Top = lifeline1().getExecutions().get(0).getTop().getAsInt();
 		int execution1Bottom = lifeline1().getExecutions().get(0).getBottom().getAsInt();
 
-		/* setup */
-		CreationCommand<Message> command = lifeline1().insertMessageAfter(
-				lifeline1().getExecutions().get(0).getStart().get(), 0, lifeline2(),
-				MessageSort.ASYNCH_CALL_LITERAL, null);
+		/* setup. Note that a message can only be received, not sent, at an execution start */
+		CreationCommand<Message> command = lifeline2().insertMessageAfter(lifeline2(),
+				/* calculate offset of the top of the execution from the lifeline2 head */
+				execution1Top - lifelineBodyTop(lifeline2()), lifeline1(), MessageSort.ASYNCH_CALL_LITERAL,
+				null);
 
 		/* act */
 		execute(command);
@@ -247,10 +259,11 @@ public class CreateMessagePaddingTest {
 		int execution2Top = lifeline1().getExecutions().get(1).getTop().getAsInt();
 		int execution2Bottom = lifeline1().getExecutions().get(1).getBottom().getAsInt();
 
-		/* setup */
-		CreationCommand<Message> command = lifeline1().insertMessageAfter(
-				lifeline1().getExecutions().get(1).getStart().get(), //
-				0, lifeline2(), MessageSort.ASYNCH_CALL_LITERAL, null);
+		/* setup. Note that a message can only be received, not sent, at an execution start */
+		CreationCommand<Message> command = lifeline2().insertMessageAfter(lifeline2(), //
+				/* calculate offset of the top of the execution from the lifeline2 head */
+				execution2Top - lifelineBodyTop(lifeline2()), //
+				lifeline1(), MessageSort.ASYNCH_CALL_LITERAL, null);
 
 		/* act */
 		execute(command);

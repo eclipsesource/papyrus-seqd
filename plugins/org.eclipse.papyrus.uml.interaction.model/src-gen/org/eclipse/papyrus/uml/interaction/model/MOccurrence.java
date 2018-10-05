@@ -24,8 +24,10 @@ import org.eclipse.uml2.uml.Element;
  * </p>
  * <ul>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getCovered <em>Covered</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#isStart <em>Start</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getStartedExecution <em>Started
  * Execution</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#isFinish <em>Finish</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getFinishedExecution <em>Finished
  * Execution</em>}</li>
  * </ul>
@@ -52,6 +54,21 @@ public interface MOccurrence<T extends Element> extends MElement<T> {
 	Optional<MLifeline> getCovered();
 
 	/**
+	 * Returns the value of the '<em><b>Start</b></em>' attribute. <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Start</em>' attribute isn't clear, there really should be more of a
+	 * description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Start</em>' attribute.
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMOccurrence_Start()
+	 * @model required="true" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	boolean isStart();
+
+	/**
 	 * Returns the value of the '<em><b>Started Execution</b></em>' attribute. <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Started Execution</em>' attribute isn't clear, there really should be more
@@ -66,6 +83,21 @@ public interface MOccurrence<T extends Element> extends MElement<T> {
 	 * @generated
 	 */
 	Optional<MExecution> getStartedExecution();
+
+	/**
+	 * Returns the value of the '<em><b>Finish</b></em>' attribute. <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Finish</em>' attribute isn't clear, there really should be more of a
+	 * description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Finish</em>' attribute.
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMOccurrence_Finish()
+	 * @model required="true" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	boolean isFinish();
 
 	/**
 	 * Returns the value of the '<em><b>Finished Execution</b></em>' attribute. <!-- begin-user-doc -->

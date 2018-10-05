@@ -55,7 +55,7 @@ public class MExecutionOccurrenceTest extends MOccurrenceTest {
 	/**
 	 * Constructs a new MExecution Occurrence test case with the given name. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	public MExecutionOccurrenceTest(String name) {
@@ -147,10 +147,33 @@ public class MExecutionOccurrenceTest extends MOccurrenceTest {
 	}
 
 	@Override
+	public void testIsStart() {
+		assertThat(getFixture().isStart(), is(true));
+
+		Optional<MExecutionOccurrence> finish = interaction
+				.getElement(umlInteraction.getFragment("ActionExecutionSpecification1Finish"))
+				.map(MExecutionOccurrence.class::cast);
+		assumeThat(finish, isPresent());
+
+		assertThat(finish.get().isStart(), is(false));
+	}
+
+	@Override
 	public void testGetStartedExecution() {
 		ExecutionSpecification exec = (ExecutionSpecification)umlInteraction
 				.getFragment("ActionExecutionSpecification1");
 		assertThat(getFixture().getStartedExecution(), isPresent(wraps(exec)));
+	}
+
+	@Override
+	public void testIsFinish() {
+
+		Optional<MExecutionOccurrence> finish = interaction
+				.getElement(umlInteraction.getFragment("ActionExecutionSpecification1Finish"))
+				.map(MExecutionOccurrence.class::cast);
+		assumeThat(finish, isPresent());
+
+		assertThat(finish.get().isFinish(), is(true));
 	}
 
 	@Override

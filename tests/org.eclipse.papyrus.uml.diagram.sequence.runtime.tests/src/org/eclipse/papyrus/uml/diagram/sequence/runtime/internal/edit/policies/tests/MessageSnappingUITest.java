@@ -265,11 +265,11 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		int newTopY = getTop(execEP);
 
 		EditPart messageEP = editor.with(modifiers,
-				() -> createConnection(SequenceElementTypes.Reply_Message_Edge, //
-						at(LL2_BODY_X, withinMagnet(newTopY, EXEC_START)),
-						at(LL1_BODY_X, withinMagnet(newTopY, EXEC_START))));
+				() -> createConnection(SequenceElementTypes.Sync_Message_Edge, //
+						at(LL1_BODY_X, withinMagnet(newTopY, EXEC_START)),
+						at(LL2_BODY_X, withinMagnet(newTopY, EXEC_START))));
 		assertThat("No snap: infer that magnet not moved", messageEP,
-				runs(LL2_BODY_X, newTopY, LL1_BODY_X, newTopY, 1));
+				runs(LL1_BODY_X, newTopY, LL2_BODY_X, newTopY, 1));
 	}
 
 	//

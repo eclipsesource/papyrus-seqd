@@ -21,9 +21,11 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.NudgeCommand;
+import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.MessageEnd;
 import org.eclipse.uml2.uml.OccurrenceSpecification;
@@ -76,6 +78,10 @@ public class MMessageEndImpl extends MOccurrenceImpl<MessageEnd> implements MMes
 	}
 
 	protected MMessageEndImpl(MMessageImpl owner, MessageEnd messageEnd) {
+		super(owner, messageEnd);
+	}
+
+	protected MMessageEndImpl(MElement<? extends Element> owner, MessageEnd messageEnd) {
 		super(owner, messageEnd);
 	}
 
