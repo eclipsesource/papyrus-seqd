@@ -91,11 +91,9 @@ public final class SequenceElementTypes {
 		Object type = hint.getAdapter(IElementType.class);
 		if (elements == null) {
 			elements = new IdentityHashMap<IElementType, ENamedElement>();
-
 			elements.put(Package_SequenceDiagram, UMLPackage.eINSTANCE.getPackage());
-
 			elements.put(Interaction_Shape, UMLPackage.eINSTANCE.getInteraction());
-
+			elements.put(Lifeline_Shape, UMLPackage.eINSTANCE.getLifeline());
 		}
 		return elements.get(type);
 	}
