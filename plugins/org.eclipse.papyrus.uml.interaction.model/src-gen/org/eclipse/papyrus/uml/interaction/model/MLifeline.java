@@ -80,31 +80,20 @@ public interface MLifeline extends MElement<Lifeline> {
 	List<MExecution> getExecutions();
 
 	/**
-	 * Returns the value of the '<em><b>Destruction</b></em>' containment reference. <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Destruction</b></em>' attribute. <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Destruction</em>' containment reference isn't clear, there really should be
 	 * more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * 
-	 * @return the value of the '<em>Destruction</em>' containment reference.
-	 * @see #setDestruction(MDestruction)
+	 * @return the value of the '<em>Destruction</em>' attribute.
 	 * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMLifeline_Destruction()
-	 * @model containment="true"
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Optional&lt;org.eclipse.papyrus.uml.interaction.model.MDestruction&gt;"
+	 *        required="true" transient="true" changeable="false" volatile="true" derived="true"
 	 * @generated
 	 */
-	MDestruction getDestruction();
-
-	/**
-	 * Sets the value of the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getDestruction
-	 * <em>Destruction</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Destruction</em>' containment reference.
-	 * @see #getDestruction()
-	 * @generated
-	 */
-	void setDestruction(MDestruction value);
+	Optional<MDestruction> getDestruction();
 
 	/**
 	 * Returns the value of the '<em><b>Left</b></em>' attribute. <!-- begin-user-doc -->

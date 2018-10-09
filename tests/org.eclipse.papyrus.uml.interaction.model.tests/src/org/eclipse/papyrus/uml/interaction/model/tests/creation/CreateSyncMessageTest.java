@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.gmf.runtime.notation.Node;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
@@ -30,11 +32,13 @@ import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.tests.ModelEditFixture;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.eclipse.uml2.uml.BehaviorExecutionSpecification;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
+import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageSort;
 import org.junit.Rule;
@@ -55,11 +59,28 @@ public class CreateSyncMessageTest {
 		interaction = null;
 	}
 
+	private <T extends Element> T create(CreationCommand<T> command) {
+		execute(command);
+		return command.get();
+	}
+
 	private MInteraction interaction() {
 		if (interaction == null) {
 			interaction = model.getMInteraction();
 		}
 		return interaction;
+	}
+
+	private MLifeline lifeline(int index) {
+		return interaction().getLifelines().get(index);
+	}
+
+	private LayoutHelper layoutHelper() {
+		return LogicalModelPlugin.INSTANCE.getLayoutHelper(model.getEditingDomain());
+	}
+
+	private int lifelineBodyTop(MLifeline lifeline) {
+		return layoutHelper().getBottom((Node)model.vertex(lifeline.getElement()).getDiagramView());
 	}
 
 	@Test
@@ -200,6 +221,31 @@ public class CreateSyncMessageTest {
 					order.size());
 			assertThat(remaining, everyItem(model.isSemanticallyAfter(element)));
 		}
+	}
+
+	@Test
+	public void attemptMessageSentByExecutionStart() {
+		/* setup */
+		ExecutionSpecification exec = create(
+				lifeline(0).insertExecutionAfter(lifeline(0), 50, 60, BEHAVIOR_EXECUTION_SPECIFICATION));
+		MExecution execution = interaction().getElement(exec).map(MExecution.class::cast).get();
+		CreationCommand<Message> command = lifeline(0).insertMessageAfter(execution.getStart().get(), 0,
+				lifeline(1), MessageSort.SYNCH_CALL_LITERAL, null);
+
+		assertThat("Command is executable", command.canExecute(), is(false));
+	}
+
+	@Test
+	public void attemptMessageReceivedByExecutionFinish() {
+		/* setup */
+		ExecutionSpecification exec = create(
+				lifeline(0).insertExecutionAfter(lifeline(0), 50, 60, BEHAVIOR_EXECUTION_SPECIFICATION));
+		MExecution execution = interaction().getElement(exec).map(MExecution.class::cast).get();
+		CreationCommand<Message> command = lifeline(1).insertMessageAfter(lifeline(1), //
+				execution.getBottom().getAsInt() - lifelineBodyTop(lifeline(2)), //
+				lifeline(0), MessageSort.REPLY_LITERAL, null);
+
+		assertThat("Command is executable", command.canExecute(), is(false));
 	}
 
 }

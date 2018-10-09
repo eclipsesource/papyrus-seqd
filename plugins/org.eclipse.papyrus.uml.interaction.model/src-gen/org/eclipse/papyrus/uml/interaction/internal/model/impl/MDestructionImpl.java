@@ -37,6 +37,10 @@ public class MDestructionImpl extends MMessageEndImpl implements MDestruction {
 		super(owner, destruction);
 	}
 
+	protected MDestructionImpl(MLifelineImpl owner, DestructionOccurrenceSpecification destruction) {
+		super(owner, destruction);
+	}
+
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 

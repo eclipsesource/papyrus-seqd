@@ -418,8 +418,19 @@
         eType="#//MExecutionOccurrence" changeable="false" containment="true" resolveProxies="false"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="executions" upperBound="-1"
         eType="#//MExecution" changeable="false" containment="true" resolveProxies="false"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="destruction" eType="#//MDestruction"
-        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ownedDestruction" eType="#//MDestruction"
+        containment="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="suppressedGetVisibility" value="true"/>
+        <details key="suppressedSetVisibility" value="true"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="destruction" lowerBound="1"
+        changeable="false" volatile="true" transient="true" derived="true">
+      <eGenericType eClassifier="#//Optional">
+        <eTypeArguments eClassifier="#//MDestruction"/>
+      </eGenericType>
+    </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="left" lowerBound="1" eType="#//OptionalInt"
         changeable="false" volatile="true" transient="true" derived="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="right" lowerBound="1" eType="#//OptionalInt"
@@ -465,12 +476,17 @@
         <eTypeArguments eClassifier="#//MLifeline"/>
       </eGenericType>
     </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="start" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        changeable="false" volatile="true" transient="true" derived="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="startedExecution" lowerBound="1"
         changeable="false" volatile="true" transient="true" derived="true">
       <eGenericType eClassifier="#//Optional">
         <eTypeArguments eClassifier="#//MExecution"/>
       </eGenericType>
     </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="finish" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" changeable="false"
+        volatile="true" transient="true" derived="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="finishedExecution" lowerBound="1"
         changeable="false" volatile="true" transient="true" derived="true">
       <eGenericType eClassifier="#//Optional">

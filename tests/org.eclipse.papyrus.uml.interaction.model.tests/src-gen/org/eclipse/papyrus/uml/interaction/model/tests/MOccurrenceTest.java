@@ -76,6 +76,17 @@ public abstract class MOccurrenceTest extends MElementTest {
 	}
 
 	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#isStart() <em>Start</em>}'
+	 * feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MOccurrence#isStart()
+	 * @generated NOT
+	 */
+	public void testIsStart() {
+		fail("Must be tested by subclasses.");
+	}
+
+	/**
 	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getStartedExecution()
 	 * <em>Started Execution</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
@@ -83,6 +94,17 @@ public abstract class MOccurrenceTest extends MElementTest {
 	 * @generated NOT
 	 */
 	public void testGetStartedExecution() {
+		fail("Must be tested by subclasses.");
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#isFinish() <em>Finish</em>}'
+	 * feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MOccurrence#isFinish()
+	 * @generated NOT
+	 */
+	public void testIsFinish() {
 		fail("Must be tested by subclasses.");
 	}
 

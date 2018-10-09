@@ -1,55 +1,38 @@
 /**
  * Copyright (c) 2018 Christian W. Damus and others.
- *
+ *  
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors:
  *   Christian W. Damus - Initial API and implementation
- *
+ * 
  */
 package org.eclipse.papyrus.uml.interaction.model.tests;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeThat;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
-import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
-import org.eclipse.uml2.uml.ExecutionSpecification;
-import org.eclipse.uml2.uml.Message;
+import org.eclipse.papyrus.uml.interaction.model.MDestruction;
+import org.eclipse.papyrus.uml.interaction.model.MMessage;
 
 import junit.textui.TestRunner;
 
 /**
- * <!-- begin-user-doc --> A test case for the model object '<em><b>MMessage End</b></em>'. <!-- end-user-doc
+ * <!-- begin-user-doc --> A test case for the model object '<em><b>MDestruction</b></em>'. <!-- end-user-doc
  * -->
- * <p>
- * The following features are tested:
- * <ul>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#isSend() <em>Send</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#isReceive() <em>Receive</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getOtherEnd() <em>Other End</em>}</li>
- * </ul>
- * </p>
- * <p>
- * The following operations are tested:
- * <ul>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getOwner() <em>Get Owner</em>}</li>
- * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getDiagramView() <em>Get Diagram
- * View</em>}</li>
- * </ul>
- * </p>
  * 
  * @generated
  */
-public class MMessageEndTest extends MOccurrenceTest {
+@SuppressWarnings("restriction")
+public class MDestructionTest extends MMessageEndTest {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -57,32 +40,32 @@ public class MMessageEndTest extends MOccurrenceTest {
 	 * @generated
 	 */
 	public static void main(String[] args) {
-		TestRunner.run(MMessageEndTest.class);
+		TestRunner.run(MDestructionTest.class);
 	}
 
 	/**
-	 * Constructs a new MMessage End test case with the given name. <!-- begin-user-doc --> <!-- end-user-doc
+	 * Constructs a new MDestruction test case with the given name. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
-	 *
+	 * 
 	 * @generated
 	 */
-	public MMessageEndTest(String name) {
+	public MDestructionTest(String name) {
 		super(name);
 	}
 
 	/**
-	 * Returns the fixture for this MMessage End test case. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * Returns the fixture for this MDestruction test case. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	@Override
-	protected MMessageEnd getFixture() {
-		return (MMessageEnd)fixture;
+	protected MDestruction getFixture() {
+		return (MDestruction)fixture;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @see junit.framework.TestCase#setUp()
 	 * @generated NOT
 	 */
@@ -92,39 +75,43 @@ public class MMessageEndTest extends MOccurrenceTest {
 	}
 
 	@Override
+	protected String getInteractionName() {
+		return "LifelineBodyAnchors";
+	}
+
+	@Override
 	protected void initializeFixture() {
-		setFixture(interaction.getMessages().get(0).getReceive().get());
+		List<MMessage> messages = interaction.getMessages();
+		setFixture(messages.get(messages.size() - 1).getReceive().get());
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @see junit.framework.TestCase#tearDown()
-	 * @generated NOT
+	 * @generated
 	 */
 	@Override
 	protected void tearDown() throws Exception {
-		super.tearDown();
+		setFixture(null);
 	}
 
 	@Override
 	public void testGetElement() {
-		assertThat(getFixture().getElement(), is(umlInteraction.getFragment("request-recv")));
+		assertThat(getFixture().getElement(), is(umlInteraction.getFragment("deleted")));
 	}
 
 	@Override
 	public void testFollowing() {
-		super.testFollowing();
-
-		assertThat(getFixture().following().get(),
-				wraps(umlInteraction.getFragment("ActionExecutionSpecification1")));
+		// Of course it's the last
+		assertThat(getFixture().following(), not(isPresent()));
 	}
 
 	@Override
 	public void testGetTop() {
-		// Note that this diagram has no interaction name label!
-		// 12 {frame} + 5 {insets} + 25 {lifeline} + 25 {head} + 25 {anchor}
-		assertThat(getFixture().getTop(), isPresent(92));
+		// Note that because this is a message end, we report where the message intersects
+		// the lifeline, which is actually the center of the X shape
+		assertThat(getFixture().getTop(), isPresent(292));
 	}
 
 	@Override
@@ -135,40 +122,22 @@ public class MMessageEndTest extends MOccurrenceTest {
 
 	@Override
 	public void testIsStart() {
-		assertThat(getFixture().isStart(), is(true));
-
-		Message reply = umlInteraction.getMessage("reply");
-		MMessageEnd replySend = interaction.getMessage(reply).get().getSend().get();
-		assumeThat(replySend, notNullValue());
-
-		assertThat(replySend.isStart(), is(false));
+		assertThat(getFixture().isStart(), is(false));
 	}
 
 	@Override
 	public void testGetStartedExecution() {
-		ExecutionSpecification exec = (ExecutionSpecification)umlInteraction
-				.getFragment("ActionExecutionSpecification1");
-		assertThat(getFixture().getStartedExecution(), isPresent(wraps(exec)));
+		assertThat(getFixture().getStartedExecution(), not(isPresent()));
 	}
 
 	@Override
 	public void testIsFinish() {
 		assertThat(getFixture().isFinish(), is(false));
-
-		Message reply = umlInteraction.getMessage("reply");
-		MMessageEnd replySend = interaction.getMessage(reply).get().getSend().get();
-		assumeThat(replySend, notNullValue());
-
-		assertThat(replySend.isFinish(), is(true));
 	}
 
 	@Override
 	public void testGetFinishedExecution() {
-		Message reply = umlInteraction.getMessage("reply");
-		MMessageEnd replySend = interaction.getMessage(reply).get().getSend().get();
-		ExecutionSpecification exec = (ExecutionSpecification)umlInteraction
-				.getFragment("ActionExecutionSpecification1");
-		assertThat(replySend.getFinishedExecution(), isPresent(wraps(exec)));
+		assertThat(getFixture().getFinishedExecution(), not(isPresent()));
 	}
 
 	/**
@@ -178,12 +147,9 @@ public class MMessageEndTest extends MOccurrenceTest {
 	 * @see org.eclipse.papyrus.uml.interaction.model.MMessageEnd#isSend()
 	 * @generated NOT
 	 */
+	@Override
 	public void testIsSend() {
 		assertThat(getFixture().isSend(), is(false));
-
-		Optional<MMessageEnd> other = getFixture().getOtherEnd();
-		assumeThat(other, isPresent());
-		assertThat(other.get().isSend(), is(true));
 	}
 
 	/**
@@ -193,12 +159,9 @@ public class MMessageEndTest extends MOccurrenceTest {
 	 * @see org.eclipse.papyrus.uml.interaction.model.MMessageEnd#isReceive()
 	 * @generated NOT
 	 */
+	@Override
 	public void testIsReceive() {
 		assertThat(getFixture().isReceive(), is(true));
-
-		Optional<MMessageEnd> other = getFixture().getOtherEnd();
-		assumeThat(other, isPresent());
-		assertThat(other.get().isReceive(), is(false));
 	}
 
 	/**
@@ -208,6 +171,7 @@ public class MMessageEndTest extends MOccurrenceTest {
 	 * @see org.eclipse.papyrus.uml.interaction.model.MMessageEnd#getOtherEnd()
 	 * @generated NOT
 	 */
+	@Override
 	public void testGetOtherEnd() {
 		assertThat(getFixture().getOtherEnd(),
 				isPresent(wraps(getFixture().getElement().oppositeEnd().get(0))));
@@ -222,8 +186,7 @@ public class MMessageEndTest extends MOccurrenceTest {
 	 */
 	@Override
 	public void testGetOwner() {
-		super.testGetOwner();
-		assertThat(getFixture().getOwner().getElement().getName(), is("request"));
+		assertThat(getFixture().getOwner().getElement().getName(), is("delete"));
 	}
 
 	/**
@@ -238,4 +201,4 @@ public class MMessageEndTest extends MOccurrenceTest {
 		assertThat(getFixture().getDiagramView(), isPresent(instanceOf(IdentityAnchor.class)));
 	}
 
-} // MMessageEndTest
+} // MDestructionTest

@@ -33,6 +33,7 @@ import org.eclipse.gmf.runtime.draw2d.ui.mapmode.IMapMode;
 import org.eclipse.gmf.runtime.notation.ArrowType;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.MessageFigure;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.ConnectionFigureMagnetHelper;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LogicalModelElementSemanticEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageBendpointsEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageEndpointEditPolicy;
@@ -44,8 +45,20 @@ public class MessageEditPart extends ConnectionNodeEditPart implements ISequence
 
 	private final EventBus bus = new EventBus();
 
+	private ConnectionFigureMagnetHelper magnetHelper;
+
 	public MessageEditPart(View view) {
 		super(view);
+	}
+
+	@Override
+	public void deactivate() {
+		if (magnetHelper != null) {
+			magnetHelper.dispose();
+			magnetHelper = null;
+		}
+
+		super.deactivate();
 	}
 
 	@Override
@@ -53,6 +66,10 @@ public class MessageEditPart extends ConnectionNodeEditPart implements ISequence
 		MessageFigure messageFigure = new MessageFigure();
 		updateArrowDecoration(messageFigure);
 		refreshLineType(messageFigure);
+
+		magnetHelper = new ConnectionFigureMagnetHelper(messageFigure, getMagnetManager(),
+				getMagnetStrength()).registerMagnets(true, false);
+
 		return messageFigure;
 	}
 

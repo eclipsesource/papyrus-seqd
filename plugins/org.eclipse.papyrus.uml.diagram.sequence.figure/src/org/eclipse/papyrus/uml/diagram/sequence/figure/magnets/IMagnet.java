@@ -12,6 +12,9 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.figure.magnets;
 
+import java.util.function.Predicate;
+
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
@@ -20,6 +23,14 @@ import org.eclipse.draw2d.geometry.Rectangle;
  * that are being dragged about by the mouse pointer.
  */
 public interface IMagnet {
+
+	/**
+	 * Obtains the figure that owns me.
+	 * 
+	 * @return my owner
+	 */
+	IFigure getOwner();
+
 	/**
 	 * Obtain the magnet's strength, which is the square radius within which it captures the mouse pointer.
 	 * 
@@ -72,6 +83,29 @@ public interface IMagnet {
 	 * @see #getStrength()
 	 */
 	boolean influences(Point location);
+
+	/**
+	 * Compute my distance from a point.
+	 * 
+	 * @param location
+	 *            a reference point
+	 * @return my distance from it
+	 */
+	default double distance(Point location) {
+		return getLocation().getDistance(location);
+	}
+
+	/**
+	 * Obtain a magnet filter (often used for exclusion) that matches magnets having the given {@code owner}.
+	 * 
+	 * @param owner
+	 *            the owner on which to filter magnets
+	 * @return the magnet filter
+	 * @see #getOwner()
+	 */
+	static Predicate<IMagnet> ownedBy(IFigure owner) {
+		return m -> m.getOwner() == owner;
+	}
 
 	// TODO: API for showing and hiding feedback (with a secondary radius within which it is activated?)
 }

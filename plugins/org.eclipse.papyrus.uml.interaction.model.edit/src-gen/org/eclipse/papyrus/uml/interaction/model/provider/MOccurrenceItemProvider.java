@@ -54,7 +54,9 @@ public class MOccurrenceItemProvider extends MElementItemProvider {
 			super.getPropertyDescriptors(object);
 
 			addCoveredPropertyDescriptor(object);
+			addStartPropertyDescriptor(object);
 			addStartedExecutionPropertyDescriptor(object);
+			addFinishPropertyDescriptor(object);
 			addFinishedExecutionPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
@@ -77,6 +79,22 @@ public class MOccurrenceItemProvider extends MElementItemProvider {
 	}
 
 	/**
+	 * This adds a property descriptor for the Start feature. <!-- begin-user-doc
+	 * --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	protected void addStartPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MOccurrence_start_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MOccurrence_start_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MOccurrence_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MOCCURRENCE__START, false, false, false,
+				ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
+	}
+
+	/**
 	 * This adds a property descriptor for the Started Execution feature. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -90,6 +108,22 @@ public class MOccurrenceItemProvider extends MElementItemProvider {
 						"_UI_MOccurrence_type"), //$NON-NLS-1$
 				SequenceDiagramPackage.Literals.MOCCURRENCE__STARTED_EXECUTION, false, false, false,
 				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Finish feature. <!-- begin-user-doc
+	 * --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	protected void addFinishPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MOccurrence_finish_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MOccurrence_finish_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MOccurrence_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MOCCURRENCE__FINISH, false, false, false,
+				ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -134,7 +168,9 @@ public class MOccurrenceItemProvider extends MElementItemProvider {
 
 		switch (notification.getFeatureID(MOccurrence.class)) {
 		case SequenceDiagramPackage.MOCCURRENCE__COVERED:
+		case SequenceDiagramPackage.MOCCURRENCE__START:
 		case SequenceDiagramPackage.MOCCURRENCE__STARTED_EXECUTION:
+		case SequenceDiagramPackage.MOCCURRENCE__FINISH:
 		case SequenceDiagramPackage.MOCCURRENCE__FINISHED_EXECUTION:
 			fireNotifyChanged(
 					new ViewerNotification(notification, notification.getNotifier(), false, true));

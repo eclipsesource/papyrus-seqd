@@ -70,7 +70,8 @@
     <genClasses ecoreClass="seqd.ecore#//MLifeline">
       <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/executionOccurrences"/>
       <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/executions"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/destruction"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/ownedDestruction"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/destruction"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/left"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/right"/>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/getOwner"/>
@@ -152,7 +153,9 @@
     <genClasses image="false" ecoreClass="seqd.ecore#//MOccurrence">
       <genTypeParameters ecoreTypeParameter="seqd.ecore#//MOccurrence/T"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/covered"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/start"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/startedExecution"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/finish"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/finishedExecution"/>
     </genClasses>
     <genClasses ecoreClass="seqd.ecore#//MExecutionOccurrence">

@@ -219,13 +219,15 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 
 			int magnetDelta = 0;
 			// Target-end magnets have precedence
-			Optional<IMagnet> magnet = getMagnetManager().getCapturingMagnet(targetLocation);
+			Optional<IMagnet> magnet = getMagnetManager().getCapturingMagnet(targetLocation,
+					IMagnet.ownedBy(getHostFigure()));
 			if (magnet.isPresent()) {
 				Point newTargetLocation = targetLocation.getCopy();
 				newTargetLocation.setLocation(magnet.get().getLocation());
 				magnetDelta = newTargetLocation.y() - targetLocation.y();
 			} else {
-				magnet = getMagnetManager().getCapturingMagnet(sourceLocation);
+				magnet = getMagnetManager().getCapturingMagnet(sourceLocation,
+						IMagnet.ownedBy(getHostFigure()));
 				if (magnet.isPresent()) {
 					Point newSourceLocation = sourceLocation.getCopy();
 					newSourceLocation.setLocation(magnet.get().getLocation());

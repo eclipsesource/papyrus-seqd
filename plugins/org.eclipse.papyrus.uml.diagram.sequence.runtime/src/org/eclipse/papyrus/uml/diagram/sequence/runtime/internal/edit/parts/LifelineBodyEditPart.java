@@ -28,9 +28,12 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
+import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.requests.DropRequest;
+import org.eclipse.gef.requests.ReconnectRequest;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.BorderedBorderItemEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IBorderItemEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
@@ -40,6 +43,7 @@ import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.LifelineBodyFigure;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.SnapToMagnetsHelper;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.InteractionSemanticEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineBodyDisallowMoveAndResizeEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineBodyGraphicalNodeEditPolicy;
@@ -168,11 +172,40 @@ public class LifelineBodyEditPart extends BorderedBorderItemEditPart implements 
 		if (request instanceof DropRequest) {
 			Point location = ((DropRequest)request).getLocation();
 
+			IFigure connection = null;
+			if (request instanceof ReconnectRequest) {
+				ReconnectRequest reconnect = (ReconnectRequest)request;
+				ConnectionEditPart connEP = reconnect.getConnectionEditPart();
+				connection = (connEP == null) ? null : connEP.getFigure();
+			}
+
 			// Snap the location to the nearest magnet, if any
-			Optional<IMagnet> magnet = getMagnetManager().getCapturingMagnet(location);
+			Optional<IMagnet> magnet = getMagnetManager().getCapturingMagnet(location,
+					IMagnet.ownedBy(connection));
 			magnet.map(IMagnet::getLocation).ifPresent(location::setLocation);
 		}
 
 		return super.getTargetConnectionAnchor(request);
 	}
+
+	@SuppressWarnings("restriction")
+	@Override
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class key) {
+		Object result = super.getAdapter(key);
+
+		if (key == SnapToHelper.class) {
+			// Snap to magnets
+			SnapToHelper magnets = new SnapToMagnetsHelper(getMagnetManager());
+			if (result instanceof SnapToHelper) {
+				// Compose it, with priority to magnets
+				result = new org.eclipse.gmf.runtime.diagram.ui.internal.ruler.CompoundSnapToHelperEx(
+						new SnapToHelper[] {magnets, (SnapToHelper)result });
+			} else {
+				result = magnets;
+			}
+		}
+
+		return result;
+	}
+
 }

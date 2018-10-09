@@ -37,6 +37,7 @@ import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.FeedbackHelper;
@@ -48,11 +49,13 @@ import org.eclipse.gmf.runtime.common.core.command.ICommand;
 import org.eclipse.gmf.runtime.diagram.core.commands.SetConnectionAnchorsCommand;
 import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.INodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewRequest;
 import org.eclipse.gmf.runtime.emf.commands.core.command.AbstractTransactionalCommand;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
+import org.eclipse.gmf.runtime.emf.type.core.commands.DestroyElementCommand;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.infra.emf.gmf.command.GMFtoEMFCommandWrapper;
@@ -72,6 +75,7 @@ import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
@@ -80,6 +84,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageSort;
+import org.eclipse.uml2.uml.OccurrenceSpecification;
 
 /**
  * Abstract implementation of a graphical node edit policy supporting message connections in the sequence
@@ -211,7 +216,8 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				Point location = request.getLocation();
 
 				// Snap the point to the nearest magnet, if any
-				Optional<IMagnet> magnet = getMagnetManager().getCapturingMagnet(location);
+				Optional<IMagnet> magnet = getMagnetManager().getCapturingMagnet(location,
+						IMagnet.ownedBy(getHostFigure()));
 				magnet.map(IMagnet::getLocation).ifPresent(location::setLocation);
 
 				int absoluteY = location.y();
@@ -259,7 +265,8 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				} else {
 					startLocation = startLocation.getCopy();
 
-					Optional<IMagnet> otherMagnet = getMagnetManager().getCapturingMagnet(startLocation)
+					Optional<IMagnet> otherMagnet = getMagnetManager()
+							.getCapturingMagnet(startLocation, IMagnet.ownedBy(getHostFigure()))
 							.filter(__ -> !magnet.isPresent()); // But not if the target is on a magnet
 					otherMagnet.map(IMagnet::getLocation).ifPresent(startLocation::setLocation);
 
@@ -281,7 +288,9 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 						startOffset = newSourceAnchorDesc.offset;
 					}
 
-					if (MessageUtil.isSynchronousCall(start.sort) && shouldCreateExecution()) {
+					if (MessageUtil.isSynchronousCall(start.sort) && shouldCreateExecution()
+					// But not if we are binding sensibly to an execution specification
+							&& !getExecutionStart(receiver, request.getLocation()).isPresent()) {
 
 						CreationCommand<Message> msgWithActionExecution = sender.insertMessageAfter(
 								startBefore, startOffset, receiver, start.sort, null,
@@ -298,6 +307,8 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 						result = sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort,
 								null);
 					}
+
+					result = sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort, null);
 				}
 
 				return wrap(result);
@@ -373,7 +384,18 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 			scaCommand.setNewTargetTerminal(target.mapConnectionAnchorToTerminal(newTargetAnchor));
 		}
 
-		return getSourceEnd(connectionEP).flatMap(src -> constrainReconnection(request, src)).orElse(result);
+		Optional<MMessageEnd> sourceEnd = getSourceEnd(connectionEP);
+		result = sourceEnd.flatMap(tgt -> constrainReconnection(request, tgt)).orElse(result);
+
+		if (result.canExecute() && sourceEnd.isPresent()) {
+			// Or, perhaps is a message send end now at an execution finish?
+			Optional<ICommand> replaceExecFinish = sourceEnd
+					.flatMap(send -> getExecutionFinish(send, request))
+					.map(execFinish -> replace(execFinish, sourceEnd.get()));
+			replaceExecFinish.ifPresent(getCompositeGMFCommand(result)::add);
+		}
+
+		return result;
 	}
 
 	protected Optional<Command> constrainReconnection(ReconnectRequest request, MMessageEnd end) {
@@ -395,7 +417,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 			successor = successor.map(MExecution.class::cast).flatMap(MExecution::getFinish);
 		}
 		if (successor.filter(above(request.getLocation().y())).isPresent()) {
-			result = Optional.of(UnexecutableCommand.INSTANCE);
+			result = Optional.of(bomb());
 		} else {
 			// And above the previous on the lifeline (accounting for self-message)
 			Optional<? extends MElement<?>> predecessor = lifeline.flatMap(
@@ -404,7 +426,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				predecessor = predecessor.map(MExecution.class::cast).flatMap(MExecution::getStart);
 			}
 			if (predecessor.filter(below(request.getLocation().y())).isPresent()) {
-				result = Optional.of(UnexecutableCommand.INSTANCE);
+				result = Optional.of(bomb());
 			}
 		}
 
@@ -413,18 +435,22 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		// the message (which is the force mode of the request)
 		if (selfMessage && wasSelfMessage && !result.isPresent() && !isForce(request)) {
 			if (MessageUtil.isSynchronous(end.getOwner().getElement().getMessageSort())) {
-				result = Optional.of(UnexecutableCommand.INSTANCE);
+				result = Optional.of(bomb());
 			} else {
 				OptionalInt otherY = end.getOtherEnd().map(MElement::getTop).orElse(OptionalInt.empty());
 				if (otherY.isPresent()
 						&& (abs(request.getLocation().y() - otherY.getAsInt()) < getLayoutConstraints()
 								.getMinimumHeight(ViewTypes.MESSAGE))) {
-					result = Optional.of(UnexecutableCommand.INSTANCE);
+					result = Optional.of(bomb());
 				}
 			}
 		}
 
 		return result;
+	}
+
+	static Command bomb() {
+		return UnexecutableCommand.INSTANCE;
 	}
 
 	@SuppressWarnings("boxing")
@@ -455,9 +481,9 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		Optional<MMessageEnd> targetEnd = getTargetEnd(connectionEP);
 		result = targetEnd.flatMap(tgt -> constrainReconnection(request, tgt)).orElse(result);
 
-		// If we're still good and we're changing a self-message to a non-self-message,
-		// then straighten the message connection
 		if (result.canExecute() && targetEnd.isPresent()) {
+			// If we're still good and we're changing a self-message to a non-self-message,
+			// then straighten the message connection
 			MMessageEnd end = targetEnd.get();
 			Optional<MLifeline> lifeline = getLifeline(); // The lifeline under the pointer
 			Optional<MLifeline> oldLifeline = end.getCovered();
@@ -471,7 +497,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				org.eclipse.emf.common.command.Command delegate = getDiagramHelper()
 						.configureStraightMessageConnector(message.get(), connector);
 				ICommand straighten = new AbstractTransactionalCommand(connectionEP.getEditingDomain(),
-						"Straighten Routing", null) {
+						"Straighten Routing", null) { //$NON-NLS-1$
 
 					@Override
 					protected CommandResult doExecuteWithResult(IProgressMonitor monitor, IAdaptable info)
@@ -493,7 +519,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				org.eclipse.emf.common.command.Command delegate = getDiagramHelper()
 						.configureSelfMessageConnector(message.get(), connector);
 				ICommand selfify = new AbstractTransactionalCommand(connectionEP.getEditingDomain(),
-						"Configure Routing", null) {
+						"Configure Routing", null) { //$NON-NLS-1$
 
 					@Override
 					protected CommandResult doExecuteWithResult(IProgressMonitor monitor, IAdaptable info)
@@ -510,6 +536,11 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				};
 				getCompositeGMFCommand(result).add(selfify);
 			}
+
+			// Is a message receive end now at an execution start?
+			Optional<ICommand> replaceExecStart = targetEnd.flatMap(recv -> getExecutionStart(recv, request))
+					.map(execStart -> replace(execStart, targetEnd.get()));
+			replaceExecStart.ifPresent(getCompositeGMFCommand(result)::add);
 		}
 
 		return result;
@@ -563,6 +594,90 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		return Activator.getDefault().getPreferences().isAutoCreateReplyForSyncCall();
 	}
 
+	/**
+	 * Find an execution occurrence that starts an execution at the same place on the lifeline as a
+	 * {@code msgEnd} sits.
+	 * 
+	 * @param msgEnd
+	 *            a message end on some lifeline
+	 * @return an execution occurrence at the same place on the lifeline
+	 */
+	private Optional<? extends MOccurrence<?>> getExecutionStart(MMessageEnd msgEnd,
+			ReconnectRequest request) {
+
+		return msgEnd.getCovered().flatMap(ll -> getExecutionStart(ll, request.getLocation()));
+	}
+
+	private Optional<? extends MOccurrence<?>> getExecutionStart(MLifeline lifeline, Point location) {
+		OptionalInt y = OptionalInt.of(location.y());
+		return Optional.of(lifeline)
+				.flatMap(ll -> ll.getExecutions().stream()
+						.filter(exec -> exec.getDiagramView().isPresent() && exec.getTop().equals(y))
+						.findFirst())
+				.flatMap(MExecution::getStart);
+	}
+
+	/**
+	 * Find an execution occurrence that finishes an execution at the same place on the lifeline as a
+	 * {@code msgEnd} sits.
+	 * 
+	 * @param msgEnd
+	 *            a message end on some lifeline
+	 * @return an execution occurrence at the same place on the lifeline
+	 */
+	private Optional<? extends MOccurrence<?>> getExecutionFinish(MMessageEnd msgEnd,
+			ReconnectRequest request) {
+
+		return msgEnd.getCovered().flatMap(ll -> getExecutionFinish(ll, request.getLocation()));
+	}
+
+	private Optional<? extends MOccurrence<?>> getExecutionFinish(MLifeline lifeline, Point location) {
+		OptionalInt y = OptionalInt.of(location.y());
+		return Optional.of(lifeline)
+				.flatMap(ll -> ll.getExecutions().stream()
+						.filter(exec -> exec.getDiagramView().isPresent() && exec.getBottom().equals(y))
+						.findFirst())
+				.flatMap(MExecution::getFinish);
+	}
+
+	private ICommand replace(MOccurrence<?> occurrence, MMessageEnd msgEnd) {
+		TransactionalEditingDomain domain = ((IGraphicalEditPart)getHost()).getEditingDomain();
+		Optional<MExecution> started = occurrence.getStartedExecution();
+		Optional<MExecution> finished = occurrence.getFinishedExecution();
+		Optional<OccurrenceSpecification> msgOcc = Optional.of(msgEnd.getElement())
+				.filter(OccurrenceSpecification.class::isInstance).map(OccurrenceSpecification.class::cast);
+
+		// If this occurrence starts and finishes an execution, or if it
+		// neither starts nor finishes an execution, then something's awry.
+		// Likewise if the msg end is not an execution occurrence (e.g., a gate)
+		if ((started.isPresent() == finished.isPresent()) || !msgOcc.isPresent()) {
+			return org.eclipse.gmf.runtime.common.core.command.UnexecutableCommand.INSTANCE;
+		}
+
+		// Moreover, it does not make sense to replace an execution start by a message send
+		// nor an execution finish by a message receive
+		if ((occurrence.isStart() != msgEnd.isReceive()) || (occurrence.isFinish() != msgEnd.isSend())) {
+			return org.eclipse.gmf.runtime.common.core.command.UnexecutableCommand.INSTANCE;
+		}
+
+		return new AbstractTransactionalCommand(domain, "Replace Execution Occurrence", null) { //$NON-NLS-1$
+
+			@Override
+			protected CommandResult doExecuteWithResult(IProgressMonitor monitor, IAdaptable info)
+					throws ExecutionException {
+
+				// First, delete the occurrence
+				DestroyElementCommand.destroy(occurrence.getElement());
+
+				// Then, hook up the execution
+				started.ifPresent(exec -> exec.getElement().setStart(msgOcc.get()));
+				finished.ifPresent(exec -> exec.getElement().setFinish(msgOcc.get()));
+
+				return CommandResult.newOKCommandResult();
+			}
+		};
+	}
+
 	//
 	// Nested types
 	//
@@ -610,6 +725,10 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		int offset() {
 			return offset;
+		}
+
+		Point location() {
+			return location;
 		}
 
 		void updateLocation(Point absoluteLocation) {

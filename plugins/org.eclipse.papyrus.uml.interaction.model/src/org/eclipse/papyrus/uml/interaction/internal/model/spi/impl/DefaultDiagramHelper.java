@@ -340,9 +340,17 @@ public class DefaultDiagramHelper implements DiagramHelper {
 						ExecutionSpecification exec = (ExecutionSpecification)target.get().getElement();
 						replace = collisionHandler.apply(exec.getStart(), message.get().getReceiveEvent());
 					} else if (AnchorFactory.isExecutionSpecificationFinish(created.getSourceAnchor())) {
-						// Replace the execution occurrence start occurrence
+						// Replace the execution occurrence finish occurrence
 						ExecutionSpecification exec = (ExecutionSpecification)source.get().getElement();
 						replace = collisionHandler.apply(exec.getFinish(), message.get().getSendEvent());
+					} else if (AnchorFactory.isExecutionSpecificationStart(created.getSourceAnchor())) {
+						// Replace the execution occurrence start occurrence, if permitted
+						ExecutionSpecification exec = (ExecutionSpecification)source.get().getElement();
+						replace = collisionHandler.apply(exec.getStart(), message.get().getSendEvent());
+					} else if (AnchorFactory.isExecutionSpecificationFinish(created.getTargetAnchor())) {
+						// Replace the execution occurrence finish occurrence, if permitted
+						ExecutionSpecification exec = (ExecutionSpecification)target.get().getElement();
+						replace = collisionHandler.apply(exec.getFinish(), message.get().getReceiveEvent());
 					}
 
 					// If we don't have a replace command, we still need something to execute

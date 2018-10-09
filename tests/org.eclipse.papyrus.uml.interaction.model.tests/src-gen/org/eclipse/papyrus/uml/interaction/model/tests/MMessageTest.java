@@ -226,6 +226,7 @@ public class MMessageTest extends MElementTest {
 		assertThat(getFixture().getEnd(recv), isPresent(wraps(recv)));
 	}
 
+	@Override
 	public void testRemove() {
 		MMessage requestMessage = getFixture();
 

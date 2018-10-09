@@ -190,6 +190,7 @@ public class MExecutionTest extends MElementTest {
 		assertThat(getFixture().getDiagramView().get().getType(), is("Shape_Execution_Specification"));
 	}
 
+	@Override
 	public void testRemove() {
 		MExecution execution = getFixture();
 

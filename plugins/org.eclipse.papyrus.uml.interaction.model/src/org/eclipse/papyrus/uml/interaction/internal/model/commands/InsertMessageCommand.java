@@ -1007,12 +1007,18 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			// just delete the execution occurrence that is being replaced
 			Command result = DeleteCommand.create(getEditingDomain(), occurrence);
 
+			// It does not make sense to replace an execution start by a message send
+			// nor an execution finish by a message receive
 			if (isStart) {
-				result = result.chain(
-						SetCommand.create(getEditingDomain(), exec, EXECUTION_SPECIFICATION__START, msgEnd));
+				result = msgEnd.isReceive()
+						? result.chain(SetCommand.create(getEditingDomain(), exec,
+								EXECUTION_SPECIFICATION__START, msgEnd))
+						: UnexecutableCommand.INSTANCE;
 			} else {
-				result = result.chain(
-						SetCommand.create(getEditingDomain(), exec, EXECUTION_SPECIFICATION__FINISH, msgEnd));
+				result = msgEnd.isSend()
+						? result.chain(SetCommand.create(getEditingDomain(), exec,
+								EXECUTION_SPECIFICATION__FINISH, msgEnd))
+						: UnexecutableCommand.INSTANCE;
 			}
 
 			return result;

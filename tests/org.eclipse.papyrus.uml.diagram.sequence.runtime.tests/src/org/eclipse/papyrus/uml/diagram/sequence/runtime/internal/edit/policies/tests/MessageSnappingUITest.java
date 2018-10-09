@@ -28,13 +28,10 @@ import java.util.Arrays;
 import java.util.function.Function;
 
 import org.eclipse.draw2d.Connection;
-import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
-import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.commands.SetBoundsCommand;
 import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
 import org.eclipse.gmf.runtime.notation.Location;
@@ -53,9 +50,12 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.internal.runners.model.ReflectiveCallable;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.junit.runners.model.Statement;
 
 /**
  * Integration test cases for the {@link LifelineBodyGraphicalNodeEditPolicy}
@@ -70,7 +70,8 @@ import org.junit.runners.Parameterized.Parameters;
 public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	@ClassRule
-	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs().dontCreateExecutionsForSyncMessages();
+	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs()
+			.dontCreateExecutionsForSyncMessages();
 
 	// Horizontal position of the first lifeline's body
 	private static final int LL1_BODY_X = 121;
@@ -84,6 +85,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	private static final boolean EXEC_FINISH = false;
 	private static final int EXEC_HEIGHT = 60;
 
+	private final boolean snapping;
 	private final EditorFixture.Modifiers modifiers;
 	private final Function<Matcher<?>, Matcher<?>> modifiersMatcherFunction;
 	private EditPart execEP;
@@ -101,30 +103,56 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	public MessageSnappingUITest(boolean withSnap, String snapString) {
 		super();
 
+		this.snapping = withSnap;
 		this.modifiers = withSnap ? editor.unmodified() : editor.modifierKey(MODIFIER_NO_SNAPPING);
 		modifiersMatcherFunction = withSnap ? CoreMatchers::is : CoreMatchers::not;
 	}
 
 	@Test
-	public void createSyncCallMessage() {
-		EditPart messageEP = editor.with(modifiers,
-				() -> createConnection(SequenceElementTypes.Sync_Message_Edge,
-						at(LL1_BODY_X, withinMagnet(EXEC_START)),
-						at(LL2_BODY_X, withinMagnet(EXEC_START))));
+	public void createSyncCallMessage() throws Throwable {
+		// The outer test context disables the creation of execution specifications,
+		// but we need to verify that there wouldn't be a prompt to create an execution
+		// even if the preference is set when binding to the execution start. Unless,
+		// of course, we aren't snapping because then we won't be on the execution
+		LightweightSeqDPrefs prefs = this.snapping
+				? new LightweightSeqDPrefs().createExecutionsForSyncMessages()
+				: new LightweightSeqDPrefs().dontCreateExecutionsForSyncMessages();
 
-		// The receiving end snaps to the exec start and the sending end matches
-		int execTop = getTop(execEP);
-		assertThat(messageEP, withModifiers(runs(LL1_BODY_X, execTop, LL2_BODY_X, execTop, 1)));
+		Statement test = new Statement() {
 
-		// The message receive event starts the execution
-		Message message = (Message) messageEP.getAdapter(EObject.class);
-		assertThat(exec.getStart(), withModifiers(is(message.getReceiveEvent())));
+			@Override
+			public void evaluate() throws Throwable {
+				EditPart messageEP = editor.with(modifiers,
+						() -> createConnection(SequenceElementTypes.Sync_Message_Edge,
+								at(LL1_BODY_X, withinMagnet(EXEC_START)),
+								at(LL2_BODY_X, withinMagnet(EXEC_START))));
 
-		// The message send and receive both are semantically before the execution
-		assertThat("Message ends out of order", message.getSendEvent(),
-				editor.semanticallyPrecedes(message.getReceiveEvent()));
-		assertThat("Execution out of order", exec, editor.semanticallyFollows(message.getReceiveEvent()));
-		assertThat("Execution finish out of order", exec, editor.semanticallyPrecedes(exec.getFinish()));
+				// The receiving end snaps to the exec start and the sending end matches
+				int execTop = getTop(execEP);
+				assertThat(messageEP, withModifiers(runs(LL1_BODY_X, execTop, LL2_BODY_X, execTop, 1)));
+
+				// The message receive event starts the execution
+				Message message = (Message) messageEP.getAdapter(EObject.class);
+				assertThat(exec.getStart(), withModifiers(is(message.getReceiveEvent())));
+
+				// The message send and receive both are semantically before the execution
+				assertThat("Message ends out of order", message.getSendEvent(),
+						editor.semanticallyPrecedes(message.getReceiveEvent()));
+				assertThat("Execution out of order", exec,
+						editor.semanticallyFollows(message.getReceiveEvent()));
+				assertThat("Execution finish out of order", exec,
+						editor.semanticallyPrecedes(exec.getFinish()));
+			}
+		};
+
+		new ReflectiveCallable() {
+
+			@Override
+			protected Object runReflectiveCall() throws Throwable {
+				prefs.apply(test, Description.EMPTY).evaluate();
+				return null;
+			}
+		}.run();
 	}
 
 	@Test
@@ -237,11 +265,11 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		int newTopY = getTop(execEP);
 
 		EditPart messageEP = editor.with(modifiers,
-				() -> createConnection(SequenceElementTypes.Reply_Message_Edge, //
-						at(LL2_BODY_X, withinMagnet(newTopY, EXEC_START)),
-						at(LL1_BODY_X, withinMagnet(newTopY, EXEC_START))));
+				() -> createConnection(SequenceElementTypes.Sync_Message_Edge, //
+						at(LL1_BODY_X, withinMagnet(newTopY, EXEC_START)),
+						at(LL2_BODY_X, withinMagnet(newTopY, EXEC_START))));
 		assertThat("No snap: infer that magnet not moved", messageEP,
-				runs(LL2_BODY_X, newTopY, LL1_BODY_X, newTopY, 1));
+				runs(LL1_BODY_X, newTopY, LL2_BODY_X, newTopY, 1));
 	}
 
 	//
@@ -276,20 +304,6 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	int withinMagnet(int y, boolean execStart) {
 		return execStart ? y - 9 : y + 9;
-	}
-
-	static int getTop(EditPart editPart) {
-		IFigure figure = ((GraphicalEditPart) editPart).getFigure();
-		Rectangle bounds = figure.getBounds().getCopy();
-		figure.getParent().translateToAbsolute(bounds);
-		return bounds.y();
-	}
-
-	static int getBottom(EditPart editPart) {
-		IFigure figure = ((GraphicalEditPart) editPart).getFigure();
-		Rectangle bounds = figure.getBounds().getCopy();
-		figure.getParent().translateToAbsolute(bounds);
-		return bounds.bottom();
 	}
 
 	static Point getMessageGrabPoint(EditPart editPart) {

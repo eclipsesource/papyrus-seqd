@@ -45,6 +45,7 @@ public class SequenceDiagramTests extends TestSuite {
 		suite.addTestSuite(MExecutionOccurrenceTest.class);
 		suite.addTestSuite(MMessageEndTest.class);
 		suite.addTestSuite(MMessageTest.class);
+		suite.addTestSuite(MDestructionTest.class);
 		return suite;
 	}
 

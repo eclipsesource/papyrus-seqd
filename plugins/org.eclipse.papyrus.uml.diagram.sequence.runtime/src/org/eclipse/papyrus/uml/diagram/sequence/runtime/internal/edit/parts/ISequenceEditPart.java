@@ -112,4 +112,8 @@ public interface ISequenceEditPart extends IGraphicalEditPart {
 	default IMagnetManager getMagnetManager() {
 		return IMagnetManager.get(this);
 	}
+
+	default int getMagnetStrength() {
+		return getLayoutConstraints().getMagnetStrength(getNotationView());
+	}
 }
