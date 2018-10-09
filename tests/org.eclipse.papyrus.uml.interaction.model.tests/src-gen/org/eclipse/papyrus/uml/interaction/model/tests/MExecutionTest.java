@@ -12,8 +12,10 @@
  */
 package org.eclipse.papyrus.uml.interaction.model.tests;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +27,7 @@ import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.uml2.uml.Element;
 
 import junit.textui.TestRunner;
 
@@ -89,6 +92,16 @@ public class MExecutionTest extends MElementTest {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+	}
+
+	@Override
+	protected String getInteractionName() {
+		switch (getName()) {
+			case "testGetOccurrences":
+				return "ExecutionSpecificationSideAnchors";
+			default:
+				return super.getInteractionName();
+		}
 	}
 
 	@Override
@@ -172,6 +185,28 @@ public class MExecutionTest extends MElementTest {
 	 */
 	public void testGetFinish() {
 		assertThat(getFixture().getFinish(), isPresent(wraps(umlInteraction.getFragment("reply-send"))));
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getOccurrences()
+	 * <em>Occurrences</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#getOccurrences()
+	 * @generated NOT
+	 */
+	public void testGetOccurrences() {
+		List<MOccurrence<? extends Element>> occurrences = getFixture().getOccurrences();
+		assertThat("Wrong number of occurrences", occurrences.size(), is(4));
+
+		// The collection is unordered, except we do always put the start occurrence first
+		// and the finish occurrence last
+		assumeThat(getFixture().getStart(), isPresent());
+		assertThat(occurrences.get(0), is(getFixture().getStart().get()));
+		assumeThat(getFixture().getFinish(), isPresent());
+		assertThat(occurrences.get(3), is(getFixture().getFinish().get()));
+
+		assertThat(occurrences, hasItem(named("request-recv")));
+		assertThat(occurrences, hasItem(named("reply-send")));
 	}
 
 	/**

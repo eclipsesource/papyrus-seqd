@@ -88,7 +88,10 @@ public class CompoundModelCommand extends StrictCompoundCommand {
 			return UnexecutableCommand.INSTANCE;
 		}
 
-		if (TRANSACTIONAL_EDITING_DOMAIN_CLASS.isInstance(editingDomain)) {
+		if (first instanceof CompoundModelCommand) {
+			((CompoundModelCommand)first).append(second);
+			return first;
+		} else if (TRANSACTIONAL_EDITING_DOMAIN_CLASS.isInstance(editingDomain)) {
 			return new TransactionalCompoundModelCommand(editingDomain, first, second);
 		}
 

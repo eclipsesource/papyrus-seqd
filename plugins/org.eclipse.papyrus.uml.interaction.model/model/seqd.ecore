@@ -414,10 +414,16 @@
         </eAnnotations>
       </eParameters>
     </eOperations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="executionOccurrences" upperBound="-1"
-        eType="#//MExecutionOccurrence" changeable="false" containment="true" resolveProxies="false"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="executions" upperBound="-1"
-        eType="#//MExecution" changeable="false" containment="true" resolveProxies="false"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="executionOccurrences" ordered="false"
+        upperBound="-1" eType="#//MExecutionOccurrence" changeable="false" containment="true"
+        resolveProxies="false">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="owned execution occurrences covering this lifeline. A subset of the list of all {@link #getOccurrences() occurrences}"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="executions" ordered="false"
+        upperBound="-1" eType="#//MExecution" changeable="false" containment="true"
+        resolveProxies="false"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="ownedDestruction" eType="#//MDestruction"
         containment="true">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -435,6 +441,24 @@
         changeable="false" volatile="true" transient="true" derived="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="right" lowerBound="1" eType="#//OptionalInt"
         changeable="false" volatile="true" transient="true" derived="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="messageEnds" ordered="false"
+        upperBound="-1" eType="#//MMessageEnd" changeable="false" volatile="true"
+        transient="true" derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="message ends covering this lifeline. A subset of the list of all {@link #getOccurrences() occurrences}"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="occurrences" ordered="false"
+        upperBound="-1" changeable="false" volatile="true" transient="true" derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="all occurrences covering this lifeline. A derived union of the {@link #getMessageEnds() message ends} and owned {@link #getExecutionOccurrences() execution occurrences}"/>
+      </eAnnotations>
+      <eGenericType eClassifier="#//MOccurrence">
+        <eTypeArguments>
+          <eUpperBound eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
+        </eTypeArguments>
+      </eGenericType>
+    </eStructuralFeatures>
     <eGenericSuperTypes eClassifier="#//MElement">
       <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Lifeline"/>
     </eGenericSuperTypes>
@@ -456,17 +480,39 @@
     </eOperations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="start" lowerBound="1" changeable="false"
         volatile="true" transient="true" derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="the starting occurrence, a subset of all of the spanned {@link #getOccurrences() occurrences}"/>
+      </eAnnotations>
       <eGenericType eClassifier="#//Optional">
         <eTypeArguments eClassifier="#//MOccurrence">
-          <eTypeArguments/>
+          <eTypeArguments>
+            <eUpperBound eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
+          </eTypeArguments>
         </eTypeArguments>
       </eGenericType>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="finish" lowerBound="1"
         changeable="false" volatile="true" transient="true" derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="the finishing occurrence, a subset of all of the spanned {@link #getOccurrences() occurrences}"/>
+      </eAnnotations>
       <eGenericType eClassifier="#//Optional">
         <eTypeArguments eClassifier="#//MOccurrence">
-          <eTypeArguments/>
+          <eTypeArguments>
+            <eUpperBound eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
+          </eTypeArguments>
+        </eTypeArguments>
+      </eGenericType>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="occurrences" ordered="false"
+        lowerBound="2" upperBound="-1" changeable="false" volatile="true" transient="true"
+        derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="list of all occurrences on its lifeline that are spanned by the execution, including the {@link #getStart() start} and {@link #getFinish() finish}"/>
+      </eAnnotations>
+      <eGenericType eClassifier="#//MOccurrence">
+        <eTypeArguments>
+          <eUpperBound eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
         </eTypeArguments>
       </eGenericType>
     </eStructuralFeatures>

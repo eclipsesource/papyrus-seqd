@@ -522,6 +522,26 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EReference getMLifeline_MessageEnds() {
+		return (EReference)mLifelineEClass.getEStructuralFeatures().get(6);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EReference getMLifeline_Occurrences() {
+		return (EReference)mLifelineEClass.getEStructuralFeatures().get(7);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EOperation getMLifeline__GetOwner() {
 		return mLifelineEClass.getEOperations().get(0);
 	}
@@ -694,6 +714,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	@Override
 	public EAttribute getMExecution_Finish() {
 		return (EAttribute)mExecutionEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EReference getMExecution_Occurrences() {
+		return (EReference)mExecutionEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -1117,6 +1147,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEAttribute(mLifelineEClass, MLIFELINE__DESTRUCTION);
 		createEAttribute(mLifelineEClass, MLIFELINE__LEFT);
 		createEAttribute(mLifelineEClass, MLIFELINE__RIGHT);
+		createEReference(mLifelineEClass, MLIFELINE__MESSAGE_ENDS);
+		createEReference(mLifelineEClass, MLIFELINE__OCCURRENCES);
 		createEOperation(mLifelineEClass, MLIFELINE___GET_OWNER);
 		createEOperation(mLifelineEClass, MLIFELINE___GET_DIAGRAM_VIEW);
 		createEOperation(mLifelineEClass, MLIFELINE___FOLLOWING__MELEMENT);
@@ -1141,6 +1173,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		mExecutionEClass = createEClass(MEXECUTION);
 		createEAttribute(mExecutionEClass, MEXECUTION__START);
 		createEAttribute(mExecutionEClass, MEXECUTION__FINISH);
+		createEReference(mExecutionEClass, MEXECUTION__OCCURRENCES);
 		createEOperation(mExecutionEClass, MEXECUTION___GET_OWNER);
 		createEOperation(mExecutionEClass, MEXECUTION___GET_DIAGRAM_VIEW);
 		createEOperation(mExecutionEClass, MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT);
@@ -1404,10 +1437,10 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		initEReference(getMLifeline_ExecutionOccurrences(), this.getMExecutionOccurrence(), null,
 				"executionOccurrences", null, 0, -1, MLifeline.class, !IS_TRANSIENT, !IS_VOLATILE, //$NON-NLS-1$
 				!IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
+				!IS_ORDERED);
 		initEReference(getMLifeline_Executions(), this.getMExecution(), null, "executions", null, 0, -1, //$NON-NLS-1$
 				MLifeline.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, IS_COMPOSITE,
-				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 		initEReference(getMLifeline_OwnedDestruction(), this.getMDestruction(), null, "ownedDestruction", //$NON-NLS-1$
 				null, 0, 1, MLifeline.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
 				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1423,6 +1456,17 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		initEAttribute(getMLifeline_Right(), this.getOptionalInt(), "right", null, 1, 1, MLifeline.class, //$NON-NLS-1$
 				IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED,
 				IS_ORDERED);
+		initEReference(getMLifeline_MessageEnds(), this.getMMessageEnd(), null, "messageEnds", null, 0, -1, //$NON-NLS-1$
+				MLifeline.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, !IS_ORDERED);
+		g1 = createEGenericType(this.getMOccurrence());
+		g2 = createEGenericType();
+		g1.getETypeArguments().add(g2);
+		g3 = createEGenericType(theUMLPackage.getElement());
+		g2.setEUpperBound(g3);
+		initEReference(getMLifeline_Occurrences(), g1, null, "occurrences", null, 0, -1, MLifeline.class, //$NON-NLS-1$
+				IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, IS_DERIVED, !IS_ORDERED);
 
 		initEOperation(getMLifeline__GetOwner(), this.getMInteraction(), "getOwner", 0, 1, IS_UNIQUE, //$NON-NLS-1$
 				IS_ORDERED);
@@ -1623,6 +1667,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		g1.getETypeArguments().add(g2);
 		g3 = createEGenericType();
 		g2.getETypeArguments().add(g3);
+		g4 = createEGenericType(theUMLPackage.getElement());
+		g3.setEUpperBound(g4);
 		initEAttribute(getMExecution_Start(), g1, "start", null, 1, 1, MExecution.class, IS_TRANSIENT, //$NON-NLS-1$
 				IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 		g1 = createEGenericType(this.getOptional());
@@ -1630,8 +1676,18 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		g1.getETypeArguments().add(g2);
 		g3 = createEGenericType();
 		g2.getETypeArguments().add(g3);
+		g4 = createEGenericType(theUMLPackage.getElement());
+		g3.setEUpperBound(g4);
 		initEAttribute(getMExecution_Finish(), g1, "finish", null, 1, 1, MExecution.class, IS_TRANSIENT, //$NON-NLS-1$
 				IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
+		g1 = createEGenericType(this.getMOccurrence());
+		g2 = createEGenericType();
+		g1.getETypeArguments().add(g2);
+		g3 = createEGenericType(theUMLPackage.getElement());
+		g2.setEUpperBound(g3);
+		initEReference(getMExecution_Occurrences(), g1, null, "occurrences", null, 2, -1, MExecution.class, //$NON-NLS-1$
+				IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, IS_DERIVED, !IS_ORDERED);
 
 		initEOperation(getMExecution__GetOwner(), this.getMLifeline(), "getOwner", 0, 1, IS_UNIQUE, //$NON-NLS-1$
 				IS_ORDERED);

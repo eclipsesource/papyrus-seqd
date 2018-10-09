@@ -74,6 +74,8 @@
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/destruction"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/left"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/right"/>
+      <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/messageEnds"/>
+      <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/occurrences"/>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/getOwner"/>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/getDiagramView"/>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/following">
@@ -147,6 +149,7 @@
     <genClasses ecoreClass="seqd.ecore#//MExecution">
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MExecution/start"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MExecution/finish"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MExecution/occurrences"/>
       <genOperations ecoreOperation="seqd.ecore#//MExecution/getOwner"/>
       <genOperations ecoreOperation="seqd.ecore#//MExecution/getDiagramView"/>
       <genOperations ecoreOperation="seqd.ecore#//MExecution/setOwner">
