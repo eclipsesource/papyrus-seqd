@@ -487,13 +487,31 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MLIFELINE__RIGHT = MELEMENT_FEATURE_COUNT + 5;
 
 	/**
+	 * The feature id for the '<em><b>Message Ends</b></em>' reference list. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE__MESSAGE_ENDS = MELEMENT_FEATURE_COUNT + 6;
+
+	/**
+	 * The feature id for the '<em><b>Occurrences</b></em>' reference list. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE__OCCURRENCES = MELEMENT_FEATURE_COUNT + 7;
+
+	/**
 	 * The number of structural features of the '<em>MLifeline</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 6;
+	int MLIFELINE_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 8;
 
 	/**
 	 * The operation id for the '<em>Vertical Distance</em>' operation. <!-- begin-user-doc --> <!--
@@ -744,13 +762,22 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MEXECUTION__FINISH = MELEMENT_FEATURE_COUNT + 1;
 
 	/**
+	 * The feature id for the '<em><b>Occurrences</b></em>' reference list. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION__OCCURRENCES = MELEMENT_FEATURE_COUNT + 2;
+
+	/**
 	 * The number of structural features of the '<em>MExecution</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MEXECUTION_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 2;
+	int MEXECUTION_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 3;
 
 	/**
 	 * The operation id for the '<em>Vertical Distance</em>' operation. <!-- begin-user-doc --> <!--
@@ -2136,6 +2163,30 @@ public interface SequenceDiagramPackage extends EPackage {
 	EAttribute getMLifeline_Right();
 
 	/**
+	 * Returns the meta object for the reference list
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getMessageEnds <em>Message Ends</em>}'.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference list '<em>Message Ends</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getMessageEnds()
+	 * @see #getMLifeline()
+	 * @generated
+	 */
+	EReference getMLifeline_MessageEnds();
+
+	/**
+	 * Returns the meta object for the reference list
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrences <em>Occurrences</em>}'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference list '<em>Occurrences</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrences()
+	 * @see #getMLifeline()
+	 * @generated
+	 */
+	EReference getMLifeline_Occurrences();
+
+	/**
 	 * Returns the meta object for the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOwner()
 	 * <em>Get Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2346,6 +2397,18 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getMExecution_Finish();
+
+	/**
+	 * Returns the meta object for the reference list
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getOccurrences <em>Occurrences</em>}'.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference list '<em>Occurrences</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#getOccurrences()
+	 * @see #getMExecution()
+	 * @generated
+	 */
+	EReference getMExecution_Occurrences();
 
 	/**
 	 * Returns the meta object for the '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getOwner()
@@ -3022,6 +3085,22 @@ public interface SequenceDiagramPackage extends EPackage {
 		EAttribute MLIFELINE__RIGHT = eINSTANCE.getMLifeline_Right();
 
 		/**
+		 * The meta object literal for the '<em><b>Message Ends</b></em>' reference list feature. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference MLIFELINE__MESSAGE_ENDS = eINSTANCE.getMLifeline_MessageEnds();
+
+		/**
+		 * The meta object literal for the '<em><b>Occurrences</b></em>' reference list feature. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference MLIFELINE__OCCURRENCES = eINSTANCE.getMLifeline_Occurrences();
+
+		/**
 		 * The meta object literal for the '<em><b>Get Owner</b></em>' operation. <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
 		 * 
@@ -3176,6 +3255,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute MEXECUTION__FINISH = eINSTANCE.getMExecution_Finish();
+
+		/**
+		 * The meta object literal for the '<em><b>Occurrences</b></em>' attribute list feature. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference MEXECUTION__OCCURRENCES = eINSTANCE.getMExecution_Occurrences();
 
 		/**
 		 * The meta object literal for the '<em><b>Get Owner</b></em>' operation. <!-- begin-user-doc --> <!--

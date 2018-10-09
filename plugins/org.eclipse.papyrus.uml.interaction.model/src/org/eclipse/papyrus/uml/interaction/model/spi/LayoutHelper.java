@@ -12,13 +12,20 @@
 
 package org.eclipse.papyrus.uml.interaction.model.spi;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
+import java.util.Comparator;
 import java.util.OptionalInt;
+import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.notation.Anchor;
 import org.eclipse.gmf.runtime.notation.Bounds;
+import org.eclipse.gmf.runtime.notation.Edge;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
@@ -367,4 +374,88 @@ public interface LayoutHelper {
 	 * @return the pluggable font helper
 	 */
 	FontHelper getFontHelper();
+
+	/**
+	 * Get the top of a view, whether it is a {@code Node} or an {@code Edge}.
+	 * 
+	 * @param view
+	 *            a view
+	 * @return its top, which in the case of an edge is the higher of the source or target anchor position
+	 */
+	default OptionalInt getTop(View view) {
+		if (view instanceof Node) {
+			return OptionalInt.of(getTop((Node)view));
+		} else if (view instanceof Edge) {
+			Edge edge = (Edge)view;
+			int sourceY = getYPosition(edge.getSourceAnchor(), (Shape)edge.getSource());
+			int targetY = getYPosition(edge.getTargetAnchor(), (Shape)edge.getTarget());
+			return OptionalInt.of(min(sourceY, targetY));
+		} else {
+			return OptionalInt.empty();
+		}
+	}
+
+	/**
+	 * Get the bottom of a view, whether it is a {@code Node} or an {@code Edge}.
+	 * 
+	 * @param view
+	 *            a view
+	 * @return its bottom, which in the case of an edge is the lower of the source or target anchor position
+	 */
+	default OptionalInt getBottom(View view) {
+		if (view instanceof Node) {
+			return OptionalInt.of(getBottom((Node)view));
+		} else if (view instanceof Edge) {
+			Edge edge = (Edge)view;
+			int sourceY = getYPosition(edge.getSourceAnchor(), (Shape)edge.getSource());
+			int targetY = getYPosition(edge.getTargetAnchor(), (Shape)edge.getTarget());
+			return OptionalInt.of(max(sourceY, targetY));
+		} else {
+			return OptionalInt.empty();
+		}
+	}
+
+	/**
+	 * Obtain a predicate that tests whether a view is above some absolute Y position.
+	 * 
+	 * @param yPosition
+	 *            an absolute Y position
+	 * @return the above predicate
+	 */
+	default Predicate<View> above(int yPosition) {
+		return self -> getTop(self).orElse(Integer.MAX_VALUE) < yPosition;
+	}
+
+	/**
+	 * Obtain a predicate that tests whether a view is below some absolute Y position.
+	 * 
+	 * @param yPosition
+	 *            an absolute Y position
+	 * @return the below predicate
+	 */
+	default Predicate<View> below(int yPosition) {
+		return self -> getBottom(self).orElse(Integer.MIN_VALUE) > yPosition;
+	}
+
+	/**
+	 * Obtain a vertical ordering of views, where views are ordered in ascending order of their top position
+	 * with ties broken by which extends farther at its bottom.
+	 * 
+	 * @return a vertical ordering for notation views
+	 */
+	default Comparator<View> verticalOrdering() {
+		return Comparator.comparingInt(__top()).thenComparingInt(__bottom());
+	}
+
+	// TODO: In Java 9 this should be private
+	default ToIntFunction<View> __top() {
+		// Sort things that we don't know their top to, well, the top
+		return v -> getTop(v).orElse(Integer.MIN_VALUE);
+	}
+
+	// TODO: In Java 9 this should be private
+	default ToIntFunction<View> __bottom() {
+		// Sort things that we don't know their top to, well, the bottom
+		return v -> getBottom(v).orElse(Integer.MAX_VALUE);
+	}
 }

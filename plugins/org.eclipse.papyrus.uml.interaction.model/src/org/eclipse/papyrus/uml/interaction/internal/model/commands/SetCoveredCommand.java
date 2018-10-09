@@ -13,9 +13,6 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import static java.util.Collections.singletonList;
-import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelOrdering.vertically;
-import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
-import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.map;
 
@@ -26,16 +23,19 @@ import java.util.OptionalInt;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.IdentityCommand;
+import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Shape;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MOccurrenceImpl;
 import org.eclipse.papyrus.uml.interaction.model.MDestruction;
-import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.InteractionFragment;
 import org.eclipse.uml2.uml.UMLPackage;
 
@@ -70,6 +70,10 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 		return yPosition.isPresent() && !getTarget().getTop().equals(yPosition);
 	}
 
+	protected Optional<Shape> getLifelineBody() {
+		return lifeline.getDiagramView().map(diagramHelper()::getLifelineBodyShape);
+	}
+
 	@Override
 	protected Command doCreateCommand() {
 		InteractionFragment fragment = (InteractionFragment)getTarget().getElement();
@@ -91,12 +95,12 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			int newYPosition = yPosition.orElseGet(() -> destruction.getTop().getAsInt());
 
 			// Move the X shape
-			result = result.chain(diagramHelper().reconnectDestructionOccurrenceShape(destructionView,
+			result = chain(result, diagramHelper().reconnectDestructionOccurrenceShape(destructionView,
 					messageView, lifelineView, newYPosition));
 		}
 
 		// Handle a dependent execution
-		result = dependencies(getTarget()).map(result::chain).orElse(result);
+		result = dependencies(getTarget()).map(chaining(result)).orElse(result);
 
 		return result;
 	}
@@ -119,32 +123,84 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 						MMessage message = end.getOwner();
 						Optional<Connector> edge = message.getDiagramView();
 						edge.ifPresent(connector -> {
-							Shape lifelineBody = diagramHelper()
-									.getLifelineBodyShape(lifeline.getDiagramView().get());
+							Shape lifelineBody = getLifelineBody().get();
 							int newYPosition = yPosition.orElseGet(() -> end.getTop().getAsInt());
 
 							// Are we connecting to an execution specification?
-							Optional<MExecution> execution = executionAt(lifeline, newYPosition);
-							Shape newAttachedShape = execution.flatMap(MExecution::getDiagramView)
-									.orElse(lifelineBody);
+							Optional<Shape> executionShape = executionShapeAt(lifelineBody, newYPosition);
+							Shape newAttachedShape = executionShape.orElse(lifelineBody);
 
 							if (end.isSend()) {
 								result.add(diagramHelper().reconnectSource(connector, newAttachedShape,
 										newYPosition));
+								end.getOtherEnd().flatMap(this::handleSelfMessageChange)
+										.ifPresent(result::add);
 							} else if (end.isReceive()) {
 								result.add(diagramHelper().reconnectTarget(connector, newAttachedShape,
 										newYPosition));
+								end.getOtherEnd().flatMap(this::handleSelfMessageChange)
+										.ifPresent(result::add);
 							} // else don't know what to do with it
 						});
 					}
 				});
 
-		return result.stream().reduce(Command::chain);
+		return result.stream().reduce(chaining());
 	}
 
-	static Optional<MExecution> executionAt(MLifeline lifeline, int absoluteY) {
+	Optional<Shape> executionShapeAt(Shape lifelineBody, int absoluteY) {
 		// An execution that is above and below a reference location straddles it
-		return lifeline.getExecutions().stream().filter(above(absoluteY).and(below(absoluteY)))
-				.max(vertically());
+		LayoutHelper layout = layoutHelper();
+		@SuppressWarnings("unchecked")
+		List<? extends View> children = lifelineBody.getChildren();
+		return children.stream() //
+				.filter(Shape.class::isInstance).map(Shape.class::cast) //
+				.filter(v -> ViewUtil.resolveSemanticElement(v) instanceof ExecutionSpecification)
+				.filter(layout.above(absoluteY).and(layout.below(absoluteY)))//
+				.max(layout.verticalOrdering());
+	}
+
+	Optional<Command> handleSelfMessageChange(MMessageEnd otherEnd) {
+		Optional<Command> result;
+
+		// If the message end opposite one being moved to this lifeline is already on that lifeline,
+		// then we now have a self-message and that needs to be re-shaped
+		if (isChangingLifeline()
+				&& (otherEnd.getCovered().map(MLifeline::getElement).orElse(null) == lifeline.getElement())) {
+
+			MMessage message = otherEnd.getOwner();
+
+			// We know the message connector exists because we wouldn't be here, otherwise
+			Connector connector = message.getDiagramView().get();
+
+			// Move the receive end down
+			// TODO: Use a nudge to make space?
+			int height = layoutHelper().getConstraints().getMinimumHeight(connector);
+
+			// Is there an execution specification here to attach to?
+			int currentYPosition = otherEnd.getTop().getAsInt();
+			Shape lifelineBody = getLifelineBody().get();
+
+			Command bend;
+			if (otherEnd.isSend()) {
+				// We're reconnecting the source end, but we need to maintain the gap
+				int newYPosition = currentYPosition - height;
+				Shape newAttachShape = executionShapeAt(lifelineBody, newYPosition).orElse(lifelineBody);
+				bend = diagramHelper().reconnectSource(connector, newAttachShape, currentYPosition);
+			} else {
+				int newYPosition = currentYPosition + height;
+				Shape newAttachShape = executionShapeAt(lifelineBody, newYPosition).orElse(lifelineBody);
+				bend = diagramHelper().reconnectTarget(connector, newAttachShape, newYPosition);
+			}
+
+			// And bend the connector around
+			bend = chain(bend,
+					diagramHelper().configureSelfMessageConnector(message.getElement(), connector));
+			result = Optional.ofNullable(bend);
+		} else {
+			result = Optional.empty();
+		}
+
+		return result;
 	}
 }

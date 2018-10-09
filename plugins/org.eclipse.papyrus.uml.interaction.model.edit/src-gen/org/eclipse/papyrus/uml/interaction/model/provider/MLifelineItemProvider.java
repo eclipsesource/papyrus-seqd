@@ -58,6 +58,8 @@ public class MLifelineItemProvider extends MElementItemProvider {
 			addDestructionPropertyDescriptor(object);
 			addLeftPropertyDescriptor(object);
 			addRightPropertyDescriptor(object);
+			addMessageEndsPropertyDescriptor(object);
+			addOccurrencesPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -108,6 +110,38 @@ public class MLifelineItemProvider extends MElementItemProvider {
 						"_UI_MLifeline_type"), //$NON-NLS-1$
 				SequenceDiagramPackage.Literals.MLIFELINE__RIGHT, false, false, false,
 				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Message Ends feature. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	protected void addMessageEndsPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MLifeline_messageEnds_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_messageEnds_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MLifeline_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MLIFELINE__MESSAGE_ENDS, false, false, false, null, null,
+				null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Occurrences feature. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	protected void addOccurrencesPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MLifeline_occurrences_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_occurrences_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MLifeline_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MLIFELINE__OCCURRENCES, false, false, false, null, null,
+				null));
 	}
 
 	/**

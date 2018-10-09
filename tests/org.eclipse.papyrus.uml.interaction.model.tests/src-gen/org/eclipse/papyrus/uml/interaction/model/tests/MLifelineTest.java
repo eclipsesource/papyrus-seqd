@@ -21,6 +21,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.emf.common.command.Command;
@@ -32,6 +33,7 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ActionExecutionSpecification;
@@ -58,6 +60,8 @@ import junit.textui.TestRunner;
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getDestruction() <em>Destruction</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getLeft() <em>Left</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getRight() <em>Right</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getMessageEnds() <em>Message Ends</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrences() <em>Occurrences</em>}</li>
  * </ul>
  * </p>
  * <p>
@@ -201,10 +205,42 @@ public class MLifelineTest extends MElementTest {
 		assertThat(getFixture().getRight(), isPresent(299)); // 215 {left} + 84 {width}
 	}
 
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getMessageEnds() <em>Message
+	 * Ends</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getMessageEnds()
+	 * @generated NOT
+	 */
+	public void testGetMessageEnds() {
+		List<MMessageEnd> messageEnds = getFixture().getMessageEnds();
+		assertThat("Wrong number of message ends", messageEnds.size(), is(2));
+		assertThat(messageEnds, hasItem(named("request-recv")));
+		assertThat(messageEnds, hasItem(named("reply-send")));
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrences()
+	 * <em>Occurrences</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrences()
+	 * @generated NOT
+	 */
+	public void testGetOccurrences() {
+		List<MOccurrence<?>> occurrences = getFixture().getOccurrences();
+		assertThat("Wrong number of occurrences", occurrences.size(), is(4));
+		assertThat(occurrences, hasItem(named("request-recv")));
+		assertThat(occurrences, hasItem(named("reply-send")));
+		assertThat(occurrences, hasItem(named("ActionExecutionSpecification1Start")));
+		assertThat(occurrences, hasItem(named("ActionExecutionSpecification1Finish")));
+	}
+
 	@Override
 	protected String getInteractionName() {
 		switch (getName()) {
 			case "testGetExecutionOccurrence__ExecutionOccurrenceSpecification":
+			case "testGetMessageEnds":
+			case "testGetOccurrences":
 				return "ExecutionSpecificationSideAnchors";
 			case "testNudgeHorizontally__int":
 				return "LifelineHeaderAnchor";

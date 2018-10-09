@@ -25,6 +25,7 @@ import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assume.assumeThat;
 
 import java.util.Optional;
@@ -33,6 +34,7 @@ import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.gmfdiag.common.utils.DiagramEditPartsUtil;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.DestructionSpecificationEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ExecutionSpecificationEditPart;
@@ -40,6 +42,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.Seque
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
+import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
@@ -47,6 +50,7 @@ import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
+import org.eclipse.uml2.uml.Element;
 import org.junit.AssumptionViolatedException;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -78,6 +82,12 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	// Width of the destruction X shape
 	private static final int DESTRUCTION_WIDTH = 20;
+
+	// Width of an execution specification
+	private static final int EXEC_WIDTH = 10;
+
+	// Vertical gap between send and receive of a self-message
+	private static final int SELF_MESSAGE_HEIGHT = 20;
 
 	private static final int INITIAL_Y = 145;
 
@@ -305,6 +315,86 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		}
 	}
 
+	@ModelResource("execution-busy.di")
+	public static class ExecutionSpanningOccurrences extends MessageNoExecution {
+
+		private static final int LIFELINE_4_BODY_X = 596;
+
+		private final int m2Y = 173;
+		private final int m3Y = 198;
+		private final int m4Y = 223;
+
+		@Override
+		protected void switchLifeline(VerificationMode mode) {
+			super.switchLifeline(mode);
+
+			int execRight = getNewRecvX() + (EXEC_WIDTH / 2);
+
+			// Verify visuals of messages spanned by the execution
+			MMessage m2 = requireMessage("m2");
+			EditPart m2EP = requireEditPart(m2);
+			mode.verify("m2 not a self-message", m2EP,
+					runs(execRight, m2Y, execRight, m2Y + SELF_MESSAGE_HEIGHT));
+			MMessage m3 = requireMessage("m3");
+			EditPart m3EP = requireEditPart(m3);
+			mode.verify(m3EP, runs(execRight, m3Y, LIFELINE_4_BODY_X, m3Y));
+			MMessage m4 = requireMessage("m4");
+			EditPart m4EP = requireEditPart(m4);
+			mode.verify(m4EP, runs(LIFELINE_4_BODY_X, m4Y, execRight, m4Y));
+
+			// And the semantics
+			mode.verify("Wrong coverage of m2 send",
+					asserting(m2.getSend(), "m2 lost its send").getCovered(), is(getReceiver()));
+			mode.verify("Coverage of m2 receive broken",
+					asserting(m2.getReceive(), "m2 lost its recevive").getCovered(), is(getReceiver()));
+			mode.verify("Wrong coverage of m3 send",
+					asserting(m3.getSend(), "m3 lost its send").getCovered(), is(getReceiver()));
+			mode.verify("Wrong coverage of m4 receive",
+					asserting(m4.getReceive(), "m4 lost its receive").getCovered(), is(getReceiver()));
+		}
+
+		@Override
+		protected void undoSwitchLifeline(VerificationMode mode) {
+			super.undoSwitchLifeline(mode);
+
+			int execRight = LIFELINE_2_BODY_X + (EXEC_WIDTH / 2);
+
+			// Verify old visuals of messages spanned by the execution
+			MMessage m2 = requireMessage("m2");
+			EditPart m2EP = requireEditPart(m2);
+			mode.verify("m2 is not routed correctly", m2EP, runs(execRight, m2Y, getNewRecvX(), m2Y));
+			MMessage m3 = requireMessage("m3");
+			EditPart m3EP = requireEditPart(m3);
+			mode.verify(m3EP, runs(execRight, m3Y, LIFELINE_4_BODY_X, m3Y));
+			MMessage m4 = requireMessage("m4");
+			EditPart m4EP = requireEditPart(m4);
+			mode.verify(m4EP, runs(LIFELINE_4_BODY_X, m4Y, execRight, m4Y));
+
+			// And the semantics
+			mode.verify("Wrong coverage of m2 send",
+					asserting(m2.getSend(), "m2 lost its send").getCovered(), is(getOriginalReceiver()));
+			mode.verify("Coverage of m2 receive broken",
+					asserting(m2.getReceive(), "m2 lost its recevive").getCovered(), is(getReceiver()));
+			mode.verify("Wrong coverage of m3 send",
+					asserting(m3.getSend(), "m3 lost its send").getCovered(), is(getOriginalReceiver()));
+			mode.verify("Wrong coverage of m4 receive",
+					asserting(m4.getReceive(), "m4 lost its receive").getCovered(),
+					is(getOriginalReceiver()));
+		}
+
+		//
+		// Test framework
+		//
+
+		@Override
+		public void createMessage() {
+			// The connections all exist already. Just locate the request message
+			MMessage request = requireMessage("request");
+			messageEP = requireEditPart(request);
+			assumeThat(messageEP, runs(sendX, mesgY, getGrabX(), mesgY));
+		}
+	}
+
 	//
 	// Test framework
 	//
@@ -379,6 +469,24 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	MExecution requireExecution() {
 		return asserting(getExecution(), "No logical model execution");
+	}
+
+	Optional<MMessage> getMessage(String name) {
+		return getInteraction().getMessages().stream()
+				.filter(where(SequenceDiagramPackage.Literals.MELEMENT__NAME, name)).findAny();
+	}
+
+	MMessage requireMessage(String name) {
+		return asserting(getMessage(name), "No such message: " + name);
+	}
+
+	EditPart requireEditPart(MElement<? extends Element> element) {
+		View notationView = assuming(as(element.getDiagramView(), View.class),
+				"No notation view for " + element);
+		EditPart result = DiagramEditPartsUtil.getEditPartFromView(notationView,
+				editor.getDiagramEditPart());
+		assumeThat("No edit-part for " + element, result, notNullValue());
+		return result;
 	}
 
 	static <T> T assuming(Optional<T> value, String message) {
