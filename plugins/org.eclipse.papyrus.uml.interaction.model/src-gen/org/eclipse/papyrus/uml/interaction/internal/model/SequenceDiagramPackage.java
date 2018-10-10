@@ -682,13 +682,22 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MLIFELINE___NUDGE_HORIZONTALLY__INT = MELEMENT_OPERATION_COUNT + 14;
 
 	/**
+	 * The operation id for the '<em>Make Created At</em>' operation. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___MAKE_CREATED_AT__OPTIONALINT = MELEMENT_OPERATION_COUNT + 15;
+
+	/**
 	 * The number of operations of the '<em>MLifeline</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 15;
+	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 16;
 
 	/**
 	 * The meta object id for the
@@ -2365,6 +2374,17 @@ public interface SequenceDiagramPackage extends EPackage {
 	EOperation getMLifeline__NudgeHorizontally__int();
 
 	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#makeCreatedAt(java.util.OptionalInt)
+	 * <em>Make Created At</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Make Created At</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#makeCreatedAt(java.util.OptionalInt)
+	 * @generated
+	 */
+	EOperation getMLifeline__MakeCreatedAt__OptionalInt();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MExecution
 	 * <em>MExecution</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -3228,6 +3248,15 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation MLIFELINE___NUDGE_HORIZONTALLY__INT = eINSTANCE.getMLifeline__NudgeHorizontally__int();
+
+		/**
+		 * The meta object literal for the '<em><b>Make Created At</b></em>' operation. <!-- begin-user-doc
+		 * --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MLIFELINE___MAKE_CREATED_AT__OPTIONALINT = eINSTANCE
+				.getMLifeline__MakeCreatedAt__OptionalInt();
 
 		/**
 		 * The meta object literal for the

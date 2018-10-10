@@ -145,6 +145,9 @@
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/nudgeHorizontally">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/nudgeHorizontally/deltaX"/>
       </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/makeCreatedAt">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/makeCreatedAt/yPosition"/>
+      </genOperations>
     </genClasses>
     <genClasses ecoreClass="seqd.ecore#//MExecution">
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MExecution/start"/>
