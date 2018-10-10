@@ -36,12 +36,17 @@ public class LogicalModelOrdering {
 	 * @return the vertical comparator
 	 */
 	public static Comparator<MElement<? extends Element>> vertically() {
-		return Comparator.comparingInt(top());
+		return Comparator.comparingInt(top()).thenComparingInt(bottom());
 	}
 
 	private static ToIntFunction<MElement<? extends Element>> top() {
 		// Sort things that we don't know their top to, well, the top
 		return el -> el.getTop().orElse(Integer.MIN_VALUE);
+	}
+
+	private static ToIntFunction<MElement<? extends Element>> bottom() {
+		// Sort things that we don't know their bottom to, well, the bottom
+		return el -> el.getBottom().orElse(Integer.MAX_VALUE);
 	}
 
 }

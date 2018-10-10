@@ -692,6 +692,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EOperation getMLifeline__MakeCreatedAt__OptionalInt() {
+		return mLifelineEClass.getEOperations().get(15);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EClass getMExecution() {
 		return mExecutionEClass;
 	}
@@ -1169,6 +1179,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 				MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MESSAGESORT_NAMEDELEMENT_EXECUTIONCREATIONCOMMANDPARAMETER);
 		createEOperation(mLifelineEClass, MLIFELINE___ELEMENT_AT__INT);
 		createEOperation(mLifelineEClass, MLIFELINE___NUDGE_HORIZONTALLY__INT);
+		createEOperation(mLifelineEClass, MLIFELINE___MAKE_CREATED_AT__OPTIONALINT);
 
 		mExecutionEClass = createEClass(MEXECUTION);
 		createEAttribute(mExecutionEClass, MEXECUTION__START);
@@ -1659,6 +1670,10 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		op = initEOperation(getMLifeline__NudgeHorizontally__int(), this.getCommand(), "nudgeHorizontally", 1, //$NON-NLS-1$
 				1, IS_UNIQUE, IS_ORDERED);
 		addEParameter(op, ecorePackage.getEInt(), "deltaX", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		op = initEOperation(getMLifeline__MakeCreatedAt__OptionalInt(), this.getCommand(), "makeCreatedAt", 1, //$NON-NLS-1$
+				1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getOptionalInt(), "yPosition", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(mExecutionEClass, MExecution.class, "MExecution", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);

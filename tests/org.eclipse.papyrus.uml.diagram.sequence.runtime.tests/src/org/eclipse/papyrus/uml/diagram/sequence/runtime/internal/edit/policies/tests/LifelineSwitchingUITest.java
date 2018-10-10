@@ -18,6 +18,7 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GE
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.isBounded;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.runs;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.at;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.sized;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.where;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.isNear;
@@ -26,10 +27,12 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
 
 import java.util.Optional;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
@@ -42,11 +45,13 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.Seque
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
+import org.eclipse.papyrus.uml.interaction.model.MDestruction;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
@@ -89,6 +94,9 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 	// Vertical gap between send and receive of a self-message
 	private static final int SELF_MESSAGE_HEIGHT = 20;
 
+	// Width of a lifeline head
+	private static final int LIFELINE_HEAD_WIDTH = 100;
+
 	private static final int INITIAL_Y = 145;
 
 	protected final int sendX;
@@ -97,7 +105,7 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	protected final int newRecvX;
 
-	protected final int mesgY;
+	protected int mesgY;
 
 	protected EditPart messageEP;
 
@@ -289,6 +297,37 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 			mode.verify(destructionEP.getParent(), is(oldLifelineEP));
 		}
 
+		/**
+		 * Verify that a destruction cannot be moved to a lifeline that would have
+		 * occurrences following it
+		 */
+		@Test
+		public void existingOccurrences() {
+			// Create an occurrence below on Lifeline3
+			editor.createShape(SequenceElementTypes.Behavior_Execution_Shape,
+					at(LIFELINE_3_BODY_X, mesgY + 50), sized(EXEC_WIDTH, EXEC_WIDTH));
+
+			// Creating the occurrence nudged our message
+			mesgY = getTargetY(messageEP);
+
+			// Attempt to move the destruction
+			editor.with(editor.allowSemanticReordering(),
+					() -> editor.moveSelection(at(getGrabX(), mesgY), at(newRecvX, mesgY)));
+
+			// Verify that nothing changed
+			assertThat(messageEP, runs(sendX, mesgY, getGrabX(), mesgY));
+			EditPart destructionEP = ((ConnectionEditPart) messageEP).getTarget();
+			assertThat(destructionEP, instanceOf(DestructionSpecificationEditPart.class));
+			EditPart oldLifelineEP = asserting(getBodyEditPart(getOriginalReceiver()),
+					"Old lifeline edit-part not found");
+			assertThat(destructionEP.getParent(), is(oldLifelineEP));
+			MDestruction destruction = asserting(
+					as(getInteraction().getElement((Element) destructionEP.getAdapter(EObject.class)),
+							MDestruction.class),
+					"Not a logical destruction");
+			assertThat(asserting(destruction.getCovered(), "No coverage").getName(), is("Lifeline2"));
+		}
+
 		//
 		// Test framework
 		//
@@ -307,11 +346,95 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		int getNewRecvX() {
 			return super.getNewRecvX() - (DESTRUCTION_WIDTH / 2);
 		}
+	}
 
-		Optional<EditPart> getBodyEditPart(Optional<MLifeline> lifeline) {
-			return as(lifeline.map(ll -> DiagramEditPartsUtil.getChildByEObject(ll.getElement(),
-					editor.getDiagramEditPart(), false)), IGraphicalEditPart.class)
-							.map(gep -> gep.getChildBySemanticHint(ViewTypes.LIFELINE_BODY));
+	public static class CreateMessage extends MessageNoExecution {
+
+		@Override
+		protected void switchLifeline(VerificationMode mode) {
+			EditPart lifeline2 = assuming(getHeadEditPart(getOriginalReceiver()), "No lifeline head");
+			int createdTop = getTop(lifeline2);
+			EditPart lifeline3 = assuming(getHeadEditPart(getReceiver()), "No lifeline head");
+			int uncreatedTop = getTop(lifeline3);
+
+			super.switchLifeline(mode);
+
+			// Verify additional details of the new visuals
+			mode.verify("Lifeline2 head not moved back to top", lifeline2,
+					isBounded(anything(), is(uncreatedTop), anything(), anything()));
+			mode.verify("Lifeline3 head not moved down for creation", lifeline3,
+					isBounded(anything(), is(createdTop), anything(), anything()));
+		}
+
+		@Override
+		protected void undoSwitchLifeline(VerificationMode mode) {
+			// Recall that this part of the test is after moving the create message
+			EditPart lifeline2 = assuming(getHeadEditPart(getOriginalReceiver()), "No lifeline head");
+			int uncreatedTop = getTop(lifeline2);
+			EditPart lifeline3 = assuming(getHeadEditPart(getReceiver()), "No lifeline head");
+			int createdTop = getTop(lifeline3);
+
+			super.undoSwitchLifeline(mode);
+
+			// Verify additional details of the old visuals
+			mode.verify("Lifeline2 head not moved back down for creation", lifeline2,
+					isBounded(anything(), is(createdTop), anything(), anything()));
+			mode.verify("Lifeline3 head not moved back to top", lifeline3,
+					isBounded(anything(), is(uncreatedTop), anything(), anything()));
+		}
+
+		/**
+		 * Verify that a creation cannot be moved to a lifeline that would have
+		 * occurrences preceding it
+		 */
+		@Test
+		public void existingOccurrences() {
+			// Create an occurrence above on Lifeline3
+			editor.createShape(SequenceElementTypes.Behavior_Execution_Shape,
+					at(LIFELINE_3_BODY_X, mesgY - 50), sized(EXEC_WIDTH, EXEC_WIDTH));
+
+			// Creating the occurrence nudged our message
+			mesgY = getTargetY(messageEP);
+
+			// And (possibly) other lifelines
+			EditPart lifeline2 = assuming(getHeadEditPart(getOriginalReceiver()), "No lifeline head");
+			int top2 = getTop(lifeline2);
+			EditPart lifeline3 = assuming(getHeadEditPart(getReceiver()), "No lifeline head");
+			int top3 = getTop(lifeline3);
+
+			// Attempt to move the creation
+			editor.with(editor.allowSemanticReordering(),
+					() -> editor.moveSelection(at(getGrabX(), mesgY), at(newRecvX, mesgY)));
+
+			// Verify that nothing changed
+			assertThat(messageEP, runs(sendX, mesgY, getGrabX(), mesgY));
+			assertThat(lifeline2, isBounded(anything(), is(top2), anything(), anything()));
+			assertThat(lifeline3, isBounded(anything(), is(top3), anything(), anything()));
+			MMessage message = assuming(
+					as(getInteraction().getElement((Element) messageEP.getAdapter(EObject.class)),
+							MMessage.class),
+					"Not a logical message");
+			MMessageEnd creation = assuming(message.getReceive(), "No creation end");
+			assertThat(asserting(creation.getCovered(), "No coverage").getName(), is("Lifeline2"));
+		}
+
+		//
+		// Test framework
+		//
+
+		@Override
+		int getGrabX() {
+			return (super.getGrabX() - (LIFELINE_HEAD_WIDTH / 2)) + 1;
+		}
+
+		@Override
+		int getNewRecvX() {
+			return (super.getNewRecvX() - (LIFELINE_HEAD_WIDTH / 2)) + 1;
+		}
+
+		@Override
+		IElementType getMessageType() {
+			return SequenceElementTypes.Create_Message_Edge;
 		}
 	}
 
@@ -487,6 +610,16 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 				editor.getDiagramEditPart());
 		assumeThat("No edit-part for " + element, result, notNullValue());
 		return result;
+	}
+
+	Optional<EditPart> getHeadEditPart(Optional<MLifeline> lifeline) {
+		return lifeline.map(ll -> DiagramEditPartsUtil.getChildByEObject(ll.getElement(),
+				editor.getDiagramEditPart(), false));
+	}
+
+	Optional<EditPart> getBodyEditPart(Optional<MLifeline> lifeline) {
+		return as(getHeadEditPart(lifeline), IGraphicalEditPart.class)
+				.map(gep -> gep.getChildBySemanticHint(ViewTypes.LIFELINE_BODY));
 	}
 
 	static <T> T assuming(Optional<T> value, String message) {

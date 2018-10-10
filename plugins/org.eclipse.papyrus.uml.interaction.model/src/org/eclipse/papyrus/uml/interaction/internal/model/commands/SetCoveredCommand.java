@@ -13,6 +13,8 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import static java.util.Collections.singletonList;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.map;
 
@@ -23,6 +25,7 @@ import java.util.OptionalInt;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.IdentityCommand;
+import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Shape;
@@ -37,6 +40,7 @@ import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.InteractionFragment;
+import org.eclipse.uml2.uml.MessageSort;
 import org.eclipse.uml2.uml.UMLPackage;
 
 /**
@@ -87,20 +91,47 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 
 		if ((getTarget() instanceof MDestruction) && lifeline.getDiagramView().isPresent()) {
 			MDestruction destruction = (MDestruction)getTarget();
-			Shape lifelineView = diagramHelper().getLifelineBodyShape(lifeline.getDiagramView().get());
+			Shape lifelineBody = diagramHelper().getLifelineBodyShape(lifeline.getDiagramView().get());
 			Shape destructionView = (Shape)vertex(destruction).getDiagramView();
 			Connector messageView = Optional.ofNullable(destruction.getOwner())
 					.flatMap(MMessage::getDiagramView).orElse(null);
 
 			int newYPosition = yPosition.orElseGet(() -> destruction.getTop().getAsInt());
 
+			// Can't destroy the lifeline if it has occurrences following the place where
+			// the destruction is to go
+			if (!validateDestruction(newYPosition)) {
+				return UnexecutableCommand.INSTANCE;
+			}
+
 			// Move the X shape
 			result = chain(result, diagramHelper().reconnectDestructionOccurrenceShape(destructionView,
-					messageView, lifelineView, newYPosition));
-		}
+					messageView, lifelineBody, newYPosition));
+		} else if ((getTarget() instanceof MMessageEnd) && isCreate((MMessageEnd)getTarget())) {
+			MMessageEnd creation = (MMessageEnd)getTarget();
+			int createPosition = yPosition.orElseGet(() -> creation.getTop().getAsInt());
 
-		// Handle a dependent execution
-		result = dependencies(getTarget()).map(chaining(result)).orElse(result);
+			// Can't create the lifeline if it has occurrences preceding the place where the
+			// creation receive end is to go
+			if (!validateCreation(createPosition)) {
+				return UnexecutableCommand.INSTANCE;
+			}
+
+			Connector messageView = Optional.ofNullable(creation.getOwner()).flatMap(MMessage::getDiagramView)
+					.orElse(null);
+			Shape lifelineHead = lifeline.getDiagramView().get();
+
+			// First, un-create this lifeline, then make the new lifeline created
+			result = chain(getTarget().getCovered().get().makeCreatedAt(OptionalInt.empty()), result);
+			result = chain(result, lifeline.makeCreatedAt(OptionalInt.of(createPosition)));
+
+			// And re-connect the message view to the new lifeline's head
+			result = chain(result,
+					defer(() -> diagramHelper().reconnectTarget(messageView, lifelineHead, createPosition)));
+		} else {
+			// Handle a dependent execution
+			result = dependencies(getTarget()).map(chaining(result)).orElse(result);
+		}
 
 		return result;
 	}
@@ -203,4 +234,41 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 
 		return result;
 	}
+
+	/**
+	 * Query whether a destruction occurrence may validly be put at the given Y position on the destination
+	 * lifeline.
+	 * 
+	 * @param y
+	 *            the Y position of the proposed destruction, in absolute coördinates
+	 * @return whether the destruction should be allowed there
+	 */
+	protected boolean validateDestruction(int y) {
+		return !lifeline.getOccurrences().stream().anyMatch(below(y));
+	}
+
+	/**
+	 * Query whether a message {@code end} is the receiving end of a <em>create</em> message.
+	 * 
+	 * @param end
+	 *            a message end
+	 * @return whether it is creating a lifeline
+	 */
+	protected boolean isCreate(MMessageEnd end) {
+		return end.isReceive()
+				&& end.getOwner().getElement().getMessageSort() == MessageSort.CREATE_MESSAGE_LITERAL;
+	}
+
+	/**
+	 * Query whether a creation occurrence may validly be put at the given Y position on the destination
+	 * lifeline.
+	 * 
+	 * @param y
+	 *            the Y position of the proposed creation, in absolute coördinates
+	 * @return whether the creation should be allowed there
+	 */
+	protected boolean validateCreation(int y) {
+		return !lifeline.getOccurrences().stream().anyMatch(above(y));
+	}
+
 }

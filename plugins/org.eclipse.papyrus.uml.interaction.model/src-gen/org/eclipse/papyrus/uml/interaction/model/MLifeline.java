@@ -391,4 +391,18 @@ public interface MLifeline extends MElement<Lifeline> {
 	 */
 	Command nudgeHorizontally(int deltaX);
 
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> Obtain a command that makes the
+	 * receiver created at some Y position in the diagram.
+	 * 
+	 * @param yPosition
+	 *            The absolute Y position at which to show the receiver as created (where the create message
+	 *            is received), or empty to revert to an uncreated lifeline. <!-- end-model-doc -->
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Command" required="true"
+	 *        yPositionDataType="org.eclipse.papyrus.uml.interaction.model.OptionalInt"
+	 *        yPositionRequired="true"
+	 * @generated
+	 */
+	Command makeCreatedAt(OptionalInt yPosition);
+
 } // MLifeline

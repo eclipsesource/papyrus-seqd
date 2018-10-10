@@ -414,6 +414,16 @@
         </eAnnotations>
       </eParameters>
     </eOperations>
+    <eOperations name="makeCreatedAt" lowerBound="1" eType="#//Command">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Obtain a command that makes the receiver created at some Y position in the diagram."/>
+      </eAnnotations>
+      <eParameters name="yPosition" lowerBound="1" eType="#//OptionalInt">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The absolute Y position at which to show the receiver as created (where the create message is received), or empty to revert to an uncreated lifeline."/>
+        </eAnnotations>
+      </eParameters>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="executionOccurrences" ordered="false"
         upperBound="-1" eType="#//MExecutionOccurrence" changeable="false" containment="true"
         resolveProxies="false">

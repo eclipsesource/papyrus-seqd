@@ -14,6 +14,8 @@ package org.eclipse.papyrus.uml.interaction.model.util;
 
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.Stream;
 
@@ -64,5 +66,24 @@ public class Optionals {
 	 */
 	public static OptionalInt map(OptionalInt optional, IntUnaryOperator operator) {
 		return optional.isPresent() ? OptionalInt.of(operator.applyAsInt(optional.getAsInt())) : optional;
+	}
+
+	/**
+	 * Map an optional integer value to an object.
+	 * 
+	 * @param optionalInt
+	 *            an optional integer value
+	 * @param mapping
+	 *            the integer mapping function
+	 * @return the optional result of the {@code mapping}
+	 */
+	public static <R> Optional<R> mapToObj(OptionalInt optionalInt, IntFunction<? extends R> mapping) {
+		return optionalInt.isPresent() ? Optional.ofNullable(mapping.apply(optionalInt.getAsInt()))
+				: Optional.empty();
+	}
+
+	public static <T> OptionalInt flatMapToInt(Optional<T> optional,
+			Function<? super T, OptionalInt> mapping) {
+		return optional.map(mapping).orElse(OptionalInt.empty());
 	}
 }

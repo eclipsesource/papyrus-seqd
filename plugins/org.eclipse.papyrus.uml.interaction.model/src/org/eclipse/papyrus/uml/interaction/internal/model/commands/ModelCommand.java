@@ -20,7 +20,9 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandWrapper;
@@ -314,5 +316,26 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 
 	protected BinaryOperator<Command> chaining() {
 		return (first, second) -> chain(first, second);
+	}
+
+	protected Command defer(Supplier<? extends Command> futureCommand) {
+		return new CommandWrapper() {
+			@Override
+			protected Command createCommand() {
+				return futureCommand.get();
+			}
+		};
+	}
+
+	protected static void findElementsBelow(int yPosition, List<MElement<? extends Element>> elementsBelow,
+			Stream<? extends MElement<? extends Element>> stream, boolean useTop) {
+
+		stream.filter(m -> {
+			if (useTop) {
+				return m.getTop().orElse(0) >= yPosition;
+			} else {
+				return m.getBottom().orElse(Integer.MAX_VALUE) >= yPosition;
+			}
+		}).forEach(elementsBelow::add);
 	}
 }

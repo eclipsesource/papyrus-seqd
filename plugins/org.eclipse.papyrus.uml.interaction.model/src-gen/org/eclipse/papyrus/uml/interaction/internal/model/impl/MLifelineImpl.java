@@ -37,6 +37,7 @@ import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.InsertExecutionCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.InsertMessageCommand;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.SetLifelineCreationCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.NudgeHorizontallyCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.RemoveLifelineCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
@@ -484,6 +485,16 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 * @generated NOT
 	 */
 	@Override
+	public Command makeCreatedAt(OptionalInt yPosition) {
+		return new SetLifelineCreationCommand(this, yPosition);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
 	public Command remove() {
 		return new RemoveLifelineCommand(this, true);
 	}
@@ -642,6 +653,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return elementAt((Integer)arguments.get(0));
 			case SequenceDiagramPackage.MLIFELINE___NUDGE_HORIZONTALLY__INT:
 				return nudgeHorizontally((Integer)arguments.get(0));
+			case SequenceDiagramPackage.MLIFELINE___MAKE_CREATED_AT__OPTIONALINT:
+				return makeCreatedAt((OptionalInt)arguments.get(0));
 		}
 		return super.eInvoke(operationID, arguments);
 	}
