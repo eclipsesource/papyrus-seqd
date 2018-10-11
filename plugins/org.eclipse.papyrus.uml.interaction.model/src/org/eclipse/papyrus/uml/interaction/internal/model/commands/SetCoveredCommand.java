@@ -26,6 +26,7 @@ import java.util.OptionalInt;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.emf.common.command.UnexecutableCommand;
+import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Shape;
@@ -37,10 +38,18 @@ import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
+import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.InteractionFragment;
+import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageSort;
+import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.Operation;
+import org.eclipse.uml2.uml.OperationOwner;
+import org.eclipse.uml2.uml.Reception;
+import org.eclipse.uml2.uml.Signal;
+import org.eclipse.uml2.uml.TypedElement;
 import org.eclipse.uml2.uml.UMLPackage;
 
 /**
@@ -131,6 +140,11 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 		} else {
 			// Handle a dependent execution
 			result = dependencies(getTarget()).map(chaining(result)).orElse(result);
+
+			// Handle message details
+			if (getTarget() instanceof MMessageEnd) {
+				result = handleMessage((MMessageEnd)getTarget()).map(chaining(result)).orElse(result);
+			}
 		}
 
 		return result;
@@ -230,6 +244,67 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			result = Optional.ofNullable(bend);
 		} else {
 			result = Optional.empty();
+		}
+
+		return result;
+	}
+
+	/**
+	 * Update details of a message as necessary for changing coverage of an {@code end}.
+	 * 
+	 * @param end
+	 *            a message end
+	 * @return the message details command
+	 */
+	Optional<Command> handleMessage(MMessageEnd end) {
+		Optional<Command> result = Optional.empty();
+
+		Message message = end.getOwner().getElement();
+		NamedElement signature = message.getSignature();
+
+		if (end.isReceive() && (signature != null)) {
+			Optional<OperationOwner> operationOwner = Optional.empty();
+			Optional<org.eclipse.uml2.uml.Class> receptionOwner = Optional.empty();
+
+			switch (end.getOwner().getElement().getMessageSort()) {
+				case SYNCH_CALL_LITERAL:
+				case ASYNCH_CALL_LITERAL:
+					// Expecting an operation signature
+					operationOwner = as(Optional.ofNullable(lifeline.getElement().getRepresents())
+							.map(TypedElement::getType), OperationOwner.class);
+					break;
+				case ASYNCH_SIGNAL_LITERAL:
+					// Expecting a signal signature
+					receptionOwner = as(Optional.ofNullable(lifeline.getElement().getRepresents())
+							.map(TypedElement::getType), org.eclipse.uml2.uml.Class.class);
+					break;
+				default:
+					// No concerns about the signature
+					break;
+			}
+
+			boolean unsetSignature = false;
+
+			if (operationOwner.isPresent() && (signature instanceof Operation)) {
+				// Operation must match
+				unsetSignature = !((Classifier)operationOwner.get()).getAllOperations().contains(signature);
+			} else if (receptionOwner.isPresent() && (signature instanceof Signal)) {
+				// There is no getAllReceptions() operation in the Class metaclass
+				unsetSignature = !receptionOwner.get().getMembers().stream()
+						.filter(Reception.class::isInstance).map(Reception.class::cast)
+						.filter(reception -> reception.getSignal() != null)
+						.anyMatch(reception -> reception.getSignal().conformsTo((Signal)signature));
+			}
+
+			if (unsetSignature) {
+				Command unsetSignatureCommand = SetCommand.create(getEditingDomain(), message,
+						UMLPackage.Literals.MESSAGE__SIGNATURE, SetCommand.UNSET_VALUE);
+				if (!message.getArguments().isEmpty()) {
+					unsetSignatureCommand = unsetSignatureCommand.chain(SetCommand.create(getEditingDomain(),
+							message, UMLPackage.Literals.MESSAGE__ARGUMENT, SetCommand.UNSET_VALUE));
+				}
+				result = Optional.of(unsetSignatureCommand);
+			}
 		}
 
 		return result;
