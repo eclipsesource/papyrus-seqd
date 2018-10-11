@@ -29,6 +29,7 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.uml2.uml.ActionExecutionSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.junit.Ignore;
 
 import junit.textui.TestRunner;
 
@@ -196,6 +197,22 @@ public class MExecutionTest extends MElementTest {
 	public void testGetDiagramView() {
 		super.testGetDiagramView();
 		assertThat(getFixture().getDiagramView().get().getType(), is("Shape_Execution_Specification"));
+	}
+
+	/**
+	 * Tests the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#insertNestedExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, int, org.eclipse.uml2.uml.Element)
+	 * <em>Insert Nested Execution After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#insertNestedExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement,
+	 *      int, int, org.eclipse.uml2.uml.Element)
+	 * @generated
+	 */
+	@Ignore
+	public void testInsertNestedExecutionAfter__MElement_int_int_Element() {
+		// TODO: implement this operation test method
+		// Ensure that you remove @generated or mark it @generated NOT
+		fail();
 	}
 
 	/**

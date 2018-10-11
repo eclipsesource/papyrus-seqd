@@ -323,7 +323,8 @@ public class MLifelineTest extends MElementTest {
 		preceding = getFixture().preceding(preceding.get());
 		assertThat(preceding, isPresent(wraps(umlInteraction.getFragment("request-recv"))));
 		preceding = getFixture().preceding(preceding.get());
-		assertThat(preceding, not(isPresent()));	}
+		assertThat(preceding, not(isPresent()));
+	}
 
 	/**
 	 * Tests the

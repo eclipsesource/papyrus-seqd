@@ -530,9 +530,9 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case SequenceDiagramPackage.MLIFELINE__EXECUTION_OCCURRENCES:
-				return (executionOccurrences != null) && !executionOccurrences.isEmpty();
+				return executionOccurrences != null && !executionOccurrences.isEmpty();
 			case SequenceDiagramPackage.MLIFELINE__EXECUTIONS:
-				return (executions != null) && !executions.isEmpty();
+				return executions != null && !executions.isEmpty();
 			case SequenceDiagramPackage.MLIFELINE__OWNED_DESTRUCTION:
 				return ownedDestruction != null;
 			case SequenceDiagramPackage.MLIFELINE__DESTRUCTION:
