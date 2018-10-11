@@ -12,9 +12,9 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.function.Function;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
@@ -28,7 +28,9 @@ import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredAddCommand;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Element;
@@ -133,31 +135,26 @@ public class InsertNestedExecutionCommand extends ModelCommand<MExecutionImpl> i
 
 		OptionalInt referenceY;
 		if (before instanceof MExecution && before == getTarget()) {
-			referenceY = OptionalInt.of(0);
+			referenceY = getTarget().getTop();
 		} else { // before should be an element on the execution itself.
-			referenceY = OptionalInt.of(
-					layoutHelper().getBottom(reference).getAsInt() - layoutHelper().getTop(getTargetView()));
+			referenceY = OptionalInt.of(layoutHelper().getBottom(reference).getAsInt());
 		}
 
 		if (!referenceY.isPresent()) {
 			return UnexecutableCommand.INSTANCE;
 		}
 
-		MElement<? extends Element> insertionPoint = normalizeFragmentInsertionPoint(before);
-		Function<Element, CreationParameters> paramsFactory = CreationParameters::after;
+		List<MElement<? extends Element>> timeline = getTimeline(getTarget().getInteraction());
+		int absoluteExecY = referenceY.getAsInt() + offset;
 
-		if (insertionPoint == getTarget()) {
-			// Insert before the first covering fragment, if any
-			Optional<MElement<? extends Element>> covering = Optional.of(((MExecution)insertionPoint));
-			if (covering.isPresent()) {
-				insertionPoint = covering.get();
-				paramsFactory = CreationParameters::after;
-			}
-		}
+		Optional<MElement<? extends Element>> insertAt = getInsertionPoint(timeline, MExecution.class,
+				absoluteExecY).map(this::normalizeFragmentInsertionPoint);
 
 		SemanticHelper semantics = semanticHelper();
-		CreationParameters execParams = paramsFactory.apply(insertionPoint.getElement());
+		CreationParameters execParams = CreationParameters.in(getTarget().getInteraction().getElement(),
+				UMLPackage.Literals.INTERACTION__FRAGMENT);
 		execParams.setEClass(eClass);
+		execParams.setInsertBefore(insertAt.get().getElement());
 		resultCommand = semantics.createExecutionSpecification(specification, execParams);
 		CreationParameters startParams = CreationParameters.before(resultCommand);
 		CreationCommand<OccurrenceSpecification> start = semantics.createStart(resultCommand, startParams);
@@ -171,15 +168,16 @@ public class InsertNestedExecutionCommand extends ModelCommand<MExecutionImpl> i
 		result = result.chain(new DeferredAddCommand(getTarget().getOwner().getElement(),
 				UMLPackage.Literals.LIFELINE__COVERED_BY, start, resultCommand, finish));
 
+		// Make sure we keep enough distance to the element before us
+		int additionalOffset = getAdditionalOffset(timeline, insertAt, absoluteExecY);
+
 		result = result.chain(diagramHelper().createNestedExecutionShape(resultCommand, getTargetView(),
-				referenceY.getAsInt() + offset, height));
+				absoluteExecY - getTarget().getTop().getAsInt(), height));
 
 		// Now we have commands to add the execution specification. But, first we must make
 		// room for it in the diagram. Nudge the element that will follow the new execution
-		int spaceAdded = offset + height;
-		Optional<Command> makeSpace = getTarget().getOwner().following(insertionPoint).map(el -> {
-			return el.nudge(spaceAdded);
-		});
+		Optional<Command> makeSpace = insertAt.flatMap(
+				insertionPoint -> createNudgeCommand(insertionPoint, absoluteExecY + additionalOffset));
 		if (makeSpace.isPresent()) {
 			result = makeSpace.get().chain(result);
 		}
@@ -197,4 +195,74 @@ public class InsertNestedExecutionCommand extends ModelCommand<MExecutionImpl> i
 		View executionView = getTarget().getDiagramView().get();
 		return Shape.class.cast(executionView);
 	}
+
+	/**
+	 * Creates the nudge command for the insertion of the execution.
+	 * <p>
+	 * If the insertion of the execution <code>isInsertBefore</code>, the <code>insertionPoint</code> also
+	 * needs to be nudged, otherwise we need to nudge everything after the insertion point.
+	 * </p>
+	 * 
+	 * @param insertionPoint
+	 *            the insertion point of the execution's insert command.
+	 * @param insertionYPosition
+	 * @param additionalOffset
+	 * @return the nudge command.
+	 */
+	protected Optional<Command> createNudgeCommand(MElement<? extends Element> insertionPoint,
+			int insertionYPosition) {
+		Optional<View> diagramView = getDiagramView(insertionPoint);
+		if (!diagramView.isPresent()) {
+			return Optional.of(insertionPoint.nudge(height));
+		}
+		int curPadding = insertionPoint.getTop().orElse(0) - insertionYPosition;
+		int reqPadding = layoutHelper().getConstraints().getPadding(RelativePosition.BOTTOM,
+				ViewTypes.EXECUTION_SPECIFICATION)
+				+ layoutHelper().getConstraints().getPadding(RelativePosition.TOP, diagramView.get());
+		if (curPadding < reqPadding) {
+			return Optional.of(insertionPoint.nudge(height + (reqPadding - curPadding)));
+		} else {
+			return Optional.of(insertionPoint.nudge(height));
+		}
+	}
+
+	private int getAdditionalOffset(List<MElement<? extends Element>> timeline,
+			Optional<MElement<? extends Element>> elementAfterMe, int insertionY) {
+		MElement<? extends Element> elementBeforeMe = getElementBeforeMe(timeline, elementAfterMe);
+		Optional<View> diagramView = getDiagramView(elementBeforeMe);
+		if (!diagramView.isPresent()) {
+			return 0;
+		}
+
+		int curPadding;
+		if (elementBeforeMe == getTarget()) {
+			curPadding = insertionY - elementBeforeMe.getTop().orElse(0); // should be similar to offset
+		} else {
+			curPadding = insertionY - elementBeforeMe.getBottom().orElse(0);
+		}
+
+		int reqPadding = layoutHelper().getConstraints().getPadding(RelativePosition.BOTTOM,
+				diagramView.get())
+				+ layoutHelper().getConstraints().getPadding(RelativePosition.TOP,
+						ViewTypes.EXECUTION_SPECIFICATION);
+		if (curPadding < reqPadding) {
+			return reqPadding - curPadding;
+		} else {
+			return 0;
+		}
+	}
+
+	private MElement<? extends Element> getElementBeforeMe(List<MElement<? extends Element>> timeline,
+			Optional<MElement<? extends Element>> elementAfterMe) {
+		if (!elementAfterMe.isPresent()) {
+			return before;
+		}
+
+		int index = timeline.indexOf(elementAfterMe.get()) - 1;
+		if (index >= 0 && index < timeline.size()) {
+			return timeline.get(index);
+		}
+		return before;
+	}
+
 }
