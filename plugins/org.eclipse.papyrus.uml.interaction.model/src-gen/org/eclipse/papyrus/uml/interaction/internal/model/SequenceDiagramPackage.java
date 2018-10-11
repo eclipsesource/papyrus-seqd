@@ -954,13 +954,22 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MOCCURRENCE__FINISHED_EXECUTION = MELEMENT_FEATURE_COUNT + 4;
 
 	/**
+	 * The feature id for the '<em><b>Execution</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MOCCURRENCE__EXECUTION = MELEMENT_FEATURE_COUNT + 5;
+
+	/**
 	 * The number of structural features of the '<em>MOccurrence</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MOCCURRENCE_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 5;
+	int MOCCURRENCE_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 6;
 
 	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1127,6 +1136,15 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MEXECUTION_OCCURRENCE__FINISHED_EXECUTION = MOCCURRENCE__FINISHED_EXECUTION;
+
+	/**
+	 * The feature id for the '<em><b>Execution</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION_OCCURRENCE__EXECUTION = MOCCURRENCE__EXECUTION;
 
 	/**
 	 * The number of structural features of the '<em>MExecution Occurrence</em>' class. <!-- begin-user-doc
@@ -1302,6 +1320,15 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MMESSAGE_END__FINISHED_EXECUTION = MOCCURRENCE__FINISHED_EXECUTION;
+
+	/**
+	 * The feature id for the '<em><b>Execution</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE_END__EXECUTION = MOCCURRENCE__EXECUTION;
 
 	/**
 	 * The feature id for the '<em><b>Send</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1685,6 +1712,15 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MDESTRUCTION__FINISHED_EXECUTION = MMESSAGE_END__FINISHED_EXECUTION;
+
+	/**
+	 * The feature id for the '<em><b>Execution</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MDESTRUCTION__EXECUTION = MMESSAGE_END__EXECUTION;
 
 	/**
 	 * The feature id for the '<em><b>Send</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2534,6 +2570,18 @@ public interface SequenceDiagramPackage extends EPackage {
 	EAttribute getMOccurrence_FinishedExecution();
 
 	/**
+	 * Returns the meta object for the attribute
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getExecution <em>Execution</em>}'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Execution</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MOccurrence#getExecution()
+	 * @see #getMOccurrence()
+	 * @generated
+	 */
+	EAttribute getMOccurrence_Execution();
+
+	/**
 	 * Returns the meta object for the
 	 * '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#setCovered(org.eclipse.papyrus.uml.interaction.model.MLifeline, java.util.OptionalInt)
 	 * <em>Set Covered</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -3368,6 +3416,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute MOCCURRENCE__FINISHED_EXECUTION = eINSTANCE.getMOccurrence_FinishedExecution();
+
+		/**
+		 * The meta object literal for the '<em><b>Execution</b></em>' attribute feature. <!-- begin-user-doc
+		 * --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute MOCCURRENCE__EXECUTION = eINSTANCE.getMOccurrence_Execution();
 
 		/**
 		 * The meta object literal for the '<em><b>Set Covered</b></em>' operation. <!-- begin-user-doc -->

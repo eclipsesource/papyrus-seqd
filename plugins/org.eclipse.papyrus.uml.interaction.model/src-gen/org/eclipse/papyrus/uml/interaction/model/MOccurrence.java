@@ -32,6 +32,7 @@ import org.eclipse.uml2.uml.Element;
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#isFinish <em>Finish</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getFinishedExecution <em>Finished
  * Execution</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getExecution <em>Execution</em>}</li>
  * </ul>
  *
  * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMOccurrence()
@@ -116,6 +117,21 @@ public interface MOccurrence<T extends Element> extends MElement<T> {
 	 * @generated
 	 */
 	Optional<MExecution> getFinishedExecution();
+
+	/**
+	 * Returns the value of the '<em><b>Execution</b></em>' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc --> <!-- begin-model-doc --> The execution that an occurrence either
+	 * {@linkplain #getStartedExecution() starts} or {@linkplain #getFinishedExecution() finishes}, or the
+	 * most nested execution during which span the occurrence happens on its covered lifeline. <!--
+	 * end-model-doc -->
+	 * 
+	 * @return the value of the '<em>Execution</em>' attribute.
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMOccurrence_Execution()
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Optional&lt;org.eclipse.papyrus.uml.interaction.model.MExecution&gt;"
+	 *        required="true" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	Optional<MExecution> getExecution();
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->

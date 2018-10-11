@@ -17,6 +17,7 @@ import java.util.OptionalInt;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.IntUnaryOperator;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
@@ -85,5 +86,59 @@ public class Optionals {
 	public static <T> OptionalInt flatMapToInt(Optional<T> optional,
 			Function<? super T, OptionalInt> mapping) {
 		return optional.map(mapping).orElse(OptionalInt.empty());
+	}
+
+	/**
+	 * A cascading <em>if-elseif</em> sequence of optionals. For a final <em>else</em> case, just do any
+	 * variant of {@link Optional#orElse(Object)} on the result of this operation.
+	 * 
+	 * @param optional
+	 *            an optional for the <em>if</em> case
+	 * @param orElse
+	 *            optionals for <em>elseif</em> cases
+	 * @return the optional result of whichever case {@linkplain Optional#isPresent() is present} or empty if
+	 *         none
+	 */
+	@SuppressWarnings("unchecked")
+	@SafeVarargs
+	public static <T> Optional<T> elseMaybe(Optional<? extends T> optional, Optional<? extends T>... orElse) {
+		if (optional.isPresent()) {
+			// Don't do the work of Optional.of(optional.get()) for type safety because Optional is immutable
+			return (Optional<T>)optional;
+		}
+		for (Optional<? extends T> next : orElse) {
+			if (next.isPresent()) {
+				return (Optional<T>)next;
+			}
+		}
+		return Optional.empty();
+	}
+
+	/**
+	 * A cascading <em>if-elseif</em> sequence of optionals. For a final <em>else</em> case, just do any
+	 * variant of {@link Optional#orElse(Object)} on the result of this operation.
+	 * 
+	 * @param optional
+	 *            an optional for the <em>if</em> case
+	 * @param orElse
+	 *            suppliers of optionals for <em>elseif</em> cases, to defer execution (short-cut semantics)
+	 * @return the optional result of whichever case {@linkplain Optional#isPresent() is present} or empty if
+	 *         none
+	 */
+	@SuppressWarnings("unchecked")
+	@SafeVarargs
+	public static <T> Optional<T> elseMaybe(Optional<? extends T> optional,
+			Supplier<Optional<? extends T>>... orElse) {
+		if (optional.isPresent()) {
+			// Don't do the work of Optional.of(optional.get()) for type safety because Optional is immutable
+			return (Optional<T>)optional;
+		}
+		for (Supplier<Optional<? extends T>> next : orElse) {
+			Optional<? extends T> possibleResult = next.get();
+			if (possibleResult.isPresent()) {
+				return (Optional<T>)possibleResult;
+			}
+		}
+		return Optional.empty();
 	}
 }
