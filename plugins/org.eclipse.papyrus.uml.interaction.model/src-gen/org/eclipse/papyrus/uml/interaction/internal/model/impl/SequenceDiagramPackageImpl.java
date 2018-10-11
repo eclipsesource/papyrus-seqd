@@ -722,6 +722,46 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EOperation getMExecution__InsertNestedExecutionAfter__MElement_int_int_Element() {
+		return mExecutionEClass.getEOperations().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMExecution__InsertNestedExecutionAfter__MElement_int_int_EClass() {
+		return mExecutionEClass.getEOperations().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMExecution__ElementAt__int() {
+		return mExecutionEClass.getEOperations().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMExecution__GetNestedExecutions() {
+		return mExecutionEClass.getEOperations().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EClass getMOccurrence() {
 		return mOccurrenceEClass;
 	}
@@ -1123,6 +1163,12 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEAttribute(mExecutionEClass, MEXECUTION__FINISH);
 		createEOperation(mExecutionEClass, MEXECUTION___GET_OWNER);
 		createEOperation(mExecutionEClass, MEXECUTION___GET_DIAGRAM_VIEW);
+		createEOperation(mExecutionEClass,
+				MEXECUTION___INSERT_NESTED_EXECUTION_AFTER__MELEMENT_INT_INT_ELEMENT);
+		createEOperation(mExecutionEClass,
+				MEXECUTION___INSERT_NESTED_EXECUTION_AFTER__MELEMENT_INT_INT_ECLASS);
+		createEOperation(mExecutionEClass, MEXECUTION___ELEMENT_AT__INT);
+		createEOperation(mExecutionEClass, MEXECUTION___GET_NESTED_EXECUTIONS);
 
 		mOccurrenceEClass = createEClass(MOCCURRENCE);
 		createEAttribute(mOccurrenceEClass, MOCCURRENCE__COVERED);
@@ -1620,6 +1666,48 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		g2 = createEGenericType(theNotationPackage.getShape());
 		g1.getETypeArguments().add(g2);
 		initEOperation(op, g1);
+
+		op = initEOperation(getMExecution__InsertNestedExecutionAfter__MElement_int_int_Element(), null,
+				"insertNestedExecutionAfter", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getMElement());
+		g2 = createEGenericType();
+		g1.getETypeArguments().add(g2);
+		addEParameter(op, g1, "before", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, ecorePackage.getEInt(), "offset", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, ecorePackage.getEInt(), "height", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, theUMLPackage.getElement(), "specification", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getCreationCommand());
+		g2 = createEGenericType(theUMLPackage.getExecutionSpecification());
+		g1.getETypeArguments().add(g2);
+		initEOperation(op, g1);
+
+		op = initEOperation(getMExecution__InsertNestedExecutionAfter__MElement_int_int_EClass(), null,
+				"insertNestedExecutionAfter", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getMElement());
+		g2 = createEGenericType();
+		g1.getETypeArguments().add(g2);
+		addEParameter(op, g1, "before", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, ecorePackage.getEInt(), "offset", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, ecorePackage.getEInt(), "height", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, theEcorePackage.getEClass(), "metaclass", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getCreationCommand());
+		g2 = createEGenericType(theUMLPackage.getExecutionSpecification());
+		g1.getETypeArguments().add(g2);
+		initEOperation(op, g1);
+
+		op = initEOperation(getMExecution__ElementAt__int(), null, "elementAt", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, ecorePackage.getEInt(), "offset", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getOptional());
+		g2 = createEGenericType(this.getMElement());
+		g1.getETypeArguments().add(g2);
+		g3 = createEGenericType();
+		g2.getETypeArguments().add(g3);
+		g4 = createEGenericType(theUMLPackage.getElement());
+		g3.setEUpperBound(g4);
+		initEOperation(op, g1);
+
+		initEOperation(getMExecution__GetNestedExecutions(), this.getMExecution(), "getNestedExecutions", 0, //$NON-NLS-1$
+				-1, IS_UNIQUE, IS_ORDERED);
 
 		initEClass(mOccurrenceEClass, MOccurrence.class, "MOccurrence", IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);

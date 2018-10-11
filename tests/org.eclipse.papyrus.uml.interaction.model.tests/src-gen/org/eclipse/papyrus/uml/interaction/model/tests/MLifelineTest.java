@@ -288,6 +288,12 @@ public class MLifelineTest extends MElementTest {
 		Optional<MElement<?>> following = getFixture().following(end.get());
 		assertThat(following, isPresent(wraps(umlInteraction.getFragment("ActionExecutionSpecification1"))));
 		following = getFixture().following(following.get());
+		assertThat(following, isPresent(wraps(umlInteraction.getFragment("Execution1-start"))));
+		following = getFixture().following(following.get());
+		assertThat(following, isPresent(wraps(umlInteraction.getFragment("Execution1"))));
+		following = getFixture().following(following.get());
+		assertThat(following, isPresent(wraps(umlInteraction.getFragment("Execution1-finish"))));
+		following = getFixture().following(following.get());
 		assertThat(following, isPresent(wraps(umlInteraction.getFragment("reply-send"))));
 		following = getFixture().following(following.get());
 		assertThat(following, not(isPresent()));
@@ -307,12 +313,17 @@ public class MLifelineTest extends MElementTest {
 		Assume.assumeThat(end, isPresent());
 
 		Optional<MElement<?>> preceding = getFixture().preceding(end.get());
+		assertThat(preceding, isPresent(wraps(umlInteraction.getFragment("Execution1-finish"))));
+		preceding = getFixture().preceding(preceding.get());
+		assertThat(preceding, isPresent(wraps(umlInteraction.getFragment("Execution1"))));
+		preceding = getFixture().preceding(preceding.get());
+		assertThat(preceding, isPresent(wraps(umlInteraction.getFragment("Execution1-start"))));
+		preceding = getFixture().preceding(preceding.get());
 		assertThat(preceding, isPresent(wraps(umlInteraction.getFragment("ActionExecutionSpecification1"))));
 		preceding = getFixture().preceding(preceding.get());
 		assertThat(preceding, isPresent(wraps(umlInteraction.getFragment("request-recv"))));
 		preceding = getFixture().preceding(preceding.get());
-		assertThat(preceding, not(isPresent()));
-	}
+		assertThat(preceding, not(isPresent()));	}
 
 	/**
 	 * Tests the

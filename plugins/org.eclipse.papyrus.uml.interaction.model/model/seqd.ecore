@@ -446,6 +446,50 @@
         <eTypeArguments eClassifier="ecore:EClass ../../org.eclipse.gmf.runtime.notation/model/notation.ecore#//Shape"/>
       </eGenericType>
     </eOperations>
+    <eOperations name="insertNestedExecutionAfter" lowerBound="1">
+      <eGenericType eClassifier="#//CreationCommand">
+        <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//ExecutionSpecification"/>
+      </eGenericType>
+      <eParameters name="before" lowerBound="1">
+        <eGenericType eClassifier="#//MElement">
+          <eTypeArguments/>
+        </eGenericType>
+      </eParameters>
+      <eParameters name="offset" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      <eParameters name="height" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      <eParameters name="specification" lowerBound="1" eType="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
+    </eOperations>
+    <eOperations name="insertNestedExecutionAfter" lowerBound="1">
+      <eGenericType eClassifier="#//CreationCommand">
+        <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//ExecutionSpecification"/>
+      </eGenericType>
+      <eParameters name="before" lowerBound="1">
+        <eGenericType eClassifier="#//MElement">
+          <eTypeArguments/>
+        </eGenericType>
+      </eParameters>
+      <eParameters name="offset" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      <eParameters name="height" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      <eParameters name="metaclass" lowerBound="1" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EClass"/>
+    </eOperations>
+    <eOperations name="elementAt" lowerBound="1">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Query the element covering this execution that is at, or the nearest element before, a given y-coordinate {@code offset}."/>
+      </eAnnotations>
+      <eGenericType eClassifier="#//Optional">
+        <eTypeArguments eClassifier="#//MElement">
+          <eTypeArguments>
+            <eUpperBound eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
+          </eTypeArguments>
+        </eTypeArguments>
+      </eGenericType>
+      <eParameters name="offset" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="an offset in the y axis on the execution border. Should be non-negative"/>
+        </eAnnotations>
+      </eParameters>
+    </eOperations>
+    <eOperations name="getNestedExecutions" upperBound="-1" eType="#//MExecution"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="start" lowerBound="1" changeable="false"
         volatile="true" transient="true" derived="true">
       <eGenericType eClassifier="#//Optional">

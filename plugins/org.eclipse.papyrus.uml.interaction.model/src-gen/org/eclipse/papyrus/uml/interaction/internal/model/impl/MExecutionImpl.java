@@ -12,19 +12,31 @@
  */
 package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 
+import static org.eclipse.papyrus.uml.interaction.graph.GraphPredicates.covers;
+
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Stack;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.Shape;
+import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.InsertNestedExecutionCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.RemoveExecutionCommand;
+import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
+import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
-import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
+import org.eclipse.uml2.uml.OccurrenceSpecification;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>MExecution</b></em>'. <!--
@@ -93,8 +105,8 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	 * @generated NOT
 	 */
 	@Override
-	public MLifeline getOwner() {
-		return (MLifeline)super.getOwner();
+	public MLifelineImpl getOwner() {
+		return (MLifelineImpl)super.getOwner();
 	}
 
 	/**
@@ -105,6 +117,104 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	@Override
 	public Optional<Shape> getDiagramView() {
 		return super.getDiagramView().map(Shape.class::cast);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public CreationCommand<ExecutionSpecification> insertNestedExecutionAfter(MElement<?> before, int offset,
+			int height, Element specification) {
+		return new InsertNestedExecutionCommand(this, before, offset, height, specification);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public CreationCommand<ExecutionSpecification> insertNestedExecutionAfter(MElement<?> before, int offset,
+			int height, EClass metaclass) {
+		return new InsertNestedExecutionCommand(this, before, offset, height, metaclass);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Optional<MElement<? extends Element>> elementAt(int offset) {
+		int top = layoutHelper().getTop(getShape(getElement()));
+		int absoluteOffset = top + offset;
+
+		Predicate<MElement<?>> isAtOrAbove = e -> e.getBottom().orElse(Integer.MAX_VALUE) <= absoluteOffset;
+
+		Optional<? extends MElement<? extends Element>> result = getVertex().flatMap(vtx -> //
+		vtx.successors().sequential().filter(covers(getOwner().getElement())) //
+				.map(Vertex::getInteractionElement) //
+				.map(getInteraction()::getElement) //
+				.filter(Optional::isPresent).map(Optional::get) //
+				.filter(isAtOrAbove)//
+				.reduce((a, b) -> b)// last element
+		);
+
+		return Optional.ofNullable(result.orElse(null));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@SuppressWarnings("boxing")
+	@Override
+	public List<MExecution> getNestedExecutions() {
+		List<MExecution> nestedExecutions = new ArrayList<>();
+		// browse all executions on lifeline after the start of this execution and before the end of this
+		// execution
+
+		List<MOccurrence<Element>> occurences = getOccurenceSpecifications();
+
+		int start = getStart().map(occ -> occurences.indexOf(occ)).orElse(-1);
+		int finish = getFinish().map(occ -> occurences.indexOf(occ)).orElse(-1);
+		if (start != -1 && finish != -1 && finish - start > 1) {
+			List<MOccurrence<Element>> executionOccurences = occurences.subList(start, finish);
+
+			Stack<MExecution> stack = new Stack<>();
+			for (MOccurrence<Element> occurence : executionOccurences) {
+				// check if it starts a new occurrence. If yes, adds it on top of the stack
+				// if it finishes, removes the finished execution from the stack
+				occurence.getFinishedExecution().ifPresent(__ -> {
+					if (!stack.isEmpty()) {
+						stack.pop();
+					}
+				});
+				if (occurence.getStartedExecution().isPresent()) {
+					MExecution execution = occurence.getStartedExecution().get();
+					// if current owner => this, then this execution should be added to the nested executions
+					if (!stack.empty() && stack.peek() == this) {
+						nestedExecutions.add(execution);
+					}
+					stack.push(execution);
+				}
+			}
+		}
+		return nestedExecutions;
+	}
+
+	protected List<MOccurrence<Element>> getOccurenceSpecifications() {
+		List<MOccurrence<Element>> orderedCoveredBys = getInteraction().getElement().getFragments().stream()
+				.filter(frg -> frg.getCovereds().contains(getOwner().getElement())) //
+				.filter(OccurrenceSpecification.class::isInstance) //
+				.map(el -> getInteraction().getElement(el)) //
+				.filter(e -> e.isPresent()) //
+				.map(e -> MOccurrence.class.cast(e.get())) //
+				.collect(Collectors.toList());
+		return orderedCoveredBys;
 	}
 
 	/**
@@ -151,6 +261,16 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 				return getOwner();
 			case SequenceDiagramPackage.MEXECUTION___GET_DIAGRAM_VIEW:
 				return getDiagramView();
+			case SequenceDiagramPackage.MEXECUTION___INSERT_NESTED_EXECUTION_AFTER__MELEMENT_INT_INT_ELEMENT:
+				return insertNestedExecutionAfter((MElement<?>)arguments.get(0), (Integer)arguments.get(1),
+						(Integer)arguments.get(2), (Element)arguments.get(3));
+			case SequenceDiagramPackage.MEXECUTION___INSERT_NESTED_EXECUTION_AFTER__MELEMENT_INT_INT_ECLASS:
+				return insertNestedExecutionAfter((MElement<?>)arguments.get(0), (Integer)arguments.get(1),
+						(Integer)arguments.get(2), (EClass)arguments.get(3));
+			case SequenceDiagramPackage.MEXECUTION___ELEMENT_AT__INT:
+				return elementAt((Integer)arguments.get(0));
+			case SequenceDiagramPackage.MEXECUTION___GET_NESTED_EXECUTIONS:
+				return getNestedExecutions();
 		}
 		return super.eInvoke(operationID, arguments);
 	}

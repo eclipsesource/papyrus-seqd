@@ -177,6 +177,10 @@
           </children>
           <children xmi:type="notation:Shape" xmi:id="_8e1Yl0FrEei1zqUjbAwdJw" type="Shape_Lifeline_Body">
             <children xmi:type="notation:Shape" xmi:id="_hsd48CIUEeiFUtGmEMBqqw" type="Shape_Execution_Specification">
+              <children xmi:type="notation:Shape" xmi:id="_9GS0sIUYEeiC1YkGTOAw5Q" type="Shape_Execution_Specification">
+                <element xmi:type="uml:ActionExecutionSpecification" href="AnchorsModel.uml#_89mywIUYEeiC1YkGTOAw5Q"/>
+                <layoutConstraint xmi:type="notation:Bounds" xmi:id="_9GS0sYUYEeiC1YkGTOAw5Q" y="50" width="10" height="40"/>
+              </children>
               <element xmi:type="uml:ActionExecutionSpecification" href="AnchorsModel.uml#_UmObcCIUEeiFUtGmEMBqqw"/>
               <layoutConstraint xmi:type="notation:Bounds" xmi:id="_hsd48SIUEeiFUtGmEMBqqw" x="33" y="25" width="10" height="150"/>
             </children>

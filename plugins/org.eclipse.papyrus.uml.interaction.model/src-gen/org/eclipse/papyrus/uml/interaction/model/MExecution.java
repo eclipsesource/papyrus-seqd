@@ -12,9 +12,12 @@
  */
 package org.eclipse.papyrus.uml.interaction.model;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.Shape;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 
 /**
@@ -84,5 +87,48 @@ public interface MExecution extends MElement<ExecutionSpecification> {
 	 */
 	@Override
 	Optional<Shape> getDiagramView();
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.CreationCommand&lt;org.eclipse.uml2.uml.ExecutionSpecification&gt;"
+	 *        required="true" beforeRequired="true" offsetRequired="true" heightRequired="true"
+	 *        specificationRequired="true"
+	 * @generated
+	 */
+	CreationCommand<ExecutionSpecification> insertNestedExecutionAfter(MElement<?> before, int offset,
+			int height, Element specification);
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.CreationCommand&lt;org.eclipse.uml2.uml.ExecutionSpecification&gt;"
+	 *        required="true" beforeRequired="true" offsetRequired="true" heightRequired="true"
+	 *        metaclassRequired="true"
+	 * @generated
+	 */
+	CreationCommand<ExecutionSpecification> insertNestedExecutionAfter(MElement<?> before, int offset,
+			int height, EClass metaclass);
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> Query the element covering this
+	 * execution that is at, or the nearest element before, a given y-coordinate {@code offset}.
+	 * 
+	 * @param offset
+	 *            an offset in the y axis on the execution border. Should be non-negative <!-- end-model-doc
+	 *            -->
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Optional&lt;org.eclipse.papyrus.uml.interaction.model.MElement&lt;?
+	 *        extends org.eclipse.uml2.uml.Element&gt;&gt;" required="true" offsetRequired="true"
+	 * @generated
+	 */
+	Optional<MElement<? extends Element>> elementAt(int offset);
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @model kind="operation"
+	 * @generated
+	 */
+	List<MExecution> getNestedExecutions();
 
 } // MExecution

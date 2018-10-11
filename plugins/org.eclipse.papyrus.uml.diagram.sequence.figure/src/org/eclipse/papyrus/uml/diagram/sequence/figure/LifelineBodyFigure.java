@@ -16,7 +16,6 @@ import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.Polyline;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
@@ -98,11 +97,6 @@ public class LifelineBodyFigure extends NodeFigure {
 	}
 
 	@Override
-	public PointList getPolygonPoints() {
-		return super.getPolygonPoints();
-	}
-
-	@Override
 	public ConnectionAnchor getSourceConnectionAnchorAt(Point p) {
 		// This method would be used to retrieve an Anchor from a Request (Create, Reconnect). However,
 		// The figure doesn't have enough info to find the right Anchor Kind.
@@ -141,6 +135,17 @@ public class LifelineBodyFigure extends NodeFigure {
 
 	public void setDefaultAnchorDistance(int distance) {
 		this.defaultAnchorDistance = distance;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public Rectangle getClientArea(Rectangle rect) {
+		rect.setBounds(getBounds());
+		rect.crop(getInsets());
+		if (useLocalCoordinates()) {
+			rect.setLocation(0, 0);
+		}
+		return rect;
 	}
 
 }

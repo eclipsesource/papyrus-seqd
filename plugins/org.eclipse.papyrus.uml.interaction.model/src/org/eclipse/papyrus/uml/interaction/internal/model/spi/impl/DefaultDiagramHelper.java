@@ -214,6 +214,39 @@ public class DefaultDiagramHelper implements DiagramHelper {
 				NotationPackage.Literals.VIEW__PERSISTED_CHILDREN);
 		return new DeferredCreateCommand<>(Shape.class, editingDomain, parameters, shape);
 	}
+	
+	@Override
+	public CreationCommand<Shape> createNestedExecutionShape(
+			Supplier<? extends ExecutionSpecification> execution, Shape parentExecution, int yPosition,
+			int height) {
+		Supplier<Shape> shape = () -> {
+			LayoutConstraint llBounds = parentExecution.getLayoutConstraint();
+			int width = 0;
+			if (Size.class.isInstance(llBounds)) {
+				width = Size.class.cast(llBounds).getWidth();
+			}
+			int execWidth = layoutHelper().getConstraints()
+					.getMinimumWidth(ViewTypes.EXECUTION_SPECIFICATION);
+
+			Shape result = NotationFactory.eINSTANCE.createShape();
+			result.setType(ViewTypes.EXECUTION_SPECIFICATION);
+			result.setElement(execution.get());
+
+			Bounds bounds = NotationFactory.eINSTANCE.createBounds();
+			bounds.setX((width - execWidth) / 2); // Relative to the parent
+			bounds.setY(yPosition); // Relative to parent (already the case for yPosition)
+			bounds.setWidth(execWidth);
+			bounds.setHeight(height);
+			result.setLayoutConstraint(bounds);
+
+			return result;
+		};
+
+		CreationParameters parameters = CreationParameters.in(parentExecution,
+				NotationPackage.Literals.VIEW__PERSISTED_CHILDREN);
+		return new DeferredCreateCommand<>(Shape.class, editingDomain, parameters, shape);
+	}
+	
 
 	@Override
 	public CreationCommand<Shape> createDestructionOccurrenceShape(Supplier<? extends MessageEnd> destruction,

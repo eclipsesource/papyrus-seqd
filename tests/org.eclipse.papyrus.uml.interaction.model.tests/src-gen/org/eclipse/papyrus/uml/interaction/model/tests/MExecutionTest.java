@@ -12,15 +12,23 @@
  */
 package org.eclipse.papyrus.uml.interaction.model.tests;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.gmf.runtime.notation.Shape;
+import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
+import org.eclipse.uml2.uml.ActionExecutionSpecification;
+import org.eclipse.uml2.uml.ExecutionSpecification;
+import org.eclipse.uml2.uml.UMLPackage;
 
 import junit.textui.TestRunner;
 
@@ -120,7 +128,7 @@ public class MExecutionTest extends MElementTest {
 	public void testFollowing() {
 		super.testFollowing();
 
-		assertThat(getFixture().following().get(), wraps(umlInteraction.getFragment("reply-send")));
+		assertThat(getFixture().following().get(), wraps(umlInteraction.getFragment("Execution1-start")));
 	}
 
 	@Override
@@ -188,6 +196,74 @@ public class MExecutionTest extends MElementTest {
 	public void testGetDiagramView() {
 		super.testGetDiagramView();
 		assertThat(getFixture().getDiagramView().get().getType(), is("Shape_Execution_Specification"));
+	}
+
+	/**
+	 * Tests the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#insertNestedExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, int, org.eclipse.emf.ecore.EClass)
+	 * <em>Insert Nested Execution After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#insertNestedExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement,
+	 *      int, int, org.eclipse.emf.ecore.EClass)
+	 * @generated NOT
+	 */
+	@SuppressWarnings("boxing")
+	public void testInsertNestedExecutionAfter__MElement_int_int_EClass() {
+
+		assertThat(getFixture().getNestedExecutions().size(), equalTo(1));
+		CreationCommand<ExecutionSpecification> command = getFixture().insertNestedExecutionAfter(
+				getFixture(), 12, 22, UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION);
+
+		assertThat(command, executable());
+		ExecutionSpecification execSpec = create(command);
+		MExecution exec = getFixture().getOwner().getExecution(execSpec).get();
+
+		assertThat(exec.getOwner(), is(getFixture().getOwner()));
+		assertThat(exec.getTop().getAsInt(), is(104)); // top of the nesting exec: 92, +offset: 12
+		assertThat(exec.getBottom().getAsInt(), is(126)); // length = 22
+		assertThat(exec.getElement(), instanceOf(ActionExecutionSpecification.class));
+
+		// We didn't actually supply the action, as such
+		assertThat(((ActionExecutionSpecification)exec.getElement()).getAction(), nullValue());
+		assertThat(getFixture().getNestedExecutions().size(), equalTo(2));
+
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#elementAt(int) <em>Element
+	 * At</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#elementAt(int)
+	 * @generated NOT
+	 */
+	public void testElementAt__int() {
+		assertFalse(getFixture().elementAt(0).isPresent()); // element is itself
+		assertFalse(getFixture().elementAt(49).isPresent()); // element is itself
+		// exactly the fragment start
+		assertThat(getFixture().elementAt(50).get(), wraps(umlInteraction.getFragment("Execution1-start")));
+		// after the fragment start
+		assertThat(getFixture().elementAt(60).get(), wraps(umlInteraction.getFragment("Execution1-start")));
+		// exactly the fragment finish
+		assertThat(getFixture().elementAt(90).get(), wraps(umlInteraction.getFragment("Execution1-finish")));
+		// after the fragment finish
+		assertThat(getFixture().elementAt(120).get(), wraps(umlInteraction.getFragment("Execution1-finish")));
+		// outside of the fragment
+		assertThat(getFixture().elementAt(200).get(), wraps(umlInteraction.getFragment("reply-send")));
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getNestedExecutions() <em>Get
+	 * Nested Executions</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#getNestedExecutions()
+	 * @generated NOT
+	 */
+	public void testGetNestedExecutions() {
+		ExecutionSpecification nested = (ExecutionSpecification)umlInteraction.getFragment("Execution1");
+		MExecution mexec = (MExecution)getFixture().getInteraction().getElement(nested).get();
+		assertTrue(getFixture().getNestedExecutions().equals(Arrays.asList(mexec)));
+
+		assertTrue(mexec.getNestedExecutions().isEmpty());
 	}
 
 	@Override

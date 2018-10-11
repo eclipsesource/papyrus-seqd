@@ -149,6 +149,22 @@
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MExecution/finish"/>
       <genOperations ecoreOperation="seqd.ecore#//MExecution/getOwner"/>
       <genOperations ecoreOperation="seqd.ecore#//MExecution/getDiagramView"/>
+      <genOperations ecoreOperation="seqd.ecore#//MExecution/insertNestedExecutionAfter">
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/insertNestedExecutionAfter/before"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/insertNestedExecutionAfter/offset"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/insertNestedExecutionAfter/height"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/insertNestedExecutionAfter/specification"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MExecution/insertNestedExecutionAfter.1">
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/insertNestedExecutionAfter.1/before"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/insertNestedExecutionAfter.1/offset"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/insertNestedExecutionAfter.1/height"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/insertNestedExecutionAfter.1/metaclass"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MExecution/elementAt">
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/elementAt/offset"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MExecution/getNestedExecutions"/>
     </genClasses>
     <genClasses image="false" ecoreClass="seqd.ecore#//MOccurrence">
       <genTypeParameters ecoreTypeParameter="seqd.ecore#//MOccurrence/T"/>
