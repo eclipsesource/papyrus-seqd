@@ -12,6 +12,7 @@
 
 package org.eclipse.papyrus.uml.interaction.model.tests;
 
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.tests.SetCoveredCommandTest;
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.tests.DefaultLayoutHelperTest;
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.tests.LogicalModelAdapterTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateDeleteMessageTest;
@@ -44,6 +45,7 @@ import org.junit.runners.Suite.SuiteClasses;
 		CreateDeleteMessageTest.class, //
 		CreateExecutionTest.class, DeleteExecutionTest.class, //
 		CreationMessageDeletionTest.class, BasicDeletionTest.class, DeletionMessageDeletionTest.class, //
+		SetCoveredCommandTest.class, //
 		SemanticOrderAfterCreationOfElementOnTopTest.class,
 		SemanticOrderAfterInsertingBetweenMsgStartAndFinishTest.class, //
 		LogicalModelAdapterTest.class, //
