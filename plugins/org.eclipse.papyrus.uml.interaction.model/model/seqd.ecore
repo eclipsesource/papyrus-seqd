@@ -565,6 +565,15 @@
         <eTypeArguments eClassifier="#//MExecution"/>
       </eGenericType>
     </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="execution" lowerBound="1"
+        changeable="false" volatile="true" transient="true" derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="The execution that an occurrence either {@linkplain #getStartedExecution() starts} or {@linkplain #getFinishedExecution() finishes}, or the most nested execution during which span the occurrence happens on its covered lifeline."/>
+      </eAnnotations>
+      <eGenericType eClassifier="#//Optional">
+        <eTypeArguments eClassifier="#//MExecution"/>
+      </eGenericType>
+    </eStructuralFeatures>
     <eGenericSuperTypes eClassifier="#//MElement">
       <eTypeArguments eTypeParameter="#//MOccurrence/T"/>
     </eGenericSuperTypes>

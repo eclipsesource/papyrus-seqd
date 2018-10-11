@@ -167,6 +167,7 @@
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/startedExecution"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/finish"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/finishedExecution"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/execution"/>
       <genOperations ecoreOperation="seqd.ecore#//MOccurrence/setCovered">
         <genParameters ecoreParameter="seqd.ecore#//MOccurrence/setCovered/lifeline"/>
         <genParameters ecoreParameter="seqd.ecore#//MOccurrence/setCovered/yPosition"/>

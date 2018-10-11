@@ -58,6 +58,7 @@ public class MOccurrenceItemProvider extends MElementItemProvider {
 			addStartedExecutionPropertyDescriptor(object);
 			addFinishPropertyDescriptor(object);
 			addFinishedExecutionPropertyDescriptor(object);
+			addExecutionPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -143,6 +144,22 @@ public class MOccurrenceItemProvider extends MElementItemProvider {
 	}
 
 	/**
+	 * This adds a property descriptor for the Execution feature. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	protected void addExecutionPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MOccurrence_execution_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MOccurrence_execution_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MOccurrence_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MOCCURRENCE__EXECUTION, false, false, false,
+				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+	}
+
+	/**
 	 * This returns the label text for the adapted class. <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * 
@@ -172,6 +189,7 @@ public class MOccurrenceItemProvider extends MElementItemProvider {
 		case SequenceDiagramPackage.MOCCURRENCE__STARTED_EXECUTION:
 		case SequenceDiagramPackage.MOCCURRENCE__FINISH:
 		case SequenceDiagramPackage.MOCCURRENCE__FINISHED_EXECUTION:
+		case SequenceDiagramPackage.MOCCURRENCE__EXECUTION:
 			fireNotifyChanged(
 					new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;

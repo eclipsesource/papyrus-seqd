@@ -203,6 +203,18 @@ public class MInteractionImpl extends MElementImpl<Interaction> implements MInte
 		@SuppressWarnings("unchecked")
 		MElement<? extends E> result = (MElement<? extends E>)EcoreUtil.getExistingAdapter(element,
 				MObject.class);
+
+		if ((result == null) && isDisposed()) {
+			// We've already been disposed, probably because of mutations to the model. Search the hard way
+			for (Iterator<?> iter = eAllContents(); (result == null) && iter.hasNext();) {
+				@SuppressWarnings("unchecked")
+				MElement<? extends E> next = (MElement<? extends E>)iter.next();
+				if (next.getElement() == element) {
+					result = next;
+				}
+			}
+		}
+
 		return Optional.ofNullable(result);
 	}
 

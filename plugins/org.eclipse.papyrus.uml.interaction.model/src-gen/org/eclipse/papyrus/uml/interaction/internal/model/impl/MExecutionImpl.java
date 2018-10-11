@@ -12,14 +12,12 @@
  */
 package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 
-import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
-import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.spannedBy;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.function.Predicate;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.util.ECollections;
@@ -31,7 +29,6 @@ import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.DependencyContext;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.RemoveExecutionCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.SetOwnerCommand;
-import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
@@ -110,15 +107,7 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	public List<MOccurrence<? extends Element>> getOccurrences() {
 		EList<MOccurrence<? extends Element>> result = new UniqueEList.FastCompare<MOccurrence<? extends Element>>();
 
-		OptionalInt top = getTop();
-		OptionalInt bottom = getBottom();
-
-		if (top.isPresent() && bottom.isPresent()) {
-			Predicate<MElement<?>> belowTop = below(top.getAsInt() - 1);
-			Predicate<MElement<?>> aboveBottom = above(bottom.getAsInt() + 1);
-			Predicate<MElement<?>> spanned = belowTop.and(aboveBottom);
-			getOwner().getOccurrences().stream().filter(spanned).forEach(result::add);
-		}
+		getOwner().getOccurrences().stream().filter(spannedBy(this)).forEach(result::add);
 
 		getStart().ifPresent(start -> {
 			if (!result.contains(start)) {

@@ -269,6 +269,10 @@ public abstract class MElementTest extends TestCase {
 		};
 	}
 
+	protected <T> Matcher<Optional<T>> isPresent(Class<? extends T> type) {
+		return isPresent(instanceOf(type));
+	}
+
 	protected <T> Matcher<Optional<T>> isPresent(Matcher<? super T> assertion) {
 		return new TypeSafeDiagnosingMatcher<Optional<T>>() {
 			@Override

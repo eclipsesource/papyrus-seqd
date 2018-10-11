@@ -12,6 +12,7 @@
  */
 package org.eclipse.papyrus.uml.interaction.model.tests;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -92,6 +93,16 @@ public class MMessageEndTest extends MOccurrenceTest {
 	}
 
 	@Override
+	protected String getInteractionName() {
+		switch (getName()) {
+			case "testGetExecution":
+				return "ExecutionSpecificationSideAnchors";
+			default:
+				return super.getInteractionName();
+		}
+	}
+
+	@Override
 	protected void initializeFixture() {
 		setFixture(interaction.getMessages().get(0).getReceive().get());
 	}
@@ -169,6 +180,12 @@ public class MMessageEndTest extends MOccurrenceTest {
 		ExecutionSpecification exec = (ExecutionSpecification)umlInteraction
 				.getFragment("ActionExecutionSpecification1");
 		assertThat(replySend.getFinishedExecution(), isPresent(wraps(exec)));
+	}
+
+	@Override
+	public void testGetExecution() {
+		assertThat(getFixture().getExecution(), isPresent());
+		assertThat(getFixture().getExecution().get().getOccurrences(), hasItem(getFixture()));
 	}
 
 	/**

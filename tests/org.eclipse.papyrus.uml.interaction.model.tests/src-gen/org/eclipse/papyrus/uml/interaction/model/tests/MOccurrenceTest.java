@@ -126,6 +126,17 @@ public abstract class MOccurrenceTest extends MElementTest {
 	}
 
 	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getExecution()
+	 * <em>Execution</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MOccurrence#getExecution()
+	 * @generated NOT
+	 */
+	public void testGetExecution() {
+		fail("Must be tested by subclasses.");
+	}
+
+	/**
 	 * Tests the
 	 * '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#setCovered(org.eclipse.papyrus.uml.interaction.model.MLifeline, java.util.OptionalInt)
 	 * <em>Set Covered</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->

@@ -140,6 +140,11 @@ public class MDestructionTest extends MMessageEndTest {
 		assertThat(getFixture().getFinishedExecution(), not(isPresent()));
 	}
 
+	@Override
+	public void testGetExecution() {
+		assertThat(getFixture().getExecution(), not(isPresent()));
+	}
+
 	/**
 	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd#isSend() <em>Send</em>}'
 	 * feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->

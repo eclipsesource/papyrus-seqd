@@ -22,6 +22,7 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.gmf.runtime.notation.Anchor;
@@ -69,6 +70,10 @@ public abstract class MObjectImpl<T extends Element> extends MinimalEObjectImpl.
 
 	protected void dispose() {
 		getInteractionImpl().dispose();
+	}
+
+	protected final boolean isDisposed() {
+		return EcoreUtil.getExistingAdapter(this, MObject.class) == null;
 	}
 
 	final void setOwner(MElement<?> owner) {

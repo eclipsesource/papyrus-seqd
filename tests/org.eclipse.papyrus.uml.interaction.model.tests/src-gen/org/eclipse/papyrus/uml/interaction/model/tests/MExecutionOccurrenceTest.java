@@ -12,6 +12,8 @@
  */
 package org.eclipse.papyrus.uml.interaction.model.tests;
 
+import static org.hamcrest.CoreMatchers.both;
+import static org.hamcrest.CoreMatchers.either;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -186,6 +188,15 @@ public class MExecutionOccurrenceTest extends MOccurrenceTest {
 		ExecutionSpecification exec = (ExecutionSpecification)umlInteraction
 				.getFragment("ActionExecutionSpecification1");
 		assertThat(finish.get().getFinishedExecution(), isPresent(wraps(exec)));
+	}
+
+	@Override
+	public void testGetExecution() {
+		Optional<MExecution> started = getFixture().getStartedExecution();
+		Optional<MExecution> finished = getFixture().getFinishedExecution();
+
+		assertThat(getFixture().getExecution(),
+				both(isPresent(MExecution.class)).and(either(is(started)).or(is(finished))));
 	}
 
 	/**
