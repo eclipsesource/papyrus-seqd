@@ -17,10 +17,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
+import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.papyrus.uml.interaction.model.MDestruction;
+import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 
 import junit.textui.TestRunner;
@@ -204,6 +207,16 @@ public class MDestructionTest extends MMessageEndTest {
 	@Override
 	public void testGetDiagramView() {
 		assertThat(getFixture().getDiagramView(), isPresent(instanceOf(IdentityAnchor.class)));
+	}
+
+	@Override
+	public void testPrecedes__MElement() {
+		for (Iterator<?> iter = ((EObject)getFixture().getInteraction()).eAllContents(); iter.hasNext();) {
+			Object next = iter.next();
+			if ((next != getFixture()) && (next instanceof MElement<?>)) {
+				assertThat("precedes " + next, getFixture().precedes((MElement<?>)next), is(false));
+			}
+		}
 	}
 
 } // MDestructionTest

@@ -29,10 +29,10 @@ public class DependencyContext {
 
 	private static final Object NO_KEY = new Object();
 
-	/** A dependency context that applies no guard at all. */
+	/** A dependency context that tracks nothing and applies no guard at all. */
 	private static final DependencyContext NULL_CONTEXT = new DependencyContext() {
 		@Override
-		boolean guardAction(Object subject, Object key) {
+		public final boolean put(Object subject, Object key) {
 			return true;
 		}
 	};
@@ -73,6 +73,21 @@ public class DependencyContext {
 	 * @see #get()
 	 */
 	public static DependencyContext getDynamic() {
+		return getDynamic(null);
+	}
+
+	/**
+	 * Obtain a dependency context in which to compute commands, which dynamically establishes a root context
+	 * if necessary, otherwise just uses the current context. Either way, from within an
+	 * {@linkplain #run(Object, Object, Runnable) action} method of the dynamic context, the real (static)
+	 * context may be obtained and stored for later use via the {@link #get()} API.
+	 * 
+	 * @param onClose
+	 *            an action to invoke when the root context is closed
+	 * @return the dynamic context
+	 * @see #get()
+	 */
+	public static DependencyContext getDynamic(Consumer<? super DependencyContext> onClose) {
 		return new DependencyContext() {
 			@Override
 			public <T, R> Optional<R> apply(T subject, Object key, Function<? super T, ? extends R> action) {
@@ -83,7 +98,13 @@ public class DependencyContext {
 				DependencyContext delegate = INSTANCE.get();
 				if (delegate == null) {
 					delegate = new DependencyContext();
-					result = delegate.withContext(ctx -> ctx.apply(subject, key, action));
+					try {
+						result = delegate.withContext(ctx -> ctx.apply(subject, key, action));
+					} finally {
+						if (onClose != null) {
+							onClose.accept(delegate);
+						}
+					}
 				} else {
 					result = delegate.apply(subject, key, action);
 				}
@@ -227,8 +248,71 @@ public class DependencyContext {
 		accept(subject, key, __ -> action.run());
 	}
 
-	boolean guardAction(Object subject, Object key) {
+	/**
+	 * Obtain the context key of some type associated with a given {@code subject}. In case of multiple
+	 * context keys of this type associated with a subject, which key is returned is undefined.
+	 * 
+	 * @param subject
+	 *            a subject of contextual operations
+	 * @param keyType
+	 *            the type of key to retrieve
+	 * @return some key of the requested type
+	 */
+	public <T> Optional<T> get(Object subject, Class<T> keyType) {
+		return context.get(subject).stream().filter(keyType::isInstance).map(keyType::cast).findAny();
+	}
+
+	/**
+	 * Obtain or create the context key of some type associated with a given {@code subject}. In case of
+	 * multiple context keys of this type associated with a subject, which key is returned is undefined. And
+	 * in the case that the key is not yet present, obtain it from the given supplier and
+	 * {@link #put(Object, Object) put it}.
+	 * 
+	 * @param subject
+	 *            a subject of contextual operations
+	 * @param keyType
+	 *            the type of key to retrieve
+	 * @param keySupplier
+	 *            a supplier of the key in case it is absent
+	 * @return some key of the requested type, supplied and registered if necessary
+	 */
+	public <T> T get(Object subject, Class<T> keyType, Supplier<? extends T> keySupplier) {
+		T result;
+
+		Optional<T> existing = get(subject, keyType);
+		if (existing.isPresent()) {
+			result = existing.get();
+		} else {
+			result = keySupplier.get();
+			put(subject, result);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Associate some context {@code key} with a {@code subject}. This is useful either intentionally to block
+	 * future {@linkplain #run(Object, Object, Runnable) actions} on that {@code subject} or else to register
+	 * some data to be {@linkplain #get(Object, Class) retrieved} later. Has no effect if the {@code key} is
+	 * already associated with the {@code subject}.
+	 * 
+	 * @param subject
+	 *            a subject of contextual operations
+	 * @param key
+	 *            a context key to associate with the {@code subject}
+	 * @return {@code true} if the context was updated, which is to say that this {@code key} is a new
+	 *         association with this {@code subject}; {@code false}, otherwise
+	 * @see #get(Object, Class)
+	 * @see #run(Object, Object, Runnable)
+	 * @see #accept(Object, Object, Consumer)
+	 * @see #apply(Object, Object, Function)
+	 */
+	public boolean put(Object subject, Object key) {
 		return context.put(subject, contextKey(key));
+	}
+
+	private final boolean guardAction(Object subject, Object key) {
+		return put(subject, key);
 	}
 
 	static Object contextKey(Object key) {

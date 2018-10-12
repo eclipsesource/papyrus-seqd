@@ -31,7 +31,6 @@ import org.eclipse.papyrus.uml.interaction.graph.GraphPredicates;
 import org.eclipse.papyrus.uml.interaction.graph.Tag;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
-import org.eclipse.papyrus.uml.interaction.internal.model.commands.DependencyContext;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.SetCoveredCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
@@ -40,7 +39,6 @@ import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.util.Optionals;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
-import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.OccurrenceSpecification;
 
 /**
@@ -117,9 +115,7 @@ public abstract class MOccurrenceImpl<T extends Element> extends MElementImpl<T>
 	 */
 	@Override
 	public Optional<MLifeline> getCovered() {
-		Optional<Lifeline> result = getFragment()
-				.map(f -> f.getCovereds().isEmpty() ? null : f.getCovereds().get(0));
-		return result.flatMap(lifeline -> getInteraction().getLifeline(lifeline));
+		throw new UnsupportedOperationException("implemented by subclasses"); //$NON-NLS-1$
 	}
 
 	/**
@@ -210,9 +206,7 @@ public abstract class MOccurrenceImpl<T extends Element> extends MElementImpl<T>
 	@Override
 	public Command setCovered(MLifeline lifeline, OptionalInt yPosition) {
 		// Avoid cycling through this occurrence again
-		return DependencyContext.getDynamic()
-				.apply(this, SetCoveredCommand.class, occ -> new SetCoveredCommand(occ, lifeline, yPosition))
-				.orElse(null);
+		return withPadding(SetCoveredCommand.class, () -> new SetCoveredCommand(this, lifeline, yPosition));
 	}
 
 	/**

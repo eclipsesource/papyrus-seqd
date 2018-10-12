@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import static java.util.Collections.singletonList;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,9 @@ import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.util.Lifelines;
 import org.eclipse.papyrus.uml.interaction.model.util.Optionals;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
 import org.eclipse.uml2.uml.Element;
@@ -46,6 +49,9 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 
 	private final OptionalInt yPosition;
 
+	// The element on the lifeline before which we're inserting our element, if the new owner is a lifeline
+	private final Optional<MElement<? extends Element>> nextOnLifeline;
+
 	/**
 	 * Initializes me.
 	 *
@@ -57,6 +63,9 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 
 		this.newOwner = newOwner;
 		this.yPosition = yPosition;
+
+		nextOnLifeline = as(Optional.of(newOwner), MLifeline.class).flatMap(lifeline -> Lifelines
+				.elementAfterAbsolute(lifeline, yPosition.orElseGet(() -> element.getTop().orElse(0))));
 	}
 
 	protected boolean isChangingOwner() {
@@ -73,7 +82,13 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 		return new SequenceDiagramSwitch<Command>() {
 			@Override
 			public Command caseMExecution(MExecution execution) {
-				return createCommand(execution, (MLifeline)newOwner);
+				Command result = createCommand(execution, (MLifeline)newOwner);
+
+				if (isChangingOwner()) {
+					ensurePadding();
+				}
+
+				return result;
 			}
 
 			@Override
@@ -135,6 +150,19 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 				.filter(Objects::nonNull).forEach(result::add);
 
 		return result.stream().reduce(chaining());
+	}
+
+	protected void ensurePadding() {
+		// Do we have an element that needs padding before it?
+		nextOnLifeline.ifPresent(next -> {
+			// And padding from which element do we need to ensure?
+			MElement<? extends Element> element = getTarget();
+			MElement<? extends Element> padFrom = element instanceof MMessageEnd
+					? ((MMessageEnd)element).getOwner()
+					: element;
+
+			DeferredPaddingCommand.get(element).padFrom(padFrom).nudge(next);
+		});
 	}
 
 }
