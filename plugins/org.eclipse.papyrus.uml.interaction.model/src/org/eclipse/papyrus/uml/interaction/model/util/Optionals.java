@@ -18,6 +18,7 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 
 /**
@@ -83,6 +84,46 @@ public class Optionals {
 				: Optional.empty();
 	}
 
+	/**
+	 * Flat-map an optional integer value to an object.
+	 * 
+	 * @param optionalInt
+	 *            an optional integer value
+	 * @param mapping
+	 *            the integer mapping function
+	 * @return the optional result of the {@code mapping}
+	 */
+	@SuppressWarnings("unchecked")
+	public static <R> Optional<R> flatMapToObj(OptionalInt optionalInt,
+			IntFunction<Optional<? extends R>> mapping) {
+
+		// Cast is unnecessary because Optional is immutable
+		return optionalInt.isPresent() ? (Optional<R>)mapping.apply(optionalInt.getAsInt())
+				: Optional.empty();
+	}
+
+	/**
+	 * Map an optional to an optional-int under an integer function.
+	 * 
+	 * @param optional
+	 *            an optional to map
+	 * @param mapping
+	 *            the integer function to apply
+	 * @return the optional result of the {@code mapping}
+	 */
+	public static <T> OptionalInt mapToInt(Optional<T> optional, ToIntFunction<? super T> mapping) {
+		return optional.map(v -> OptionalInt.of(mapping.applyAsInt(v))).orElse(OptionalInt.empty());
+	}
+
+	/**
+	 * Map an optional to an optional-int under an optional-integer function.
+	 * 
+	 * @param optional
+	 *            an optional to map
+	 * @param mapping
+	 *            the optional-integer function to apply
+	 * @return the optional result of the {@code mapping}
+	 */
 	public static <T> OptionalInt flatMapToInt(Optional<T> optional,
 			Function<? super T, OptionalInt> mapping) {
 		return optional.map(mapping).orElse(OptionalInt.empty());

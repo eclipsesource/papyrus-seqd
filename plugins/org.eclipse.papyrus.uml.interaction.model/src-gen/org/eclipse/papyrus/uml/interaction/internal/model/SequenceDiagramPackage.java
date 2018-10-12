@@ -178,13 +178,21 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MELEMENT___REMOVE = 5;
 
 	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MELEMENT___PRECEDES__MELEMENT = 6;
+
+	/**
 	 * The number of operations of the '<em>MElement</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MELEMENT_OPERATION_COUNT = 6;
+	int MELEMENT_OPERATION_COUNT = 7;
 
 	/**
 	 * The meta object id for the
@@ -307,6 +315,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MINTERACTION___REMOVE = MELEMENT___REMOVE;
+
+	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MINTERACTION___PRECEDES__MELEMENT = MELEMENT___PRECEDES__MELEMENT;
 
 	/**
 	 * The operation id for the '<em>Get Diagram View</em>' operation. <!-- begin-user-doc --> <!--
@@ -545,6 +561,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MLIFELINE___REMOVE = MELEMENT___REMOVE;
+
+	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___PRECEDES__MELEMENT = MELEMENT___PRECEDES__MELEMENT;
 
 	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -822,6 +846,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MEXECUTION___REMOVE = MELEMENT___REMOVE;
 
 	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION___PRECEDES__MELEMENT = MELEMENT___PRECEDES__MELEMENT;
+
+	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -1022,6 +1054,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MOCCURRENCE___REMOVE = MELEMENT___REMOVE;
 
 	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MOCCURRENCE___PRECEDES__MELEMENT = MELEMENT___PRECEDES__MELEMENT;
+
+	/**
 	 * The operation id for the '<em>Set Covered</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
@@ -1187,6 +1227,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MEXECUTION_OCCURRENCE___REMOVE = MOCCURRENCE___REMOVE;
+
+	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION_OCCURRENCE___PRECEDES__MELEMENT = MOCCURRENCE___PRECEDES__MELEMENT;
 
 	/**
 	 * The operation id for the '<em>Set Covered</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
@@ -1399,6 +1447,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MMESSAGE_END___REMOVE = MOCCURRENCE___REMOVE;
 
 	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE_END___PRECEDES__MELEMENT = MOCCURRENCE___PRECEDES__MELEMENT;
+
+	/**
 	 * The operation id for the '<em>Set Covered</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
@@ -1580,6 +1636,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MMESSAGE___REMOVE = MELEMENT___REMOVE;
+
+	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE___PRECEDES__MELEMENT = MELEMENT___PRECEDES__MELEMENT;
 
 	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1789,6 +1853,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MDESTRUCTION___REMOVE = MMESSAGE_END___REMOVE;
+
+	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MDESTRUCTION___PRECEDES__MELEMENT = MMESSAGE_END___PRECEDES__MELEMENT;
 
 	/**
 	 * The operation id for the '<em>Set Covered</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
@@ -2013,6 +2085,17 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EOperation getMElement__Remove();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MElement#precedes(org.eclipse.papyrus.uml.interaction.model.MElement)
+	 * <em>Precedes</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Precedes</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#precedes(org.eclipse.papyrus.uml.interaction.model.MElement)
+	 * @generated
+	 */
+	EOperation getMElement__Precedes__MElement();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction
@@ -3009,6 +3092,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation MELEMENT___REMOVE = eINSTANCE.getMElement__Remove();
+
+		/**
+		 * The meta object literal for the '<em><b>Precedes</b></em>' operation. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MELEMENT___PRECEDES__MELEMENT = eINSTANCE.getMElement__Precedes__MElement();
 
 		/**
 		 * The meta object literal for the

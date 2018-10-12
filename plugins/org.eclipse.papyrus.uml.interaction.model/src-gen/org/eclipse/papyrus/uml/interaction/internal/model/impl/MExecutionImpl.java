@@ -26,7 +26,6 @@ import org.eclipse.emf.common.util.UniqueEList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
-import org.eclipse.papyrus.uml.interaction.internal.model.commands.DependencyContext;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.RemoveExecutionCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.SetOwnerCommand;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
@@ -156,9 +155,7 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	@Override
 	public Command setOwner(MLifeline newOwner, OptionalInt yPosition) {
 		// Avoid cycling through this execution again
-		return DependencyContext.getDynamic()
-				.apply(this, SetOwnerCommand.class, exec -> new SetOwnerCommand(exec, newOwner, yPosition)) //
-				.orElse(null);
+		return withPadding(SetOwnerCommand.class, () -> new SetOwnerCommand(this, newOwner, yPosition));
 	}
 
 	/**

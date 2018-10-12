@@ -33,11 +33,13 @@ import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MOccurrenceImpl;
 import org.eclipse.papyrus.uml.interaction.model.MDestruction;
+import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
+import org.eclipse.papyrus.uml.interaction.model.util.Lifelines;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
@@ -61,6 +63,9 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 
 	private final OptionalInt yPosition;
 
+	// The element on the lifeline before which we're inserting our occurrence
+	private final Optional<MElement<? extends Element>> nextOnLifeline;
+
 	/**
 	 * Initializes me.
 	 *
@@ -72,6 +77,9 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 
 		this.lifeline = lifeline;
 		this.yPosition = yPosition;
+
+		nextOnLifeline = Lifelines.elementAfterAbsolute(lifeline,
+				yPosition.orElseGet(() -> end.getTop().orElse(0)));
 	}
 
 	protected boolean isChangingLifeline() {
@@ -145,6 +153,10 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			if (getTarget() instanceof MMessageEnd) {
 				result = handleMessage((MMessageEnd)getTarget()).map(chaining(result)).orElse(result);
 			}
+		}
+
+		if (isChangingLifeline()) {
+			ensurePadding();
 		}
 
 		return result;
@@ -346,4 +358,16 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 		return !lifeline.getOccurrences().stream().anyMatch(above(y));
 	}
 
+	protected void ensurePadding() {
+		// Do we have an element that needs padding before it?
+		nextOnLifeline.ifPresent(next -> {
+			// And padding from which element do we need to ensure?
+			MOccurrence<? extends Element> occurrence = getTarget();
+			MElement<? extends Element> padFrom = occurrence instanceof MMessageEnd
+					? ((MMessageEnd)occurrence).getOwner()
+					: occurrence;
+
+			DeferredPaddingCommand.get(occurrence).padFrom(padFrom).nudge(next);
+		});
+	}
 }

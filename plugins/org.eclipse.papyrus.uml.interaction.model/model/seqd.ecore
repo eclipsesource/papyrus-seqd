@@ -38,6 +38,13 @@
       <eParameters name="deltaY" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     </eOperations>
     <eOperations name="remove" lowerBound="1" eType="#//Command"/>
+    <eOperations name="precedes" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eParameters name="other" lowerBound="1">
+        <eGenericType eClassifier="#//MElement">
+          <eTypeArguments/>
+        </eGenericType>
+      </eParameters>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="interaction" lowerBound="1"
         eType="#//MInteraction" changeable="false" volatile="true" transient="true"
         derived="true" resolveProxies="false"/>
