@@ -672,6 +672,26 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EOperation getMLifeline__GetFirstLevelExecutions() {
+		return mLifelineEClass.getEOperations().get(15);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMLifeline__GetOccurrenceSpecifications() {
+		return mLifelineEClass.getEOperations().get(16);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EClass getMExecution() {
 		return mExecutionEClass;
 	}
@@ -1157,6 +1177,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 				MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MESSAGESORT_NAMEDELEMENT_EXECUTIONCREATIONCOMMANDPARAMETER);
 		createEOperation(mLifelineEClass, MLIFELINE___ELEMENT_AT__INT);
 		createEOperation(mLifelineEClass, MLIFELINE___NUDGE_HORIZONTALLY__INT);
+		createEOperation(mLifelineEClass, MLIFELINE___GET_FIRST_LEVEL_EXECUTIONS);
+		createEOperation(mLifelineEClass, MLIFELINE___GET_OCCURRENCE_SPECIFICATIONS);
 
 		mExecutionEClass = createEClass(MEXECUTION);
 		createEAttribute(mExecutionEClass, MEXECUTION__START);
@@ -1639,6 +1661,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		op = initEOperation(getMLifeline__NudgeHorizontally__int(), this.getCommand(), "nudgeHorizontally", 1, //$NON-NLS-1$
 				1, IS_UNIQUE, IS_ORDERED);
 		addEParameter(op, ecorePackage.getEInt(), "deltaX", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		initEOperation(getMLifeline__GetFirstLevelExecutions(), this.getMExecution(),
+				"getFirstLevelExecutions", 0, -1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		op = initEOperation(getMLifeline__GetOccurrenceSpecifications(), null, "getOccurrenceSpecifications", //$NON-NLS-1$
+				0, -1, IS_UNIQUE, IS_ORDERED);
+		g1 = createEGenericType(this.getMOccurrence());
+		g2 = createEGenericType();
+		g1.getETypeArguments().add(g2);
+		initEOperation(op, g1);
 
 		initEClass(mExecutionEClass, MExecution.class, "MExecution", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);

@@ -143,6 +143,8 @@
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/nudgeHorizontally">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/nudgeHorizontally/deltaX"/>
       </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/getFirstLevelExecutions"/>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/getOccurrenceSpecifications"/>
     </genClasses>
     <genClasses ecoreClass="seqd.ecore#//MExecution">
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MExecution/start"/>

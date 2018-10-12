@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.command.Command;
@@ -24,6 +25,7 @@ import org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MMessageImpl;
+import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.ElementRemovalCommandImpl;
 import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
@@ -61,14 +63,15 @@ public class RemoveLifelineCommand extends ModelCommand<MLifelineImpl> implement
 		List<RemovalCommand<Element>> removalCommands = new ArrayList<>(lifeline.getExecutions().size() + 1);
 
 		/* collect non execution related messages */
-		Set<MessageOccurrenceSpecification> messageEndsToDelete = new LinkedHashSet<MessageOccurrenceSpecification>(
+		Set<MessageOccurrenceSpecification> messageEndsToDelete = new LinkedHashSet<>(
 				lifeline.getElement().getCoveredBys().stream()//
 						.filter(MessageOccurrenceSpecification.class::isInstance)//
 						.map(MessageOccurrenceSpecification.class::cast)//
 						.collect(Collectors.toSet()));
 
-		/* remove executions */
-		lifeline.getExecutions().forEach(e -> {
+		/* remove executions (only first level, others will be removed by dependency */
+
+		lifeline.getFirstLevelExecutions().forEach(e -> {
 			e.getStart().ifPresent(o -> messageEndsToDelete.remove(o.getElement()));
 			e.getFinish().ifPresent(o -> messageEndsToDelete.remove(o.getElement()));
 			removalCommands.add(new RemoveExecutionCommand((MExecutionImpl)e, false));
@@ -113,6 +116,15 @@ public class RemoveLifelineCommand extends ModelCommand<MLifelineImpl> implement
 			return Collections.emptySet();
 		}
 		return delegate.getElementsToRemove();
+	}
+
+	public static class IsDirectlyNested implements Predicate<MExecution> {
+
+		@Override
+		public boolean test(MExecution t) {
+			return false;
+		}
+
 	}
 
 }

@@ -21,6 +21,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.emf.common.command.Command;
@@ -44,6 +45,7 @@ import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
 import org.eclipse.uml2.uml.MessageKind;
 import org.eclipse.uml2.uml.MessageSort;
+import org.eclipse.uml2.uml.OccurrenceSpecification;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.junit.Assume;
@@ -91,6 +93,10 @@ import junit.textui.TestRunner;
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#elementAt(int) <em>Element At</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#nudgeHorizontally(int) <em>Nudge
  * Horizontally</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getFirstLevelExecutions() <em>Get First
+ * Level Executions</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrenceSpecifications() <em>Get
+ * Occurrence Specifications</em>}</li>
  * </ul>
  * </p>
  * 
@@ -660,6 +666,62 @@ public class MLifelineTest extends MElementTest {
 		// but this one doesn't move. It's dependet on the centre line by creation message, but it's
 		// visually to the left, so isn't affected by the horizontal nudge (which has no semantics)
 		assertThat("Left line moved", interaction.getLifeline(left).get().getLeft().getAsInt(), is(leftX));
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getFirstLevelExecutions() <em>Get
+	 * First Level Executions</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getFirstLevelExecutions()
+	 * @generated NOT
+	 */
+	public void testGetFirstLevelExecutions() {
+		List<MExecution> executions = getFixture().getFirstLevelExecutions();
+		ActionExecutionSpecification fragment = (ActionExecutionSpecification)umlInteraction.getFragment(
+				"ActionExecutionSpecification1", true, UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION, //$NON-NLS-1$
+				false);
+		Optional<MExecution> execution = getFixture().getExecution(fragment);
+		assertTrue(execution.isPresent());
+		assertThat(executions, hasItem(execution.get()));
+		assertEquals(1, executions.size());
+
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrenceSpecifications()
+	 * <em>Get Occurrence Specifications</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrenceSpecifications()
+	 * @generated NOT
+	 */
+	public void testGetOccurrenceSpecifications() {
+		// get start and finish for ActionExecutionSpecification1
+		ActionExecutionSpecification actionExec1 = (ActionExecutionSpecification)umlInteraction.getFragment(
+				"ActionExecutionSpecification1", true, UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION, //$NON-NLS-1$
+				false);
+		OccurrenceSpecification start = actionExec1.getStart();
+		OccurrenceSpecification finish = actionExec1.getFinish();
+
+		ActionExecutionSpecification exec1 = (ActionExecutionSpecification)umlInteraction.getFragment(
+				"Execution1", true, UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION, //$NON-NLS-1$
+				false);
+		OccurrenceSpecification exec1_strt = exec1.getStart();
+		OccurrenceSpecification exec1_fsh = exec1.getFinish();
+
+		MElement<? extends OccurrenceSpecification> mStart = getFixture().getOwner().getElement(start).get();
+		MElement<? extends OccurrenceSpecification> mFinish = getFixture().getOwner().getElement(finish)
+				.get();
+		MElement<? extends OccurrenceSpecification> mExec1_strt = getFixture().getOwner()
+				.getElement(exec1_strt).get();
+		MElement<? extends OccurrenceSpecification> mExec1_fsh = getFixture().getOwner().getElement(exec1_fsh)
+				.get();
+
+		assertEquals(4, getFixture().getOccurrenceSpecifications().size());
+		assertEquals(mStart, getFixture().getOccurrenceSpecifications().get(0));
+		assertEquals(mExec1_strt, getFixture().getOccurrenceSpecifications().get(1));
+		assertEquals(mExec1_fsh, getFixture().getOccurrenceSpecifications().get(2));
+		assertEquals(mFinish, getFixture().getOccurrenceSpecifications().get(3));
+
 	}
 
 } // MLifelineTest

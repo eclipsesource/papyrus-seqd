@@ -28,8 +28,9 @@ import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.uml2.uml.ActionExecutionSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
+import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.junit.Ignore;
 
 import junit.textui.TestRunner;
 
@@ -206,13 +207,23 @@ public class MExecutionTest extends MElementTest {
 	 * 
 	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#insertNestedExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement,
 	 *      int, int, org.eclipse.uml2.uml.Element)
-	 * @generated
+	 * @generated NOT
 	 */
-	@Ignore
 	public void testInsertNestedExecutionAfter__MElement_int_int_Element() {
-		// TODO: implement this operation test method
-		// Ensure that you remove @generated or mark it @generated NOT
-		fail();
+		OpaqueAction action = UMLFactory.eINSTANCE.createOpaqueAction();
+		assertThat(getFixture().getNestedExecutions().size(), equalTo(1));
+		CreationCommand<ExecutionSpecification> command = getFixture()
+				.insertNestedExecutionAfter(getFixture(), 12, 22, action);
+
+		assertThat(command, executable());
+		ExecutionSpecification execSpec = create(command);
+		MExecution exec = getFixture().getOwner().getExecution(execSpec).get();
+		assertThat(exec.getOwner(), is(getFixture().getOwner()));
+		assertThat(exec.getTop().getAsInt(), is(104)); // top of the nesting exec: 92, +offset: 12
+		assertThat(exec.getBottom().getAsInt(), is(126)); // length = 22
+		assertThat(exec.getElement(), instanceOf(ActionExecutionSpecification.class));
+		assertThat(((ActionExecutionSpecification)exec.getElement()).getAction(), is(action));
+		assertThat(getFixture().getNestedExecutions().size(), equalTo(2));
 	}
 
 	/**

@@ -15,10 +15,13 @@ package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 import static org.eclipse.papyrus.uml.interaction.graph.GraphPredicates.covers;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.Stack;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Notification;
@@ -44,6 +47,7 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
 import org.eclipse.uml2.uml.Element;
@@ -53,6 +57,7 @@ import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageSort;
 import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.OccurrenceSpecification;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>MLifeline</b></em>'. <!--
@@ -445,6 +450,57 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 * @generated NOT
 	 */
 	@Override
+	public List<MExecution> getFirstLevelExecutions() {
+		List<MExecution> nestedExecutions = new ArrayList<>();
+		// browse all executions on this lifeline and check the virtual owner
+		List<MOccurrence<?>> occurrences = getOccurrenceSpecifications();
+
+		Stack<MExecution> stack = new Stack<>();
+		for (MOccurrence<?> occurence : occurrences) {
+			// check if it starts a new occurrence. If yes, adds it on top of the stack
+			// if it finishes, removes the finished execution from the stack
+			occurence.getFinishedExecution().ifPresent(__ -> {
+				if (!stack.isEmpty()) {
+					stack.pop();
+				}
+			});
+			if (occurence.getStartedExecution().isPresent()) {
+				MExecution execution = occurence.getStartedExecution().get();
+				// if current owner is null, that mean that the direct owner is the lifeline, so it should be
+				// added in the list
+				if (stack.empty()) {
+					nestedExecutions.add(execution);
+				}
+				stack.push(execution);
+			}
+		}
+		return nestedExecutions;
+
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public List<MOccurrence<?>> getOccurrenceSpecifications() {
+		List<MOccurrence<?>> orderedCoveredBys = getInteraction().getElement().getFragments().stream()
+				.filter(frg -> frg.getCovereds().contains(getElement())) //
+				.filter(OccurrenceSpecification.class::isInstance) //
+				.map(el -> getInteraction().getElement(el)) //
+				.filter(e -> e.isPresent()) //
+				.map(e -> MOccurrence.class.cast(e.get())) //
+				.collect(Collectors.toList());
+		return orderedCoveredBys;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
 	public Command remove() {
 		return new RemoveLifelineCommand(this, true);
 	}
@@ -595,6 +651,10 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return elementAt((Integer)arguments.get(0));
 			case SequenceDiagramPackage.MLIFELINE___NUDGE_HORIZONTALLY__INT:
 				return nudgeHorizontally((Integer)arguments.get(0));
+			case SequenceDiagramPackage.MLIFELINE___GET_FIRST_LEVEL_EXECUTIONS:
+				return getFirstLevelExecutions();
+			case SequenceDiagramPackage.MLIFELINE___GET_OCCURRENCE_SPECIFICATIONS:
+				return getOccurrenceSpecifications();
 		}
 		return super.eInvoke(operationID, arguments);
 	}

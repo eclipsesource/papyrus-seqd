@@ -364,4 +364,23 @@ public interface MLifeline extends MElement<Lifeline> {
 	 */
 	Command nudgeHorizontally(int deltaX);
 
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> Query the list of owned
+	 * {@link MExecution} that are directly on the lifeline, and not virtual children of another execution of
+	 * this lifeline. <!-- end-model-doc -->
+	 * 
+	 * @model kind="operation"
+	 * @generated
+	 */
+	List<MExecution> getFirstLevelExecutions();
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> Query the {@link MOccurrence} in
+	 * timeline order that are on this lifeline <!-- end-model-doc -->
+	 * 
+	 * @model kind="operation"
+	 * @generated
+	 */
+	List<MOccurrence<?>> getOccurrenceSpecifications();
+
 } // MLifeline

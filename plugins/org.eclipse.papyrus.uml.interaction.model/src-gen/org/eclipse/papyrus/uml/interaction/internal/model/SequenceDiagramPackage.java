@@ -664,13 +664,31 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MLIFELINE___NUDGE_HORIZONTALLY__INT = MELEMENT_OPERATION_COUNT + 14;
 
 	/**
+	 * The operation id for the '<em>Get First Level Executions</em>' operation. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___GET_FIRST_LEVEL_EXECUTIONS = MELEMENT_OPERATION_COUNT + 15;
+
+	/**
+	 * The operation id for the '<em>Get Occurrence Specifications</em>' operation. <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___GET_OCCURRENCE_SPECIFICATIONS = MELEMENT_OPERATION_COUNT + 16;
+
+	/**
 	 * The number of operations of the '<em>MLifeline</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 15;
+	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 17;
 
 	/**
 	 * The meta object id for the
@@ -2305,6 +2323,28 @@ public interface SequenceDiagramPackage extends EPackage {
 	EOperation getMLifeline__NudgeHorizontally__int();
 
 	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getFirstLevelExecutions() <em>Get First
+	 * Level Executions</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Get First Level Executions</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getFirstLevelExecutions()
+	 * @generated
+	 */
+	EOperation getMLifeline__GetFirstLevelExecutions();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrenceSpecifications() <em>Get
+	 * Occurrence Specifications</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Get Occurrence Specifications</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrenceSpecifications()
+	 * @generated
+	 */
+	EOperation getMLifeline__GetOccurrenceSpecifications();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MExecution
 	 * <em>MExecution</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -3162,6 +3202,23 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation MLIFELINE___NUDGE_HORIZONTALLY__INT = eINSTANCE.getMLifeline__NudgeHorizontally__int();
+
+		/**
+		 * The meta object literal for the '<em><b>Get First Level Executions</b></em>' operation. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MLIFELINE___GET_FIRST_LEVEL_EXECUTIONS = eINSTANCE.getMLifeline__GetFirstLevelExecutions();
+
+		/**
+		 * The meta object literal for the '<em><b>Get Occurrence Specifications</b></em>' operation. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MLIFELINE___GET_OCCURRENCE_SPECIFICATIONS = eINSTANCE
+				.getMLifeline__GetOccurrenceSpecifications();
 
 		/**
 		 * The meta object literal for the

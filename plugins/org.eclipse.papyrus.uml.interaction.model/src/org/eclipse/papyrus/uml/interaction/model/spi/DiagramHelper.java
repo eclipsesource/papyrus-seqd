@@ -102,7 +102,7 @@ public interface DiagramHelper {
 	CreationCommand<Shape> createExecutionShape(Supplier<? extends ExecutionSpecification> execution,
 			Shape lifeline, int yPosition, int height);
 
-/**
+	/**
 	 * Obtain a command to create a shape for the given {@code execution} specification as a child of another
 	 * {@link ExecutionSpecification} shape in the diagram.
 	 * 

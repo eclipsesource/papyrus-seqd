@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.util.EList;
@@ -36,7 +35,6 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
-import org.eclipse.uml2.uml.OccurrenceSpecification;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>MExecution</b></em>'. <!--
@@ -177,15 +175,15 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 		// browse all executions on lifeline after the start of this execution and before the end of this
 		// execution
 
-		List<MOccurrence<Element>> occurences = getOccurenceSpecifications();
+		List<MOccurrence<?>> occurences = getOwner().getOccurrenceSpecifications();
 
 		int start = getStart().map(occ -> occurences.indexOf(occ)).orElse(-1);
 		int finish = getFinish().map(occ -> occurences.indexOf(occ)).orElse(-1);
 		if (start != -1 && finish != -1 && finish - start > 1) {
-			List<MOccurrence<Element>> executionOccurences = occurences.subList(start, finish);
+			List<MOccurrence<?>> executionOccurences = occurences.subList(start, finish);
 
 			Stack<MExecution> stack = new Stack<>();
-			for (MOccurrence<Element> occurence : executionOccurences) {
+			for (MOccurrence<?> occurence : executionOccurences) {
 				// check if it starts a new occurrence. If yes, adds it on top of the stack
 				// if it finishes, removes the finished execution from the stack
 				occurence.getFinishedExecution().ifPresent(__ -> {
@@ -204,17 +202,6 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 			}
 		}
 		return nestedExecutions;
-	}
-
-	protected List<MOccurrence<Element>> getOccurenceSpecifications() {
-		List<MOccurrence<Element>> orderedCoveredBys = getInteraction().getElement().getFragments().stream()
-				.filter(frg -> frg.getCovereds().contains(getOwner().getElement())) //
-				.filter(OccurrenceSpecification.class::isInstance) //
-				.map(el -> getInteraction().getElement(el)) //
-				.filter(e -> e.isPresent()) //
-				.map(e -> MOccurrence.class.cast(e.get())) //
-				.collect(Collectors.toList());
-		return orderedCoveredBys;
 	}
 
 	/**
