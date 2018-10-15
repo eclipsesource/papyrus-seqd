@@ -33,29 +33,20 @@ import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.FeedbackHelper;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
-import org.eclipse.gmf.runtime.common.core.command.CommandResult;
-import org.eclipse.gmf.runtime.common.core.command.ICommand;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewRequest;
-import org.eclipse.gmf.runtime.emf.commands.core.command.AbstractTransactionalCommand;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
-import org.eclipse.gmf.runtime.emf.type.core.commands.DestroyElementCommand;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.papyrus.infra.emf.gmf.command.GMFtoEMFCommandWrapper;
 import org.eclipse.papyrus.infra.gmfdiag.common.commands.SelectAndExecuteCommand;
@@ -74,7 +65,6 @@ import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
-import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
@@ -83,7 +73,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageSort;
-import org.eclipse.uml2.uml.OccurrenceSpecification;
 
 /**
  * Abstract implementation of a graphical node edit policy supporting message connections in the sequence
@@ -408,9 +397,9 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		if (result.canExecute()) {
 			// Perhaps is a message send end now at an execution finish that isn't already a message end?
-			Optional<ICommand> replaceExecFinish = Optional.of(sourceEnd)
+			Optional<org.eclipse.emf.common.command.Command> replaceExecFinish = Optional.of(sourceEnd)
 					.flatMap(send -> getExecutionFinish(send, request))
-					.map(execFinish -> replace(execFinish, sourceEnd));
+					.map(execFinish -> execFinish.replaceBy(sourceEnd));
 			result = replaceExecFinish.map(this::wrap).map(result::chain).orElse(result);
 		}
 
@@ -548,9 +537,9 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 			}
 
 			// Perhaps is a message receive end now at an execution start that isn't already a message end?
-			Optional<ICommand> replaceExecStart = Optional.of(targetEnd)
+			Optional<org.eclipse.emf.common.command.Command> replaceExecStart = Optional.of(targetEnd)
 					.flatMap(recv -> getExecutionStart(recv, request))
-					.map(execStart -> replace(execStart, targetEnd));
+					.map(execStart -> execStart.replaceBy(targetEnd));
 			result = replaceExecStart.map(this::wrap).map(result::chain).orElse(result);
 		}
 
@@ -612,53 +601,6 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 						.filter(exec -> exec.getDiagramView().isPresent() && exec.getBottom().equals(y))
 						.findFirst())
 				.flatMap(MExecution::getFinish), MExecutionOccurrence.class);
-	}
-
-	private ICommand replace(MOccurrence<?> occurrence, MMessageEnd msgEnd) {
-		TransactionalEditingDomain domain = ((IGraphicalEditPart)getHost()).getEditingDomain();
-		Optional<MExecution> started = occurrence.getStartedExecution();
-		Optional<MExecution> finished = occurrence.getFinishedExecution();
-		Optional<OccurrenceSpecification> msgOcc = Optional.of(msgEnd.getElement())
-				.filter(OccurrenceSpecification.class::isInstance).map(OccurrenceSpecification.class::cast);
-
-		// If this occurrence starts and finishes an execution, or if it
-		// neither starts nor finishes an execution, then something's awry.
-		// Likewise if the msg end is not an execution occurrence (e.g., a gate)
-		if ((started.isPresent() == finished.isPresent()) || !msgOcc.isPresent()) {
-			return org.eclipse.gmf.runtime.common.core.command.UnexecutableCommand.INSTANCE;
-		}
-
-		// Moreover, it does not make sense to replace an execution start by a message send
-		// nor an execution finish by a message receive
-		if ((occurrence.isStart() != msgEnd.isReceive()) || (occurrence.isFinish() != msgEnd.isSend())) {
-			return org.eclipse.gmf.runtime.common.core.command.UnexecutableCommand.INSTANCE;
-		}
-
-		return new AbstractTransactionalCommand(domain, "Replace Execution Occurrence", null) { //$NON-NLS-1$
-
-			@Override
-			protected CommandResult doExecuteWithResult(IProgressMonitor monitor, IAdaptable info)
-					throws ExecutionException {
-
-				// First, delete the occurrence
-				DestroyElementCommand.destroy(occurrence.getElement());
-
-				// Then, hook up the execution semantics
-				started.ifPresent(exec -> exec.getElement().setStart(msgOcc.get()));
-				finished.ifPresent(exec -> exec.getElement().setFinish(msgOcc.get()));
-
-				// And the execution visuals
-				Optional<Connector> messageView = msgEnd.getOwner().getDiagramView();
-				messageView.ifPresent(connector -> {
-					started.flatMap(MExecution::getDiagramView).ifPresent(
-							exec -> getDiagramHelper().reconnectTarget(connector, exec, 0).execute());
-					finished.flatMap(MExecution::getDiagramView).ifPresent(exec -> getDiagramHelper()
-							.reconnectSource(connector, exec, Integer.MAX_VALUE).execute());
-				});
-
-				return CommandResult.newOKCommandResult();
-			}
-		};
 	}
 
 	//

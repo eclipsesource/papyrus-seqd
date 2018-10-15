@@ -892,6 +892,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EOperation getMExecutionOccurrence__ReplaceBy__MMessageEnd() {
+		return mExecutionOccurrenceEClass.getEOperations().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EClass getMMessageEnd() {
 		return mMessageEndEClass;
 	}
@@ -1222,6 +1232,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		mExecutionOccurrenceEClass = createEClass(MEXECUTION_OCCURRENCE);
 		createEOperation(mExecutionOccurrenceEClass, MEXECUTION_OCCURRENCE___GET_OWNER);
 		createEOperation(mExecutionOccurrenceEClass, MEXECUTION_OCCURRENCE___GET_DIAGRAM_VIEW);
+		createEOperation(mExecutionOccurrenceEClass, MEXECUTION_OCCURRENCE___REPLACE_BY__MMESSAGEEND);
 
 		mMessageEndEClass = createEClass(MMESSAGE_END);
 		createEAttribute(mMessageEndEClass, MMESSAGE_END__SEND);
@@ -1797,6 +1808,10 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		g2 = createEGenericType(theNotationPackage.getIdentityAnchor());
 		g1.getETypeArguments().add(g2);
 		initEOperation(op, g1);
+
+		op = initEOperation(getMExecutionOccurrence__ReplaceBy__MMessageEnd(), this.getCommand(), "replaceBy", //$NON-NLS-1$
+				1, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getMMessageEnd(), "messageEnd", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(mMessageEndEClass, MMessageEnd.class, "MMessageEnd", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);
