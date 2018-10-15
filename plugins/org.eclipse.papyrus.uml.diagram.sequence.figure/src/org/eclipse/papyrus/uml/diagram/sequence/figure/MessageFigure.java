@@ -13,7 +13,11 @@
 package org.eclipse.papyrus.uml.diagram.sequence.figure;
 
 import org.eclipse.draw2d.ConnectionAnchor;
+import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.IExecutionAnchor;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.MessageSourceAnchor;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.MessageTargetAnchor;
 
@@ -40,6 +44,41 @@ public class MessageFigure extends PolylineConnectionEx {
 		}
 
 		return super.getConnectionAnchor(terminal);
+	}
+
+	@Override
+	public void validate() {
+		super.validate();
+
+		MessageDirection direction = computeDirection();
+		if (getSourceAnchor() instanceof IExecutionAnchor) {
+			((IExecutionAnchor)getSourceAnchor()).setConnectionSide(direction.getExecutionSide(true));
+		}
+		if (getTargetAnchor() instanceof IExecutionAnchor) {
+			((IExecutionAnchor)getTargetAnchor()).setConnectionSide(direction.getExecutionSide(false));
+		}
+	}
+
+	MessageDirection computeDirection() {
+		PointList points = getPoints();
+		Point source = points.getFirstPoint();
+		Point target = points.getLastPoint();
+
+		return (target.x >= source.x) ? MessageDirection.LEFT_TO_RIGHT : MessageDirection.RIGHT_TO_LEFT;
+	}
+
+	//
+	// Nested types
+	//
+
+	enum MessageDirection {
+		LEFT_TO_RIGHT, RIGHT_TO_LEFT;
+
+		int getExecutionSide(boolean sourceAnchor) {
+			return sourceAnchor //
+					? (this == RIGHT_TO_LEFT) ? PositionConstants.LEFT : PositionConstants.RIGHT
+					: (this == LEFT_TO_RIGHT) ? PositionConstants.LEFT : PositionConstants.RIGHT;
+		}
 	}
 
 }

@@ -36,12 +36,15 @@ import org.eclipse.gmf.runtime.common.core.command.ICommand;
 import org.eclipse.gmf.runtime.emf.commands.core.command.AbstractTransactionalCommand;
 import org.eclipse.gmf.runtime.emf.type.core.commands.DestroyElementCommand;
 import org.eclipse.papyrus.commands.wrappers.GMFtoGEFCommandWrapper;
+import org.eclipse.papyrus.infra.emf.gmf.command.EMFtoGMFCommandWrapper;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.MessageOccurrenceSpecification;
 
@@ -87,8 +90,22 @@ public class ExecutionSpecificationSemanticEditPolicy extends InteractionSemanti
 			Optional<MMessageEnd> finishEnd = as(exec.getFinish(), MExecutionOccurrence.class)
 					.flatMap(occ -> findMessageEnd(occ, bounds.bottom()));
 
+			// Semantics
 			startEnd.map(end -> replace(exec.getStart().get(), end)).ifPresent(result::add);
 			finishEnd.map(end -> replace(exec.getFinish().get(), end)).ifPresent(result::add);
+
+			// Visuals
+			exec.getDiagramView().ifPresent(execView -> {
+				DiagramHelper diagramHelper = LogicalModelPlugin.INSTANCE
+						.getDiagramHelper(getGraphicalHost().getEditingDomain());
+
+				startEnd.map(MMessageEnd::getOwner).flatMap(MMessage::getDiagramView)
+						.map(connector -> diagramHelper.reconnectTarget(connector, execView, 0))
+						.map(EMFtoGMFCommandWrapper::wrap).ifPresent(result::add);
+				finishEnd.map(MMessageEnd::getOwner).flatMap(MMessage::getDiagramView).map(
+						connector -> diagramHelper.reconnectSource(connector, execView, Integer.MAX_VALUE))
+						.map(EMFtoGMFCommandWrapper::wrap).ifPresent(result::add);
+			});
 			return result.stream().filter(Objects::nonNull).reduce(ICommand::compose)
 					.map(GMFtoGEFCommandWrapper::wrap).orElse(null);
 		});
