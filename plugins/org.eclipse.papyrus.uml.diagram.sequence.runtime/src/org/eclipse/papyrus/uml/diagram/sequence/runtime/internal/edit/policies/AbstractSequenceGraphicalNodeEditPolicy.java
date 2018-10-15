@@ -643,9 +643,18 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				// First, delete the occurrence
 				DestroyElementCommand.destroy(occurrence.getElement());
 
-				// Then, hook up the execution
+				// Then, hook up the execution semantics
 				started.ifPresent(exec -> exec.getElement().setStart(msgOcc.get()));
 				finished.ifPresent(exec -> exec.getElement().setFinish(msgOcc.get()));
+
+				// And the execution visuals
+				Optional<Connector> messageView = msgEnd.getOwner().getDiagramView();
+				messageView.ifPresent(connector -> {
+					started.flatMap(MExecution::getDiagramView).ifPresent(
+							exec -> getDiagramHelper().reconnectTarget(connector, exec, 0).execute());
+					finished.flatMap(MExecution::getDiagramView).ifPresent(exec -> getDiagramHelper()
+							.reconnectSource(connector, exec, Integer.MAX_VALUE).execute());
+				});
 
 				return CommandResult.newOKCommandResult();
 			}

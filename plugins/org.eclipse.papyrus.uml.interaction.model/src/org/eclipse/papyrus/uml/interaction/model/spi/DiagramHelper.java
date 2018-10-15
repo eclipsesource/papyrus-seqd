@@ -221,7 +221,7 @@ public interface DiagramHelper {
 	 *            the Y position on the target shape at which to anchor the {@code connector}
 	 * @return the command to effect the target end re-connection
 	 */
-	Command reconnectTarget(Connector connector, Shape newSource, int yPosition);
+	Command reconnectTarget(Connector connector, Shape newTarget, int yPosition);
 
 	/**
 	 * Obtain a command to delete a given {@code connector}.
