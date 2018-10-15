@@ -13,6 +13,8 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.CommandUtil.injectViewInto;
+
 import java.util.Optional;
 
 import org.eclipse.draw2d.geometry.Dimension;
@@ -58,7 +60,8 @@ public abstract class LogicalModelCreationEditPolicy extends CreationEditPolicy 
 				(IElementType)request.getViewAndElementDescriptor().getCreateElementRequestAdapter()
 						.getAdapter(IElementType.class));
 
-		return result.map(this::wrap).orElse(UnexecutableCommand.INSTANCE);
+		return result.map(cmd -> injectViewInto(request.getViewAndElementDescriptor(), cmd)).map(this::wrap) //
+				.orElse(UnexecutableCommand.INSTANCE);
 	}
 
 	protected abstract Optional<org.eclipse.emf.common.command.Command> getCreationCommand(

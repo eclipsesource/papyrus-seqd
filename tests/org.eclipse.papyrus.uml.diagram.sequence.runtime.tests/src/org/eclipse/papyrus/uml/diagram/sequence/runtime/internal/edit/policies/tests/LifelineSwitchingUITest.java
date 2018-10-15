@@ -32,10 +32,14 @@ import static org.junit.Assume.assumeThat;
 
 import java.util.Optional;
 
+import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
+import org.eclipse.gef.commands.Command;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewAndElementRequest;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.gmfdiag.common.utils.DiagramEditPartsUtil;
@@ -303,9 +307,11 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		 */
 		@Test
 		public void existingOccurrences() {
-			// Create an occurrence below on Lifeline3
-			editor.createShape(SequenceElementTypes.Behavior_Execution_Shape,
-					at(LIFELINE_3_BODY_X, mesgY + 50), sized(EXEC_WIDTH, EXEC_WIDTH));
+			// Create an occurrence above on Lifeline3. Don't automate the tool but just
+			// force-create it because this isn't the point of the test
+			EditPart ll3EP = assuming(getBodyEditPart(getLifeline("Lifeline3")), "Lifeline3 has no body");
+			forceCreateNode(ll3EP, SequenceElementTypes.Behavior_Execution_Shape, //
+					at(-EXEC_WIDTH / 2, 250), sized(EXEC_WIDTH, EXEC_WIDTH));
 
 			// Creating the occurrence nudged our message
 			mesgY = getTargetY(messageEP);
@@ -389,9 +395,11 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		 */
 		@Test
 		public void existingOccurrences() {
-			// Create an occurrence above on Lifeline3
-			editor.createShape(SequenceElementTypes.Behavior_Execution_Shape,
-					at(LIFELINE_3_BODY_X, mesgY - 50), sized(EXEC_WIDTH, EXEC_WIDTH));
+			// Create an occurrence above on Lifeline3. Don't automate the tool but just
+			// force-create it because this isn't the point of the test
+			EditPart ll3EP = assuming(getBodyEditPart(getLifeline("Lifeline3")), "Lifeline3 has no body");
+			forceCreateNode(ll3EP, SequenceElementTypes.Behavior_Execution_Shape, //
+					at(-EXEC_WIDTH / 2, 10), sized(EXEC_WIDTH, EXEC_WIDTH));
 
 			// Creating the occurrence nudged our message
 			mesgY = getTargetY(messageEP);
@@ -609,6 +617,32 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		EditPart result = DiagramEditPartsUtil.getEditPartFromView(notationView,
 				editor.getDiagramEditPart());
 		assumeThat("No edit-part for " + element, result, notNullValue());
+		return result;
+	}
+
+	EditPart forceCreateNode(EditPart parent, IElementType type, Point location, Dimension size) {
+		CreateViewAndElementRequest create = new CreateViewAndElementRequest(type,
+				editor.getDiagramEditPart().getDiagramPreferencesHint());
+		create.setLocation(location);
+		create.setSize(size);
+
+		EditPart target = parent.getTargetEditPart(create);
+		if (target == null) {
+			target = parent;
+		}
+
+		Command command = target.getCommand(create);
+		assumeThat("Creation command not executable", command.canExecute(), is(true));
+		editor.getDiagramEditPart().getDiagramEditDomain().getDiagramCommandStack().execute(command);
+
+		editor.flushDisplayEvents();
+
+		View createdView = (View) create.getViewAndElementDescriptor().getAdapter(View.class);
+		assumeThat("No view created", createdView, notNullValue());
+
+		EditPart result = (EditPart) editor.getDiagramEditPart().getViewer().getEditPartRegistry()
+				.get(createdView);
+		assumeThat("No edit-part registered for created view", result, notNullValue());
 		return result;
 	}
 
