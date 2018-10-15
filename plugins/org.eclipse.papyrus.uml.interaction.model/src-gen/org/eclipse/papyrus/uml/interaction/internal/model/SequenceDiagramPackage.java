@@ -1263,13 +1263,21 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MEXECUTION_OCCURRENCE___GET_DIAGRAM_VIEW = MOCCURRENCE_OPERATION_COUNT + 1;
 
 	/**
+	 * The operation id for the '<em>Replace By</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION_OCCURRENCE___REPLACE_BY__MMESSAGEEND = MOCCURRENCE_OPERATION_COUNT + 2;
+
+	/**
 	 * The number of operations of the '<em>MExecution Occurrence</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MEXECUTION_OCCURRENCE_OPERATION_COUNT = MOCCURRENCE_OPERATION_COUNT + 2;
+	int MEXECUTION_OCCURRENCE_OPERATION_COUNT = MOCCURRENCE_OPERATION_COUNT + 3;
 
 	/**
 	 * The meta object id for the
@@ -2710,6 +2718,17 @@ public interface SequenceDiagramPackage extends EPackage {
 	EOperation getMExecutionOccurrence__GetDiagramView();
 
 	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence#replaceBy(org.eclipse.papyrus.uml.interaction.model.MMessageEnd)
+	 * <em>Replace By</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Replace By</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence#replaceBy(org.eclipse.papyrus.uml.interaction.model.MMessageEnd)
+	 * @generated
+	 */
+	EOperation getMExecutionOccurrence__ReplaceBy__MMessageEnd();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd
 	 * <em>MMessage End</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -3552,6 +3571,15 @@ public interface SequenceDiagramPackage extends EPackage {
 		 */
 		EOperation MEXECUTION_OCCURRENCE___GET_DIAGRAM_VIEW = eINSTANCE
 				.getMExecutionOccurrence__GetDiagramView();
+
+		/**
+		 * The meta object literal for the '<em><b>Replace By</b></em>' operation. <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MEXECUTION_OCCURRENCE___REPLACE_BY__MMESSAGEEND = eINSTANCE
+				.getMExecutionOccurrence__ReplaceBy__MMessageEnd();
 
 		/**
 		 * The meta object literal for the

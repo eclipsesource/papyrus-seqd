@@ -179,6 +179,9 @@
     <genClasses ecoreClass="seqd.ecore#//MExecutionOccurrence">
       <genOperations ecoreOperation="seqd.ecore#//MExecutionOccurrence/getOwner"/>
       <genOperations ecoreOperation="seqd.ecore#//MExecutionOccurrence/getDiagramView"/>
+      <genOperations ecoreOperation="seqd.ecore#//MExecutionOccurrence/replaceBy">
+        <genParameters ecoreParameter="seqd.ecore#//MExecutionOccurrence/replaceBy/messageEnd"/>
+      </genOperations>
     </genClasses>
     <genClasses ecoreClass="seqd.ecore#//MMessageEnd">
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessageEnd/send"/>

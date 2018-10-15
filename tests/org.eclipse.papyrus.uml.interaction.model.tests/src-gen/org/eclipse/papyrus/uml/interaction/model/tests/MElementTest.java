@@ -374,12 +374,18 @@ public abstract class MElementTest extends TestCase {
 	}
 
 	protected void execute(Command command) {
+		execute(command, true);
+	}
+
+	protected void execute(Command command, boolean reinitFixture) {
 		domain.getCommandStack().execute(command);
 		assertThat("Command not executed", domain.getCommandStack().getUndoCommand(), is(command));
 
-		// Reinitialize the logical model
-		interaction = MInteraction.getInstance(umlInteraction, sequenceDiagram);
-		initializeFixture();
+		if (reinitFixture) {
+			// Reinitialize the logical model
+			interaction = MInteraction.getInstance(umlInteraction, sequenceDiagram);
+			initializeFixture();
+		}
 	}
 
 	protected <T extends EObject> T create(CreationCommand<T> command) {

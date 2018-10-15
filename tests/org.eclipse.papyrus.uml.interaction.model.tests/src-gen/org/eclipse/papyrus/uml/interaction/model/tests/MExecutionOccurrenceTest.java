@@ -16,13 +16,17 @@ import static org.hamcrest.CoreMatchers.both;
 import static org.hamcrest.CoreMatchers.either;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
 
 import java.util.Optional;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.MMessage;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 
@@ -38,6 +42,8 @@ import junit.textui.TestRunner;
  * Owner</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence#getDiagramView() <em>Get Diagram
  * View</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence#replaceBy(org.eclipse.papyrus.uml.interaction.model.MMessageEnd)
+ * <em>Replace By</em>}</li>
  * </ul>
  * </p>
  * 
@@ -210,6 +216,43 @@ public class MExecutionOccurrenceTest extends MOccurrenceTest {
 	public void testGetDiagramView() {
 		assertThat(getFixture().getDiagramView(), not(isPresent()));
 		// TODO: Case of GeneralOrdering edge anchored on an execution occurrence
+	}
+
+	/**
+	 * Tests the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence#replaceBy(org.eclipse.papyrus.uml.interaction.model.MMessageEnd)
+	 * <em>Replace By</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence#replaceBy(org.eclipse.papyrus.uml.interaction.model.MMessageEnd)
+	 * @generated NOT
+	 */
+	public void testReplaceBy__MMessageEnd() {
+		MMessage message = getFixture().getInteraction().getMessages().get(0);
+		MMessageEnd end = message.getReceive().get();
+		ExecutionSpecification exec = getFixture().getElement().getExecution();
+
+		Command replace = getFixture().replaceBy(end);
+		assertThat("Replace command not executable", replace, executable());
+
+		// Don't attempt to re-initialize the fixture
+		execute(replace, false);
+
+		assertThat("Execution occurrence not replaced", exec.getStart(), is(end.getElement()));
+		assertThat("Occurrence not removed", getFixture().getElement().eContainer(), nullValue());
+	}
+
+	@Override
+	public void testRemove() {
+		Command remove = getFixture().remove();
+		assertThat("Remove command not executable", remove, executable());
+
+		ExecutionSpecification exec = getFixture().getElement().getExecution();
+
+		// Don't attempt to re-initialize the fixture
+		execute(remove, false);
+
+		assertThat("Execution still has a start occurrence", exec.getStart(), nullValue());
+		assertThat("Occurrence not removed", getFixture().getElement().eContainer(), nullValue());
 	}
 
 } // MExecutionOccurrenceTest
