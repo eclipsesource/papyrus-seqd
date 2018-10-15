@@ -124,6 +124,11 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 	}
 
 	@Override
+	public Class<? extends ExecutionSpecification> getType() {
+		return ExecutionSpecification.class;
+	}
+
+	@Override
 	public ExecutionSpecification getNewObject() {
 		return (resultCommand == null) ? null : resultCommand.getNewObject();
 	}

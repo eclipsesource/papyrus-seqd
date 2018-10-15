@@ -83,7 +83,8 @@ public class CreationCommandImpl<T extends EObject> extends CommandWrapper imple
 						.filter(type::isInstance).map(type::cast).findFirst().orElse(null);
 	}
 
-	protected final Class<? extends T> getType() {
+	@Override
+	public final Class<? extends T> getType() {
 		return type;
 	}
 

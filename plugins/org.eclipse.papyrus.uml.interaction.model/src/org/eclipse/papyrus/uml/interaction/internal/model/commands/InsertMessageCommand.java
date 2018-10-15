@@ -285,6 +285,11 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	}
 
 	@Override
+	public Class<? extends Message> getType() {
+		return Message.class;
+	}
+
+	@Override
 	public Message getNewObject() {
 		return (resultCommand == null) ? null : resultCommand.getNewObject();
 	}

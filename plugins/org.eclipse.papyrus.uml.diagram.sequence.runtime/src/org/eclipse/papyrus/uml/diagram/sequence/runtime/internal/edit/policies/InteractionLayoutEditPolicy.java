@@ -20,6 +20,7 @@ import static org.eclipse.papyrus.uml.service.types.utils.ElementUtil.isTypeOf;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.draw2d.FigureUtilities;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.Shape;
@@ -27,8 +28,6 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
@@ -40,6 +39,7 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.LayoutEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.XYLayoutEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateUnspecifiedTypeRequest;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewAndElementRequest;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.Bounds;
 import org.eclipse.gmf.runtime.notation.Diagram;
@@ -48,7 +48,6 @@ import org.eclipse.gmf.runtime.notation.NotationFactory;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.InteractionUtil;
-import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.service.types.element.UMLElementTypes;
 import org.eclipse.uml2.uml.Element;
@@ -91,13 +90,9 @@ public class InteractionLayoutEditPolicy extends XYLayoutEditPolicy implements I
 				return;
 			}
 
-			MInteraction mInteraction = MInteraction.getInstance(interaction.get(), diagram.get());
-			EditingDomain domain = TransactionUtil.getEditingDomain(mInteraction.getElement());
-
 			// retrieve local position for the creation (request is absolute to the diagram, logical model
 			// works with relative to parent)
 
-			Bounds proposed = NotationFactory.eINSTANCE.createBounds();
 			Point proposedLocation = createRequest.getLocation().getCopy();
 			Dimension proposedSize = createRequest.getSize();
 			if (proposedSize == null) {
@@ -108,13 +103,8 @@ public class InteractionLayoutEditPolicy extends XYLayoutEditPolicy implements I
 			}
 
 			translateFromAbsoluteToLayoutRelative(proposedLocation);
-			proposed.setX(proposedLocation.x());
-			proposed.setY(proposedLocation.y());
-			proposed.setHeight(proposedSize.height());
-			proposed.setWidth(proposedSize.width());
-
-			Bounds bounds = Activator.getDefault().getLayoutHelper(domain)
-					.getNewBounds(UMLPackage.Literals.LIFELINE, proposed, view);
+			Bounds proposed = bounds(proposedLocation, proposedSize);
+			Bounds bounds = getLayoutHelper().getNewBounds(UMLPackage.Literals.LIFELINE, proposed, view);
 
 			// retranslate to absolute
 			Rectangle absoluteBounds = new Rectangle(bounds.getX(), bounds.getY(), bounds.getWidth(),
@@ -181,4 +171,44 @@ public class InteractionLayoutEditPolicy extends XYLayoutEditPolicy implements I
 		return parent.getFigure().getBounds();
 	}
 
+	@Override
+	protected Object getConstraintFor(CreateRequest request) {
+		Object result = super.getConstraintFor(request);
+
+		// The initial location of a lifeline is always at the top
+		if ((result instanceof Rectangle) && (request instanceof CreateViewAndElementRequest)) {
+			Rectangle rect = (Rectangle)result;
+			CreateViewAndElementRequest create = (CreateViewAndElementRequest)request;
+
+			IAdaptable elementAdapter = create.getViewAndElementDescriptor().getElementAdapter();
+			IElementType type = elementAdapter.getAdapter(IElementType.class);
+			Node container = (Node)((IGraphicalEditPart)getHost()).getNotationView();
+
+			Bounds proposed = bounds(rect);
+			Bounds bounds = getLayoutHelper().getNewBounds(type.getEClass(), proposed, container);
+			set(rect, bounds);
+		}
+
+		return result;
+	}
+
+	static final Bounds bounds(Point location, Dimension size) {
+		Bounds result = NotationFactory.eINSTANCE.createBounds();
+		result.setX(location.x);
+		result.setY(location.y);
+		result.setWidth(size.width);
+		result.setHeight(size.height);
+		return result;
+	}
+
+	static final Bounds bounds(Rectangle rect) {
+		return bounds(rect.getLocation(), rect.getSize());
+	}
+
+	private static final void set(Rectangle rect, Bounds bounds) {
+		rect.setX(bounds.getX());
+		rect.setY(bounds.getY());
+		rect.setWidth(bounds.getWidth());
+		rect.setHeight(bounds.getHeight());
+	}
 }

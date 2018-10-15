@@ -22,10 +22,7 @@ import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
@@ -45,18 +42,23 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
+import org.eclipse.gef.Request;
+import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.tools.ConnectionCreationTool;
 import org.eclipse.gef.tools.SelectionTool;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramEditor;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewAndElementRequest;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateUnspecifiedTypeConnectionRequest;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateUnspecifiedTypeRequest;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewAndElementRequest;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.core.sasheditor.di.contentprovider.utils.IPageUtils;
 import org.eclipse.papyrus.infra.core.sasheditor.editor.IEditorPage;
 import org.eclipse.papyrus.infra.core.sasheditor.editor.IPage;
@@ -76,9 +78,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.operations.IWorkbenchOperationSupport;
-import org.eclipse.uml2.uml.GeneralOrdering;
-import org.eclipse.uml2.uml.Message;
-import org.eclipse.uml2.uml.MessageSort;
 import org.junit.runner.Description;
 
 /**
@@ -298,11 +297,20 @@ public class EditorFixture extends ModelFixture.Edit {
 	public EditPart createShape(IElementType type, Point location, Dimension size) {
 		DiagramEditPart diagram = getDiagramEditPart();
 		EditPartViewer viewer = diagram.getViewer();
+		CreateUnspecifiedTypeRequest[] request = { null };
 
-		@SuppressWarnings("unchecked")
-		Set<EditPart> originalEditParts = new HashSet<EditPart>(viewer.getEditPartRegistry().values());
+		AspectUnspecifiedTypeCreationTool tool = new AspectUnspecifiedTypeCreationTool(
+				singletonList(type)) {
 
-		AspectUnspecifiedTypeCreationTool tool = new AspectUnspecifiedTypeCreationTool(singletonList(type));
+			@Override
+			protected Request createTargetRequest() {
+				Request result = super.createTargetRequest();
+				if (result instanceof CreateUnspecifiedTypeRequest) {
+					request[0] = (CreateUnspecifiedTypeRequest) result;
+				}
+				return result;
+			}
+		};
 
 		Event mouse = new Event();
 		mouse.display = editor.getSite().getShell().getDisplay();
@@ -345,15 +353,15 @@ public class EditorFixture extends ModelFixture.Edit {
 		flushDisplayEvents();
 
 		// Find the new edit-part
-		@SuppressWarnings("unchecked")
-		Set<EditPart> newEditParts = new HashSet<EditPart>(viewer.getEditPartRegistry().values());
-		newEditParts.removeAll(originalEditParts);
-		while (newEditParts.removeIf(ep -> newEditParts.contains(ep.getParent()))) {
-			// Keep only the topmost new edit-parts (that aren't nested in other new
-			// edit-parts)
-		}
-
-		return newEditParts.stream().findFirst().orElseGet(failOnAbsence("New edit-part not found"));
+		assertThat("No unsepecified-type request", request[0], notNullValue());
+		CreateViewAndElementRequest createRequest = (CreateViewAndElementRequest) request[0]
+				.getRequestForType(type);
+		assertThat("No specific create request", createRequest, notNullValue());
+		View createdView = (View) createRequest.getViewAndElementDescriptor().getAdapter(View.class);
+		assertThat("No view created", createdView, notNullValue());
+		EditPart result = (EditPart) viewer.getEditPartRegistry().get(createdView);
+		assertThat("New edit-part not found", result, notNullValue());
+		return result;
 	}
 
 	/**
@@ -372,52 +380,26 @@ public class EditorFixture extends ModelFixture.Edit {
 	 * @return the newly created connection edit-part
 	 */
 	public EditPart createConnection(IElementType type, Point start, Point finish) {
-		EditPartViewer viewer = getDiagramEditPart().getViewer();
-
-		@SuppressWarnings("unchecked")
-		Set<EditPart> originalEditParts = new HashSet<EditPart>(viewer.getEditPartRegistry().values());
-
-		drawConnection(type, start, finish, true);
-
-		// Find the new edit-part. If we're creating a sync call message with reply,
-		// then be careful to get the request message, not the reply
-		@SuppressWarnings("unchecked")
-		Set<EditPart> newEditParts = new HashSet<EditPart>(viewer.getEditPartRegistry().values());
-		newEditParts.removeAll(originalEditParts);
-		while (newEditParts.removeIf(ep -> !(ep instanceof ConnectionEditPart))) {
-			// Keep only the new connections, not any shapes
-		}
-
-		return newEditParts.stream().map(ConnectionEditPart.class::cast)
-				.sorted(Comparator.comparing(this::connectionCategory)).findFirst()
-				.orElseGet(failOnAbsence("New connection edit-part not found"));
+		return drawConnection(type, start, finish, true);
 	}
 
-	/**
-	 * Obtain a category by which connection edit-parts can be sorted for priority
-	 * in searching within the diagram.
-	 *
-	 * @param ep
-	 *            a connection edit-part
-	 * @return its connection category, in decreasing order of priority (smaller
-	 *         values more important)
-	 */
-	private int connectionCategory(ConnectionEditPart ep) {
-		EObject semantic = ep.getAdapter(EObject.class);
-		if (semantic instanceof Message) {
-			// These are the highest priority categories (negative values in enum order)
-			return ((Message) semantic).getMessageSort().ordinal() - (MessageSort.VALUES.size() + 1);
-		} else if (semantic instanceof GeneralOrdering) {
-			return 0;
-		} else {
-			return Integer.MAX_VALUE;
-		}
-	}
-
-	private void drawConnection(IElementType type, Point start, Point finish, boolean complete) {
+	EditPart drawConnection(IElementType type, Point start, Point finish, boolean complete) {
 		DiagramEditPart diagram = getDiagramEditPart();
 		EditPartViewer viewer = diagram.getViewer();
-		ConnectionCreationTool tool = createConnectionTool(type);
+		CreateUnspecifiedTypeConnectionRequest[] request = { null };
+
+		@SuppressWarnings("restriction")
+		ConnectionCreationTool tool = new org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceConnectionCreationTool(
+				singletonList(type)) {
+			@Override
+			protected CreateConnectionRequest createTargetRequest() {
+				CreateConnectionRequest result = super.createTargetRequest();
+				if (result instanceof CreateUnspecifiedTypeConnectionRequest) {
+					request[0] = (CreateUnspecifiedTypeConnectionRequest) result;
+				}
+				return result;
+			}
+		};
 
 		Event mouse = new Event();
 		mouse.display = editor.getSite().getShell().getDisplay();
@@ -461,6 +443,23 @@ public class EditorFixture extends ModelFixture.Edit {
 
 			flushDisplayEvents();
 		}
+
+		if (!complete) {
+			return null;
+		}
+
+		// Find the new edit-part
+		assertThat("No unsepecified-type request", request[0], notNullValue());
+		CreateConnectionViewAndElementRequest createRequest = (CreateConnectionViewAndElementRequest) request[0]
+				.getRequestForType(type);
+		assertThat("No specific create request", createRequest, notNullValue());
+		View createdView = (View) createRequest.getConnectionViewAndElementDescriptor()
+				.getAdapter(View.class);
+		assertThat("No view created", createdView, notNullValue());
+		EditPart result = (EditPart) getDiagramEditPart().getViewer().getEditPartRegistry()
+				.get(createdView);
+		assertThat("New edit-part not found", result, notNullValue());
+		return result;
 	}
 
 	/**
@@ -804,12 +803,6 @@ public class EditorFixture extends ModelFixture.Edit {
 	@SuppressWarnings("restriction")
 	private SelectionTool createSelectionTool() {
 		return new org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceSelectionTool();
-	}
-
-	@SuppressWarnings("restriction")
-	private ConnectionCreationTool createConnectionTool(IElementType type) {
-		return new org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceConnectionCreationTool(
-				singletonList(type));
 	}
 
 	//

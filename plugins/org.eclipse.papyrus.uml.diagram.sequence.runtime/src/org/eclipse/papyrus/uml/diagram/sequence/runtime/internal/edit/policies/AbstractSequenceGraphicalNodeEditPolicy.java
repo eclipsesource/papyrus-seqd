@@ -14,6 +14,7 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
 import static java.lang.Math.abs;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.isForce;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.CommandUtil.injectViewInto;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil.getSort;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
@@ -244,18 +245,19 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 					if (MessageUtil.isSynchronousCall(start.sort) && selfMessage && shouldCreateExecution()) {
 						MElement<?> _startBefore = startBefore;
 						int _startOffset = startOffset;
-						return createSelectionCommand(
-								getAvailableExecutionTypes()
-										.map(execType -> sender.insertMessageAfter(_startBefore, _startOffset,
-												receiver, anchorDesc.elementBefore.orElse(receiver),
-												anchorDesc.offset, start.sort, null,
-												new ExecutionCreationCommandParameter(true,
-														shouldCreateReply(), execType)))
-										.collect(Collectors.toList()));
+						return createSelectionCommand(getAvailableExecutionTypes()
+								.map(execType -> sender.insertMessageAfter(_startBefore, _startOffset,
+										receiver, anchorDesc.elementBefore.orElse(receiver),
+										anchorDesc.offset, start.sort, null,
+										new ExecutionCreationCommandParameter(true, shouldCreateReply(),
+												execType)))
+								.map(cmd -> injectViewInto(request.getConnectionViewDescriptor(), cmd))
+								.collect(Collectors.toList()));
 					} else {
-						result = sender.insertMessageAfter(startBefore, startOffset, receiver,
-								anchorDesc.elementBefore.orElse(receiver), anchorDesc.offset, start.sort,
-								null);
+						result = injectViewInto(request.getConnectionViewDescriptor(),
+								sender.insertMessageAfter(startBefore, startOffset, receiver,
+										anchorDesc.elementBefore.orElse(receiver), anchorDesc.offset,
+										start.sort, null));
 					}
 				} else {
 					startLocation = startLocation.getCopy();
@@ -291,15 +293,18 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 						int _startOffset = startOffset;
 						return createSelectionCommand(getAvailableExecutionTypes()
 								.map(execType -> sender.insertMessageAfter(_startBefore, _startOffset,
-										receiver, start.sort, null, new ExecutionCreationCommandParameter(
-												true, shouldCreateReply(), execType)))
+										receiver, start.sort, null,
+										new ExecutionCreationCommandParameter(true, shouldCreateReply(),
+												execType)))
+								.map(cmd -> injectViewInto(request.getConnectionViewDescriptor(), cmd))
 								.collect(Collectors.toList()));
 					} else {
-						result = sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort,
-								null);
+						result = injectViewInto(request.getConnectionViewDescriptor(), sender
+								.insertMessageAfter(startBefore, startOffset, receiver, start.sort, null));
 					}
 
-					result = sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort, null);
+					result = injectViewInto(request.getConnectionViewDescriptor(),
+							sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort, null));
 				}
 
 				return wrap(result);
