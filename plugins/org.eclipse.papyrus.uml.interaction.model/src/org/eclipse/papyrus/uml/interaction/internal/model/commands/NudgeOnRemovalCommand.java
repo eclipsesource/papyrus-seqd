@@ -181,7 +181,7 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 		Map<Integer, Set<MElement<? extends Element>>> topToElements = new LinkedHashMap<>();
 		Map<Integer, Set<MElement<? extends Element>>> bottomToElements = new LinkedHashMap<>();
 		for (MLifeline lifeline : interaction.getLifelines()) {
-			for (MExecution execution : lifeline.getExecutions()) {
+			for (MExecution execution : lifeline.getFirstLevelExecutions()) {
 				putValuesInMaps(execution, topToElements, bottomToElements);
 			}
 		}
