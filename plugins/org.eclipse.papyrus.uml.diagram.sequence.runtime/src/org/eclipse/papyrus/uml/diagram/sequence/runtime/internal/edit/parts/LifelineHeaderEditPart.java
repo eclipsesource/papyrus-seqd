@@ -39,7 +39,7 @@ import org.eclipse.uml2.uml.Lifeline;
  * Figure representing the header of the lifeline, e.g. the part that usually contains the name of the
  * lifeline, and potential stereotypes/additional information.
  */
-public class LifelineHeaderEditPart extends AbstractBorderedShapeEditPart {
+public class LifelineHeaderEditPart extends AbstractBorderedShapeEditPart implements ISequenceEditPart {
 
 	public LifelineHeaderEditPart(View view) {
 		super(view);

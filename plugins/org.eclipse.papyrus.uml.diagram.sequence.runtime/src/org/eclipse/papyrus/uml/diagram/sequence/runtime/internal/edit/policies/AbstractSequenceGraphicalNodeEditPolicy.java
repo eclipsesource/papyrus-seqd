@@ -19,6 +19,7 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil.
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToInt;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.BEHAVIOR_EXECUTION_SPECIFICATION;
 
@@ -495,7 +496,15 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		// This is known to exist because we're manipulating an existing message in the diagram
 		MMessage message = getInteraction().getMessage(_message.get()).get();
-		OptionalInt yPosition = OptionalInt.of(request.getLocation().y());
+		int y = request.getLocation().y();
+		if (!isForce(request) && MessageUtil.isSynchronous(message.getElement().getMessageSort())
+		// Synchronous message that is not a self-message
+				&& message.getSender().isPresent()
+				&& (lifeline.get().getElement() != message.getSender().get().getElement())) {
+			// Doesn't matter where the mouse pointer is
+			y = flatMapToInt(message.getSend(), MElement::getTop).orElse(y);
+		}
+		OptionalInt yPosition = OptionalInt.of(y);
 
 		// If the message didn't have a receive end, we wouldn't be reconnecting it
 		MMessageEnd targetEnd = message.getReceive().get();

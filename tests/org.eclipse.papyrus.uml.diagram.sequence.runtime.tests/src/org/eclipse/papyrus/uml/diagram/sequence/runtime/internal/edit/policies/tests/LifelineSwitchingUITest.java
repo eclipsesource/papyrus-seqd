@@ -426,6 +426,36 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 			assertThat(asserting(creation.getCovered(), "No coverage").getName(), is("Lifeline2"));
 		}
 
+		/**
+		 * Verify that a create message can be reoriented to a lifeline head with the
+		 * same outcome as the lifeline body.
+		 */
+		@Test
+		public void switchToLifelineHead() {
+			EditPart lifeline2 = assuming(getHeadEditPart(getOriginalReceiver()), "No lifeline head");
+			int createdTop = getTop(lifeline2);
+			EditPart lifeline3 = assuming(getHeadEditPart(getReceiver()), "No lifeline head");
+			int uncreatedTop = getTop(lifeline3);
+
+			editor.with(editor.allowSemanticReordering(),
+					() -> editor.moveSelection(at(getGrabX(), mesgY), getBounds(lifeline3).getCenter()));
+
+			// Verify the new visuals
+			assertThat(messageEP, runs(sendX, mesgY, getNewRecvX(), mesgY));
+
+			// And the semantics
+			MMessage msg = getRequestMessage();
+			assertThat("Sender changed", msg.getSender(), is(getSender()));
+			assertThat("Receiver not changed", msg.getReceiver(), not(getOriginalReceiver()));
+			assertThat("Wrong receiver", msg.getReceiver(), is(getReceiver()));
+
+			// Verify additional details of the new visuals
+			assertThat("Lifeline2 head not moved back to top", lifeline2,
+					isBounded(anything(), is(uncreatedTop), anything(), anything()));
+			assertThat("Lifeline3 head not moved down for creation", lifeline3,
+					isBounded(anything(), is(createdTop), anything(), anything()));
+		}
+
 		//
 		// Test framework
 		//
