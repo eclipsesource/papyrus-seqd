@@ -56,7 +56,14 @@ public interface ISequenceEditPolicy extends EditPolicy {
 	default Command wrap(org.eclipse.emf.common.command.Command emfCommand) {
 		TransactionalEditingDomain domain = __getEditingDomain(this);
 		return (domain == null) ? UnexecutableCommand.INSTANCE
-				: wrap(new EMFCommandOperation(domain, emfCommand));
+				: wrap(new EMFCommandOperation(domain, emfCommand) {
+
+					/** The operation tries to "improve" the label, but we prefer the original. */
+					@Override
+					public String getLabel() {
+						return emfCommand.getLabel();
+					}
+				});
 	}
 
 	default Command wrap(IUndoableOperation operation) {
