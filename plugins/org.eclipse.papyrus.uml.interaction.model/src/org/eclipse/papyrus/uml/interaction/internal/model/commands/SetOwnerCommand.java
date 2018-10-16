@@ -121,9 +121,9 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 			}
 
 			if (isChangingPosition() || isChangingOwner()) {
-				// Position it, as the relative position of the execution may now be different according to
-				// the new lifeline's creation position
-				result = chain(result, layoutHelper().setTop(executionShape.get(), newYPosition));
+				// Position it later, as the relative position of the execution may then be different
+				// according to the new lifeline's creation position
+				result = chain(result, layoutHelper().setTop(executionShape.get(), () -> newYPosition));
 			}
 		}
 
