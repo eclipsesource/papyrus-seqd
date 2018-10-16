@@ -17,7 +17,9 @@ import static java.lang.Math.min;
 
 import java.util.Comparator;
 import java.util.OptionalInt;
+import java.util.function.IntSupplier;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
 import org.eclipse.emf.common.command.Command;
@@ -156,6 +158,18 @@ public interface LayoutHelper {
 	Command setTop(Node shape, int yPosition);
 
 	/**
+	 * Obtains a deferred command that sets the top (y-coördinate) of the diagram visual element associated
+	 * with a vertex in the graph.
+	 * 
+	 * @param shape
+	 *            a shape in the sequence diagram
+	 * @param yPosition
+	 *            the future top position to set
+	 * @return the command, which may not be executable but will not be {@code null}
+	 */
+	Command setTop(Node shape, IntSupplier yPosition);
+
+	/**
 	 * Obtains a command that sets the bottom (y-coördinate) of the diagram visual element associated with a
 	 * vertex in the graph.
 	 * 
@@ -179,6 +193,18 @@ public interface LayoutHelper {
 	Command setBottom(Node shape, int yPosition);
 
 	/**
+	 * Obtains a deferred command that sets the bottom (y-coördinate) of a {@code shape} in the sequence
+	 * diagram.
+	 * 
+	 * @param shape
+	 *            a shape in the sequence diagram
+	 * @param yPosition
+	 *            the future bottom position to set
+	 * @return the command, which may not be executable but will not be {@code null}
+	 */
+	Command setBottom(Node shape, IntSupplier yPosition);
+
+	/**
 	 * Obtains a command that sets the vertical position (y-coördinate) of an {@code anchor} in the sequence
 	 * diagram.
 	 * 
@@ -191,6 +217,20 @@ public interface LayoutHelper {
 	 * @return the command, which may not be executable but will not be {@code null}
 	 */
 	Command setYPosition(Anchor anchor, Shape onShape, int yPosition);
+
+	/**
+	 * Obtains a deferred command that sets the vertical position (y-coördinate) of an {@code anchor} in the
+	 * sequence diagram.
+	 * 
+	 * @param anchor
+	 *            an anchor in the sequence diagram
+	 * @param onShape
+	 *            the future shape on which the {@code anchor} will have attached its edge
+	 * @param yPosition
+	 *            the future vertical position to set for the {@code anchor}
+	 * @return the command, which may not be executable but will not be {@code null}
+	 */
+	Command setYPosition(Anchor anchor, Supplier<? extends Shape> onShape, IntSupplier yPosition);
 
 	/**
 	 * Obtains a command that sets the left (x-coördinate) of the diagram visual element associated with a
@@ -214,6 +254,18 @@ public interface LayoutHelper {
 	 * @return the command, which may not be executable but will not be {@code null}
 	 */
 	Command setLeft(Node shape, int xPosition);
+
+	/**
+	 * Obtains a deferred command that sets the left (x-coördinate) of a {@code shape} in the sequence
+	 * diagram.
+	 * 
+	 * @param shape
+	 *            a shape in the sequence diagram
+	 * @param xPosition
+	 *            the future left position to set
+	 * @return the command, which may not be executable but will not be {@code null}
+	 */
+	Command setLeft(Node shape, IntSupplier xPosition);
 
 	/**
 	 * Returns the bounds for a new representation, given the proposed bounds.
