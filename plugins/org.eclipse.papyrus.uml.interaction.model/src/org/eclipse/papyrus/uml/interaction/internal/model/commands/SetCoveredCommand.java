@@ -359,15 +359,15 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 	}
 
 	protected void ensurePadding() {
-		// Do we have an element that needs padding before it?
-		nextOnLifeline.ifPresent(next -> {
-			// And padding from which element do we need to ensure?
-			MOccurrence<? extends Element> occurrence = getTarget();
-			MElement<? extends Element> padFrom = occurrence instanceof MMessageEnd
-					? ((MMessageEnd)occurrence).getOwner()
-					: occurrence;
+		MElement<? extends Element> element = getTarget();
+		// From which element do we need to ensure padding?
+		MElement<? extends Element> padFrom = element instanceof MMessageEnd
+				? ((MMessageEnd)element).getOwner()
+				: element;
 
-			DeferredPaddingCommand.get(occurrence).padFrom(padFrom).nudge(next);
-		});
+		// Do we have an element that needs padding before it?
+		MElement<? extends Element> nudge = nextOnLifeline.orElse(null);
+
+		DeferredPaddingCommand.get(element).padFrom(padFrom).nudge(nudge);
 	}
 }
