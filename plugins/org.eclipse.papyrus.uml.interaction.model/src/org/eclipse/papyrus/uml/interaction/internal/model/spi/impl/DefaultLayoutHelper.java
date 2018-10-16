@@ -16,6 +16,7 @@ import static org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil.
 
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import java.util.regex.Matcher;
@@ -26,7 +27,6 @@ import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.notation.Anchor;
@@ -46,6 +46,7 @@ import org.eclipse.gmf.runtime.notation.util.NotationSwitch;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil;
 import org.eclipse.papyrus.uml.interaction.graph.util.Suppliers;
+import org.eclipse.papyrus.uml.interaction.model.spi.DeferredSetCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.FontHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
@@ -744,9 +745,9 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	public Command setTop(Node shape, int yPosition) {
 		Command result = UnexecutableCommand.INSTANCE;
 		if (shape.getLayoutConstraint() instanceof Location) {
-			// Compute relative position
-			int relativeY = toRelativeY(shape, yPosition);
-			result = SetCommand.create(editingDomain, shape.getLayoutConstraint(),
+			// Compute relative position, but not yet because we may also be re-parenting this node
+			Supplier<Integer> relativeY = () -> toRelativeY(shape, yPosition);
+			result = new DeferredSetCommand(editingDomain, shape::getLayoutConstraint,
 					NotationPackage.Literals.LOCATION__Y, relativeY);
 		}
 		return result;
@@ -757,18 +758,19 @@ public class DefaultLayoutHelper implements LayoutHelper {
 		Command result = UnexecutableCommand.INSTANCE;
 		if (anchor instanceof IdentityAnchor) {
 			String id = ((IdentityAnchor)anchor).getId();
-			Matcher m = IDENTITY_ANCHOR_PATTERN.matcher(id);
-			if (m.matches()) {
+			Matcher idMatcher = IDENTITY_ANCHOR_PATTERN.matcher(id);
+			if (idMatcher.matches()) {
 				// But anchor position is relative to the attached shape
-				int anchorPos = yPosition - getTop(onShape);
-				String newID = m.replaceFirst("$1" + Integer.toString(anchorPos)); //$NON-NLS-1$
-				result = SetCommand.create(editingDomain, anchor,
+				IntSupplier anchorPos = () -> yPosition - getTop(onShape);
+				Supplier<String> newID = () -> idMatcher
+						.replaceFirst("$1" + Integer.toString(anchorPos.getAsInt())); //$NON-NLS-1$
+				result = new DeferredSetCommand(editingDomain, () -> anchor,
 						NotationPackage.Literals.IDENTITY_ANCHOR__ID, newID);
 			} else {
-				m = EXEC_START_FINISH_ANCHOR_PATTERN.matcher(id);
-				if (m.matches()) {
+				Matcher execMatcher = EXEC_START_FINISH_ANCHOR_PATTERN.matcher(id);
+				if (execMatcher.matches()) {
 					// Adjust the execution specification to effect the move
-					if (m.group(1) != null) {
+					if (execMatcher.group(1) != null) {
 						// The top end
 						result = setTop(onShape, yPosition);
 					} else {
@@ -813,9 +815,11 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	public Command setBottom(Node shape, int yPosition) {
 		Command result = UnexecutableCommand.INSTANCE;
 		if (shape.getLayoutConstraint() instanceof Size) {
-			int top = getTop(shape);
-			result = SetCommand.create(editingDomain, shape.getLayoutConstraint(),
-					NotationPackage.Literals.SIZE__HEIGHT, yPosition - top);
+			// Compute relative top, but not yet because we may also be re-parenting this node
+			IntSupplier top = () -> getTop(shape);
+			Supplier<Integer> height = () -> yPosition - top.getAsInt();
+			result = new DeferredSetCommand(editingDomain, shape::getLayoutConstraint,
+					NotationPackage.Literals.SIZE__HEIGHT, height);
 		}
 		return result;
 	}
@@ -839,9 +843,9 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	public Command setLeft(Node shape, int xPosition) {
 		Command result = UnexecutableCommand.INSTANCE;
 		if (shape.getLayoutConstraint() instanceof Location) {
-			// Compute relative position
-			int relativeX = toRelativeX(shape, xPosition);
-			result = SetCommand.create(editingDomain, shape.getLayoutConstraint(),
+			// Compute relative position, but not yet because we may also be re-parenting this node
+			Supplier<Integer> relativeX = () -> toRelativeX(shape, xPosition);
+			result = new DeferredSetCommand(editingDomain, shape::getLayoutConstraint,
 					NotationPackage.Literals.LOCATION__X, relativeX);
 		}
 		return result;

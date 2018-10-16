@@ -79,7 +79,10 @@ public class DeferredPaddingCommand extends CommandWrapper {
 	}
 
 	public DeferredPaddingCommand padFrom(MElement<? extends Element> element) {
-		if (referenceElement == null) {
+		if (element == null) {
+			// Have now determined that padding is not required
+			referenceElement = element;
+		} else if (referenceElement == null) {
 			referenceElement = element;
 		} else if ((referenceElement != element) && referenceElement.precedes(element)) {
 			referenceElement = element;
@@ -88,7 +91,10 @@ public class DeferredPaddingCommand extends CommandWrapper {
 	}
 
 	public DeferredPaddingCommand nudge(MElement<? extends Element> element) {
-		if (nudgeElement == null) {
+		if (element == null) {
+			// Have now determined that padding is not required
+			nudgeElement = element;
+		} else if (nudgeElement == null) {
 			nudgeElement = element;
 		} else if ((nudgeElement != element) && element.precedes(nudgeElement)) {
 			nudgeElement = element;
