@@ -45,7 +45,7 @@ import org.eclipse.uml2.uml.UMLPackage;
  *
  * @author Christian W. Damus
  */
-public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implements CreationCommand<ExecutionSpecification> {
+public class InsertExecutionCommand extends ModelCommand.Creation<MLifelineImpl, ExecutionSpecification> {
 
 	private final MElement<?> before;
 
@@ -56,8 +56,6 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 	private final Element specification;
 
 	private final EClass eClass;
-
-	private CreationCommand<ExecutionSpecification> resultCommand;
 
 	/**
 	 * Initializes me.
@@ -76,7 +74,7 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 	public InsertExecutionCommand(MLifelineImpl owner, MElement<?> before, int offset, int height,
 			Element specification) {
 
-		super(owner);
+		super(owner, ExecutionSpecification.class);
 
 		checkInteraction(before);
 		if (specification != null && !(specification instanceof Action)
@@ -109,7 +107,7 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 	public InsertExecutionCommand(MLifelineImpl owner, MElement<?> before, int offset, int height,
 			EClass eClass) {
 
-		super(owner);
+		super(owner, ExecutionSpecification.class);
 
 		checkInteraction(before);
 		if (!UMLPackage.Literals.EXECUTION_SPECIFICATION.isSuperTypeOf(eClass) || eClass.isAbstract()) {
@@ -121,16 +119,6 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 		this.height = height;
 		this.specification = null;
 		this.eClass = eClass;
-	}
-
-	@Override
-	public Class<? extends ExecutionSpecification> getType() {
-		return ExecutionSpecification.class;
-	}
-
-	@Override
-	public ExecutionSpecification getNewObject() {
-		return (resultCommand == null) ? null : resultCommand.getNewObject();
 	}
 
 	@Override
@@ -166,7 +154,8 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 		execParams.setEClass(eClass);
 		execParams.setInsertBefore(
 				() -> insertAt.map(MElement::getElement).map(Element.class::cast).orElse(null));
-		resultCommand = semantics.createExecutionSpecification(specification, execParams);
+		CreationCommand<ExecutionSpecification> resultCommand = setResult(
+				semantics.createExecutionSpecification(specification, execParams));
 		CreationParameters startParams = CreationParameters.before(resultCommand);
 		CreationCommand<OccurrenceSpecification> start = semantics.createStart(resultCommand, startParams);
 		CreationParameters finishParams = CreationParameters.after(resultCommand);
@@ -267,4 +256,5 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 		View headerView = getTarget().getDiagramView().get();
 		return (Shape)ViewUtil.getChildBySemanticHint(headerView, ViewTypes.LIFELINE_BODY);
 	}
+
 }

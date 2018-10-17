@@ -270,8 +270,9 @@ public class DefaultDiagramHelper implements DiagramHelper {
 	}
 
 	@Override
-	public Command createMessageConnector(Supplier<Message> message, Supplier<? extends View> source,
-			IntSupplier sourceY, Supplier<? extends View> target, IntSupplier targetY,
+	public CreationCommand<Connector> createMessageConnector(Supplier<Message> message,
+			Supplier<? extends View> source, IntSupplier sourceY, Supplier<? extends View> target,
+			IntSupplier targetY,
 			BiFunction<? super OccurrenceSpecification, ? super MessageEnd, Optional<Command>> collisionHandler) {
 
 		// TODO: The Logical Model is required to have no dependencies on the diagram editor,
@@ -345,7 +346,7 @@ public class DefaultDiagramHelper implements DiagramHelper {
 		DeferredSetCommand setTarget = new DeferredSetCommand(editingDomain, createMessage,
 				NotationPackage.Literals.EDGE__TARGET, target);
 
-		Command result = createMessage.chain(setSource).chain(setTarget);
+		CreationCommand<Connector> result = createMessage.chain(setSource).chain(setTarget);
 
 		if (collisionHandler != null) {
 			CommandWrapper deferredCollisionHandler = new CommandWrapper() {
@@ -437,6 +438,18 @@ public class DefaultDiagramHelper implements DiagramHelper {
 	}
 
 	@Override
+	public Command reconnectSource(Supplier<? extends Connector> connector,
+			Supplier<? extends Shape> newSource, IntSupplier yPosition) {
+
+		return new CommandWrapper() {
+			@Override
+			protected Command createCommand() {
+				return reconnectSource(connector.get(), newSource.get(), yPosition.getAsInt());
+			}
+		};
+	}
+
+	@Override
 	public Command reconnectTarget(Connector connector, Shape newTarget, int yPosition) {
 		Command result = (connector.getTarget() == newTarget) ? IdentityCommand.INSTANCE
 				: SetCommand.create(editingDomain, connector, NotationPackage.Literals.EDGE__TARGET,
@@ -451,6 +464,18 @@ public class DefaultDiagramHelper implements DiagramHelper {
 				NotationPackage.Literals.IDENTITY_ANCHOR__ID, newID));
 
 		return result;
+	}
+
+	@Override
+	public Command reconnectTarget(Supplier<? extends Connector> connector,
+			Supplier<? extends Shape> newTarget, IntSupplier yPosition) {
+
+		return new CommandWrapper() {
+			@Override
+			protected Command createCommand() {
+				return reconnectTarget(connector.get(), newTarget.get(), yPosition.getAsInt());
+			}
+		};
 	}
 
 	@Override

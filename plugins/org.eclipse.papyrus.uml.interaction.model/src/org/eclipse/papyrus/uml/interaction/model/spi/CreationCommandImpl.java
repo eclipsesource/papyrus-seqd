@@ -16,7 +16,6 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandWrapper;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.papyrus.uml.interaction.internal.model.commands.CompoundModelCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 
 /**
@@ -89,7 +88,7 @@ public class CreationCommandImpl<T extends EObject> extends CommandWrapper imple
 	}
 
 	@Override
-	public Command chain(Command next) {
-		return CompoundModelCommand.compose(domain, this, next);
+	public CreationCommand<T> chain(Command next) {
+		return andThen(domain, next);
 	}
 }

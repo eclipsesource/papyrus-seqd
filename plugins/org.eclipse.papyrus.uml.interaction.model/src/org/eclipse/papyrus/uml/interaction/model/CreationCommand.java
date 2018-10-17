@@ -60,9 +60,11 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 	 * @see #getType()
 	 */
 	default <U extends EObject> CreationCommand<U> as(Class<U> subtype) {
-		final class Cast extends CommandWrapper implements CreationCommand<U> {
+		final class Cast extends Wrapper<U> {
+			@SuppressWarnings("unchecked")
 			Cast() {
-				super(CreationCommand.this);
+				// This cast is checked externally, below
+				super((CreationCommand<U>)CreationCommand.this);
 			}
 
 			@Override
@@ -94,7 +96,7 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 	 * @return myself, with follow-up
 	 */
 	default CreationCommand<T> andThen(EditingDomain domain, Command next) {
-		class AndThen extends CommandWrapper implements CreationCommand<T> {
+		class AndThen extends Wrapper<T> {
 			// Anticipate a small number of follow-ups
 			private final List<Command> toCompose = new ArrayList<>(3);
 
@@ -106,7 +108,7 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 
 			@Override
 			protected Command createCommand() {
-				Command result = CompoundModelCommand.compose(domain, CreationCommand.this, toCompose.get(0));
+				Command result = Compound.compose(domain, CreationCommand.this, toCompose.get(0));
 				for (int i = 1; i < toCompose.size(); i++) {
 					result = result.chain(toCompose.get(i));
 				}
@@ -115,18 +117,14 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 			}
 
 			@Override
-			public Class<? extends T> getType() {
-				return CreationCommand.this.getType();
-			}
-
-			@Override
-			public T getNewObject() {
-				return CreationCommand.this.getNewObject();
-			}
-
-			@Override
 			public CreationCommand<T> andThen(EditingDomain domain_, Command followUp) {
 				toCompose.add(followUp);
+				return this;
+			}
+
+			@Override
+			public CreationCommand<T> chain(Command nextCommand) {
+				toCompose.add(nextCommand);
 				return this;
 			}
 		}
@@ -144,7 +142,7 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 	 * @return myself, with side-effects
 	 */
 	default CreationCommand<T> andThen(Consumer<? super T> sideEffect) {
-		class AndThen extends CommandWrapper implements CreationCommand<T> {
+		class AndThen extends Wrapper<T> {
 			AndThen() {
 				super(CreationCommand.this);
 			}
@@ -155,17 +153,186 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 				sideEffect.accept(getNewObject());
 			}
 
-			@Override
-			public Class<? extends T> getType() {
-				return CreationCommand.this.getType();
-			}
-
-			@Override
-			public T getNewObject() {
-				return CreationCommand.this.getNewObject();
-			}
 		}
 
 		return new AndThen();
 	}
+
+	@Override
+	CreationCommand<T> chain(Command next);
+
+	//
+	// Nested types
+	//
+
+	/**
+	 * Base for wrappers around creation commands.
+	 *
+	 * @param <T>
+	 *            the wrapped creation-command product type
+	 */
+	class Wrapper<T extends EObject> extends CommandWrapper implements CreationCommand<T> {
+
+		Wrapper() {
+			super();
+		}
+
+		Wrapper(CreationCommand<T> wrapped) {
+			super(wrapped);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public CreationCommand<T> getCommand() {
+			// This cast is safe by construction
+			return (CreationCommand<T>)super.getCommand();
+		}
+
+		@Override
+		public String getLabel() {
+			return getCommand().getLabel();
+		}
+
+		@Override
+		public String getDescription() {
+			return getCommand().getDescription();
+		}
+
+		@Override
+		public Class<? extends T> getType() {
+			return getCommand().getType();
+		}
+
+		@Override
+		public T getNewObject() {
+			return getCommand().getNewObject();
+		}
+
+		@Override
+		public CreationCommand<T> chain(Command nextCommand) {
+			return new Compound<>(this, nextCommand);
+		}
+
+		//
+		// Nested types
+		//
+
+		/**
+		 * Creation-command analogue of the {@link CompoundModelCommand} API. The first command in the
+		 * compound is a {@link CreationCommand}.
+		 *
+		 * @param <T>
+		 *            the composed creation-command product type
+		 */
+		static class Compound<T extends EObject> extends CompoundModelCommand implements CreationCommand<T> {
+
+			/**
+			 * Initializes me.
+			 *
+			 * @param first
+			 * @param second
+			 */
+			Compound(CreationCommand<T> first, Command second) {
+				super(first, second);
+			}
+
+			@SuppressWarnings("unchecked")
+			private CreationCommand<T> getCreationCommand() {
+				// This cast is safe by construction
+				return (CreationCommand<T>)commandList.get(0);
+			}
+
+			@Override
+			public String getLabel() {
+				return getCreationCommand().getLabel();
+			}
+
+			@Override
+			public String getDescription() {
+				return getCreationCommand().getDescription();
+			}
+
+			@Override
+			public Class<? extends T> getType() {
+				return getCreationCommand().getType();
+			}
+
+			@Override
+			public T getNewObject() {
+				return getCreationCommand().getNewObject();
+			}
+
+			@Override
+			public CreationCommand<T> chain(Command next) {
+				super.chain(next);
+				return this;
+			}
+
+			static <T extends EObject> CreationCommand<T> compose(EditingDomain editingDomain,
+					CreationCommand<T> first, Command second) {
+				if (first instanceof CompoundModelCommand) {
+					((CompoundModelCommand)first).append(second);
+					return first;
+				} else if (isTransactional(editingDomain)) {
+					return new Transactional<>(editingDomain, first, second);
+				}
+
+				return new Compound<>(first, second);
+			}
+
+			//
+			// Nested types
+			//
+
+			/**
+			 * Creation-command analogue of the {@link TransactionalCompoundModelCommand} API. The first
+			 * command in the compound is a {@link CreationCommand}.
+			 *
+			 * @param <T>
+			 *            the composed creation-command product type
+			 */
+			static class Transactional<T extends EObject> extends TransactionalCompoundModelCommand implements CreationCommand<T> {
+
+				Transactional(EditingDomain editingDomain, CreationCommand<T> first, Command second) {
+					super(editingDomain, first, second);
+				}
+
+				@SuppressWarnings("unchecked")
+				private CreationCommand<T> getCreationCommand() {
+					// This cast is safe by construction
+					return (CreationCommand<T>)commandList.get(0);
+				}
+
+				@Override
+				public String getLabel() {
+					return getCreationCommand().getLabel();
+				}
+
+				@Override
+				public String getDescription() {
+					return getCreationCommand().getDescription();
+				}
+
+				@Override
+				public Class<? extends T> getType() {
+					return getCreationCommand().getType();
+				}
+
+				@Override
+				public T getNewObject() {
+					return getCreationCommand().getNewObject();
+				}
+
+				@Override
+				public CreationCommand<T> chain(Command next) {
+					super.chain(next);
+					return this;
+				}
+
+			}
+
+		}
+
+	}
+
 }
