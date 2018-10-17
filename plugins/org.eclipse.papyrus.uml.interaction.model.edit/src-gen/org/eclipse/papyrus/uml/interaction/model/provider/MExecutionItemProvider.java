@@ -55,6 +55,7 @@ public class MExecutionItemProvider extends MElementItemProvider {
 
 			addStartPropertyDescriptor(object);
 			addFinishPropertyDescriptor(object);
+			addOccurrencesPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -66,13 +67,13 @@ public class MExecutionItemProvider extends MElementItemProvider {
 	 * @generated
 	 */
 	protected void addStartPropertyDescriptor(Object object) {
-		itemPropertyDescriptors
-				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
-						getResourceLocator(), getString("_UI_MExecution_start_feature"), //$NON-NLS-1$
-						getString("_UI_PropertyDescriptor_description", "_UI_MExecution_start_feature", //$NON-NLS-1$ //$NON-NLS-2$
-								"_UI_MExecution_type"), //$NON-NLS-1$
-						SequenceDiagramPackage.Literals.MEXECUTION__START, false, false, false,
-						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MExecution_start_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MExecution_start_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MExecution_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MEXECUTION__START, false, false, false,
+				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -82,13 +83,29 @@ public class MExecutionItemProvider extends MElementItemProvider {
 	 * @generated
 	 */
 	protected void addFinishPropertyDescriptor(Object object) {
-		itemPropertyDescriptors
-				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
-						getResourceLocator(), getString("_UI_MExecution_finish_feature"), //$NON-NLS-1$
-						getString("_UI_PropertyDescriptor_description", "_UI_MExecution_finish_feature", //$NON-NLS-1$ //$NON-NLS-2$
-								"_UI_MExecution_type"), //$NON-NLS-1$
-						SequenceDiagramPackage.Literals.MEXECUTION__FINISH, false, false, false,
-						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MExecution_finish_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MExecution_finish_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MExecution_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MEXECUTION__FINISH, false, false, false,
+				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Occurrences feature. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	protected void addOccurrencesPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MExecution_occurrences_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MExecution_occurrences_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MExecution_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MEXECUTION__OCCURRENCES, false, false, false, null, null,
+				null));
 	}
 
 	/**
@@ -110,7 +127,7 @@ public class MExecutionItemProvider extends MElementItemProvider {
 	@Override
 	public String getText(Object object) {
 		String label = ((MExecution) object).getName();
-		return label == null || label.length() == 0 ? getString("_UI_MExecution_type") : //$NON-NLS-1$
+		return (label == null) || (label.length() == 0) ? getString("_UI_MExecution_type") : //$NON-NLS-1$
 				getString("_UI_MExecution_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -128,7 +145,9 @@ public class MExecutionItemProvider extends MElementItemProvider {
 		switch (notification.getFeatureID(MExecution.class)) {
 		case SequenceDiagramPackage.MEXECUTION__START:
 		case SequenceDiagramPackage.MEXECUTION__FINISH:
-			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
+		case SequenceDiagramPackage.MEXECUTION__OCCURRENCES:
+			fireNotifyChanged(
+					new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;
 		}
 		super.notifyChanged(notification);

@@ -13,7 +13,9 @@
 package org.eclipse.papyrus.uml.interaction.model;
 
 import java.util.Optional;
+import java.util.OptionalInt;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.uml2.uml.Element;
 
 /**
@@ -24,10 +26,13 @@ import org.eclipse.uml2.uml.Element;
  * </p>
  * <ul>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getCovered <em>Covered</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#isStart <em>Start</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getStartedExecution <em>Started
  * Execution</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#isFinish <em>Finish</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getFinishedExecution <em>Finished
  * Execution</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getExecution <em>Execution</em>}</li>
  * </ul>
  *
  * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMOccurrence()
@@ -52,6 +57,21 @@ public interface MOccurrence<T extends Element> extends MElement<T> {
 	Optional<MLifeline> getCovered();
 
 	/**
+	 * Returns the value of the '<em><b>Start</b></em>' attribute. <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Start</em>' attribute isn't clear, there really should be more of a
+	 * description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Start</em>' attribute.
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMOccurrence_Start()
+	 * @model required="true" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	boolean isStart();
+
+	/**
 	 * Returns the value of the '<em><b>Started Execution</b></em>' attribute. <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Started Execution</em>' attribute isn't clear, there really should be more
@@ -68,6 +88,21 @@ public interface MOccurrence<T extends Element> extends MElement<T> {
 	Optional<MExecution> getStartedExecution();
 
 	/**
+	 * Returns the value of the '<em><b>Finish</b></em>' attribute. <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Finish</em>' attribute isn't clear, there really should be more of a
+	 * description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Finish</em>' attribute.
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMOccurrence_Finish()
+	 * @model required="true" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	boolean isFinish();
+
+	/**
 	 * Returns the value of the '<em><b>Finished Execution</b></em>' attribute. <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Finished Execution</em>' attribute isn't clear, there really should be more
@@ -82,5 +117,34 @@ public interface MOccurrence<T extends Element> extends MElement<T> {
 	 * @generated
 	 */
 	Optional<MExecution> getFinishedExecution();
+
+	/**
+	 * Returns the value of the '<em><b>Execution</b></em>' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc --> <!-- begin-model-doc --> The execution that an occurrence either
+	 * {@linkplain #getStartedExecution() starts} or {@linkplain #getFinishedExecution() finishes}, or the
+	 * most nested execution during which span the occurrence happens on its covered lifeline. <!--
+	 * end-model-doc -->
+	 * 
+	 * @return the value of the '<em>Execution</em>' attribute.
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMOccurrence_Execution()
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Optional&lt;org.eclipse.papyrus.uml.interaction.model.MExecution&gt;"
+	 *        required="true" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	Optional<MExecution> getExecution();
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * 
+	 * @param yPosition
+	 *            the absolute Y position at which to place the occurrence on the lifeline, or empty to
+	 *            maintain the current Y position. <!-- end-model-doc -->
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Command" required="true"
+	 *        lifelineRequired="true"
+	 *        yPositionDataType="org.eclipse.papyrus.uml.interaction.model.OptionalInt"
+	 *        yPositionRequired="true"
+	 * @generated
+	 */
+	Command setCovered(MLifeline lifeline, OptionalInt yPosition);
 
 } // MOccurrence

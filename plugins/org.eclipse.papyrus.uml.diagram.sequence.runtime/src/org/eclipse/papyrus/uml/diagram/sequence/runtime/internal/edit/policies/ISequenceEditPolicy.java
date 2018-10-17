@@ -12,6 +12,9 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
+import java.util.Optional;
+
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.ecore.EObject;
@@ -26,9 +29,15 @@ import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.commands.wrappers.OperationToGEFCommandWrapper;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnetManager;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ISequenceEditPart;
+import org.eclipse.papyrus.uml.interaction.model.MElement;
+import org.eclipse.papyrus.uml.interaction.model.MInteraction;
+import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
+import org.eclipse.uml2.uml.Element;
 
 /**
  * A mix-in interface for edit-policies in the sequence diagram that need to create executable commands in a
@@ -47,7 +56,22 @@ public interface ISequenceEditPolicy extends EditPolicy {
 	default Command wrap(org.eclipse.emf.common.command.Command emfCommand) {
 		TransactionalEditingDomain domain = __getEditingDomain(this);
 		return (domain == null) ? UnexecutableCommand.INSTANCE
-				: OperationToGEFCommandWrapper.wrap(new EMFCommandOperation(domain, emfCommand));
+				: wrap(new EMFCommandOperation(domain, emfCommand) {
+
+					/** The operation tries to "improve" the label, but we prefer the original. */
+					@Override
+					public String getLabel() {
+						return emfCommand.getLabel();
+					}
+				});
+	}
+
+	default Command wrap(IUndoableOperation operation) {
+		return OperationToGEFCommandWrapper.wrap(operation);
+	}
+
+	default DiagramHelper getDiagramHelper() {
+		return Activator.getDefault().getDiagramHelper(__getEditingDomain(this));
 	}
 
 	default LayoutHelper getLayoutHelper() {
@@ -84,15 +108,19 @@ public interface ISequenceEditPolicy extends EditPolicy {
 	 * @return the {@code location} in my host figure's coördinate space
 	 */
 	default Point getRelativeLocation(Point location) {
-		Point result = location.getCopy();
+		return Optional.of(getHost()).filter(ISequenceEditPart.class::isInstance)
+				.map(ISequenceEditPart.class::cast).map(seq -> seq.getRelativeLocation(location))
+				.orElseGet(() -> {
+					Point result = location.getCopy();
 
-		IFigure figure = __getHostFigure(this);
-		if (figure != null) {
-			figure.translateToRelative(result);
-			result.translate(figure.getBounds().getLocation().getNegated());
-		}
+					IFigure figure = __getHostFigure(this);
+					if (figure != null) {
+						figure.translateToRelative(result);
+						result.translate(figure.getBounds().getLocation().getNegated());
+					}
 
-		return result;
+					return result;
+				});
 	}
 
 	default int getMinimumWidth() {
@@ -103,4 +131,17 @@ public interface ISequenceEditPolicy extends EditPolicy {
 		return getLayoutConstraints().getMinimumHeight(__getHostView(this));
 	}
 
+	default MInteraction getInteraction() {
+		return Optional.of(getHost()).filter(ISequenceEditPart.class::isInstance)
+				.map(ISequenceEditPart.class::cast).map(ISequenceEditPart::getInteraction).orElse(null);
+	}
+
+	default Optional<MElement<? extends Element>> getLogicalElement() {
+		return Optional.of(getHost()).filter(ISequenceEditPart.class::isInstance)
+				.map(ISequenceEditPart.class::cast).flatMap(ISequenceEditPart::getLogicalElement);
+	}
+
+	default IMagnetManager getMagnetManager() {
+		return IMagnetManager.get(getHost());
+	}
 }

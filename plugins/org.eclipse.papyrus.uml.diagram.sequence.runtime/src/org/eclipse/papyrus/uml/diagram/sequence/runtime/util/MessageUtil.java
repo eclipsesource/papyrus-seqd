@@ -135,6 +135,15 @@ public class MessageUtil {
 		}
 	}
 
+	public static boolean isSynchronousCall(MessageSort messageSort) {
+		switch (messageSort) {
+			case SYNCH_CALL_LITERAL:
+				return true;
+			default:
+				return false;
+		}
+	}
+
 	public static boolean isMessage(IElementType type) {
 		return ElementUtil.isTypeOf(type, UMLElementTypes.MESSAGE);
 	}

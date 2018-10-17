@@ -21,10 +21,14 @@ import java.util.OptionalInt;
 import java.util.function.Predicate;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.UniqueEList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.eclipse.gmf.runtime.notation.Shape;
@@ -35,12 +39,18 @@ import org.eclipse.papyrus.uml.interaction.internal.model.commands.InsertExecuti
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.InsertMessageCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.NudgeHorizontallyCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.RemoveLifelineCommand;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.SetLifelineCreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
+import org.eclipse.papyrus.uml.interaction.model.MDestruction;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
+import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
@@ -60,14 +70,23 @@ import org.eclipse.uml2.uml.NamedElement;
  * <em>Execution Occurrences</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl#getExecutions
  * <em>Executions</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl#getOwnedDestruction
+ * <em>Owned Destruction</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl#getDestruction
+ * <em>Destruction</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl#getLeft
  * <em>Left</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl#getRight
  * <em>Right</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl#getMessageEnds <em>Message
+ * Ends</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl#getOccurrences
+ * <em>Occurrences</em>}</li>
  * </ul>
  *
  * @generated
  */
+@SuppressWarnings("boxing")
 public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	/**
 	 * The cached value of the '{@link #getExecutionOccurrences() <em>Execution Occurrences</em>}' containment
@@ -88,6 +107,16 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 * @ordered
 	 */
 	protected EList<MExecution> executions;
+
+	/**
+	 * The cached value of the '{@link #getOwnedDestruction() <em>Owned Destruction</em>}' containment
+	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getOwnedDestruction()
+	 * @generated
+	 * @ordered
+	 */
+	protected MDestruction ownedDestruction;
 
 	/**
 	 * The default value of the '{@link #getLeft() <em>Left</em>}' attribute. <!-- begin-user-doc --> <!--
@@ -140,8 +169,7 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	@Override
 	public List<MExecutionOccurrence> getExecutionOccurrences() {
 		if (executionOccurrences == null) {
-			executionOccurrences = new EObjectContainmentEList<MExecutionOccurrence>(
-					MExecutionOccurrence.class, this,
+			executionOccurrences = new EObjectContainmentEList<>(MExecutionOccurrence.class, this,
 					SequenceDiagramPackage.MLIFELINE__EXECUTION_OCCURRENCES);
 		}
 		return executionOccurrences;
@@ -155,10 +183,89 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	@Override
 	public List<MExecution> getExecutions() {
 		if (executions == null) {
-			executions = new EObjectContainmentEList<MExecution>(MExecution.class, this,
+			executions = new EObjectContainmentEList<>(MExecution.class, this,
 					SequenceDiagramPackage.MLIFELINE__EXECUTIONS);
 		}
 		return executions;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public MDestruction getOwnedDestruction() {
+		return ownedDestruction;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public NotificationChain basicSetOwnedDestruction(MDestruction newOwnedDestruction,
+			NotificationChain msgs) {
+		MDestruction oldOwnedDestruction = ownedDestruction;
+		ownedDestruction = newOwnedDestruction;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					SequenceDiagramPackage.MLIFELINE__OWNED_DESTRUCTION, oldOwnedDestruction,
+					newOwnedDestruction);
+			if (msgs == null) {
+				msgs = notification;
+			} else {
+				msgs.add(notification);
+			}
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setOwnedDestruction(MDestruction newOwnedDestruction) {
+		if (newOwnedDestruction != ownedDestruction) {
+			NotificationChain msgs = null;
+			if (ownedDestruction != null) {
+				msgs = ((InternalEObject)ownedDestruction).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - SequenceDiagramPackage.MLIFELINE__OWNED_DESTRUCTION, null,
+						msgs);
+			}
+			if (newOwnedDestruction != null) {
+				msgs = ((InternalEObject)newOwnedDestruction).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - SequenceDiagramPackage.MLIFELINE__OWNED_DESTRUCTION, null,
+						msgs);
+			}
+			msgs = basicSetOwnedDestruction(newOwnedDestruction, msgs);
+			if (msgs != null) {
+				msgs.dispatch();
+			}
+		} else if (eNotificationRequired()) {
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					SequenceDiagramPackage.MLIFELINE__OWNED_DESTRUCTION, newOwnedDestruction,
+					newOwnedDestruction));
+		}
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Optional<MDestruction> getDestruction() {
+		// Is it owned? (not a delete message end but a spontaneous deletion)
+		Optional<MDestruction> result = Optional.ofNullable(getOwnedDestruction());
+		if (!result.isPresent()) {
+			// Maybe it's owned by a message
+			Optional<DestructionOccurrenceSpecification> destruction = getElement().getCoveredBys().stream()
+					.filter(DestructionOccurrenceSpecification.class::isInstance)
+					.map(DestructionOccurrenceSpecification.class::cast).findFirst();
+			result = destruction.flatMap(getInteraction()::getElement).map(MDestruction.class::cast);
+		}
+		return result;
 	}
 
 	/**
@@ -179,6 +286,37 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	@Override
 	public OptionalInt getRight() {
 		return getVertex().map(layoutHelper()::getRight).orElseGet(OptionalInt::empty);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public List<MMessageEnd> getMessageEnds() {
+		EList<MMessageEnd> result = new UniqueEList.FastCompare<>();
+
+		Predicate<MMessageEnd> covers = end -> end.getCovered().filter(this::equals).isPresent();
+		getInteraction().getMessages().forEach(msg -> {
+			msg.getSend().filter(covers).ifPresent(result::add);
+			msg.getReceive().filter(covers).ifPresent(result::add);
+		});
+
+		return ECollections.unmodifiableEList(result);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public List<MOccurrence<? extends Element>> getOccurrences() {
+		EList<MOccurrence<? extends Element>> result = new UniqueEList.FastCompare<>();
+		result.addAll(getExecutionOccurrences());
+		result.addAll(getMessageEnds());
+		return ECollections.unmodifiableEList(result);
 	}
 
 	/**
@@ -271,12 +409,40 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 * @generated NOT
 	 */
 	@Override
+	public CreationCommand<Message> insertMessageAfter(MElement<?> before, int offset, MLifeline receiver,
+			MessageSort sort, NamedElement signature,
+			ExecutionCreationCommandParameter executionCreationConfig) {
+
+		return new InsertMessageCommand(this, before, offset, receiver, sort, signature,
+				executionCreationConfig);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
 	public CreationCommand<Message> insertMessageAfter(MElement<?> beforeSend, int sendOffset,
 			MLifeline receiver, MElement<?> beforeRecv, int recvOffset, MessageSort sort,
 			NamedElement signature) {
 
+		return insertMessageAfter(beforeSend, sendOffset, receiver, beforeRecv, recvOffset, sort, signature,
+				new ExecutionCreationCommandParameter());
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public CreationCommand<Message> insertMessageAfter(MElement<?> beforeSend, int sendOffset,
+			MLifeline receiver, MElement<?> beforeRecv, int recvOffset, MessageSort sort,
+			NamedElement signature, ExecutionCreationCommandParameter executionCreationConfig) {
+
 		return new InsertMessageCommand(this, beforeSend, sendOffset, receiver, beforeRecv, recvOffset, sort,
-				signature);
+				signature, executionCreationConfig);
 	}
 
 	/**
@@ -319,6 +485,16 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 * @generated NOT
 	 */
 	@Override
+	public Command makeCreatedAt(OptionalInt yPosition) {
+		return new SetLifelineCreationCommand(this, yPosition);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
 	public Command remove() {
 		return new RemoveLifelineCommand(this, true);
 	}
@@ -335,6 +511,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return ((InternalEList<?>)getExecutionOccurrences()).basicRemove(otherEnd, msgs);
 			case SequenceDiagramPackage.MLIFELINE__EXECUTIONS:
 				return ((InternalEList<?>)getExecutions()).basicRemove(otherEnd, msgs);
+			case SequenceDiagramPackage.MLIFELINE__OWNED_DESTRUCTION:
+				return basicSetOwnedDestruction(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -351,12 +529,50 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return getExecutionOccurrences();
 			case SequenceDiagramPackage.MLIFELINE__EXECUTIONS:
 				return getExecutions();
+			case SequenceDiagramPackage.MLIFELINE__OWNED_DESTRUCTION:
+				return getOwnedDestruction();
+			case SequenceDiagramPackage.MLIFELINE__DESTRUCTION:
+				return getDestruction();
 			case SequenceDiagramPackage.MLIFELINE__LEFT:
 				return getLeft();
 			case SequenceDiagramPackage.MLIFELINE__RIGHT:
 				return getRight();
+			case SequenceDiagramPackage.MLIFELINE__MESSAGE_ENDS:
+				return getMessageEnds();
+			case SequenceDiagramPackage.MLIFELINE__OCCURRENCES:
+				return getOccurrences();
 		}
 		return super.eGet(featureID, resolve, coreType);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public void eSet(int featureID, Object newValue) {
+		switch (featureID) {
+			case SequenceDiagramPackage.MLIFELINE__OWNED_DESTRUCTION:
+				setOwnedDestruction((MDestruction)newValue);
+				return;
+		}
+		super.eSet(featureID, newValue);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public void eUnset(int featureID) {
+		switch (featureID) {
+			case SequenceDiagramPackage.MLIFELINE__OWNED_DESTRUCTION:
+				setOwnedDestruction((MDestruction)null);
+				return;
+		}
+		super.eUnset(featureID);
 	}
 
 	/**
@@ -368,13 +584,21 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case SequenceDiagramPackage.MLIFELINE__EXECUTION_OCCURRENCES:
-				return executionOccurrences != null && !executionOccurrences.isEmpty();
+				return (executionOccurrences != null) && !executionOccurrences.isEmpty();
 			case SequenceDiagramPackage.MLIFELINE__EXECUTIONS:
-				return executions != null && !executions.isEmpty();
+				return (executions != null) && !executions.isEmpty();
+			case SequenceDiagramPackage.MLIFELINE__OWNED_DESTRUCTION:
+				return ownedDestruction != null;
+			case SequenceDiagramPackage.MLIFELINE__DESTRUCTION:
+				return getDestruction() != null;
 			case SequenceDiagramPackage.MLIFELINE__LEFT:
 				return LEFT_EDEFAULT == null ? getLeft() != null : !LEFT_EDEFAULT.equals(getLeft());
 			case SequenceDiagramPackage.MLIFELINE__RIGHT:
 				return RIGHT_EDEFAULT == null ? getRight() != null : !RIGHT_EDEFAULT.equals(getRight());
+			case SequenceDiagramPackage.MLIFELINE__MESSAGE_ENDS:
+				return !getMessageEnds().isEmpty();
+			case SequenceDiagramPackage.MLIFELINE__OCCURRENCES:
+				return !getOccurrences().isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
@@ -400,6 +624,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return getExecutionOccurrence((ExecutionOccurrenceSpecification)arguments.get(0));
 			case SequenceDiagramPackage.MLIFELINE___GET_EXECUTION__EXECUTIONSPECIFICATION:
 				return getExecution((ExecutionSpecification)arguments.get(0));
+			case SequenceDiagramPackage.MLIFELINE___GET_DESTRUCTION__DESTRUCTIONOCCURRENCESPECIFICATION:
+				return getDestruction((DestructionOccurrenceSpecification)arguments.get(0));
 			case SequenceDiagramPackage.MLIFELINE___INSERT_EXECUTION_AFTER__MELEMENT_INT_INT_ELEMENT:
 				return insertExecutionAfter((MElement<?>)arguments.get(0), (Integer)arguments.get(1),
 						(Integer)arguments.get(2), (Element)arguments.get(3));
@@ -414,10 +640,21 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return insertMessageAfter((MElement<?>)arguments.get(0), (Integer)arguments.get(1),
 						(MLifeline)arguments.get(2), (MElement<?>)arguments.get(3), (Integer)arguments.get(4),
 						(MessageSort)arguments.get(5), (NamedElement)arguments.get(6));
+			case SequenceDiagramPackage.MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MELEMENT_INT_MESSAGESORT_NAMEDELEMENT_EXECUTIONCREATIONCOMMANDPARAMETER:
+				return insertMessageAfter((MElement<?>)arguments.get(0), (Integer)arguments.get(1),
+						(MLifeline)arguments.get(2), (MElement<?>)arguments.get(3), (Integer)arguments.get(4),
+						(MessageSort)arguments.get(5), (NamedElement)arguments.get(6),
+						(ExecutionCreationCommandParameter)arguments.get(7));
+			case SequenceDiagramPackage.MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MESSAGESORT_NAMEDELEMENT_EXECUTIONCREATIONCOMMANDPARAMETER:
+				return insertMessageAfter((MElement<?>)arguments.get(0), (Integer)arguments.get(1),
+						(MLifeline)arguments.get(2), (MessageSort)arguments.get(3),
+						(NamedElement)arguments.get(4), (ExecutionCreationCommandParameter)arguments.get(5));
 			case SequenceDiagramPackage.MLIFELINE___ELEMENT_AT__INT:
 				return elementAt((Integer)arguments.get(0));
 			case SequenceDiagramPackage.MLIFELINE___NUDGE_HORIZONTALLY__INT:
 				return nudgeHorizontally((Integer)arguments.get(0));
+			case SequenceDiagramPackage.MLIFELINE___MAKE_CREATED_AT__OPTIONALINT:
+				return makeCreatedAt((OptionalInt)arguments.get(0));
 		}
 		return super.eInvoke(operationID, arguments);
 	}
@@ -451,6 +688,22 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	public Optional<MExecutionOccurrence> getExecutionOccurrence(
 			ExecutionOccurrenceSpecification occurrence) {
 		return getElement(occurrence, getExecutionOccurrences());
+	}
+
+	MDestructionImpl addDestruction(DestructionOccurrenceSpecification destruction) {
+		return getDestruction(destruction).map(MDestructionImpl.class::cast) //
+				.orElseGet(() -> addDestruction((MDestructionImpl)getInteractionImpl()
+						.addMessage(destruction.getMessage()).getReceiveEnd()));
+	}
+
+	MDestructionImpl addDestruction(MDestructionImpl destruction) {
+		setOwnedDestruction(destruction);
+		return destruction;
+	}
+
+	@Override
+	public Optional<MDestruction> getDestruction(DestructionOccurrenceSpecification destruction) {
+		return getElement(destruction, getDestruction());
 	}
 
 } // MLifelineImpl

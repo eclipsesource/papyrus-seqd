@@ -201,6 +201,55 @@ public interface LayoutConstraints {
 	boolean isAsyncMessageSlope(double x1, double y1, double x2, double y2);
 
 	/**
+	 * Query the strength of a magnet attached to the given {@code view}
+	 * 
+	 * @param view
+	 *            a notation view in the diagram that supports magnets
+	 * @return the magnet strength
+	 */
+	int getMagnetStrength(View view);
+
+	/**
+	 * Query the top inset of the given {@code view}.
+	 * 
+	 * @param view
+	 *            a view in the diagram
+	 * @return the top inset for that {@code view}
+	 */
+	default int getTopInset(View view) {
+		return getTopInset(view.getType());
+	}
+
+	/**
+	 * Query the standard top inset of the given view type.
+	 * 
+	 * @param viewType
+	 *            a view type
+	 * @return the standard top inset for that view type
+	 */
+	int getTopInset(String viewType);
+
+	/**
+	 * Query the bottom inset of the given {@code view}.
+	 * 
+	 * @param view
+	 *            a view in the diagram
+	 * @return the bottom inset for that {@code view}
+	 */
+	default int getBottomInset(View view) {
+		return getBottomInset(view.getType());
+	}
+
+	/**
+	 * Query the standard bottom inset of the given view type.
+	 * 
+	 * @param viewType
+	 *            a view type
+	 * @return the standard bottom inset for that view type
+	 */
+	int getBottomInset(String viewType);
+
+	/**
 	 * Applies a {@link Modifiers modifier} to the given <code>viewType</code> and returns the resulting key.
 	 * 
 	 * @param modifier

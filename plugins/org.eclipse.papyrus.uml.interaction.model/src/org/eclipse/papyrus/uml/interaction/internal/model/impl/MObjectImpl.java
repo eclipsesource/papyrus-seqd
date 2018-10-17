@@ -22,6 +22,7 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.gmf.runtime.notation.Anchor;
@@ -69,6 +70,10 @@ public abstract class MObjectImpl<T extends Element> extends MinimalEObjectImpl.
 
 	protected void dispose() {
 		getInteractionImpl().dispose();
+	}
+
+	protected final boolean isDisposed() {
+		return EcoreUtil.getExistingAdapter(this, MObject.class) == null;
 	}
 
 	final void setOwner(MElement<?> owner) {
@@ -134,7 +139,15 @@ public abstract class MObjectImpl<T extends Element> extends MinimalEObjectImpl.
 	}
 
 	final <E extends Element, M extends MElement<E>> Optional<M> getElement(E uml, Collection<M> elements) {
-		return elements.stream().filter(m -> m.getElement() == uml).findAny();
+		return getElement(uml, elements.stream());
+	}
+
+	final <E extends Element, M extends MElement<E>> Optional<M> getElement(E uml, M element) {
+		return getElement(uml, Stream.of(element));
+	}
+
+	final <E extends Element, M extends MElement<E>> Optional<M> getElement(E uml, Stream<M> elements) {
+		return elements.filter(m -> m.getElement() == uml).findAny();
 	}
 
 	@SafeVarargs

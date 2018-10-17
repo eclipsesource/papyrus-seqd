@@ -22,7 +22,13 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.pol
 
 import com.google.common.eventbus.EventBus;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import org.eclipse.draw2d.ConnectionAnchor;
+import org.eclipse.draw2d.ConnectionLocator;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.Request;
@@ -30,12 +36,15 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.gef.editpolicies.FeedbackHelper;
+import org.eclipse.gef.handles.ConnectionHandle;
 import org.eclipse.gef.requests.BendpointRequest;
 import org.eclipse.gef.requests.LocationRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageFeedbackHelper.Mode;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.handles.SequenceConnectionEndpointHandle;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.CommandCreatedEvent;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
 import org.eclipse.uml2.uml.Message;
@@ -43,7 +52,7 @@ import org.eclipse.uml2.uml.Message;
 /**
  * Endpoint edit-policy for management of message ends.
  */
-public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy {
+public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy implements ISequenceEditPolicy {
 
 	private final EventBus bus;
 
@@ -93,8 +102,8 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy {
 			Message message = (Message)((IGraphicalEditPart)getHost()).resolveSemanticElement();
 			boolean synch = MessageUtil.isSynchronous(message.getMessageSort());
 			boolean source = request.isMovingStartAnchor();
-
-			feedbackHelper = new MessageFeedbackHelper(source ? Mode.MOVE_SOURCE : Mode.MOVE_TARGET, synch);
+			feedbackHelper = new MessageFeedbackHelper(source ? Mode.MOVE_SOURCE : Mode.MOVE_TARGET, synch,
+					getMagnetManager(), getLayoutConstraints());
 			feedbackHelper.setConnection(getConnection());
 		}
 		return feedbackHelper;
@@ -138,8 +147,6 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy {
 		}
 
 		FeedbackHelper helper = getFeedbackHelper(request);
-		helper.setMovingStartAnchor(true);
-		helper.update(getConnection().getSourceAnchor(), request.getLocation());
 		helper.setMovingStartAnchor(false);
 		helper.update(getConnection().getTargetAnchor(), request.getLocation());
 	}
@@ -175,7 +182,8 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy {
 			Message message = (Message)((IGraphicalEditPart)getHost()).resolveSemanticElement();
 			boolean synch = MessageUtil.isSynchronous(message.getMessageSort());
 
-			feedbackHelper = new MessageFeedbackHelper(Mode.MOVE_BOTH, synch);
+			feedbackHelper = new MessageFeedbackHelper(Mode.MOVE_BOTH, synch, getMagnetManager(),
+					getLayoutConstraints());
 			feedbackHelper.setConnection(getConnection());
 
 			Point grabbedAt = lastMouseLocation;
@@ -208,24 +216,55 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy {
 			EditPart source = connection.getSource();
 			EditPart target = connection.getTarget();
 
-			// Don't modify the original because we get this command many times
+			// Don't modify the originals because we get this command many times
 			Point sourceLocation = getOriginalSourceLocation(request).getCopy();
+			Point targetLocation = getOriginalTargetLocation(request).getCopy();
 			sourceLocation.translate(0, deltaY);
+			targetLocation.translate(0, deltaY);
+
+			int magnetDelta = 0;
+			// Target-end magnets have precedence
+			Optional<IMagnet> magnet = getMagnetManager().getCapturingMagnet(targetLocation,
+					IMagnet.ownedBy(getHostFigure()));
+			if (magnet.isPresent()) {
+				Point newTargetLocation = targetLocation.getCopy();
+				newTargetLocation.setLocation(magnet.get().getLocation());
+				magnetDelta = newTargetLocation.y() - targetLocation.y();
+			} else {
+				magnet = getMagnetManager().getCapturingMagnet(sourceLocation,
+						IMagnet.ownedBy(getHostFigure()));
+				if (magnet.isPresent()) {
+					Point newSourceLocation = sourceLocation.getCopy();
+					newSourceLocation.setLocation(magnet.get().getLocation());
+					magnetDelta = newSourceLocation.y() - sourceLocation.y();
+				}
+			}
+
+			if (magnetDelta != 0) {
+				deltaY = deltaY + magnetDelta;
+				sourceLocation.translate(0, magnetDelta);
+				targetLocation.translate(0, magnetDelta);
+			}
+
 			ReconnectRequest sourceReq = new ReconnectRequest(REQ_RECONNECT_SOURCE);
 			sourceReq.setTargetEditPart(source);
 			sourceReq.setConnectionEditPart(connection);
 			sourceReq.setLocation(sourceLocation);
 			setForce(sourceReq, true);
+
+			// In case the result of the drag moves the source end to a different edit-part
+			// (for example, a different execution specification)
+			source = retargetRequest(source, sourceReq);
 			Command updateSource = source.getCommand(sourceReq);
 
-			// Don't modify the original because we get this command many times
-			Point targetLocation = getOriginalTargetLocation(request).getCopy();
-			targetLocation.translate(0, deltaY);
 			ReconnectRequest targetReq = new ReconnectRequest(REQ_RECONNECT_TARGET);
 			targetReq.setTargetEditPart(target);
 			targetReq.setConnectionEditPart(connection);
 			targetReq.setLocation(targetLocation);
 			setForce(targetReq, true);
+
+			// In case the result of the drag moves the target end to a different edit-part
+			target = retargetRequest(target, targetReq);
 			Command updateTarget = target.getCommand(targetReq);
 
 			// Never update just one end
@@ -236,5 +275,43 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy {
 		}
 
 		return result.unwrap();
+	}
+
+	/**
+	 * Recompute the target of a re-connection request in case the connection end is being dragged to a
+	 * different edit-part than where it connects to currently.
+	 * 
+	 * @param editPart
+	 *            the original connection source/target edit-part that is the intended target edit-part of the
+	 *            {@code request}
+	 * @param request
+	 *            the request to be sent
+	 * @return the best available edit-part to which to target the {@code request}, which if different to the
+	 *         original {@code editPart} will already be set as the {@code request}'s
+	 *         {@link ReconnectRequest#setTargetEditPart(EditPart) target}
+	 */
+	protected EditPart retargetRequest(EditPart editPart, ReconnectRequest request) {
+		EditPart result = editPart;
+
+		EditPart resolvedTarget = editPart.getViewer().findObjectAtExcluding(request.getLocation(),
+				Collections.singleton(request.getConnectionEditPart()),
+				ep -> ep.getTargetEditPart(request) != null);
+		if (resolvedTarget != null && resolvedTarget != editPart) {
+			// Ask this one for the command
+			request.setTargetEditPart(resolvedTarget);
+			result = resolvedTarget;
+		}
+
+		return result;
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected List createSelectionHandles() {
+		List<ConnectionHandle> result = new ArrayList<>(2);
+		ConnectionEditPart host = (ConnectionEditPart)getHost();
+		result.add(new SequenceConnectionEndpointHandle(host, ConnectionLocator.SOURCE));
+		result.add(new SequenceConnectionEndpointHandle(host, ConnectionLocator.TARGET));
+		return result;
 	}
 }

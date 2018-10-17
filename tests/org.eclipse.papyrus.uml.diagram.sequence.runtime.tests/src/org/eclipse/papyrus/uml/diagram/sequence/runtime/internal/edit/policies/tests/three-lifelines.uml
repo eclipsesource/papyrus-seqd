@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_Oy8JgEppEeiB_O7ig5LXPg" name="lightweight">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_O45nkEppEeiB_O7ig5LXPg">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_R_u1oEppEeiB_O7ig5LXPg" name="DoIt">
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_FMyroGpHEeiIJqtZNCF3Dw" name="Lifeline1"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_F4rhQGpHEeiIJqtZNCF3Dw" name="Lifeline2"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_9dbCgMr5EeiHN4fdcelXbQ" name="Lifeline3"/>
+  </packagedElement>
+</uml:Model>

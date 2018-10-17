@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_79NFgMvAEei-2PpXSl-dWw" name="execution-busy">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_8EagwMvAEei-2PpXSl-dWw">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_7-T4wMvAEei-2PpXSl-dWw" name="Interaction1">
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_9L5GMMvAEei-2PpXSl-dWw" name="Lifeline1" coveredBy="_FtkMUMvBEei-2PpXSl-dWw _FtsIIcvBEei-2PpXSl-dWw"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_-BqQkMvAEei-2PpXSl-dWw" name="Lifeline2" coveredBy="_cNv0sMvBEei-2PpXSl-dWw _ea3MgMvBEei-2PpXSl-dWw _fUBCEMvBEei-2PpXSl-dWw _FtsIIMvBEei-2PpXSl-dWw _FtrhEMvBEei-2PpXSl-dWw _FtkzYMvBEei-2PpXSl-dWw"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="__tdEAMvAEei-2PpXSl-dWw" name="Lifeline3" coveredBy="_cNv0scvBEei-2PpXSl-dWw"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_DbA64MvBEei-2PpXSl-dWw" name="Lifeline4" coveredBy="_ea3MgcvBEei-2PpXSl-dWw _fUAbAMvBEei-2PpXSl-dWw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_FtkMUMvBEei-2PpXSl-dWw" name="request-send" covered="_9L5GMMvAEei-2PpXSl-dWw" message="_FtkzYcvBEei-2PpXSl-dWw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_FtkzYMvBEei-2PpXSl-dWw" name="request-recv" covered="_-BqQkMvAEei-2PpXSl-dWw" message="_FtkzYcvBEei-2PpXSl-dWw"/>
+    <fragment xmi:type="uml:BehaviorExecutionSpecification" xmi:id="_FtrhEMvBEei-2PpXSl-dWw" name="Execution1" covered="_-BqQkMvAEei-2PpXSl-dWw" finish="_FtsIIMvBEei-2PpXSl-dWw" start="_FtkzYMvBEei-2PpXSl-dWw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_cNv0sMvBEei-2PpXSl-dWw" name="m2-send" covered="_-BqQkMvAEei-2PpXSl-dWw" message="_cNv0ssvBEei-2PpXSl-dWw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_cNv0scvBEei-2PpXSl-dWw" name="m2-recv" covered="__tdEAMvAEei-2PpXSl-dWw" message="_cNv0ssvBEei-2PpXSl-dWw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_ea3MgMvBEei-2PpXSl-dWw" name="m3-send" covered="_-BqQkMvAEei-2PpXSl-dWw" message="_ea3zkMvBEei-2PpXSl-dWw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_ea3MgcvBEei-2PpXSl-dWw" name="m3-recv" covered="_DbA64MvBEei-2PpXSl-dWw" message="_ea3zkMvBEei-2PpXSl-dWw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_fUAbAMvBEei-2PpXSl-dWw" name="m4-send" covered="_DbA64MvBEei-2PpXSl-dWw" message="_fUBCEcvBEei-2PpXSl-dWw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_fUBCEMvBEei-2PpXSl-dWw" name="m4-recv" covered="_-BqQkMvAEei-2PpXSl-dWw" message="_fUBCEcvBEei-2PpXSl-dWw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_FtsIIMvBEei-2PpXSl-dWw" name="reply-send" covered="_-BqQkMvAEei-2PpXSl-dWw" message="_FtsIIsvBEei-2PpXSl-dWw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_FtsIIcvBEei-2PpXSl-dWw" name="reply-recv" covered="_9L5GMMvAEei-2PpXSl-dWw" message="_FtsIIsvBEei-2PpXSl-dWw"/>
+    <message xmi:type="uml:Message" xmi:id="_FtkzYcvBEei-2PpXSl-dWw" name="request" receiveEvent="_FtkzYMvBEei-2PpXSl-dWw" sendEvent="_FtkMUMvBEei-2PpXSl-dWw"/>
+    <message xmi:type="uml:Message" xmi:id="_FtsIIsvBEei-2PpXSl-dWw" name="reply" messageSort="reply" receiveEvent="_FtsIIcvBEei-2PpXSl-dWw" sendEvent="_FtsIIMvBEei-2PpXSl-dWw"/>
+    <message xmi:type="uml:Message" xmi:id="_cNv0ssvBEei-2PpXSl-dWw" name="m2" messageSort="asynchCall" receiveEvent="_cNv0scvBEei-2PpXSl-dWw" sendEvent="_cNv0sMvBEei-2PpXSl-dWw"/>
+    <message xmi:type="uml:Message" xmi:id="_ea3zkMvBEei-2PpXSl-dWw" name="m3" messageSort="asynchCall" receiveEvent="_ea3MgcvBEei-2PpXSl-dWw" sendEvent="_ea3MgMvBEei-2PpXSl-dWw"/>
+    <message xmi:type="uml:Message" xmi:id="_fUBCEcvBEei-2PpXSl-dWw" name="m4" messageSort="asynchCall" receiveEvent="_fUBCEMvBEei-2PpXSl-dWw" sendEvent="_fUAbAMvBEei-2PpXSl-dWw"/>
+  </packagedElement>
+</uml:Model>

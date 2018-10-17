@@ -22,8 +22,10 @@ import java.util.Arrays;
 import org.eclipse.gef.EditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineBodyGraphicalNodeEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -40,6 +42,10 @@ import org.junit.runners.Parameterized.Parameters;
 @Maximized
 @RunWith(Parameterized.class)
 public class MessageReconnectionUITest extends AbstractGraphicalEditPolicyUITest {
+	
+	@ClassRule
+	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs().dontCreateExecutionsForSyncMessages();
+	
 	// Horizontal position of the first lifeline's body
 	private static final int LIFELINE_1_BODY_X = 121;
 
@@ -78,8 +84,8 @@ public class MessageReconnectionUITest extends AbstractGraphicalEditPolicyUITest
 
 	@Test
 	public void moveAsyncEnd() {
-		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, INITIAL_Y),
-				at(recvX, INITIAL_Y));
+		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, //
+				at(sendX, INITIAL_Y), at(recvX, INITIAL_Y));
 
 		assumeThat(messageEP, runs(sendX, INITIAL_Y, recvX, INITIAL_Y));
 
@@ -92,8 +98,9 @@ public class MessageReconnectionUITest extends AbstractGraphicalEditPolicyUITest
 
 		if (moveSource) {
 			if (moveDown) {
-				expectedSendY = y;
-				expectedRecvY = y;
+				// Cannot slope up, so this end doesn't move
+				expectedSendY = INITIAL_Y;
+				expectedRecvY = INITIAL_Y;
 			} else {
 				expectedSendY = y;
 				expectedRecvY = INITIAL_Y;
@@ -103,8 +110,9 @@ public class MessageReconnectionUITest extends AbstractGraphicalEditPolicyUITest
 				expectedSendY = INITIAL_Y;
 				expectedRecvY = y;
 			} else {
-				expectedSendY = y;
-				expectedRecvY = y;
+				// Cannot slope up, so this end doesn't move
+				expectedSendY = INITIAL_Y;
+				expectedRecvY = INITIAL_Y;
 			}
 		}
 
@@ -126,7 +134,8 @@ public class MessageReconnectionUITest extends AbstractGraphicalEditPolicyUITest
 
 		editor.moveSelection(at(x, INITIAL_Y), at(x, y));
 
-		assertThat(messageEP, runs(sendX, y, recvX, y));
+		assertThat("Was able to move sync message end", messageEP,
+				runs(sendX, INITIAL_Y, recvX, INITIAL_Y));
 	}
 
 	//

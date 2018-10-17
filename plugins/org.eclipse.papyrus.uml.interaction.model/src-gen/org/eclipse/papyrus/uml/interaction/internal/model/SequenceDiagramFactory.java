@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.interaction.internal.model;
 
 import org.eclipse.emf.ecore.EFactory;
+import org.eclipse.papyrus.uml.interaction.model.MDestruction;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
@@ -84,6 +85,14 @@ public interface SequenceDiagramFactory extends EFactory {
 	 * @generated
 	 */
 	MMessage createMMessage();
+
+	/**
+	 * Returns a new object of class '<em>MDestruction</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return a new object of class '<em>MDestruction</em>'.
+	 * @generated
+	 */
+	MDestruction createMDestruction();
 
 	/**
 	 * Returns the package supported by this factory. <!-- begin-user-doc --> <!-- end-user-doc -->

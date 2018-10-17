@@ -11,15 +11,19 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts;
 
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes.Lifeline_Shape;
+import static org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes.LIFELINE_NAME;
+
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.gmf.runtime.common.ui.services.parser.IParser;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.TextCompartmentEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.label.ILabelDelegate;
 import org.eclipse.gmf.runtime.diagram.ui.label.WrappingLabelDelegate;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.papyrus.infra.gmfdiag.common.parsers.ParserUtil;
 
 public class LifelineNameEditPart extends TextCompartmentEditPart {
 
@@ -47,15 +51,15 @@ public class LifelineNameEditPart extends TextCompartmentEditPart {
 	}
 
 	@Override
-	protected String getLabelText() {
-		// TODO remove override to get normal parser working
-		// return super.getLabelText();
-
-		EObject element = resolveSemanticElement();
-		if (NamedElement.class.isInstance(element)) {
-			return NamedElement.class.cast(element).getName();
+	public IParser getParser() {
+		if (parser == null) {
+			parser = ParserUtil.getParser(Lifeline_Shape, getParserElement(), this, LIFELINE_NAME);
 		}
-		return null;
+		return parser;
+	}
+
+	protected EObject getParserElement() {
+		return resolveSemanticElement();
 	}
 
 }

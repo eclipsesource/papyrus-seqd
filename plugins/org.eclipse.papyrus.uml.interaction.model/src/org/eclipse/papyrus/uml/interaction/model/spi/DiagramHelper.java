@@ -12,12 +12,15 @@
 
 package org.eclipse.papyrus.uml.interaction.model.spi;
 
+import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.notation.Compartment;
+import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
@@ -26,6 +29,7 @@ import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
+import org.eclipse.uml2.uml.OccurrenceSpecification;
 
 /**
  * Protocol for a pluggable utility that provides creation of the visual elements of a sequence diagram. All
@@ -99,6 +103,23 @@ public interface DiagramHelper {
 			Shape lifeline, int yPosition, int height);
 
 	/**
+	 * Obtain a command to create a shape for the given {@code execution} specification as a child of a
+	 * {@link lifeline} shape in the diagram.
+	 * 
+	 * @param execution
+	 *            an execution specification to be visualized in the diagram
+	 * @param lifeline
+	 *            the lifeline shape in which to create the {@code execution} shape
+	 * @param yPosition
+	 *            the vertical position of the {@code execution} shape to create
+	 * @param height
+	 *            the vertical extent of the {@code execution} shape to create
+	 * @return the execution shape creation command
+	 */
+	CreationCommand<Shape> createExecutionShape(Supplier<? extends ExecutionSpecification> execution,
+			Shape lifelineBody, IntSupplier yPosition, int height);
+
+	/**
 	 * Obtain a command to create a shape for the given {@code destruction} specification as a child of a
 	 * {@link lifeline} shape in the diagram.
 	 * 
@@ -114,6 +135,23 @@ public interface DiagramHelper {
 			Shape lifeline, int yPosition);
 
 	/**
+	 * Obtain a command that moves a destruction occurrence shape to another lifeline and re-connects the
+	 * delete message to it.
+	 * 
+	 * @param destructionView
+	 *            a destruction occurrence shape to move
+	 * @param messageView
+	 *            the delete message view (or {@code null} for a spontaneous destruction)
+	 * @param newLifeline
+	 *            the lifeline to which to move the destruction view
+	 * @param yPosition
+	 *            the Y position on the lifeline at which to put the destruction view
+	 * @return the command to effect the destruction re-connection
+	 */
+	Command reconnectDestructionOccurrenceShape(Shape destructionView, Connector messageView,
+			Shape newLifeline, int yPosition);
+
+	/**
 	 * Obtain a command to create a shape for the given {@code message} as an edge of a {@link diagram}.
 	 * 
 	 * @param message
@@ -126,11 +164,64 @@ public interface DiagramHelper {
 	 *            the target to which to attach the connector
 	 * @param targetY
 	 *            the target Y position
+	 * @param collisionHandler
+	 *            an optional handler of collision between a message end and the start or finish occurrence of
+	 *            an execution specification, providing an optional command to
+	 *            {@linkplain Command#chain(Command) chain} to the result. May be {@code null}
 	 * @return the message connector creation command
 	 */
 	Command createMessageConnector(Supplier<Message> message, //
 			Supplier<? extends View> source, IntSupplier sourceY, //
-			Supplier<? extends View> target, IntSupplier targetY);
+			Supplier<? extends View> target, IntSupplier targetY, //
+			BiFunction<? super OccurrenceSpecification, ? super MessageEnd, Optional<Command>> collisionHandler);
+
+	/**
+	 * Configure the routing of a self-message view.
+	 * 
+	 * @param message
+	 *            the self-message
+	 * @param messageView
+	 *            its diagram view
+	 * @return the routing configuration command
+	 */
+	Command configureSelfMessageConnector(Message message, Connector messageView);
+
+	/**
+	 * Configure the routing of a straight (non-self) message view.
+	 * 
+	 * @param message
+	 *            the message
+	 * @param messageView
+	 *            its diagram view
+	 * @return the routing configuration command
+	 */
+	Command configureStraightMessageConnector(Message message, Connector messageView);
+
+	/**
+	 * Obtain a command that reconnects the source end of a {@code connector}.
+	 * 
+	 * @param connector
+	 *            the connector to reconnect at its source end
+	 * @param newSource
+	 *            the new source-attached view for the connector
+	 * @param yPosition
+	 *            the Y position on the source shape at which to anchor the {@code connector}
+	 * @return the command to effect the source end re-connection
+	 */
+	Command reconnectSource(Connector connector, Shape newSource, int yPosition);
+
+	/**
+	 * Obtain a command that reconnects the target end of a {@code connector}.
+	 * 
+	 * @param connector
+	 *            the connector to reconnect at its target end
+	 * @param newTarget
+	 *            the new target-attached view for the connector
+	 * @param yPosition
+	 *            the Y position on the target shape at which to anchor the {@code connector}
+	 * @return the command to effect the target end re-connection
+	 */
+	Command reconnectTarget(Connector connector, Shape newSource, int yPosition);
 
 	/**
 	 * Obtain a command to delete a given {@code connector}.
@@ -141,4 +232,14 @@ public interface DiagramHelper {
 	 */
 	Command deleteView(EObject diagramView);
 
+	/**
+	 * Obtain a command that re-parents a view.
+	 * 
+	 * @param view
+	 *            a view to reparent
+	 * @param newParent
+	 *            the new parent view to which to move the {@code view}
+	 * @return a command to effect the re-parenting of the {@code view}
+	 */
+	Command reparentView(View view, View newParent);
 }

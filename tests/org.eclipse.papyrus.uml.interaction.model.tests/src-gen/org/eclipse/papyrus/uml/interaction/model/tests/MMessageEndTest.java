@@ -12,8 +12,10 @@
  */
 package org.eclipse.papyrus.uml.interaction.model.tests;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
 
@@ -91,6 +93,16 @@ public class MMessageEndTest extends MOccurrenceTest {
 	}
 
 	@Override
+	protected String getInteractionName() {
+		switch (getName()) {
+			case "testGetExecution":
+				return "ExecutionSpecificationSideAnchors";
+			default:
+				return super.getInteractionName();
+		}
+	}
+
+	@Override
 	protected void initializeFixture() {
 		setFixture(interaction.getMessages().get(0).getReceive().get());
 	}
@@ -121,14 +133,26 @@ public class MMessageEndTest extends MOccurrenceTest {
 
 	@Override
 	public void testGetTop() {
-		// 12 {frame} + 30 {title} + 25 {lifeline} + 25 {head} + 25 {anchor}
-		assertThat(getFixture().getTop(), isPresent(117));
+		// Note that this diagram has no interaction name label!
+		// 12 {frame} + 5 {insets} + 25 {lifeline} + 25 {head} + 25 {anchor}
+		assertThat(getFixture().getTop(), isPresent(92));
 	}
 
 	@Override
 	public void testVerticalDistance__MElement() {
 		assertThat(getFixture().verticalDistance(getFixture().getOwner()), isPresent(0));
 		assertThat(getFixture().verticalDistance(getFixture().getOtherEnd().get()), isPresent(0));
+	}
+
+	@Override
+	public void testIsStart() {
+		assertThat(getFixture().isStart(), is(true));
+
+		Message reply = umlInteraction.getMessage("reply");
+		MMessageEnd replySend = interaction.getMessage(reply).get().getSend().get();
+		assumeThat(replySend, notNullValue());
+
+		assertThat(replySend.isStart(), is(false));
 	}
 
 	@Override
@@ -139,12 +163,29 @@ public class MMessageEndTest extends MOccurrenceTest {
 	}
 
 	@Override
+	public void testIsFinish() {
+		assertThat(getFixture().isFinish(), is(false));
+
+		Message reply = umlInteraction.getMessage("reply");
+		MMessageEnd replySend = interaction.getMessage(reply).get().getSend().get();
+		assumeThat(replySend, notNullValue());
+
+		assertThat(replySend.isFinish(), is(true));
+	}
+
+	@Override
 	public void testGetFinishedExecution() {
 		Message reply = umlInteraction.getMessage("reply");
 		MMessageEnd replySend = interaction.getMessage(reply).get().getSend().get();
 		ExecutionSpecification exec = (ExecutionSpecification)umlInteraction
 				.getFragment("ActionExecutionSpecification1");
 		assertThat(replySend.getFinishedExecution(), isPresent(wraps(exec)));
+	}
+
+	@Override
+	public void testGetExecution() {
+		assertThat(getFixture().getExecution(), isPresent());
+		assertThat(getFixture().getExecution().get().getOccurrences(), hasItem(getFixture()));
 	}
 
 	/**

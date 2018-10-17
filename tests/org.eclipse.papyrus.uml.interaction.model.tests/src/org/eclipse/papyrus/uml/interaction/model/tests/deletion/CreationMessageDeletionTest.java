@@ -5,9 +5,8 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
-import org.eclipse.papyrus.uml.interaction.tests.rules.ModelFixture;
+import org.eclipse.papyrus.uml.interaction.model.tests.ModelEditFixture;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,11 +15,11 @@ import org.junit.Test;
 public class CreationMessageDeletionTest {
 
 	@Rule
-	public final ModelFixture.Edit model = new ModelFixture.Edit();
+	public final ModelEditFixture model = new ModelEditFixture();
 
 	private MInteraction interaction;
 
-	private int execution4Top;
+	private int execution3Top;
 
 	private int execution2Top;
 
@@ -48,32 +47,29 @@ public class CreationMessageDeletionTest {
 		lifeline2Top = interaction().getLifelines().get(1).getTop().getAsInt();
 		lifeline3Top = interaction().getLifelines().get(2).getTop().getAsInt();
 
-		message3Top = interaction().getMessages().get(0).getTop().getAsInt();
-		message5Top = interaction().getMessages().get(1).getTop().getAsInt();
-		message4Top = interaction().getMessages().get(2).getTop().getAsInt();
-		message1Top = interaction().getMessages().get(3).getTop().getAsInt();
-		message2Top = interaction().getMessages().get(4).getTop().getAsInt();
+		message1Top = interaction().getMessages().get(0).getTop().getAsInt();
+		message2Top = interaction().getMessages().get(1).getTop().getAsInt();
+		message3Top = interaction().getMessages().get(2).getTop().getAsInt();
+		message4Top = interaction().getMessages().get(3).getTop().getAsInt();
+		message5Top = interaction().getMessages().get(4).getTop().getAsInt();
 
 		execution1Top = interaction().getLifelines().get(0).getExecutionOccurrences().get(0).getTop()
 				.getAsInt();
 		execution2Top = interaction().getLifelines().get(1).getExecutionOccurrences().get(0).getTop()
 				.getAsInt();
-		execution4Top = interaction().getLifelines().get(2).getExecutionOccurrences().get(0).getTop()
+		execution3Top = interaction().getLifelines().get(2).getExecutionOccurrences().get(0).getTop()
 				.getAsInt();
 	}
 
 	private MInteraction interaction() {
 		if (interaction == null) {
-			interaction = MInteraction.getInstance(model.getInteraction(), model.getSequenceDiagram().get());
+			interaction = model.getMInteraction();
 		}
 		return interaction;
 	}
 
-	private void execute(Command remove) {
-		if (!remove.canExecute()) {
-			Assert.fail("Command not executable"); //$NON-NLS-1$
-		}
-		remove.execute();
+	private void execute(Command command) {
+		model.execute(command);
 		/* force reinit after change */
 		interaction = null;
 	}
@@ -81,7 +77,7 @@ public class CreationMessageDeletionTest {
 	@Test
 	public void message_oneCreation() {
 		/* setup */
-		MMessage toDelete = interaction().getMessages().get(4);
+		MMessage toDelete = interaction().getMessages().get(1);
 
 		/* act */
 		execute(toDelete.remove());
@@ -94,29 +90,29 @@ public class CreationMessageDeletionTest {
 
 		assertEquals(lifeline1Top, interaction().getLifelines().get(0).getTop().getAsInt());
 		assertEquals(lifeline2Top, interaction().getLifelines().get(1).getTop().getAsInt());
-		assertEquals(message1Top, interaction().getMessages().get(3).getTop().getAsInt());
+		assertEquals(message1Top, interaction().getMessages().get(0).getTop().getAsInt());
 
 		assertEquals(lifeline1Top, interaction().getLifelines().get(2).getTop().getAsInt());
 
 		int delta = message2Top - message1Top;
-		assertEquals(message3Top - delta, interaction().getMessages().get(0).getTop().getAsInt());
-		assertEquals(message5Top - delta, interaction().getMessages().get(1).getTop().getAsInt());
+		assertEquals(message3Top - delta, interaction().getMessages().get(1).getTop().getAsInt());
 		assertEquals(message4Top - delta, interaction().getMessages().get(2).getTop().getAsInt());
-		assertEquals(message3Top - delta, interaction().getMessages().get(0).getBottom().getAsInt());
-		assertEquals(message5Top - delta, interaction().getMessages().get(1).getBottom().getAsInt());
+		assertEquals(message5Top - delta, interaction().getMessages().get(3).getTop().getAsInt());
+		assertEquals(message3Top - delta, interaction().getMessages().get(1).getBottom().getAsInt());
 		assertEquals(message4Top - delta, interaction().getMessages().get(2).getBottom().getAsInt());
+		assertEquals(message5Top - delta, interaction().getMessages().get(3).getBottom().getAsInt());
 		assertEquals(execution1Top - delta,
 				interaction().getLifelines().get(0).getExecutionOccurrences().get(0).getTop().getAsInt());
 		assertEquals(execution2Top - delta,
 				interaction().getLifelines().get(1).getExecutionOccurrences().get(0).getTop().getAsInt());
-		assertEquals(execution4Top - delta,
+		assertEquals(execution3Top - delta,
 				interaction().getLifelines().get(2).getExecutionOccurrences().get(0).getTop().getAsInt());
 	}
 
 	@Test
 	public void message_nestedCreation() {
 		/* setup */
-		MMessage toDelete = interaction().getMessages().get(3);
+		MMessage toDelete = interaction().getMessages().get(0);
 
 		/* act */
 		execute(toDelete.remove());
@@ -138,19 +134,20 @@ public class CreationMessageDeletionTest {
 		 */
 		int delta = 0;
 		assertEquals(lifeline3Top - delta, interaction().getLifelines().get(2).getTop().getAsInt());
-		assertEquals(message3Top - delta, interaction().getMessages().get(0).getTop().getAsInt());
-		assertEquals(message5Top - delta, interaction().getMessages().get(1).getTop().getAsInt());
+
+		assertEquals(message2Top - delta, interaction().getMessages().get(0).getTop().getAsInt());
+		assertEquals(message3Top - delta, interaction().getMessages().get(1).getTop().getAsInt());
 		assertEquals(message4Top - delta, interaction().getMessages().get(2).getTop().getAsInt());
-		assertEquals(message2Top - delta, interaction().getMessages().get(3).getTop().getAsInt());
-		assertEquals(message3Top - delta, interaction().getMessages().get(0).getBottom().getAsInt());
-		assertEquals(message5Top - delta, interaction().getMessages().get(1).getBottom().getAsInt());
+		assertEquals(message5Top - delta, interaction().getMessages().get(3).getTop().getAsInt());
+		assertEquals(message2Top - delta, interaction().getMessages().get(0).getBottom().getAsInt());
+		assertEquals(message3Top - delta, interaction().getMessages().get(1).getBottom().getAsInt());
 		assertEquals(message4Top - delta, interaction().getMessages().get(2).getBottom().getAsInt());
-		assertEquals(message2Top - delta, interaction().getMessages().get(3).getBottom().getAsInt());
+		assertEquals(message5Top - delta, interaction().getMessages().get(3).getBottom().getAsInt());
 		assertEquals(execution1Top - delta,
 				interaction().getLifelines().get(0).getExecutionOccurrences().get(0).getTop().getAsInt());
 		assertEquals(execution2Top - delta,
 				interaction().getLifelines().get(1).getExecutionOccurrences().get(0).getTop().getAsInt());
-		assertEquals(execution4Top - delta,
+		assertEquals(execution3Top - delta,
 				interaction().getLifelines().get(2).getExecutionOccurrences().get(0).getTop().getAsInt());
 	}
 

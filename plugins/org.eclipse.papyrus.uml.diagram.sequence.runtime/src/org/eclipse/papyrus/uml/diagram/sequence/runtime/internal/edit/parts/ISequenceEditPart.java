@@ -11,11 +11,22 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts;
 
+import java.util.Optional;
+
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
+import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnetManager;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
+import org.eclipse.papyrus.uml.interaction.model.MElement;
+import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
+import org.eclipse.uml2.uml.Element;
 
 /**
  * A mix-in interface for edit-parts in the sequence diagram that need to access the {@link #getLayoutHelper()
@@ -67,4 +78,42 @@ public interface ISequenceEditPart extends IGraphicalEditPart {
 		return getLayoutConstraints().getPadding(orientation, getNotationView());
 	}
 
+	/**
+	 * Compute a {@code location} relative in my host figure's coördinate space.
+	 * 
+	 * @param location
+	 *            an absolute location in the diagram viewer coördinates
+	 * @return the {@code location} in my host figure's coördinate space
+	 */
+	default Point getRelativeLocation(Point location) {
+		Point result = location.getCopy();
+
+		IFigure figure = getFigure();
+		if (figure != null) {
+			figure.translateToRelative(result);
+			result.translate(figure.getBounds().getLocation().getNegated());
+		}
+
+		return result;
+	}
+
+	default MInteraction getInteraction() {
+		View view = getNotationView();
+		Diagram diagram = view.getDiagram();
+		return MInteraction.getInstance(diagram);
+	}
+
+	default Optional<MElement<? extends Element>> getLogicalElement() {
+		EObject semantic = resolveSemanticElement();
+		return Optional.ofNullable(semantic).filter(Element.class::isInstance).map(Element.class::cast)
+				.flatMap(getInteraction()::getElement);
+	}
+
+	default IMagnetManager getMagnetManager() {
+		return IMagnetManager.get(this);
+	}
+
+	default int getMagnetStrength() {
+		return getLayoutConstraints().getMagnetStrength(getNotationView());
+	}
 }

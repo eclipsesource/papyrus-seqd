@@ -12,9 +12,15 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.tests;
 
+import org.eclipse.draw2d.Connection;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.PointList;
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
+import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture;
 import org.junit.After;
@@ -26,6 +32,35 @@ import org.junit.Rule;
  * @author Christian W. Damus
  */
 public abstract class AbstractGraphicalEditPolicyUITest {
+
+	protected static Rectangle getBounds(EditPart editPart) {
+		IFigure figure = ((GraphicalEditPart) editPart).getFigure();
+		Rectangle result = figure.getBounds().getCopy();
+		figure.getParent().translateToAbsolute(result);
+		return result;
+	}
+
+	protected static int getTop(EditPart editPart) {
+		return getBounds(editPart).y();
+	}
+
+	protected static int getBottom(EditPart editPart) {
+		return getBounds(editPart).bottom();
+	}
+
+	protected static int getSourceY(EditPart connectionEditPart) {
+		Connection connection = (Connection) ((ConnectionEditPart) connectionEditPart).getFigure();
+		PointList points = connection.getPoints().getCopy();
+		connection.getParent().translateToAbsolute(points);
+		return points.getFirstPoint().y();
+	}
+
+	protected static int getTargetY(EditPart connectionEditPart) {
+		Connection connection = (Connection) ((ConnectionEditPart) connectionEditPart).getFigure();
+		PointList points = connection.getPoints().getCopy();
+		connection.getParent().translateToAbsolute(points);
+		return points.getLastPoint().y();
+	}
 
 	@Rule
 	public final EditorFixture editor = new EditorFixture();

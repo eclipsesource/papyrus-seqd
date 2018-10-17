@@ -25,6 +25,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.BorderAnchor;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.ExecutionSpecificationEndAnchor;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.ExecutionSpecificationSideAnchor;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.ExecutionSpecificationStartAnchor;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.ISequenceAnchor;
 
 public class ExecutionSpecificationFigure extends NodeFigure {
 	@Override
@@ -114,5 +115,13 @@ public class ExecutionSpecificationFigure extends NodeFigure {
 		}
 
 		return super.createAnchor(p);
+	}
+
+	@Override
+	public String getConnectionAnchorTerminal(ConnectionAnchor c) {
+		if (c instanceof ISequenceAnchor) {
+			return ((ISequenceAnchor)c).getTerminal();
+		}
+		return super.getConnectionAnchorTerminal(c);
 	}
 }

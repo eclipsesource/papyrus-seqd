@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_ltSdcLpLEeiiUtJ92gbC8w" name="SEQD2">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_lzz8MLpLEeiiUtJ92gbC8w">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_luG80LpLEeiiUtJ92gbC8w" name="Interaction1">
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_md9scLpLEeiiUtJ92gbC8w" name="Lifeline1" coveredBy="_otLWALpLEeiiUtJ92gbC8w _pBjqkLpLEeiiUtJ92gbC8w _pbhpwLpLEeiiUtJ92gbC8w"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_mkWoULpLEeiiUtJ92gbC8w" name="Lifeline2" coveredBy="_otL9ELpLEeiiUtJ92gbC8w _pBjDgLpLEeiiUtJ92gbC8w _pbhpwbpLEeiiUtJ92gbC8w"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_otLWALpLEeiiUtJ92gbC8w" name="a" covered="_md9scLpLEeiiUtJ92gbC8w" message="_otL9EbpLEeiiUtJ92gbC8w"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_otL9ELpLEeiiUtJ92gbC8w" name="b" covered="_mkWoULpLEeiiUtJ92gbC8w" message="_otL9EbpLEeiiUtJ92gbC8w"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_pBjDgLpLEeiiUtJ92gbC8w" name="c" covered="_mkWoULpLEeiiUtJ92gbC8w" message="_pBjqkbpLEeiiUtJ92gbC8w"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_pBjqkLpLEeiiUtJ92gbC8w" name="d" covered="_md9scLpLEeiiUtJ92gbC8w" message="_pBjqkbpLEeiiUtJ92gbC8w"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_pbhpwLpLEeiiUtJ92gbC8w" name="e" covered="_md9scLpLEeiiUtJ92gbC8w" message="_pbiQ0LpLEeiiUtJ92gbC8w"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_pbhpwbpLEeiiUtJ92gbC8w" name="f" covered="_mkWoULpLEeiiUtJ92gbC8w" message="_pbiQ0LpLEeiiUtJ92gbC8w"/>
+    <message xmi:type="uml:Message" xmi:id="_otL9EbpLEeiiUtJ92gbC8w" name="m1" receiveEvent="_otL9ELpLEeiiUtJ92gbC8w" sendEvent="_otLWALpLEeiiUtJ92gbC8w"/>
+    <message xmi:type="uml:Message" xmi:id="_pBjqkbpLEeiiUtJ92gbC8w" name="m2" receiveEvent="_pBjqkLpLEeiiUtJ92gbC8w" sendEvent="_pBjDgLpLEeiiUtJ92gbC8w"/>
+    <message xmi:type="uml:Message" xmi:id="_pbiQ0LpLEeiiUtJ92gbC8w" name="m3" receiveEvent="_pbhpwbpLEeiiUtJ92gbC8w" sendEvent="_pbhpwLpLEeiiUtJ92gbC8w"/>
+  </packagedElement>
+</uml:Model>

@@ -206,7 +206,8 @@ public class GraphComputer {
 					DestructionOccurrenceSpecification receive = tag(
 							(DestructionOccurrenceSpecification)message.getReceiveEvent(),
 							Tag.LIFELINE_DESTRUCTION);
-					edge(message, receive.getCovereds());
+					// Destroyed lifeline must precede its destruction
+					edge(receive.getCovered(), message);
 				}
 			}
 

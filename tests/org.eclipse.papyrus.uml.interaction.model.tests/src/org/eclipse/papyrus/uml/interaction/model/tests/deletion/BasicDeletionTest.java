@@ -15,7 +15,7 @@ import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
-import org.eclipse.papyrus.uml.interaction.tests.rules.ModelFixture;
+import org.eclipse.papyrus.uml.interaction.model.tests.ModelEditFixture;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.eclipse.uml2.uml.Element;
 import org.junit.Assert;
@@ -26,7 +26,7 @@ import org.junit.Test;
 public class BasicDeletionTest {
 
 	@Rule
-	public final ModelFixture.Edit model = new ModelFixture.Edit();
+	public final ModelEditFixture model = new ModelEditFixture();
 
 	private MInteraction interaction;
 
@@ -48,7 +48,7 @@ public class BasicDeletionTest {
 
 	private MInteraction interaction() {
 		if (interaction == null) {
-			interaction = MInteraction.getInstance(model.getInteraction(), model.getSequenceDiagram().get());
+			interaction = model.getMInteraction();
 		}
 		return interaction;
 	}
@@ -70,7 +70,6 @@ public class BasicDeletionTest {
 
 		/* force reinit after change */
 		interaction = null;
-
 	}
 
 	@SuppressWarnings("unchecked")

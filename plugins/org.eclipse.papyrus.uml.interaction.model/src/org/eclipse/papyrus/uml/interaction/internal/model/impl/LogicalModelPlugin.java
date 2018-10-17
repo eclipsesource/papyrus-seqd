@@ -15,15 +15,18 @@ package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 import com.google.common.collect.MapMaker;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.util.ResourceLocator;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.DefaultDiagramHelper;
+import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.DefaultFontHelper;
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.DefaultLayoutConstraints;
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.DefaultLayoutHelper;
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.DefaultSemanticHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
+import org.eclipse.papyrus.uml.interaction.model.spi.FontHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.osgi.framework.BundleContext;
@@ -47,6 +50,8 @@ public class LogicalModelPlugin extends EMFPlugin {
 
 	private final Map<EditingDomain, SemanticHelper> semanticHelpers = new MapMaker().weakKeys().weakValues()
 			.makeMap();
+
+	private Supplier<FontHelper> fontHelperFactory = DefaultFontHelper::new;
 
 	/**
 	 * Initializes me.
@@ -78,7 +83,7 @@ public class LogicalModelPlugin extends EMFPlugin {
 	 */
 	public LayoutHelper getLayoutHelper(EditingDomain editingDomain) {
 		return layoutHelpers.computeIfAbsent(editingDomain, //
-				domain -> new DefaultLayoutHelper(domain, DefaultLayoutConstraints::new));
+				domain -> new DefaultLayoutHelper(domain, DefaultLayoutConstraints::new, fontHelperFactory));
 	}
 
 	/**
@@ -90,6 +95,17 @@ public class LogicalModelPlugin extends EMFPlugin {
 	 */
 	public SemanticHelper getSemanticHelper(EditingDomain editingDomain) {
 		return semanticHelpers.computeIfAbsent(editingDomain, DefaultSemanticHelper::new);
+	}
+
+	/**
+	 * Inject a factory to create (hopeully UI/SWT-aware) font helpers.
+	 * 
+	 * @param fontHelperFactory
+	 *            the font-helper factory to set, or {@code null} for the default implementation that is now
+	 *            aware of SWT font metrics
+	 */
+	public void setFontHelperFactory(Supplier<FontHelper> fontHelperFactory) {
+		this.fontHelperFactory = (fontHelperFactory == null) ? DefaultFontHelper::new : fontHelperFactory;
 	}
 
 	public static LogicalModelPlugin getInstance() {

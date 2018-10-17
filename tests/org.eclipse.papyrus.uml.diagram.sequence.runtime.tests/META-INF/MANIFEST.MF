@@ -19,6 +19,8 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.13.0,4.0.0)",
  org.eclipse.gef,
  org.eclipse.gmf.runtime.emf.type.core,
  org.eclipse.papyrus.infra.gmfdiag.common,
- org.eclipse.papyrus.uml.diagram.common;bundle-version="[3.1.0,4.0.0)"
+ org.eclipse.papyrus.uml.diagram.common;bundle-version="[3.1.0,4.0.0)",
+ org.eclipse.papyrus.uml.diagram.sequence.figure;bundle-version="[1.0.0,2.0.0)",
+ org.eclipse.papyrus.uml.interaction.model;bundle-version="[1.0.0,2.0.0)"
 Bundle-Description: Tests of the core run-time APIs of the sequence diagram.
 Export-Package: org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers;version="1.0.0"

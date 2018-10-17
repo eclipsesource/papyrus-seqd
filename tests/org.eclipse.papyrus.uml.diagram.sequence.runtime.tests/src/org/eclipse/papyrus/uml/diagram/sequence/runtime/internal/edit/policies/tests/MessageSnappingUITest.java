@@ -1,0 +1,313 @@
+/*****************************************************************************
+ * Copyright (c) 2018 Christian W. Damus and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Christian W. Damus - Initial API and implementation
+ *****************************************************************************/
+
+package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.tests;
+
+import static org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnetManager.MODIFIER_NO_SNAPPING;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.isPoint;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.runs;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.at;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.sized;
+import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.isNear;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assume.assumeThat;
+
+import java.util.Arrays;
+import java.util.function.Function;
+
+import org.eclipse.draw2d.Connection;
+import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.gef.ConnectionEditPart;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gmf.runtime.diagram.ui.commands.SetBoundsCommand;
+import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
+import org.eclipse.gmf.runtime.notation.Location;
+import org.eclipse.gmf.runtime.notation.Node;
+import org.eclipse.papyrus.commands.wrappers.GMFtoGEFCommandWrapper;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineBodyGraphicalNodeEditPolicy;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
+import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
+import org.eclipse.uml2.uml.ExecutionSpecification;
+import org.eclipse.uml2.uml.Message;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.internal.runners.model.ReflectiveCallable;
+import org.junit.runner.Description;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.junit.runners.model.Statement;
+
+/**
+ * Integration test cases for the {@link LifelineBodyGraphicalNodeEditPolicy}
+ * class's message re-connection behaviour.
+ *
+ * @author Christian W. Damus
+ */
+@SuppressWarnings("restriction")
+@ModelResource("two-lifelines.di")
+@Maximized
+@RunWith(Parameterized.class)
+public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
+
+	@ClassRule
+	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs()
+			.dontCreateExecutionsForSyncMessages();
+
+	// Horizontal position of the first lifeline's body
+	private static final int LL1_BODY_X = 121;
+
+	// Horizontal position of the second lifeline's body
+	private static final int LL2_BODY_X = 281;
+
+	private static final boolean EXEC_START = true;
+	private static final int EXEC_START_Y = 145;
+
+	private static final boolean EXEC_FINISH = false;
+	private static final int EXEC_HEIGHT = 60;
+
+	private final boolean snapping;
+	private final EditorFixture.Modifiers modifiers;
+	private final Function<Matcher<?>, Matcher<?>> modifiersMatcherFunction;
+	private EditPart execEP;
+	private ExecutionSpecification exec;
+
+	/**
+	 * Initializes me.
+	 *
+	 * @param withSnap
+	 *            whether to allow snapping ({@code true}) or suppress it
+	 *            ({@code false})
+	 * @param snapString
+	 *            a string representation of {@code withSnap}
+	 */
+	public MessageSnappingUITest(boolean withSnap, String snapString) {
+		super();
+
+		this.snapping = withSnap;
+		this.modifiers = withSnap ? editor.unmodified() : editor.modifierKey(MODIFIER_NO_SNAPPING);
+		modifiersMatcherFunction = withSnap ? CoreMatchers::is : CoreMatchers::not;
+	}
+
+	@Test
+	public void createSyncCallMessage() throws Throwable {
+		// The outer test context disables the creation of execution specifications,
+		// but we need to verify that there wouldn't be a prompt to create an execution
+		// even if the preference is set when binding to the execution start. Unless,
+		// of course, we aren't snapping because then we won't be on the execution
+		LightweightSeqDPrefs prefs = this.snapping
+				? new LightweightSeqDPrefs().createExecutionsForSyncMessages()
+				: new LightweightSeqDPrefs().dontCreateExecutionsForSyncMessages();
+
+		Statement test = new Statement() {
+
+			@Override
+			public void evaluate() throws Throwable {
+				EditPart messageEP = editor.with(modifiers,
+						() -> createConnection(SequenceElementTypes.Sync_Message_Edge,
+								at(LL1_BODY_X, withinMagnet(EXEC_START)),
+								at(LL2_BODY_X, withinMagnet(EXEC_START))));
+
+				// The receiving end snaps to the exec start and the sending end matches
+				int execTop = getTop(execEP);
+				assertThat(messageEP, withModifiers(runs(LL1_BODY_X, execTop, LL2_BODY_X, execTop, 1)));
+
+				// The message receive event starts the execution
+				Message message = (Message) messageEP.getAdapter(EObject.class);
+				assertThat(exec.getStart(), withModifiers(is(message.getReceiveEvent())));
+
+				// The message send and receive both are semantically before the execution
+				assertThat("Message ends out of order", message.getSendEvent(),
+						editor.semanticallyPrecedes(message.getReceiveEvent()));
+				assertThat("Execution out of order", exec,
+						editor.semanticallyFollows(message.getReceiveEvent()));
+				assertThat("Execution finish out of order", exec,
+						editor.semanticallyPrecedes(exec.getFinish()));
+			}
+		};
+
+		new ReflectiveCallable() {
+
+			@Override
+			protected Object runReflectiveCall() throws Throwable {
+				prefs.apply(test, Description.EMPTY).evaluate();
+				return null;
+			}
+		}.run();
+	}
+
+	@Test
+	public void createAsyncCallMessage() {
+		EditPart messageEP = editor.with(modifiers,
+				() -> createConnection(SequenceElementTypes.Async_Message_Edge, at(LL1_BODY_X, 120),
+						at(LL2_BODY_X, withinMagnet(EXEC_START))));
+
+		// The receiving end snaps to the exec start. The sending end doesn't match
+		int execTop = getTop(execEP);
+		assertThat(messageEP, withModifiers(runs(LL1_BODY_X, 120, LL2_BODY_X, execTop, 1)));
+
+		// The message receive event starts the execution
+		Message message = (Message) messageEP.getAdapter(EObject.class);
+		assertThat(exec.getStart(), withModifiers(is(message.getReceiveEvent())));
+	}
+
+	@Test
+	public void createReplyMessage() {
+		EditPart messageEP = editor.with(modifiers,
+				() -> createConnection(SequenceElementTypes.Reply_Message_Edge,
+						at(LL2_BODY_X, withinMagnet(EXEC_FINISH)),
+						at(LL1_BODY_X, withinMagnet(EXEC_FINISH))));
+
+		// The sending end snaps to the exec start and the receiving end matches
+		int execBottom = getBottom(execEP);
+		assertThat(messageEP, withModifiers(runs(LL2_BODY_X, execBottom, LL1_BODY_X, execBottom, 1)));
+
+		// The message send event finishes the execution
+		Message message = (Message) messageEP.getAdapter(EObject.class);
+		assertThat(exec.getFinish(), withModifiers(is(message.getSendEvent())));
+	}
+
+	@Test
+	public void moveSyncCallMessage() {
+		EditPart messageEP = createConnection(SequenceElementTypes.Sync_Message_Edge, at(LL1_BODY_X, 120),
+				at(LL2_BODY_X, 120));
+		Point midMessage = getMessageGrabPoint(messageEP);
+
+		// The receiving end snaps to the exec start and the sending end matches
+		editor.with(modifiers,
+				() -> editor.moveSelection(midMessage, at(midMessage.x(), withinMagnet(EXEC_START))));
+		Point newMessageMidpoint = getMessageGrabPoint(messageEP);
+		assumeThat("Message not moved", newMessageMidpoint,
+				not(isPoint(midMessage.x(), midMessage.y(), 5)));
+
+		int execTop = getTop(execEP);
+		assertThat(messageEP, withModifiers(runs(LL1_BODY_X, execTop, LL2_BODY_X, execTop, 1)));
+	}
+
+	@Test
+	public void moveReplyMessage() {
+		EditPart messageEP = createConnection(SequenceElementTypes.Reply_Message_Edge, at(LL2_BODY_X, 240),
+				at(LL1_BODY_X, 240));
+		Point midMessage = getMessageGrabPoint(messageEP);
+
+		// The sending end snaps to the exec start and the receiving end matches
+		editor.with(modifiers,
+				() -> editor.moveSelection(midMessage, at(midMessage.x(), withinMagnet(EXEC_FINISH))));
+		int execBottom = getBottom(execEP);
+		assertThat(messageEP, withModifiers(runs(LL2_BODY_X, execBottom, LL1_BODY_X, execBottom, 1)));
+	}
+
+	/**
+	 * Verify that magnets are updated when the size of an execution occurrence
+	 * changes.
+	 */
+	@Test
+	public void magnetUpdatesOnSize() {
+		assumeThat("Only makes sense with snapping enabled", "magnets suppressed",
+				withModifiers(is("magnets suppressed")));
+
+		// First, extend the bottom edge of the execution specification. Have to
+		// subtract 1 to grab on (inside-ish) the actual bottom edge
+		int execBottom = getBottom(execEP);
+		editor.moveSelection(at(LL2_BODY_X, execBottom - 1), at(LL2_BODY_X, execBottom + 100));
+
+		int newBottomY = getBottom(getLastCreatedEditPart());
+		assumeThat("Execution not stretched", newBottomY, not(isNear(execBottom, 5)));
+
+		EditPart messageEP = editor.with(modifiers,
+				() -> createConnection(SequenceElementTypes.Reply_Message_Edge, //
+						at(LL2_BODY_X, withinMagnet(newBottomY, EXEC_FINISH)),
+						at(LL1_BODY_X, withinMagnet(newBottomY, EXEC_FINISH))));
+		assertThat("No snap: infer that magnet not moved", messageEP,
+				runs(LL2_BODY_X, newBottomY, LL1_BODY_X, newBottomY, 1));
+	}
+
+	/**
+	 * Verify that magnets are updated when the location of an execution occurrence
+	 * changes.
+	 */
+	@Test
+	public void magnetUpdatesOnLocation() {
+		assumeThat("Only makes sense with snapping enabled", "magnets suppressed",
+				withModifiers(is("magnets suppressed")));
+
+		// First, move the execution specification down. The edit-part doesn't (yet)
+		// have a policy for moving it (only for resize) so be direct about it instead
+		// of automating the selection tool
+		EditPart execEP = getLastCreatedEditPart();
+		Node execView = (Node) execEP.getModel();
+		Location location = (Location) execView.getLayoutConstraint();
+		SetBoundsCommand command = new SetBoundsCommand(editor.getDiagramEditPart().getEditingDomain(),
+				"Move execution down", new EObjectAdapter(execView),
+				at(location.getX(), location.getY() + 100));
+		editor.getDiagramEditPart().getDiagramEditDomain().getDiagramCommandStack()
+				.execute(GMFtoGEFCommandWrapper.wrap(command));
+
+		int newTopY = getTop(execEP);
+
+		EditPart messageEP = editor.with(modifiers,
+				() -> createConnection(SequenceElementTypes.Sync_Message_Edge, //
+						at(LL1_BODY_X, withinMagnet(newTopY, EXEC_START)),
+						at(LL2_BODY_X, withinMagnet(newTopY, EXEC_START))));
+		assertThat("No snap: infer that magnet not moved", messageEP,
+				runs(LL1_BODY_X, newTopY, LL2_BODY_X, newTopY, 1));
+	}
+
+	//
+	// Test framework
+	//
+
+	@Parameters(name = "{1}")
+	public static Iterable<Object[]> parameters() {
+		return Arrays.asList(new Object[][] { //
+				{ true, "snap to magnet" }, //
+				{ false, "suppress snapping" }, //
+		});
+	}
+
+	@Before
+	public void createExecutionSpecification() {
+		execEP = createShape(SequenceElementTypes.Behavior_Execution_Shape, //
+				at(LL2_BODY_X, EXEC_START_Y), sized(0, EXEC_HEIGHT));
+		assumeThat("Execution specification not created", execEP, notNullValue());
+
+		exec = (ExecutionSpecification) execEP.getAdapter(EObject.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	<T> Matcher<T> withModifiers(Matcher<T> matcher) {
+		return (Matcher<T>) modifiersMatcherFunction.apply(matcher);
+	}
+
+	int withinMagnet(boolean execStart) {
+		return withinMagnet(execStart ? getTop(execEP) : getBottom(execEP), execStart);
+	}
+
+	int withinMagnet(int y, boolean execStart) {
+		return execStart ? y - 9 : y + 9;
+	}
+
+	static Point getMessageGrabPoint(EditPart editPart) {
+		Connection connection = (Connection) ((ConnectionEditPart) editPart).getFigure();
+		return connection.getPoints().getMidpoint();
+	}
+}

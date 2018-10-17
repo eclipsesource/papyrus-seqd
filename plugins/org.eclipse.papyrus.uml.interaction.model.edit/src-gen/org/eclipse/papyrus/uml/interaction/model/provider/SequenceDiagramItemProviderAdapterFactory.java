@@ -67,7 +67,7 @@ public class SequenceDiagramItemProviderAdapterFactory extends SequenceDiagramAd
 	 * 
 	 * @generated
 	 */
-	protected Collection<Object> supportedTypes = new ArrayList<Object>();
+	protected Collection<Object> supportedTypes = new ArrayList<>();
 
 	/**
 	 * This constructs an instance. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -233,6 +233,31 @@ public class SequenceDiagramItemProviderAdapterFactory extends SequenceDiagramAd
 	}
 
 	/**
+	 * This keeps track of the one adapter used for all
+	 * {@link org.eclipse.papyrus.uml.interaction.model.MDestruction} instances.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	protected MDestructionItemProvider mDestructionItemProvider;
+
+	/**
+	 * This creates an adapter for a
+	 * {@link org.eclipse.papyrus.uml.interaction.model.MDestruction}. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public Adapter createMDestructionAdapter() {
+		if (mDestructionItemProvider == null) {
+			mDestructionItemProvider = new MDestructionItemProvider(this);
+		}
+
+		return mDestructionItemProvider;
+	}
+
+	/**
 	 * This returns the root adapter factory that contains this factory. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -335,18 +360,27 @@ public class SequenceDiagramItemProviderAdapterFactory extends SequenceDiagramAd
 	 */
 	@Override
 	public void dispose() {
-		if (mInteractionItemProvider != null)
+		if (mInteractionItemProvider != null) {
 			mInteractionItemProvider.dispose();
-		if (mLifelineItemProvider != null)
+		}
+		if (mLifelineItemProvider != null) {
 			mLifelineItemProvider.dispose();
-		if (mExecutionItemProvider != null)
+		}
+		if (mExecutionItemProvider != null) {
 			mExecutionItemProvider.dispose();
-		if (mExecutionOccurrenceItemProvider != null)
+		}
+		if (mExecutionOccurrenceItemProvider != null) {
 			mExecutionOccurrenceItemProvider.dispose();
-		if (mMessageEndItemProvider != null)
+		}
+		if (mMessageEndItemProvider != null) {
 			mMessageEndItemProvider.dispose();
-		if (mMessageItemProvider != null)
+		}
+		if (mMessageItemProvider != null) {
 			mMessageItemProvider.dispose();
+		}
+		if (mDestructionItemProvider != null) {
+			mDestructionItemProvider.dispose();
+		}
 	}
 
 }

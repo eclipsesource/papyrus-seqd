@@ -30,8 +30,6 @@
 
 	<modules>
 		<!-- Self-contained build system for EMF Facade. -->
-		<module>../../emf-facade</module>
-		
 		<module>../org.eclipse.papyrus.uml.diagram.sequence.targetplatform</module>
 		<module>../org.eclipse.papyrus.uml.diagram.sequence.updatesite</module>
 		<module>../../plugins</module>

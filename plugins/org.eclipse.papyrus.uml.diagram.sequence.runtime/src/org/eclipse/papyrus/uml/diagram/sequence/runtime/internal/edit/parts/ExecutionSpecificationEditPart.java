@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -31,8 +32,9 @@ import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.ExecutionSpecificationFigure;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.NodeFigureMagnetHelper;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.ExecutionSpecificationGraphicalNodeEditPolicy;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.InteractionSemanticEditPolicy;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.ExecutionSpecificationSemanticEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.ResizableBorderItemPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.locators.ExecutionSpecificationBorderItemLocator;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
@@ -43,10 +45,24 @@ import org.eclipse.papyrus.uml.interaction.model.MLifeline;
  * This also means that by default, it won't listen to its bounds, and won't refresh properly
  * when org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.ResizableBorderItemPolicy is used.
  */
-public class ExecutionSpecificationEditPart extends BorderedBorderItemEditPart {
+public class ExecutionSpecificationEditPart extends BorderedBorderItemEditPart implements ISequenceEditPart {
+
+	private static final int[] MAGNET_POSITIONS = {PositionConstants.NORTH, PositionConstants.SOUTH };
+
+	private NodeFigureMagnetHelper magnetHelper;
 
 	public ExecutionSpecificationEditPart(View view) {
 		super(view);
+	}
+
+	@Override
+	public void deactivate() {
+		if (magnetHelper != null) {
+			magnetHelper.dispose();
+			magnetHelper = null;
+		}
+
+		super.deactivate();
 	}
 
 	@Override
@@ -56,10 +72,21 @@ public class ExecutionSpecificationEditPart extends BorderedBorderItemEditPart {
 	}
 
 	@Override
+	protected NodeFigure createNodeFigure() {
+		NodeFigure result = super.createNodeFigure();
+
+		// Configure magnets
+		magnetHelper = new NodeFigureMagnetHelper(result, getMagnetManager(), getMagnetStrength())
+				.registerMagnets(MAGNET_POSITIONS);
+
+		return result;
+	}
+
+	@Override
 	protected void createDefaultEditPolicies() {
 		super.createDefaultEditPolicies();
 		installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, new ResizableBorderItemPolicy());
-		installEditPolicy(EditPolicyRoles.SEMANTIC_ROLE, new InteractionSemanticEditPolicy());
+		installEditPolicy(EditPolicyRoles.SEMANTIC_ROLE, new ExecutionSpecificationSemanticEditPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
 				new ExecutionSpecificationGraphicalNodeEditPolicy());
 	}
@@ -71,12 +98,6 @@ public class ExecutionSpecificationEditPart extends BorderedBorderItemEditPart {
 		if (locator != null) {
 			locator.relocate(getFigure());
 		}
-		// super.refreshBounds();
-	}
-
-	@Override
-	public IBorderItemLocator getBorderItemLocator() {
-		return super.getBorderItemLocator();
 	}
 
 	@Override

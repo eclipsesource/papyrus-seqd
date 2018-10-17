@@ -16,6 +16,7 @@ import static org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil.
 
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import java.util.regex.Matcher;
@@ -32,6 +33,7 @@ import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.notation.Anchor;
 import org.eclipse.gmf.runtime.notation.Bounds;
 import org.eclipse.gmf.runtime.notation.Compartment;
+import org.eclipse.gmf.runtime.notation.DecorationNode;
 import org.eclipse.gmf.runtime.notation.Edge;
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.gmf.runtime.notation.LayoutConstraint;
@@ -45,9 +47,12 @@ import org.eclipse.gmf.runtime.notation.util.NotationSwitch;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil;
 import org.eclipse.papyrus.uml.interaction.graph.util.Suppliers;
+import org.eclipse.papyrus.uml.interaction.model.spi.DeferredSetCommand;
+import org.eclipse.papyrus.uml.interaction.model.spi.FontHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
+import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.GeneralOrdering;
 import org.eclipse.uml2.uml.Lifeline;
@@ -89,6 +94,8 @@ public class DefaultLayoutHelper implements LayoutHelper {
 
 	private final Supplier<LayoutConstraints> layoutConstraints;
 
+	private final Supplier<FontHelper> fontHelper;
+
 	private final EditingDomain editingDomain;
 
 	/**
@@ -98,12 +105,17 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	 *            my editing domain
 	 * @param layoutConstraints
 	 *            my constraints supplier
+	 * @param fontHelper
+	 *            my font-helper supplier
 	 */
-	public DefaultLayoutHelper(EditingDomain editingDomain, Supplier<LayoutConstraints> layoutConstraints) {
+	public DefaultLayoutHelper(EditingDomain editingDomain, Supplier<LayoutConstraints> layoutConstraints,
+			Supplier<FontHelper> fontHelper) {
+
 		super();
 
 		this.editingDomain = editingDomain;
 		this.layoutConstraints = Suppliers.memoize(layoutConstraints);
+		this.fontHelper = Suppliers.memoize(fontHelper);
 	}
 
 	@Override
@@ -113,6 +125,15 @@ public class DefaultLayoutHelper implements LayoutHelper {
 		View view = v.getDiagramView();
 		if (view instanceof Shape) {
 			int top = getTop((Shape)view);
+
+			if (v.getInteractionElement() instanceof DestructionOccurrenceSpecification) {
+				// Special case: we actually want to locate the centre of the X shape
+				int bottom = getBottom((Shape)view);
+				if ((top != DEFAULT_TOP) && bottom != DEFAULT_BOTTOM) {
+					top = (top + bottom) / 2;
+				}
+			}
+
 			result = (top == DEFAULT_TOP) ? OptionalInt.empty() : OptionalInt.of(top);
 		} else if (view instanceof Edge) {
 			// For anchors, which are points, the top is the bottom
@@ -151,7 +172,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	}
 
 	@Override
-	public int getTop(Shape shape) {
+	public int getTop(Node shape) {
 		int result = DEFAULT_TOP;
 
 		// if the shape is located by a border item locator, we may only have access to the bounds on figure,
@@ -175,7 +196,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	}
 
 	@Override
-	public int toAbsoluteX(Shape shape, View parent, int x) {
+	public int toAbsoluteX(Node shape, View parent, int x) {
 		EObject containerView = parent;
 		int compartmentX = 0;
 		if (containerView instanceof Compartment) {
@@ -196,7 +217,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	}
 
 	@Override
-	public int toRelativeX(Shape shape, View parent, int x) {
+	public int toRelativeX(Node shape, View parent, int x) {
 		EObject containerView = parent;
 		int compartmentX = 0;
 		if (containerView instanceof Compartment) {
@@ -217,7 +238,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	}
 
 	@Override
-	public int toAbsoluteY(Shape shape, View parent, int y) {
+	public int toAbsoluteY(Node shape, View parent, int y) {
 		EObject containerView = parent;
 		int compartmentY = 0;
 		if (containerView instanceof Compartment) {
@@ -238,7 +259,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	}
 
 	@Override
-	public int toRelativeY(Shape shape, View parent, int y) {
+	public int toRelativeY(Node shape, View parent, int y) {
 		EObject containerView = parent;
 		int compartmentY = 0;
 		if (containerView instanceof Compartment) {
@@ -316,11 +337,29 @@ public class DefaultLayoutHelper implements LayoutHelper {
 		View view = v.getDiagramView();
 		if (view instanceof Shape) {
 			int bottom = getBottom((Shape)view);
+
+			if (v.getInteractionElement() instanceof DestructionOccurrenceSpecification) {
+				// Special case: we actually want to locate the centre of the X shape
+				int top = getTop((Shape)view);
+				if ((top != DEFAULT_TOP) && bottom != DEFAULT_BOTTOM) {
+					bottom = (top + bottom) / 2;
+				}
+			}
+
 			result = (bottom == DEFAULT_BOTTOM) ? OptionalInt.empty() : OptionalInt.of(bottom);
 		} else if (view instanceof Edge) {
 			Edge edge = (Edge)view;
-			// All edges in a sequence diagram slope down if they are not horizontal
-			int anchorY = getYPosition(edge.getTargetAnchor(), (Shape)edge.getTarget());
+			// All edges in a sequence diagram slope down if they are not horizontal.
+			// And in the case of a delete message, the target is anchored to a distinct
+			// shape, not to the lifeline
+			int anchorY;
+			Shape target = (Shape)edge.getTarget();
+			if (ViewTypes.DESTRUCTION_SPECIFICATION.equals(target.getType())) {
+				// Center of the X shape
+				anchorY = (getBottom(target) + getTop(target)) / 2;
+			} else {
+				anchorY = getYPosition(edge.getTargetAnchor(), (Shape)edge.getTarget());
+			}
 
 			if (anchorY == DEFAULT_BOTTOM) {
 				result = OptionalInt.empty();
@@ -370,7 +409,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	}
 
 	@Override
-	public int getBottom(Shape shape) {
+	public int getBottom(Node shape) {
 		int result = DEFAULT_BOTTOM;
 
 		LayoutConstraint constraint = shape.getLayoutConstraint();
@@ -384,6 +423,25 @@ public class DefaultLayoutHelper implements LayoutHelper {
 		}
 
 		return result;
+	}
+
+	@Override
+	public int getHeight(Node shape) {
+		if (shape instanceof DecorationNode) {
+			// Get the label insets
+			LayoutConstraints constraints = getConstraints();
+			int yInsets = constraints.getTopInset(shape) + constraints.getBottomInset(shape);
+
+			// Calculate label height from font
+			int fontHeight = getFontHelper().getFontHeight(shape).orElse(10);
+
+			// Which then we add to the insets
+			return fontHeight + yInsets;
+		} else {
+			int bottom = getBottom(shape);
+			int top = getTop(shape);
+			return ((bottom == DEFAULT_BOTTOM) || (top == DEFAULT_TOP)) ? DEFAULT_HEIGHT : bottom - top;
+		}
 	}
 
 	@Override
@@ -416,7 +474,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	}
 
 	@Override
-	public int getLeft(Shape shape) {
+	public int getLeft(Node shape) {
 		int result = DEFAULT_LEFT;
 
 		// if the shape is located by a border item locator, we may only have access to the bounds on figure,
@@ -458,7 +516,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	}
 
 	@Override
-	public int getRight(Shape shape) {
+	public int getRight(Node shape) {
 		int result = DEFAULT_RIGHT;
 
 		if (isLifelineBody(shape)) {
@@ -685,7 +743,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 
 	@Override
 	@SuppressWarnings("boxing")
-	public Command setTop(Shape shape, int yPosition) {
+	public Command setTop(Node shape, int yPosition) {
 		Command result = UnexecutableCommand.INSTANCE;
 		if (shape.getLayoutConstraint() instanceof Location) {
 			// Compute relative position
@@ -694,6 +752,27 @@ public class DefaultLayoutHelper implements LayoutHelper {
 					NotationPackage.Literals.LOCATION__Y, relativeY);
 		}
 		return result;
+	}
+
+	@Override
+	public Command setTop(Node shape, IntSupplier yPosition) {
+		Command result = UnexecutableCommand.INSTANCE;
+		if (shape.getLayoutConstraint() instanceof Location) {
+			// Compute relative position
+			IntSupplier relativeY = () -> toRelativeY(shape, yPosition.getAsInt());
+			result = new DeferredSetCommand(editingDomain, shape::getLayoutConstraint, //
+					NotationPackage.Literals.LOCATION__Y, relativeY::getAsInt);
+		}
+		return result;
+	}
+
+	protected Command setTop(Supplier<? extends Node> node, IntSupplier yPosition) {
+		// Compute relative position
+		IntSupplier relativeY = () -> toRelativeY(node.get(), yPosition.getAsInt());
+		Supplier<LayoutConstraint> layoutConstraint = () -> node.get().getLayoutConstraint();
+
+		return new DeferredSetCommand(editingDomain, layoutConstraint, NotationPackage.Literals.LOCATION__Y,
+				relativeY::getAsInt);
 	}
 
 	@Override
@@ -713,6 +792,38 @@ public class DefaultLayoutHelper implements LayoutHelper {
 				if (m.matches()) {
 					// Adjust the execution specification to effect the move
 					if (m.group(1) != null) {
+						// The top end
+						result = setTop(onShape, yPosition);
+					} else {
+						// The bottom end
+						result = setBottom(onShape, yPosition);
+					}
+				} else {
+					return UnexecutableCommand.INSTANCE;
+				}
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public Command setYPosition(Anchor anchor, Supplier<? extends Shape> onShape, IntSupplier yPosition) {
+		Command result = UnexecutableCommand.INSTANCE;
+		if (anchor instanceof IdentityAnchor) {
+			String id = ((IdentityAnchor)anchor).getId();
+			Matcher idMatcher = IDENTITY_ANCHOR_PATTERN.matcher(id);
+			if (idMatcher.matches()) {
+				// But anchor position is relative to the attached shape
+				IntSupplier anchorPos = () -> yPosition.getAsInt() - getTop(onShape.get());
+				Supplier<String> newID = () -> idMatcher
+						.replaceFirst("$1" + Integer.toString(anchorPos.getAsInt())); //$NON-NLS-1$
+				result = new DeferredSetCommand(editingDomain, () -> anchor,
+						NotationPackage.Literals.IDENTITY_ANCHOR__ID, newID);
+			} else {
+				Matcher execMatcher = EXEC_START_FINISH_ANCHOR_PATTERN.matcher(id);
+				if (execMatcher.matches()) {
+					// Adjust the execution specification to effect the move
+					if (execMatcher.group(1) != null) {
 						// The top end
 						result = setTop(onShape, yPosition);
 					} else {
@@ -754,7 +865,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 
 	@Override
 	@SuppressWarnings("boxing")
-	public Command setBottom(Shape shape, int yPosition) {
+	public Command setBottom(Node shape, int yPosition) {
 		Command result = UnexecutableCommand.INSTANCE;
 		if (shape.getLayoutConstraint() instanceof Size) {
 			int top = getTop(shape);
@@ -762,6 +873,27 @@ public class DefaultLayoutHelper implements LayoutHelper {
 					NotationPackage.Literals.SIZE__HEIGHT, yPosition - top);
 		}
 		return result;
+	}
+
+	@Override
+	public Command setBottom(Node shape, IntSupplier yPosition) {
+		Command result = UnexecutableCommand.INSTANCE;
+		if (shape.getLayoutConstraint() instanceof Size) {
+			// Compute height
+			IntSupplier height = () -> yPosition.getAsInt() - getTop(shape);
+			result = new DeferredSetCommand(editingDomain, shape::getLayoutConstraint, //
+					NotationPackage.Literals.SIZE__HEIGHT, height::getAsInt);
+		}
+		return result;
+	}
+
+	protected Command setBottom(Supplier<? extends Node> node, IntSupplier yPosition) {
+		// Compute height
+		IntSupplier height = () -> yPosition.getAsInt() - getTop(node.get());
+		Supplier<LayoutConstraint> layoutConstraint = () -> node.get().getLayoutConstraint();
+
+		return new DeferredSetCommand(editingDomain, layoutConstraint, NotationPackage.Literals.SIZE__HEIGHT,
+				height::getAsInt);
 	}
 
 	@Override
@@ -780,13 +912,25 @@ public class DefaultLayoutHelper implements LayoutHelper {
 
 	@Override
 	@SuppressWarnings("boxing")
-	public Command setLeft(Shape shape, int xPosition) {
+	public Command setLeft(Node shape, int xPosition) {
 		Command result = UnexecutableCommand.INSTANCE;
 		if (shape.getLayoutConstraint() instanceof Location) {
 			// Compute relative position
 			int relativeX = toRelativeX(shape, xPosition);
 			result = SetCommand.create(editingDomain, shape.getLayoutConstraint(),
 					NotationPackage.Literals.LOCATION__X, relativeX);
+		}
+		return result;
+	}
+
+	@Override
+	public Command setLeft(Node shape, IntSupplier xPosition) {
+		Command result = UnexecutableCommand.INSTANCE;
+		if (shape.getLayoutConstraint() instanceof Location) {
+			// Compute relative position
+			IntSupplier relativeX = () -> toRelativeX(shape, xPosition.getAsInt());
+			result = new DeferredSetCommand(editingDomain, shape::getLayoutConstraint, //
+					NotationPackage.Literals.LOCATION__X, relativeX::getAsInt);
 		}
 		return result;
 	}
@@ -847,5 +991,10 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	@Override
 	public LayoutConstraints getConstraints() {
 		return layoutConstraints.get();
+	}
+
+	@Override
+	public FontHelper getFontHelper() {
+		return fontHelper.get();
 	}
 }

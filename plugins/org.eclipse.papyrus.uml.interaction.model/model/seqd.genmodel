@@ -24,6 +24,7 @@
       <genTypeParameters ecoreTypeParameter="seqd.ecore#//CreationCommand/T"/>
     </genDataTypes>
     <genDataTypes ecoreDataType="seqd.ecore#//EObject"/>
+    <genDataTypes ecoreDataType="seqd.ecore#//ExecutionCreationCommandParameter"/>
     <genClasses image="false" ecoreClass="seqd.ecore#//MElement">
       <genTypeParameters ecoreTypeParameter="seqd.ecore#//MElement/T"/>
       <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MElement/interaction"/>
@@ -42,6 +43,9 @@
         <genParameters ecoreParameter="seqd.ecore#//MElement/nudge/deltaY"/>
       </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MElement/remove"/>
+      <genOperations ecoreOperation="seqd.ecore#//MElement/precedes">
+        <genParameters ecoreParameter="seqd.ecore#//MElement/precedes/other"/>
+      </genOperations>
     </genClasses>
     <genClasses ecoreClass="seqd.ecore#//MInteraction">
       <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MInteraction/lifelines"/>
@@ -64,22 +68,33 @@
       <genOperations ecoreOperation="seqd.ecore#//MInteraction/getLifelineAt">
         <genParameters ecoreParameter="seqd.ecore#//MInteraction/getLifelineAt/offset"/>
       </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MInteraction/getBottommostElement"/>
     </genClasses>
     <genClasses ecoreClass="seqd.ecore#//MLifeline">
       <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/executionOccurrences"/>
       <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/executions"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/ownedDestruction"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/destruction"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/left"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MLifeline/right"/>
+      <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/messageEnds"/>
+      <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/occurrences"/>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/getOwner"/>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/getDiagramView"/>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/following">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/following/element"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/preceding">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/preceding/element"/>
       </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/getExecutionOccurrence">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/getExecutionOccurrence/occurrence"/>
       </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/getExecution">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/getExecution/execution"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/getDestruction">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/getDestruction/destruction"/>
       </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/insertExecutionAfter">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertExecutionAfter/before"/>
@@ -109,24 +124,57 @@
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.1/sort"/>
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.1/signature"/>
       </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/insertMessageAfter.2">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.2/beforeSend"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.2/sendOffset"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.2/receiver"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.2/beforeRecv"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.2/recvOffset"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.2/sort"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.2/signature"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.2/executionCreationCommandParameter"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/insertMessageAfter.3">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.3/before"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.3/offset"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.3/receiver"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.3/sort"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.3/signature"/>
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/insertMessageAfter.3/executionCreationCommandParameter"/>
+      </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/elementAt">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/elementAt/offset"/>
       </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/nudgeHorizontally">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/nudgeHorizontally/deltaX"/>
       </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/makeCreatedAt">
+        <genParameters ecoreParameter="seqd.ecore#//MLifeline/makeCreatedAt/yPosition"/>
+      </genOperations>
     </genClasses>
     <genClasses ecoreClass="seqd.ecore#//MExecution">
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MExecution/start"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MExecution/finish"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MExecution/occurrences"/>
       <genOperations ecoreOperation="seqd.ecore#//MExecution/getOwner"/>
       <genOperations ecoreOperation="seqd.ecore#//MExecution/getDiagramView"/>
+      <genOperations ecoreOperation="seqd.ecore#//MExecution/setOwner">
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/setOwner/newOwner"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/setOwner/yPosition"/>
+      </genOperations>
     </genClasses>
     <genClasses image="false" ecoreClass="seqd.ecore#//MOccurrence">
       <genTypeParameters ecoreTypeParameter="seqd.ecore#//MOccurrence/T"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/covered"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/start"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/startedExecution"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/finish"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/finishedExecution"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MOccurrence/execution"/>
+      <genOperations ecoreOperation="seqd.ecore#//MOccurrence/setCovered">
+        <genParameters ecoreParameter="seqd.ecore#//MOccurrence/setCovered/lifeline"/>
+        <genParameters ecoreParameter="seqd.ecore#//MOccurrence/setCovered/yPosition"/>
+      </genOperations>
     </genClasses>
     <genClasses ecoreClass="seqd.ecore#//MExecutionOccurrence">
       <genOperations ecoreOperation="seqd.ecore#//MExecutionOccurrence/getOwner"/>
@@ -152,5 +200,6 @@
         <genParameters ecoreParameter="seqd.ecore#//MMessage/getEnd/end"/>
       </genOperations>
     </genClasses>
+    <genClasses ecoreClass="seqd.ecore#//MDestruction"/>
   </genPackages>
 </genmodel:GenModel>

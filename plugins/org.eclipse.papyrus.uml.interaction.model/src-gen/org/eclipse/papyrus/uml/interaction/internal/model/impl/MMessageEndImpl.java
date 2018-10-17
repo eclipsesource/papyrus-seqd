@@ -21,9 +21,12 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.NudgeCommand;
+import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.InteractionFragment;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.MessageEnd;
 import org.eclipse.uml2.uml.OccurrenceSpecification;
@@ -66,6 +69,8 @@ public class MMessageEndImpl extends MOccurrenceImpl<MessageEnd> implements MMes
 	 */
 	protected static final boolean RECEIVE_EDEFAULT = false;
 
+	private Optional<MLifeline> covered;
+
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -77,6 +82,19 @@ public class MMessageEndImpl extends MOccurrenceImpl<MessageEnd> implements MMes
 
 	protected MMessageEndImpl(MMessageImpl owner, MessageEnd messageEnd) {
 		super(owner, messageEnd);
+
+		// A gate, for example, is not an interaction fragment
+		if (messageEnd instanceof InteractionFragment) {
+			covered = getCovered((InteractionFragment)messageEnd);
+		}
+	}
+
+	protected MMessageEndImpl(MElement<? extends Element> owner, MessageEnd messageEnd) {
+		super(owner, messageEnd);
+
+		if (owner instanceof MLifeline) {
+			covered = Optional.of((MLifeline)owner);
+		}
 	}
 
 	/**
@@ -136,9 +154,15 @@ public class MMessageEndImpl extends MOccurrenceImpl<MessageEnd> implements MMes
 	 */
 	@Override
 	public Optional<MLifeline> getCovered() {
-		Optional<Lifeline> result = getFragment()
-				.map(f -> f.getCovereds().isEmpty() ? null : f.getCovereds().get(0));
-		return result.flatMap(lifeline -> getInteraction().getLifeline(lifeline));
+		if (covered == null) {
+			covered = getFragment().flatMap(this::getCovered);
+		}
+		return covered;
+	}
+
+	private Optional<MLifeline> getCovered(InteractionFragment fragment) {
+		Lifeline result = fragment.getCovereds().isEmpty() ? null : fragment.getCovereds().get(0);
+		return getInteraction().getLifeline(result);
 	}
 
 	/**
@@ -174,10 +198,18 @@ public class MMessageEndImpl extends MOccurrenceImpl<MessageEnd> implements MMes
 		return result;
 	}
 
+	@SuppressWarnings("boxing")
 	@Override
 	public Command nudge(int deltaY) {
-		// If I am the receiving end of a message, don't reorient me, so instead
-		// move the sending end. Unless I'm a found message, of course
+		/*
+		 * If I am the receiving end of a message, only reorient me if I am a found message or if I am part of
+		 * a sloped message. Otherwise move the sending end.
+		 */
+		if (getTop().orElse(0) != getOtherEnd().map(me -> me.getTop().orElse(0)).orElse(0)) {
+			/* part of sloped message, move me */
+			return new NudgeCommand(this, deltaY);
+		}
+
 		MMessageEndImpl end = getOtherEnd().filter(MMessageEnd::isSend).map(MMessageEndImpl.class::cast)
 				.orElse(this);
 		return new NudgeCommand(end, deltaY);
