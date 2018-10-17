@@ -15,6 +15,7 @@ package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 import static java.lang.Integer.MAX_VALUE;
 import static org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil.invertSingle;
 import static org.eclipse.papyrus.uml.interaction.graph.util.Suppliers.compose;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelOrdering.vertically;
 import static org.eclipse.uml2.uml.MessageSort.REPLY_LITERAL;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.EXECUTION_SPECIFICATION__FINISH;
@@ -26,7 +27,6 @@ import static org.eclipse.uml2.uml.UMLPackage.Literals.LIFELINE__COVERED_BY;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -36,8 +36,6 @@ import java.util.function.BinaryOperator;
 import java.util.function.IntSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
@@ -48,7 +46,6 @@ import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
-import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MObjectImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.Messages;
@@ -288,6 +285,11 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	}
 
 	@Override
+	public Class<? extends Message> getType() {
+		return Message.class;
+	}
+
+	@Override
 	public Message getNewObject() {
 		return (resultCommand == null) ? null : resultCommand.getNewObject();
 	}
@@ -517,8 +519,7 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 								.filter(m -> m.getTop().orElse(0) < absoluteRecvY)//
 								.flatMap(l -> l.getExecutions().stream()),
 						true);
-				Collections.sort(elementsToNudge,
-						Comparator.comparingInt(e -> ((MElementImpl<?>)e).getTop().orElse(0)).reversed());
+				Collections.sort(elementsToNudge, vertically().reversed());
 				List<Command> nudgeCommands = new ArrayList<>(elementsToNudge.size());
 				for (int i = 0; i < elementsToNudge.size(); i++) {
 					MElement<? extends Element> element = elementsToNudge.get(i);
@@ -972,19 +973,6 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 
 	private int relativeTopOfBefore() {
 		return beforeSend.getTop().getAsInt() - layoutHelper().getBottom(getTarget().getDiagramView().get());
-	}
-
-	private static void findElementsBelow(int yPosition, List<MElement<? extends Element>> elementsBelow,
-			Stream<?> stream, boolean useTop) {
-		stream//
-				.filter(MElementImpl.class::isInstance).map(MElementImpl.class::cast).filter(m -> {
-					if (useTop) {
-						return m.getTop().orElse(0) >= yPosition;
-					} else {
-						return m.getBottom().orElse(0) >= yPosition;
-					}
-				})//
-				.collect(Collectors.toCollection(() -> elementsBelow));
 	}
 
 	private CreationParameters endParams(Supplier<? extends EObject> insertionPoint) {

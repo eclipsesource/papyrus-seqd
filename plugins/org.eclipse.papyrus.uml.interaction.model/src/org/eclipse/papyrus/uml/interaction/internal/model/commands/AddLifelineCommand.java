@@ -56,6 +56,11 @@ public class AddLifelineCommand extends ModelCommand<MInteractionImpl> implement
 	}
 
 	@Override
+	public Class<? extends Lifeline> getType() {
+		return Lifeline.class;
+	}
+
+	@Override
 	public Lifeline getNewObject() {
 		return (resultCommand == null) ? null : resultCommand.getNewObject();
 	}

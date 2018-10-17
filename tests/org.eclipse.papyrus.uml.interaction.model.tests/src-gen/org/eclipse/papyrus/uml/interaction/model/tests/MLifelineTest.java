@@ -20,8 +20,11 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.gmf.runtime.notation.Diagram;
@@ -32,6 +35,7 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ActionExecutionSpecification;
@@ -58,6 +62,8 @@ import junit.textui.TestRunner;
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getDestruction() <em>Destruction</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getLeft() <em>Left</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getRight() <em>Right</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getMessageEnds() <em>Message Ends</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrences() <em>Occurrences</em>}</li>
  * </ul>
  * </p>
  * <p>
@@ -91,6 +97,8 @@ import junit.textui.TestRunner;
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#elementAt(int) <em>Element At</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#nudgeHorizontally(int) <em>Nudge
  * Horizontally</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#makeCreatedAt(java.util.OptionalInt)
+ * <em>Make Created At</em>}</li>
  * </ul>
  * </p>
  * 
@@ -142,7 +150,10 @@ public class MLifelineTest extends MElementTest {
 		int which;
 		switch (getName()) {
 			case "testNudgeHorizontally__int":
+			case "testMakeCreatedAt__OptionalInt":
+			case "testMakeCreatedAt__OptionalInt__empty":
 				which = 2; // The 'CenterLine' in this diagram
+				break;
 			default:
 				which = 1; // The 'RightLine' in most diagrams
 				break;
@@ -201,12 +212,46 @@ public class MLifelineTest extends MElementTest {
 		assertThat(getFixture().getRight(), isPresent(299)); // 215 {left} + 84 {width}
 	}
 
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getMessageEnds() <em>Message
+	 * Ends</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getMessageEnds()
+	 * @generated NOT
+	 */
+	public void testGetMessageEnds() {
+		List<MMessageEnd> messageEnds = getFixture().getMessageEnds();
+		assertThat("Wrong number of message ends", messageEnds.size(), is(2));
+		assertThat(messageEnds, hasItem(named("request-recv")));
+		assertThat(messageEnds, hasItem(named("reply-send")));
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrences()
+	 * <em>Occurrences</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrences()
+	 * @generated NOT
+	 */
+	public void testGetOccurrences() {
+		List<MOccurrence<?>> occurrences = getFixture().getOccurrences();
+		assertThat("Wrong number of occurrences", occurrences.size(), is(4));
+		assertThat(occurrences, hasItem(named("request-recv")));
+		assertThat(occurrences, hasItem(named("reply-send")));
+		assertThat(occurrences, hasItem(named("ActionExecutionSpecification1Start")));
+		assertThat(occurrences, hasItem(named("ActionExecutionSpecification1Finish")));
+	}
+
 	@Override
 	protected String getInteractionName() {
 		switch (getName()) {
 			case "testGetExecutionOccurrence__ExecutionOccurrenceSpecification":
+			case "testGetMessageEnds":
+			case "testGetOccurrences":
 				return "ExecutionSpecificationSideAnchors";
 			case "testNudgeHorizontally__int":
+			case "testMakeCreatedAt__OptionalInt":
+			case "testMakeCreatedAt__OptionalInt__empty":
 				return "LifelineHeaderAnchor";
 			case "testGetDestruction__DestructionOccurrenceSpecification":
 			case "testGetDestruction":
@@ -648,6 +693,48 @@ public class MLifelineTest extends MElementTest {
 		// but this one doesn't move. It's dependet on the centre line by creation message, but it's
 		// visually to the left, so isn't affected by the horizontal nudge (which has no semantics)
 		assertThat("Left line moved", interaction.getLifeline(left).get().getLeft().getAsInt(), is(leftX));
+	}
+
+	/**
+	 * Tests the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#makeCreatedAt(java.util.OptionalInt)
+	 * <em>Make Created At</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#makeCreatedAt(java.util.OptionalInt)
+	 * @generated NOT
+	 */
+	public void testMakeCreatedAt__OptionalInt() {
+		MLifeline right = interaction.getLifeline(interaction.getElement().getLifeline("RightLine")).get();
+
+		OptionalInt expectedTop = right.getTop();
+		assumeThat("No Y location for RightLine", expectedTop, isPresentInt());
+
+		MMessage createRight = interaction.getMessage(interaction.getElement().getMessage("leftToRight"))
+				.get();
+		OptionalInt createdAtY = createRight.getReceive().get().getBottom();
+		assumeThat("No Y location for receive end of RightLine creation", expectedTop, isPresentInt());
+
+		Command setCreation = getFixture().makeCreatedAt(createdAtY);
+		assertThat(setCreation, executable());
+		execute(setCreation);
+
+		assertThat("Center line not moved", getFixture().getTop(), isPresent(expectedTop.getAsInt()));
+	}
+
+	public void testMakeCreatedAt__OptionalInt__empty() {
+		MLifeline right = interaction.getLifeline(interaction.getElement().getLifeline("RightLine")).get();
+
+		OptionalInt expectedTop = getFixture().getTop();
+		assumeThat("No Y location for CenterLine", expectedTop, isPresentInt());
+
+		Command setCreation = right.makeCreatedAt(OptionalInt.empty());
+		assertThat(setCreation, executable());
+		execute(setCreation);
+
+		// Refresh the Logical model after mutation
+		right = interaction.getLifeline(interaction.getElement().getLifeline("RightLine")).get();
+
+		assertThat("Right line not moved", right.getTop(), isPresent(expectedTop.getAsInt()));
 	}
 
 } // MLifelineTest

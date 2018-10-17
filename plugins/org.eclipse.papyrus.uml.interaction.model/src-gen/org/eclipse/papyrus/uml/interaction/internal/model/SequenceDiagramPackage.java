@@ -178,13 +178,21 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MELEMENT___REMOVE = 5;
 
 	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MELEMENT___PRECEDES__MELEMENT = 6;
+
+	/**
 	 * The number of operations of the '<em>MElement</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MELEMENT_OPERATION_COUNT = 6;
+	int MELEMENT_OPERATION_COUNT = 7;
 
 	/**
 	 * The meta object id for the
@@ -307,6 +315,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MINTERACTION___REMOVE = MELEMENT___REMOVE;
+
+	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MINTERACTION___PRECEDES__MELEMENT = MELEMENT___PRECEDES__MELEMENT;
 
 	/**
 	 * The operation id for the '<em>Get Diagram View</em>' operation. <!-- begin-user-doc --> <!--
@@ -487,13 +503,31 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MLIFELINE__RIGHT = MELEMENT_FEATURE_COUNT + 5;
 
 	/**
+	 * The feature id for the '<em><b>Message Ends</b></em>' reference list. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE__MESSAGE_ENDS = MELEMENT_FEATURE_COUNT + 6;
+
+	/**
+	 * The feature id for the '<em><b>Occurrences</b></em>' reference list. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE__OCCURRENCES = MELEMENT_FEATURE_COUNT + 7;
+
+	/**
 	 * The number of structural features of the '<em>MLifeline</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 6;
+	int MLIFELINE_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 8;
 
 	/**
 	 * The operation id for the '<em>Vertical Distance</em>' operation. <!-- begin-user-doc --> <!--
@@ -527,6 +561,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MLIFELINE___REMOVE = MELEMENT___REMOVE;
+
+	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___PRECEDES__MELEMENT = MELEMENT___PRECEDES__MELEMENT;
 
 	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -664,13 +706,22 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MLIFELINE___NUDGE_HORIZONTALLY__INT = MELEMENT_OPERATION_COUNT + 14;
 
 	/**
+	 * The operation id for the '<em>Make Created At</em>' operation. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___MAKE_CREATED_AT__OPTIONALINT = MELEMENT_OPERATION_COUNT + 15;
+
+	/**
 	 * The number of operations of the '<em>MLifeline</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 15;
+	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 16;
 
 	/**
 	 * The meta object id for the
@@ -744,13 +795,22 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MEXECUTION__FINISH = MELEMENT_FEATURE_COUNT + 1;
 
 	/**
+	 * The feature id for the '<em><b>Occurrences</b></em>' reference list. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION__OCCURRENCES = MELEMENT_FEATURE_COUNT + 2;
+
+	/**
 	 * The number of structural features of the '<em>MExecution</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MEXECUTION_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 2;
+	int MEXECUTION_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 3;
 
 	/**
 	 * The operation id for the '<em>Vertical Distance</em>' operation. <!-- begin-user-doc --> <!--
@@ -786,6 +846,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MEXECUTION___REMOVE = MELEMENT___REMOVE;
 
 	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION___PRECEDES__MELEMENT = MELEMENT___PRECEDES__MELEMENT;
+
+	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -803,13 +871,21 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MEXECUTION___GET_DIAGRAM_VIEW = MELEMENT_OPERATION_COUNT + 1;
 
 	/**
+	 * The operation id for the '<em>Set Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT = MELEMENT_OPERATION_COUNT + 2;
+
+	/**
 	 * The number of operations of the '<em>MExecution</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MEXECUTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 2;
+	int MEXECUTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 3;
 
 	/**
 	 * The meta object id for the
@@ -910,13 +986,22 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MOCCURRENCE__FINISHED_EXECUTION = MELEMENT_FEATURE_COUNT + 4;
 
 	/**
+	 * The feature id for the '<em><b>Execution</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MOCCURRENCE__EXECUTION = MELEMENT_FEATURE_COUNT + 5;
+
+	/**
 	 * The number of structural features of the '<em>MOccurrence</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MOCCURRENCE_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 5;
+	int MOCCURRENCE_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 6;
 
 	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -969,13 +1054,30 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MOCCURRENCE___REMOVE = MELEMENT___REMOVE;
 
 	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MOCCURRENCE___PRECEDES__MELEMENT = MELEMENT___PRECEDES__MELEMENT;
+
+	/**
+	 * The operation id for the '<em>Set Covered</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MOCCURRENCE___SET_COVERED__MLIFELINE_OPTIONALINT = MELEMENT_OPERATION_COUNT + 0;
+
+	/**
 	 * The number of operations of the '<em>MOccurrence</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MOCCURRENCE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 0;
+	int MOCCURRENCE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 1;
 
 	/**
 	 * The meta object id for the
@@ -1076,6 +1178,15 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MEXECUTION_OCCURRENCE__FINISHED_EXECUTION = MOCCURRENCE__FINISHED_EXECUTION;
 
 	/**
+	 * The feature id for the '<em><b>Execution</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION_OCCURRENCE__EXECUTION = MOCCURRENCE__EXECUTION;
+
+	/**
 	 * The number of structural features of the '<em>MExecution Occurrence</em>' class. <!-- begin-user-doc
 	 * --> <!-- end-user-doc -->
 	 * 
@@ -1116,6 +1227,23 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MEXECUTION_OCCURRENCE___REMOVE = MOCCURRENCE___REMOVE;
+
+	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION_OCCURRENCE___PRECEDES__MELEMENT = MOCCURRENCE___PRECEDES__MELEMENT;
+
+	/**
+	 * The operation id for the '<em>Set Covered</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION_OCCURRENCE___SET_COVERED__MLIFELINE_OPTIONALINT = MOCCURRENCE___SET_COVERED__MLIFELINE_OPTIONALINT;
 
 	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1242,6 +1370,15 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MMESSAGE_END__FINISHED_EXECUTION = MOCCURRENCE__FINISHED_EXECUTION;
 
 	/**
+	 * The feature id for the '<em><b>Execution</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE_END__EXECUTION = MOCCURRENCE__EXECUTION;
+
+	/**
 	 * The feature id for the '<em><b>Send</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -1308,6 +1445,23 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MMESSAGE_END___REMOVE = MOCCURRENCE___REMOVE;
+
+	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE_END___PRECEDES__MELEMENT = MOCCURRENCE___PRECEDES__MELEMENT;
+
+	/**
+	 * The operation id for the '<em>Set Covered</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE_END___SET_COVERED__MLIFELINE_OPTIONALINT = MOCCURRENCE___SET_COVERED__MLIFELINE_OPTIONALINT;
 
 	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1484,6 +1638,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MMESSAGE___REMOVE = MELEMENT___REMOVE;
 
 	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE___PRECEDES__MELEMENT = MELEMENT___PRECEDES__MELEMENT;
+
+	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -1616,6 +1778,15 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MDESTRUCTION__FINISHED_EXECUTION = MMESSAGE_END__FINISHED_EXECUTION;
 
 	/**
+	 * The feature id for the '<em><b>Execution</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MDESTRUCTION__EXECUTION = MMESSAGE_END__EXECUTION;
+
+	/**
 	 * The feature id for the '<em><b>Send</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -1682,6 +1853,23 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MDESTRUCTION___REMOVE = MMESSAGE_END___REMOVE;
+
+	/**
+	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MDESTRUCTION___PRECEDES__MELEMENT = MMESSAGE_END___PRECEDES__MELEMENT;
+
+	/**
+	 * The operation id for the '<em>Set Covered</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MDESTRUCTION___SET_COVERED__MLIFELINE_OPTIONALINT = MMESSAGE_END___SET_COVERED__MLIFELINE_OPTIONALINT;
 
 	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1899,6 +2087,17 @@ public interface SequenceDiagramPackage extends EPackage {
 	EOperation getMElement__Remove();
 
 	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MElement#precedes(org.eclipse.papyrus.uml.interaction.model.MElement)
+	 * <em>Precedes</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Precedes</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#precedes(org.eclipse.papyrus.uml.interaction.model.MElement)
+	 * @generated
+	 */
+	EOperation getMElement__Precedes__MElement();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction
 	 * <em>MInteraction</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2092,6 +2291,30 @@ public interface SequenceDiagramPackage extends EPackage {
 	EAttribute getMLifeline_Right();
 
 	/**
+	 * Returns the meta object for the reference list
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getMessageEnds <em>Message Ends</em>}'.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference list '<em>Message Ends</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getMessageEnds()
+	 * @see #getMLifeline()
+	 * @generated
+	 */
+	EReference getMLifeline_MessageEnds();
+
+	/**
+	 * Returns the meta object for the reference list
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrences <em>Occurrences</em>}'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference list '<em>Occurrences</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrences()
+	 * @see #getMLifeline()
+	 * @generated
+	 */
+	EReference getMLifeline_Occurrences();
+
+	/**
 	 * Returns the meta object for the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOwner()
 	 * <em>Get Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2270,6 +2493,17 @@ public interface SequenceDiagramPackage extends EPackage {
 	EOperation getMLifeline__NudgeHorizontally__int();
 
 	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#makeCreatedAt(java.util.OptionalInt)
+	 * <em>Make Created At</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Make Created At</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#makeCreatedAt(java.util.OptionalInt)
+	 * @generated
+	 */
+	EOperation getMLifeline__MakeCreatedAt__OptionalInt();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MExecution
 	 * <em>MExecution</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2304,6 +2538,18 @@ public interface SequenceDiagramPackage extends EPackage {
 	EAttribute getMExecution_Finish();
 
 	/**
+	 * Returns the meta object for the reference list
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getOccurrences <em>Occurrences</em>}'.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference list '<em>Occurrences</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#getOccurrences()
+	 * @see #getMExecution()
+	 * @generated
+	 */
+	EReference getMExecution_Occurrences();
+
+	/**
 	 * Returns the meta object for the '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getOwner()
 	 * <em>Get Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2323,6 +2569,18 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EOperation getMExecution__GetDiagramView();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline, java.util.OptionalInt)
+	 * <em>Set Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Set Owner</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline,
+	 *      java.util.OptionalInt)
+	 * @generated
+	 */
+	EOperation getMExecution__SetOwner__MLifeline_OptionalInt();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence
@@ -2393,6 +2651,30 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getMOccurrence_FinishedExecution();
+
+	/**
+	 * Returns the meta object for the attribute
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#getExecution <em>Execution</em>}'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Execution</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MOccurrence#getExecution()
+	 * @see #getMOccurrence()
+	 * @generated
+	 */
+	EAttribute getMOccurrence_Execution();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence#setCovered(org.eclipse.papyrus.uml.interaction.model.MLifeline, java.util.OptionalInt)
+	 * <em>Set Covered</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Set Covered</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MOccurrence#setCovered(org.eclipse.papyrus.uml.interaction.model.MLifeline,
+	 *      java.util.OptionalInt)
+	 * @generated
+	 */
+	EOperation getMOccurrence__SetCovered__MLifeline_OptionalInt();
 
 	/**
 	 * Returns the meta object for class
@@ -2812,6 +3094,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		EOperation MELEMENT___REMOVE = eINSTANCE.getMElement__Remove();
 
 		/**
+		 * The meta object literal for the '<em><b>Precedes</b></em>' operation. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MELEMENT___PRECEDES__MELEMENT = eINSTANCE.getMElement__Precedes__MElement();
+
+		/**
 		 * The meta object literal for the
 		 * '{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl
 		 * <em>MInteraction</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2954,6 +3244,22 @@ public interface SequenceDiagramPackage extends EPackage {
 		EAttribute MLIFELINE__RIGHT = eINSTANCE.getMLifeline_Right();
 
 		/**
+		 * The meta object literal for the '<em><b>Message Ends</b></em>' reference list feature. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference MLIFELINE__MESSAGE_ENDS = eINSTANCE.getMLifeline_MessageEnds();
+
+		/**
+		 * The meta object literal for the '<em><b>Occurrences</b></em>' reference list feature. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference MLIFELINE__OCCURRENCES = eINSTANCE.getMLifeline_Occurrences();
+
+		/**
 		 * The meta object literal for the '<em><b>Get Owner</b></em>' operation. <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
 		 * 
@@ -3083,6 +3389,15 @@ public interface SequenceDiagramPackage extends EPackage {
 		EOperation MLIFELINE___NUDGE_HORIZONTALLY__INT = eINSTANCE.getMLifeline__NudgeHorizontally__int();
 
 		/**
+		 * The meta object literal for the '<em><b>Make Created At</b></em>' operation. <!-- begin-user-doc
+		 * --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MLIFELINE___MAKE_CREATED_AT__OPTIONALINT = eINSTANCE
+				.getMLifeline__MakeCreatedAt__OptionalInt();
+
+		/**
 		 * The meta object literal for the
 		 * '{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl
 		 * <em>MExecution</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -3110,6 +3425,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		EAttribute MEXECUTION__FINISH = eINSTANCE.getMExecution_Finish();
 
 		/**
+		 * The meta object literal for the '<em><b>Occurrences</b></em>' attribute list feature. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference MEXECUTION__OCCURRENCES = eINSTANCE.getMExecution_Occurrences();
+
+		/**
 		 * The meta object literal for the '<em><b>Get Owner</b></em>' operation. <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
 		 * 
@@ -3124,6 +3447,15 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation MEXECUTION___GET_DIAGRAM_VIEW = eINSTANCE.getMExecution__GetDiagramView();
+
+		/**
+		 * The meta object literal for the '<em><b>Set Owner</b></em>' operation. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT = eINSTANCE
+				.getMExecution__SetOwner__MLifeline_OptionalInt();
 
 		/**
 		 * The meta object literal for the
@@ -3175,6 +3507,23 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute MOCCURRENCE__FINISHED_EXECUTION = eINSTANCE.getMOccurrence_FinishedExecution();
+
+		/**
+		 * The meta object literal for the '<em><b>Execution</b></em>' attribute feature. <!-- begin-user-doc
+		 * --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute MOCCURRENCE__EXECUTION = eINSTANCE.getMOccurrence_Execution();
+
+		/**
+		 * The meta object literal for the '<em><b>Set Covered</b></em>' operation. <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MOCCURRENCE___SET_COVERED__MLIFELINE_OPTIONALINT = eINSTANCE
+				.getMOccurrence__SetCovered__MLifeline_OptionalInt();
 
 		/**
 		 * The meta object literal for the

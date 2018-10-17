@@ -12,8 +12,12 @@
 
 package org.eclipse.papyrus.uml.interaction.model.util;
 
+import java.util.Objects;
+import java.util.OptionalInt;
 import java.util.function.Predicate;
 
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.uml2.uml.Element;
 
@@ -43,6 +47,40 @@ public class LogicalModelPredicates {
 
 	public static Predicate<MElement<? extends Element>> below(MElement<?> other) {
 		return below(other.getBottom().orElse(Integer.MAX_VALUE));
+	}
+
+	public static Predicate<MElement<? extends Element>> where(EStructuralFeature feature, Object value) {
+		return elem -> Objects.equals(((EObject)elem).eGet(feature), value);
+	}
+
+	public static Predicate<MElement<? extends Element>> spannedBy(MElement<? extends Element> extent) {
+		OptionalInt top = extent.getTop();
+		OptionalInt bottom = extent.getBottom();
+
+		if (!top.isPresent() || !bottom.isPresent()) {
+			// Doesn't span anything
+			return __ -> false;
+		}
+
+		// Widen the search by 1 to include elements at the top or bottom (above/below are exclusive)
+		Predicate<MElement<?>> belowTop = below(top.getAsInt() - 1);
+		Predicate<MElement<?>> aboveBottom = above(bottom.getAsInt() + 1);
+		return belowTop.and(aboveBottom);
+	}
+
+	public static Predicate<MElement<? extends Element>> spans(MElement<? extends Element> element) {
+		OptionalInt top = element.getTop();
+		OptionalInt bottom = element.getBottom();
+
+		if (!top.isPresent() || !bottom.isPresent()) {
+			// Not spannable
+			return __ -> false;
+		}
+
+		// Widen the search by 1 to include elements at the top or bottom (above/below are exclusive)
+		Predicate<MElement<? extends Element>> above = above(top.getAsInt() + 1);
+		Predicate<MElement<? extends Element>> below = below(bottom.getAsInt() - 1);
+		return above.and(below);
 	}
 
 }

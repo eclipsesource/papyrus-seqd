@@ -18,7 +18,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandWrapper;
@@ -295,5 +299,43 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 	@Override
 	public Command chain(Command next) {
 		return CompoundModelCommand.compose(getEditingDomain(), this, next);
+	}
+
+	protected Command chain(Command first, Command second) {
+		return (first instanceof ModelCommand<?>) ? first.chain(second)
+				: CompoundModelCommand.compose(getEditingDomain(second), first, second);
+	}
+
+	private EditingDomain getEditingDomain(Command c) {
+		return (c instanceof ModelCommand<?>) ? ((ModelCommand<?>)c).getEditingDomain() : getEditingDomain();
+	}
+
+	protected Function<Command, Command> chaining(Command initial) {
+		return c -> chain(initial, c);
+	}
+
+	protected BinaryOperator<Command> chaining() {
+		return (first, second) -> chain(first, second);
+	}
+
+	protected Command defer(Supplier<? extends Command> futureCommand) {
+		return new CommandWrapper() {
+			@Override
+			protected Command createCommand() {
+				return futureCommand.get();
+			}
+		};
+	}
+
+	protected static void findElementsBelow(int yPosition, List<MElement<? extends Element>> elementsBelow,
+			Stream<? extends MElement<? extends Element>> stream, boolean useTop) {
+
+		stream.filter(m -> {
+			if (useTop) {
+				return m.getTop().orElse(0) >= yPosition;
+			} else {
+				return m.getBottom().orElse(Integer.MAX_VALUE) >= yPosition;
+			}
+		}).forEach(elementsBelow::add);
 	}
 }

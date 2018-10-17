@@ -14,6 +14,7 @@ package org.eclipse.papyrus.uml.interaction.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
@@ -30,6 +31,12 @@ import org.eclipse.papyrus.uml.interaction.internal.model.commands.CompoundModel
  * @author Christian W. Damus
  */
 public interface CreationCommand<T extends EObject> extends Command, Supplier<T> {
+	/**
+	 * Query the type of thing that I create.
+	 * 
+	 * @return my created type
+	 */
+	Class<? extends T> getType();
 
 	/**
 	 * Obtains the object created by my execution. It would normally also be expected to be amongst the
@@ -42,6 +49,38 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 	@Override
 	default T get() {
 		return getNewObject();
+	}
+
+	/**
+	 * Obtain myself as a cast to the given {@code subtype} of my result {@link #getType() type}.
+	 * 
+	 * @param subtype
+	 *            a subtype of my {@link #getType() type}
+	 * @return the cast, or {@code null} if the {@code subtype} is not compatible with me
+	 * @see #getType()
+	 */
+	default <U extends EObject> CreationCommand<U> as(Class<U> subtype) {
+		final class Cast extends CommandWrapper implements CreationCommand<U> {
+			Cast() {
+				super(CreationCommand.this);
+			}
+
+			@Override
+			public Class<? extends U> getType() {
+				return subtype;
+			}
+
+			@Override
+			public U getNewObject() {
+				return subtype.cast(CreationCommand.this.getNewObject());
+			}
+		}
+
+		if (subtype.isAssignableFrom(getType())) {
+			return new Cast();
+		}
+
+		return null;
 	}
 
 	/**
@@ -76,6 +115,11 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 			}
 
 			@Override
+			public Class<? extends T> getType() {
+				return CreationCommand.this.getType();
+			}
+
+			@Override
 			public T getNewObject() {
 				return CreationCommand.this.getNewObject();
 			}
@@ -88,5 +132,40 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 		}
 
 		return new AndThen(next);
+	}
+
+	/**
+	 * Obtain a view of myself that, after I am executed, processes my result and then returns it.
+	 * 
+	 * @param domain
+	 *            the contextual editing domain
+	 * @param sideEffect
+	 *            some processor of the result to produce side-effects
+	 * @return myself, with side-effects
+	 */
+	default CreationCommand<T> andThen(Consumer<? super T> sideEffect) {
+		class AndThen extends CommandWrapper implements CreationCommand<T> {
+			AndThen() {
+				super(CreationCommand.this);
+			}
+
+			@Override
+			public void execute() {
+				super.execute();
+				sideEffect.accept(getNewObject());
+			}
+
+			@Override
+			public Class<? extends T> getType() {
+				return CreationCommand.this.getType();
+			}
+
+			@Override
+			public T getNewObject() {
+				return CreationCommand.this.getNewObject();
+			}
+		}
+
+		return new AndThen();
 	}
 }

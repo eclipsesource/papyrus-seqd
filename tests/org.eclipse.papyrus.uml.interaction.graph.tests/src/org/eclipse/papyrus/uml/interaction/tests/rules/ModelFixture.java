@@ -32,6 +32,7 @@ import java.util.Set;
 import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -469,5 +470,23 @@ public class ModelFixture implements TestRule {
 			assertThat("command is not executable", command.canExecute(), is(true));
 			getEditingDomain().getCommandStack().execute(command);
 		}
+
+		public void undo() {
+			CommandStack stack = getEditingDomain().getCommandStack();
+			Command command = stack.getUndoCommand();
+
+			assertThat("no command to undo", command, notNullValue());
+			assertThat("command is not undoable", command.canUndo(), is(true));
+			getEditingDomain().getCommandStack().undo();
+		}
+
+		public void redo() {
+			CommandStack stack = getEditingDomain().getCommandStack();
+			Command command = stack.getRedoCommand();
+
+			assertThat("no command to redo", command, notNullValue());
+			getEditingDomain().getCommandStack().redo();
+		}
+
 	}
 }

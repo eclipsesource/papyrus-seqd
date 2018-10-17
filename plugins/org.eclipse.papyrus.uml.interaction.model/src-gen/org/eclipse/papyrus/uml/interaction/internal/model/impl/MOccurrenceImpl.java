@@ -12,22 +12,33 @@
  */
 package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 
+import static java.util.stream.Collectors.toCollection;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelOrdering.vertically;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.spans;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.papyrus.uml.interaction.graph.GraphPredicates;
 import org.eclipse.papyrus.uml.interaction.graph.Tag;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.SetCoveredCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.util.Optionals;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
-import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.OccurrenceSpecification;
 
 /**
@@ -47,6 +58,8 @@ import org.eclipse.uml2.uml.OccurrenceSpecification;
  * <em>Finish</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MOccurrenceImpl#getFinishedExecution
  * <em>Finished Execution</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MOccurrenceImpl#getExecution
+ * <em>Execution</em>}</li>
  * </ul>
  *
  * @generated
@@ -102,9 +115,7 @@ public abstract class MOccurrenceImpl<T extends Element> extends MElementImpl<T>
 	 */
 	@Override
 	public Optional<MLifeline> getCovered() {
-		Optional<Lifeline> result = getFragment()
-				.map(f -> f.getCovereds().isEmpty() ? null : f.getCovereds().get(0));
-		return result.flatMap(lifeline -> getInteraction().getLifeline(lifeline));
+		throw new UnsupportedOperationException("implemented by subclasses"); //$NON-NLS-1$
 	}
 
 	/**
@@ -160,6 +171,47 @@ public abstract class MOccurrenceImpl<T extends Element> extends MElementImpl<T>
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Optional<MExecution> getExecution() {
+		Optional<MExecution> result = Optionals.elseMaybe(getStartedExecution(), //
+				this::getFinishedExecution, //
+				this::getDeepestSpanningExecution);
+		return result;
+	}
+
+	Optional<MExecution> getDeepestSpanningExecution() {
+		Optional<MLifeline> covered = getCovered();
+		if (!covered.isPresent()) {
+			// Can't be spanned by executions if I'm not on a lifeline
+			return Optional.empty();
+		}
+
+		MLifeline lifeline = covered.get();
+
+		SortedSet<MExecution> spanning = lifeline.getExecutions().stream() //
+				.filter(spans(this)) //
+				.collect(toCollection(() -> new TreeSet<>(vertically())));
+
+		// The bottommost spanning execution is necessarily the deepest nested
+		return spanning.isEmpty() ? Optional.empty() : Optional.of(spanning.last());
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Command setCovered(MLifeline lifeline, OptionalInt yPosition) {
+		// Avoid cycling through this occurrence again
+		return withPadding(SetCoveredCommand.class, () -> new SetCoveredCommand(this, lifeline, yPosition));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -175,6 +227,8 @@ public abstract class MOccurrenceImpl<T extends Element> extends MElementImpl<T>
 				return isFinish();
 			case SequenceDiagramPackage.MOCCURRENCE__FINISHED_EXECUTION:
 				return getFinishedExecution();
+			case SequenceDiagramPackage.MOCCURRENCE__EXECUTION:
+				return getExecution();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -197,8 +251,24 @@ public abstract class MOccurrenceImpl<T extends Element> extends MElementImpl<T>
 				return isFinish() != FINISH_EDEFAULT;
 			case SequenceDiagramPackage.MOCCURRENCE__FINISHED_EXECUTION:
 				return getFinishedExecution() != null;
+			case SequenceDiagramPackage.MOCCURRENCE__EXECUTION:
+				return getExecution() != null;
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
+		switch (operationID) {
+			case SequenceDiagramPackage.MOCCURRENCE___SET_COVERED__MLIFELINE_OPTIONALINT:
+				return setCovered((MLifeline)arguments.get(0), (OptionalInt)arguments.get(1));
+		}
+		return super.eInvoke(operationID, arguments);
 	}
 
 	protected Optional<IdentityAnchor> getAnchor(OccurrenceSpecification occurrence) {

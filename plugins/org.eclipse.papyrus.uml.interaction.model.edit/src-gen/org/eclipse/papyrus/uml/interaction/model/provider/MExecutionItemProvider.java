@@ -55,6 +55,7 @@ public class MExecutionItemProvider extends MElementItemProvider {
 
 			addStartPropertyDescriptor(object);
 			addFinishPropertyDescriptor(object);
+			addOccurrencesPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -89,6 +90,22 @@ public class MExecutionItemProvider extends MElementItemProvider {
 						"_UI_MExecution_type"), //$NON-NLS-1$
 				SequenceDiagramPackage.Literals.MEXECUTION__FINISH, false, false, false,
 				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Occurrences feature. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	protected void addOccurrencesPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MExecution_occurrences_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MExecution_occurrences_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MExecution_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MEXECUTION__OCCURRENCES, false, false, false, null, null,
+				null));
 	}
 
 	/**
@@ -128,6 +145,7 @@ public class MExecutionItemProvider extends MElementItemProvider {
 		switch (notification.getFeatureID(MExecution.class)) {
 		case SequenceDiagramPackage.MEXECUTION__START:
 		case SequenceDiagramPackage.MEXECUTION__FINISH:
+		case SequenceDiagramPackage.MEXECUTION__OCCURRENCES:
 			fireNotifyChanged(
 					new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;

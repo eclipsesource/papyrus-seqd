@@ -59,6 +59,7 @@ import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.util.UMLUtil;
 import org.hamcrest.CustomTypeSafeMatcher;
 import org.hamcrest.Description;
+import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
@@ -87,6 +88,8 @@ import junit.framework.TestCase;
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#following() <em>Following</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#nudge(int) <em>Nudge</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#remove() <em>Remove</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#precedes(org.eclipse.papyrus.uml.interaction.model.MElement)
+ * <em>Precedes</em>}</li>
  * </ul>
  * </p>
  * 
@@ -268,6 +271,10 @@ public abstract class MElementTest extends TestCase {
 		};
 	}
 
+	protected <T> Matcher<Optional<T>> isPresent(Class<? extends T> type) {
+		return isPresent(instanceOf(type));
+	}
+
 	protected <T> Matcher<Optional<T>> isPresent(Matcher<? super T> assertion) {
 		return new TypeSafeDiagnosingMatcher<Optional<T>>() {
 			@Override
@@ -353,6 +360,15 @@ public abstract class MElementTest extends TestCase {
 			@Override
 			protected boolean matchesSafely(Command item) {
 				return item.canExecute();
+			}
+		};
+	}
+
+	protected Matcher<MElement<?>> named(String name) {
+		return new FeatureMatcher<MElement<?>, String>(is(name), "name", "name") {
+			@Override
+			protected String featureValueOf(MElement<?> actual) {
+				return actual.getName();
 			}
 		};
 	}
@@ -522,6 +538,20 @@ public abstract class MElementTest extends TestCase {
 		Command remove = getFixture().remove();
 		assertThat(remove, notNullValue());
 		assertThat(remove.canExecute(), is(false));
+	}
+
+	/**
+	 * Tests the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MElement#precedes(org.eclipse.papyrus.uml.interaction.model.MElement)
+	 * <em>Precedes</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#precedes(org.eclipse.papyrus.uml.interaction.model.MElement)
+	 * @generated NOT
+	 */
+	public void testPrecedes__MElement() {
+		assumeThat("no following element", getFixture().following(), isPresent());
+		assertThat("precedes() not consistent with following()",
+				getFixture().precedes(getFixture().following().get()), is(true));
 	}
 
 } // MElementTest

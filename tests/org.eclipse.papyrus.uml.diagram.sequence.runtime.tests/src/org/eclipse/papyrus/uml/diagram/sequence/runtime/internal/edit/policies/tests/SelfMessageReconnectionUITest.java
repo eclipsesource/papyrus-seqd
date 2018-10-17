@@ -26,12 +26,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.RelativeBendpoints;
 import org.eclipse.gmf.runtime.notation.Routing;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.Modifiers;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
@@ -53,10 +55,11 @@ import org.junit.runners.Parameterized.Parameters;
 @Maximized
 @RunWith(Parameterized.class)
 public class SelfMessageReconnectionUITest extends AbstractGraphicalEditPolicyUITest {
-	
+
 	@ClassRule
-	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs().dontCreateExecutionsForSyncMessages();
-	
+	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs()
+			.dontCreateExecutionsForSyncMessages();
+
 	// Horizontal position of the first lifeline's body
 	private static final int LIFELINE_1_BODY_X = 121;
 
@@ -91,6 +94,7 @@ public class SelfMessageReconnectionUITest extends AbstractGraphicalEditPolicyUI
 		int dropX;
 		int dropY;
 		int delta = +10;
+		Modifiers modifiers = editor.unmodified();
 
 		switch (reconnectionMode) {
 		case SLIDE_SEND_UP:
@@ -131,40 +135,50 @@ public class SelfMessageReconnectionUITest extends AbstractGraphicalEditPolicyUI
 		case RECEIVE_ON_OTHER_LIFELINE:
 			dropX = LIFELINE_2_BODY_X;
 			dropY = RECV_Y;
+			modifiers = editor.allowSemanticReordering();
 			break;
 		case RECEIVE_ON_SENDING_LIFELINE:
 			grabX = LIFELINE_2_BODY_X - 5;
 			grabY = SEND_Y + (isSynchronous(messageSort) ? 0 : 15);
 			dropX = LIFELINE_1_BODY_X;
 			dropY = SEND_Y; // The editor should enforce the minimum gap
+			modifiers = editor.allowSemanticReordering();
 			break;
 		default:
 			throw new IllegalStateException("Unsupported reconnection mode: " + reconnectionMode);
 		}
 
-		editor.moveSelection(at(grabX, grabY), at(dropX, dropY));
+		Point grabAt = at(grabX, grabY);
+		Point dropAt = at(dropX, dropY);
+		editor.with(modifiers, () -> editor.moveSelection(grabAt, dropAt));
 
 		switch (reconnectionMode) {
 		case SLIDE_SEND_UP:
 			if (async) {
-				assertThat("Send end not moved as expected", messageEP, runs(sendX(), dropY, recvX(), RECV_Y, 2));
+				assertThat("Send end not moved as expected", messageEP,
+						runs(sendX(), dropY, recvX(), RECV_Y, 2));
 			} else {
-				assertThat("Synchronous message was reshaped", messageEP, runs(sendX(), SEND_Y, recvX(), RECV_Y, 2));
+				assertThat("Synchronous message was reshaped", messageEP,
+						runs(sendX(), SEND_Y, recvX(), RECV_Y, 2));
 			}
 			break;
 		case SLIDE_SEND_DOWN:
 		case SLIDE_RECEIVE_UP:
 			if (async) {
-				assertThat("Minimum gap not maintained", messageEP, runs(sendX(), SEND_Y, recvX(), RECV_Y, 2));
+				assertThat("Minimum gap not maintained", messageEP,
+						runs(sendX(), SEND_Y, recvX(), RECV_Y, 2));
 			} else {
-				assertThat("Synchronous message was reshaped", messageEP, runs(sendX(), SEND_Y, recvX(), RECV_Y, 2));
+				assertThat("Synchronous message was reshaped", messageEP,
+						runs(sendX(), SEND_Y, recvX(), RECV_Y, 2));
 			}
 			break;
 		case SLIDE_RECEIVE_DOWN:
 			if (async) {
-				assertThat("Receive end not moved as expected", messageEP, runs(sendX(), SEND_Y, recvX(), dropY, 2));
+				assertThat("Receive end not moved as expected", messageEP,
+						runs(sendX(), SEND_Y, recvX(), dropY, 2));
 			} else {
-				assertThat("Synchronous message was reshaped", messageEP, runs(sendX(), SEND_Y, recvX(), RECV_Y, 2));
+				assertThat("Synchronous message was reshaped", messageEP,
+						runs(sendX(), SEND_Y, recvX(), RECV_Y, 2));
 			}
 			break;
 		case MOVE_UP:
@@ -180,7 +194,8 @@ public class SelfMessageReconnectionUITest extends AbstractGraphicalEditPolicyUI
 			Routing routing = getRouting(messageEP);
 			assertThat("Lifeline is not oblique", routing, is(Routing.MANUAL_LITERAL));
 			RelativeBendpoints bendpoints = getBendpoints(messageEP);
-			assertThat("Message has bendpoints", (List<?>) bendpoints.getPoints(), not(hasItem(anything())));
+			assertThat("Message has bendpoints", (List<?>) bendpoints.getPoints(),
+					not(hasItem(anything())));
 			break;
 		}
 		case RECEIVE_ON_SENDING_LIFELINE: {
@@ -205,7 +220,8 @@ public class SelfMessageReconnectionUITest extends AbstractGraphicalEditPolicyUI
 		List<Object[]> result = new ArrayList<>();
 
 		// Cross product of message sorts and reconnection modes
-		for (MessageSort sort : Arrays.asList(MessageSort.SYNCH_CALL_LITERAL, MessageSort.ASYNCH_CALL_LITERAL)) {
+		for (MessageSort sort : Arrays.asList(MessageSort.SYNCH_CALL_LITERAL,
+				MessageSort.ASYNCH_CALL_LITERAL)) {
 			for (ReconnectionMode mode : ReconnectionMode.values()) {
 				result.add(new Object[] { sort, mode });
 			}
@@ -220,11 +236,13 @@ public class SelfMessageReconnectionUITest extends AbstractGraphicalEditPolicyUI
 		switch (reconnectionMode) {
 		default: // the majority of cases are self-messages
 			// Drop connection at the same Y coördinate; the editor adds the internal gap
-			messageEP = createConnection(type, at(LIFELINE_1_BODY_X, SEND_Y), at(LIFELINE_1_BODY_X, SEND_Y));
+			messageEP = createConnection(type, at(LIFELINE_1_BODY_X, SEND_Y),
+					at(LIFELINE_1_BODY_X, SEND_Y));
 			break;
 		case RECEIVE_ON_SENDING_LIFELINE:
 			int receiveY = SEND_Y + (isSynchronous(messageSort) ? 0 : 15);
-			messageEP = createConnection(type, at(LIFELINE_1_BODY_X, SEND_Y), at(LIFELINE_2_BODY_X, receiveY));
+			messageEP = createConnection(type, at(LIFELINE_1_BODY_X, SEND_Y),
+					at(LIFELINE_2_BODY_X, receiveY));
 			break;
 		}
 	}
@@ -262,7 +280,8 @@ public class SelfMessageReconnectionUITest extends AbstractGraphicalEditPolicyUI
 
 	RelativeBendpoints getBendpoints(EditPart editPart) {
 		return Optional.ofNullable(((Connector) editPart.getModel()).getBendpoints())
-				.filter(RelativeBendpoints.class::isInstance).map(RelativeBendpoints.class::cast).orElse(null);
+				.filter(RelativeBendpoints.class::isInstance).map(RelativeBendpoints.class::cast)
+				.orElse(null);
 	}
 
 	//

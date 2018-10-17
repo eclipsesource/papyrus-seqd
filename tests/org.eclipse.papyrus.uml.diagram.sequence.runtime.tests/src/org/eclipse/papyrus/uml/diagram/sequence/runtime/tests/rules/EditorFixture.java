@@ -15,36 +15,51 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.util.Collections.singletonList;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.IOperationHistory;
+import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
+import org.eclipse.gef.Request;
+import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.tools.ConnectionCreationTool;
 import org.eclipse.gef.tools.SelectionTool;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramEditor;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewAndElementRequest;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateUnspecifiedTypeConnectionRequest;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateUnspecifiedTypeRequest;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewAndElementRequest;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.core.sasheditor.di.contentprovider.utils.IPageUtils;
 import org.eclipse.papyrus.infra.core.sasheditor.editor.IEditorPage;
 import org.eclipse.papyrus.infra.core.sasheditor.editor.IPage;
@@ -63,6 +78,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.operations.IWorkbenchOperationSupport;
 import org.junit.runner.Description;
 
 /**
@@ -70,7 +86,7 @@ import org.junit.runner.Description;
  *
  * @author Christian W. Damus
  */
-public class EditorFixture extends ModelFixture {
+public class EditorFixture extends ModelFixture.Edit {
 
 	/** Default size of a shape to create or set. */
 	public static final Dimension DEFAULT_SIZE = null;
@@ -282,11 +298,20 @@ public class EditorFixture extends ModelFixture {
 	public EditPart createShape(IElementType type, Point location, Dimension size) {
 		DiagramEditPart diagram = getDiagramEditPart();
 		EditPartViewer viewer = diagram.getViewer();
+		CreateUnspecifiedTypeRequest[] request = { null };
 
-		@SuppressWarnings("unchecked")
-		Set<EditPart> originalEditParts = new HashSet<EditPart>(viewer.getEditPartRegistry().values());
+		AspectUnspecifiedTypeCreationTool tool = new AspectUnspecifiedTypeCreationTool(
+				singletonList(type)) {
 
-		AspectUnspecifiedTypeCreationTool tool = new AspectUnspecifiedTypeCreationTool(singletonList(type));
+			@Override
+			protected Request createTargetRequest() {
+				Request result = super.createTargetRequest();
+				if (result instanceof CreateUnspecifiedTypeRequest) {
+					request[0] = (CreateUnspecifiedTypeRequest) result;
+				}
+				return result;
+			}
+		};
 
 		Event mouse = new Event();
 		mouse.display = editor.getSite().getShell().getDisplay();
@@ -329,15 +354,15 @@ public class EditorFixture extends ModelFixture {
 		flushDisplayEvents();
 
 		// Find the new edit-part
-		@SuppressWarnings("unchecked")
-		Set<EditPart> newEditParts = new HashSet<EditPart>(viewer.getEditPartRegistry().values());
-		newEditParts.removeAll(originalEditParts);
-		while (newEditParts.removeIf(ep -> newEditParts.contains(ep.getParent()))) {
-			// Keep only the topmost new edit-parts (that aren't nested in other new
-			// edit-parts)
-		}
-
-		return newEditParts.stream().findFirst().orElseGet(failOnAbsence("New edit-part not found"));
+		assertThat("No unsepecified-type request", request[0], notNullValue());
+		CreateViewAndElementRequest createRequest = (CreateViewAndElementRequest) request[0]
+				.getRequestForType(type);
+		assertThat("No specific create request", createRequest, notNullValue());
+		View createdView = (View) createRequest.getViewAndElementDescriptor().getAdapter(View.class);
+		assertThat("No view created", createdView, notNullValue());
+		EditPart result = (EditPart) viewer.getEditPartRegistry().get(createdView);
+		assertThat("New edit-part not found", result, notNullValue());
+		return result;
 	}
 
 	/**
@@ -356,30 +381,26 @@ public class EditorFixture extends ModelFixture {
 	 * @return the newly created connection edit-part
 	 */
 	public EditPart createConnection(IElementType type, Point start, Point finish) {
-		EditPartViewer viewer = getDiagramEditPart().getViewer();
-
-		@SuppressWarnings("unchecked")
-		Set<EditPart> originalEditParts = new HashSet<EditPart>(viewer.getEditPartRegistry().values());
-
-		drawConnection(type, start, finish, true);
-
-		// Find the new edit-part
-		@SuppressWarnings("unchecked")
-		Set<EditPart> newEditParts = new HashSet<EditPart>(viewer.getEditPartRegistry().values());
-		newEditParts.removeAll(originalEditParts);
-		while (newEditParts.removeIf(ep -> !(ep instanceof ConnectionEditPart))) {
-			// Keep only the topmost new edit-parts (that aren't nested in other new
-			// edit-parts)
-		}
-
-		return newEditParts.stream().findFirst()
-				.orElseGet(failOnAbsence("New connection edit-part not found"));
+		return drawConnection(type, start, finish, true);
 	}
 
-	private void drawConnection(IElementType type, Point start, Point finish, boolean complete) {
+	EditPart drawConnection(IElementType type, Point start, Point finish, boolean complete) {
 		DiagramEditPart diagram = getDiagramEditPart();
 		EditPartViewer viewer = diagram.getViewer();
-		ConnectionCreationTool tool = createConnectionTool(type);
+		CreateUnspecifiedTypeConnectionRequest[] request = { null };
+
+		@SuppressWarnings("restriction")
+		ConnectionCreationTool tool = new org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceConnectionCreationTool(
+				singletonList(type)) {
+			@Override
+			protected CreateConnectionRequest createTargetRequest() {
+				CreateConnectionRequest result = super.createTargetRequest();
+				if (result instanceof CreateUnspecifiedTypeConnectionRequest) {
+					request[0] = (CreateUnspecifiedTypeConnectionRequest) result;
+				}
+				return result;
+			}
+		};
 
 		Event mouse = new Event();
 		mouse.display = editor.getSite().getShell().getDisplay();
@@ -423,6 +444,23 @@ public class EditorFixture extends ModelFixture {
 
 			flushDisplayEvents();
 		}
+
+		if (!complete) {
+			return null;
+		}
+
+		// Find the new edit-part
+		assertThat("No unsepecified-type request", request[0], notNullValue());
+		CreateConnectionViewAndElementRequest createRequest = (CreateConnectionViewAndElementRequest) request[0]
+				.getRequestForType(type);
+		assertThat("No specific create request", createRequest, notNullValue());
+		View createdView = (View) createRequest.getConnectionViewAndElementDescriptor()
+				.getAdapter(View.class);
+		assertThat("No view created", createdView, notNullValue());
+		EditPart result = (EditPart) getDiagramEditPart().getViewer().getEditPartRegistry()
+				.get(createdView);
+		assertThat("New edit-part not found", result, notNullValue());
+		return result;
 	}
 
 	/**
@@ -543,10 +581,53 @@ public class EditorFixture extends ModelFixture {
 		flushDisplayEvents();
 	}
 
+	@Override
+	public void undo() {
+		IOperationHistory history = editor.getSite().getService(IWorkbenchOperationSupport.class)
+				.getOperationHistory();
+		IUndoContext ctx = editor.getAdapter(IUndoContext.class);
+
+		IUndoableOperation operation = history.getUndoOperation(ctx);
+
+		assertThat("no command to undo", operation, notNullValue());
+		assertThat("command is not undoable", operation.canUndo(), is(true));
+
+		try {
+			history.undo(ctx, new NullProgressMonitor(), null);
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+			fail("Undo failed: " + e.getLocalizedMessage());
+		}
+
+		flushDisplayEvents();
+	}
+
+	@Override
+	public void redo() {
+		IOperationHistory history = editor.getSite().getService(IWorkbenchOperationSupport.class)
+				.getOperationHistory();
+		IUndoContext ctx = editor.getAdapter(IUndoContext.class);
+
+		IUndoableOperation operation = history.getRedoOperation(ctx);
+
+		assertThat("no command to redo", operation, notNullValue());
+		assertThat("command is not redoable", operation.canRedo(), is(true));
+
+		try {
+			history.redo(ctx, new NullProgressMonitor(), null);
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+			fail("Undo failed: " + e.getLocalizedMessage());
+		}
+
+		flushDisplayEvents();
+	}
+
 	//
 	// Utilities
 	//
 
+	@Override
 	public final EditingDomain getEditingDomain() {
 		return getDiagramEditPart().getEditingDomain();
 	}
@@ -678,6 +759,16 @@ public class EditorFixture extends ModelFixture {
 	}
 
 	/**
+	 * Obtain modifiers applying the option to allow semantic re-ordering (which is
+	 * <tt>Command</tt> on Mac and <tt>Ctrl</tt> on other platforms).
+	 *
+	 * @return the modifier key modifiers
+	 */
+	public Modifiers allowSemanticReordering() {
+		return modifierKey(Platform.OS_MACOSX.equals(Platform.getOS()) ? SWT.COMMAND : SWT.CTRL);
+	}
+
+	/**
 	 * Obtain modifiers applying a modifier key to mouse and keyboard events.
 	 *
 	 * @param modifierKey
@@ -713,12 +804,6 @@ public class EditorFixture extends ModelFixture {
 	@SuppressWarnings("restriction")
 	private SelectionTool createSelectionTool() {
 		return new org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceSelectionTool();
-	}
-
-	@SuppressWarnings("restriction")
-	private ConnectionCreationTool createConnectionTool(IElementType type) {
-		return new org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceConnectionCreationTool(
-				singletonList(type));
 	}
 
 	//

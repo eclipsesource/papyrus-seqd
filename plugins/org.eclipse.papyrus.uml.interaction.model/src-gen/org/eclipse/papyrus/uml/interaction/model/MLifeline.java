@@ -74,7 +74,7 @@ public interface MLifeline extends MElement<Lifeline> {
 	 * 
 	 * @return the value of the '<em>Executions</em>' containment reference list.
 	 * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMLifeline_Executions()
-	 * @model containment="true" changeable="false"
+	 * @model containment="true" changeable="false" ordered="false"
 	 * @generated
 	 */
 	List<MExecution> getExecutions();
@@ -126,6 +126,33 @@ public interface MLifeline extends MElement<Lifeline> {
 	 * @generated
 	 */
 	OptionalInt getRight();
+
+	/**
+	 * Returns the value of the '<em><b>Message Ends</b></em>' reference list. The list contents are of type
+	 * {@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd}. <!-- begin-user-doc --> <!--
+	 * end-user-doc --> <!-- begin-model-doc --> message ends covering this lifeline. A subset of the list of
+	 * all {@link #getOccurrences() occurrences} <!-- end-model-doc -->
+	 * 
+	 * @return the value of the '<em>Message Ends</em>' reference list.
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMLifeline_MessageEnds()
+	 * @model transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	List<MMessageEnd> getMessageEnds();
+
+	/**
+	 * Returns the value of the '<em><b>Occurrences</b></em>' reference list. The list contents are of type
+	 * {@link org.eclipse.papyrus.uml.interaction.model.MOccurrence}<code>&lt;? extends org.eclipse.uml2.uml.Element&gt;</code>.
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> all occurrences covering this
+	 * lifeline. A derived union of the {@link #getMessageEnds() message ends} and owned
+	 * {@link #getExecutionOccurrences() execution occurrences} <!-- end-model-doc -->
+	 * 
+	 * @return the value of the '<em>Occurrences</em>' reference list.
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMLifeline_Occurrences()
+	 * @model transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	List<MOccurrence<? extends Element>> getOccurrences();
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -363,5 +390,19 @@ public interface MLifeline extends MElement<Lifeline> {
 	 * @generated
 	 */
 	Command nudgeHorizontally(int deltaX);
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> Obtain a command that makes the
+	 * receiver created at some Y position in the diagram.
+	 * 
+	 * @param yPosition
+	 *            The absolute Y position at which to show the receiver as created (where the create message
+	 *            is received), or empty to revert to an uncreated lifeline. <!-- end-model-doc -->
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Command" required="true"
+	 *        yPositionDataType="org.eclipse.papyrus.uml.interaction.model.OptionalInt"
+	 *        yPositionRequired="true"
+	 * @generated
+	 */
+	Command makeCreatedAt(OptionalInt yPosition);
 
 } // MLifeline

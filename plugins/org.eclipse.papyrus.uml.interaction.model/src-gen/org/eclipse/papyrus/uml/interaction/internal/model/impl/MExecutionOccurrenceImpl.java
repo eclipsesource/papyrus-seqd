@@ -73,6 +73,11 @@ public class MExecutionOccurrenceImpl extends MOccurrenceImpl<ExecutionOccurrenc
 		return getAnchor(getElement());
 	}
 
+	@Override
+	public Optional<MLifeline> getCovered() {
+		return Optional.of(getOwner());
+	}
+
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 

@@ -26,6 +26,7 @@ import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.InteractionFragment;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.MessageEnd;
 import org.eclipse.uml2.uml.OccurrenceSpecification;
@@ -68,6 +69,8 @@ public class MMessageEndImpl extends MOccurrenceImpl<MessageEnd> implements MMes
 	 */
 	protected static final boolean RECEIVE_EDEFAULT = false;
 
+	private Optional<MLifeline> covered;
+
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -79,10 +82,19 @@ public class MMessageEndImpl extends MOccurrenceImpl<MessageEnd> implements MMes
 
 	protected MMessageEndImpl(MMessageImpl owner, MessageEnd messageEnd) {
 		super(owner, messageEnd);
+
+		// A gate, for example, is not an interaction fragment
+		if (messageEnd instanceof InteractionFragment) {
+			covered = getCovered((InteractionFragment)messageEnd);
+		}
 	}
 
 	protected MMessageEndImpl(MElement<? extends Element> owner, MessageEnd messageEnd) {
 		super(owner, messageEnd);
+
+		if (owner instanceof MLifeline) {
+			covered = Optional.of((MLifeline)owner);
+		}
 	}
 
 	/**
@@ -142,9 +154,15 @@ public class MMessageEndImpl extends MOccurrenceImpl<MessageEnd> implements MMes
 	 */
 	@Override
 	public Optional<MLifeline> getCovered() {
-		Optional<Lifeline> result = getFragment()
-				.map(f -> f.getCovereds().isEmpty() ? null : f.getCovereds().get(0));
-		return result.flatMap(lifeline -> getInteraction().getLifeline(lifeline));
+		if (covered == null) {
+			covered = getFragment().flatMap(this::getCovered);
+		}
+		return covered;
+	}
+
+	private Optional<MLifeline> getCovered(InteractionFragment fragment) {
+		Lifeline result = fragment.getCovereds().isEmpty() ? null : fragment.getCovereds().get(0);
+		return getInteraction().getLifeline(result);
 	}
 
 	/**

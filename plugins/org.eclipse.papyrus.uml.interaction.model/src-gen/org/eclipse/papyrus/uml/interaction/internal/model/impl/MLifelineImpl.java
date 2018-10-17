@@ -23,7 +23,9 @@ import java.util.function.Predicate;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.UniqueEList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
@@ -37,6 +39,7 @@ import org.eclipse.papyrus.uml.interaction.internal.model.commands.InsertExecuti
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.InsertMessageCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.NudgeHorizontallyCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.RemoveLifelineCommand;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.SetLifelineCreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MDestruction;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
@@ -44,6 +47,8 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
 import org.eclipse.uml2.uml.Element;
@@ -73,11 +78,15 @@ import org.eclipse.uml2.uml.NamedElement;
  * <em>Left</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl#getRight
  * <em>Right</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl#getMessageEnds <em>Message
+ * Ends</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl#getOccurrences
+ * <em>Occurrences</em>}</li>
  * </ul>
  *
  * @generated
  */
-@SuppressWarnings({"hiding", "boxing" })
+@SuppressWarnings("boxing")
 public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	/**
 	 * The cached value of the '{@link #getExecutionOccurrences() <em>Execution Occurrences</em>}' containment
@@ -285,6 +294,37 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 * @generated NOT
 	 */
 	@Override
+	public List<MMessageEnd> getMessageEnds() {
+		EList<MMessageEnd> result = new UniqueEList.FastCompare<>();
+
+		Predicate<MMessageEnd> covers = end -> end.getCovered().filter(this::equals).isPresent();
+		getInteraction().getMessages().forEach(msg -> {
+			msg.getSend().filter(covers).ifPresent(result::add);
+			msg.getReceive().filter(covers).ifPresent(result::add);
+		});
+
+		return ECollections.unmodifiableEList(result);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public List<MOccurrence<? extends Element>> getOccurrences() {
+		EList<MOccurrence<? extends Element>> result = new UniqueEList.FastCompare<>();
+		result.addAll(getExecutionOccurrences());
+		result.addAll(getMessageEnds());
+		return ECollections.unmodifiableEList(result);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
 	public MInteraction getOwner() {
 		return (MInteraction)super.getOwner();
 	}
@@ -445,6 +485,16 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 * @generated NOT
 	 */
 	@Override
+	public Command makeCreatedAt(OptionalInt yPosition) {
+		return new SetLifelineCreationCommand(this, yPosition);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
 	public Command remove() {
 		return new RemoveLifelineCommand(this, true);
 	}
@@ -487,6 +537,10 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return getLeft();
 			case SequenceDiagramPackage.MLIFELINE__RIGHT:
 				return getRight();
+			case SequenceDiagramPackage.MLIFELINE__MESSAGE_ENDS:
+				return getMessageEnds();
+			case SequenceDiagramPackage.MLIFELINE__OCCURRENCES:
+				return getOccurrences();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -541,6 +595,10 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return LEFT_EDEFAULT == null ? getLeft() != null : !LEFT_EDEFAULT.equals(getLeft());
 			case SequenceDiagramPackage.MLIFELINE__RIGHT:
 				return RIGHT_EDEFAULT == null ? getRight() != null : !RIGHT_EDEFAULT.equals(getRight());
+			case SequenceDiagramPackage.MLIFELINE__MESSAGE_ENDS:
+				return !getMessageEnds().isEmpty();
+			case SequenceDiagramPackage.MLIFELINE__OCCURRENCES:
+				return !getOccurrences().isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
@@ -595,6 +653,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return elementAt((Integer)arguments.get(0));
 			case SequenceDiagramPackage.MLIFELINE___NUDGE_HORIZONTALLY__INT:
 				return nudgeHorizontally((Integer)arguments.get(0));
+			case SequenceDiagramPackage.MLIFELINE___MAKE_CREATED_AT__OPTIONALINT:
+				return makeCreatedAt((OptionalInt)arguments.get(0));
 		}
 		return super.eInvoke(operationID, arguments);
 	}

@@ -175,4 +175,12 @@ public interface MElement<T extends Element> extends MObject {
 	 */
 	Command remove();
 
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @model required="true" otherRequired="true"
+	 * @generated
+	 */
+	boolean precedes(MElement<?> other);
+
 } // MElement
