@@ -25,7 +25,7 @@ Export-Package: org.eclipse.papyrus.uml.interaction.internal.model;
  org.eclipse.papyrus.uml.interaction.internal.model.commands;x-internal:=true,
  org.eclipse.papyrus.uml.interaction.internal.model.impl;
   x-friends:="org.eclipse.papyrus.uml.diagram.sequence.runtime",
- org.eclipse.papyrus.uml.interaction.internal.model.spi.impl;x-internal:=true,
+ org.eclipse.papyrus.uml.interaction.internal.model.spi.impl,
  org.eclipse.papyrus.uml.interaction.model,
  org.eclipse.papyrus.uml.interaction.model.spi,
  org.eclipse.papyrus.uml.interaction.model.util

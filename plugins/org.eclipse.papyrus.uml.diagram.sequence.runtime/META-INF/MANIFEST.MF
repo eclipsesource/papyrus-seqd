@@ -34,3 +34,4 @@ Export-Package: org.eclipse.papyrus.uml.diagram.sequence.runtime.internal;x-frie
  org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util;x-internal:=true,
  org.eclipse.papyrus.uml.diagram.sequence.runtime.util
 Import-Package: com.google.common.eventbus;version="[21.0.0,22.0.0)"
+Automatic-Module-Name: org.eclipse.papyrus.uml.diagram.sequence.runtime

@@ -29,7 +29,6 @@ import org.junit.Test;
 /**
  * Unit tests for the {@link LogicalModelPredicates} class.
  */
-@SuppressWarnings({"boxing", "nls" })
 @ModelResource({"AnchorsModel.di", "AnchorsModel.uml", "AnchorsModel.notation" })
 public class LogicalModelPredicatesTest {
 

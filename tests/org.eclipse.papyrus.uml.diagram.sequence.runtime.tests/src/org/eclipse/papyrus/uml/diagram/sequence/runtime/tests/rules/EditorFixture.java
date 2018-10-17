@@ -23,6 +23,7 @@ import static org.junit.Assert.fail;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
@@ -851,12 +852,6 @@ public class EditorFixture extends ModelFixture.Edit {
 
 		static Modifiers with(Runnable apply, Runnable unapply) {
 			return new ModifiersImpl(apply, unapply);
-		}
-
-		static <T> Modifiers with(Supplier<? extends T> apply, Consumer<? super T> unapply) {
-			@SuppressWarnings("unchecked")
-			final T[] holder = (T[]) new Object[1];
-			return with(() -> holder[0] = apply.get(), () -> unapply.accept(holder[0]));
 		}
 
 		static Modifiers withInt(IntSupplier apply, IntConsumer unapply) {

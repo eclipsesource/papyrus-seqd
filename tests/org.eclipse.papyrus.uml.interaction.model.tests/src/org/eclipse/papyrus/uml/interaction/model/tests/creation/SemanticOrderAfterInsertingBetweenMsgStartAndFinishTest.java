@@ -28,7 +28,6 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.junit.Rule;
 import org.junit.Test;
 
-@SuppressWarnings("nls")
 @ModelResource({"SemanticOrderAfterCreationTest.uml", "SemanticOrderAfterCreationTest.notation" })
 public class SemanticOrderAfterInsertingBetweenMsgStartAndFinishTest {
 
@@ -95,7 +94,6 @@ public class SemanticOrderAfterInsertingBetweenMsgStartAndFinishTest {
 			assertTrue(element.isPresent());
 			assertSame(expectedOrder.get(i), element.get());
 		}
-
 	}
 
 }

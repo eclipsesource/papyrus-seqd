@@ -33,7 +33,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-@SuppressWarnings("restriction")
 public class ModelEditFixture extends Edit {
 
 	public DiagramHelper diagramHelper() {

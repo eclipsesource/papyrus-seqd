@@ -27,8 +27,8 @@ import org.eclipse.ui.part.IPageBookViewPage;
  * @author Antonio Campesino - Split the class in a generic class (PapyrusPageBookView) and specific class. 
  *
  */
-@SuppressWarnings("restriction")
 public class LogicalModelView extends PapyrusPageBookView {
+	
 	@Override
 	protected final IPageBookViewPage doCreateSubPage(UmlGmfDiagramEditor part) {
 		return new LogicalModelPage(part);

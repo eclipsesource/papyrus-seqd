@@ -40,7 +40,6 @@ import org.junit.Test;
  *
  * @author Christian W. Damus
  */
-@SuppressWarnings({"nls", "restriction" })
 @ModelResource({"lifelines_layout.uml", "lifelines_layout.notation" })
 public class DefaultLayoutHelperTest {
 
