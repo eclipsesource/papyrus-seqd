@@ -52,16 +52,16 @@
     <owner xmi:type="uml:Interaction" href="execution-busy.uml#_7-T4wMvAEei-2PpXSl-dWw"/>
   </styles>
   <element xmi:type="uml:Interaction" href="execution-busy.uml#_7-T4wMvAEei-2PpXSl-dWw"/>
-  <edges xmi:type="notation:Connector" xmi:id="_FtpE0MvBEei-2PpXSl-dWw" type="Edge_Message" source="_9UPw88vAEei-2PpXSl-dWw" target="_-EVxI8vAEei-2PpXSl-dWw">
+  <edges xmi:type="notation:Connector" xmi:id="_FtpE0MvBEei-2PpXSl-dWw" type="Edge_Message" source="_9UPw88vAEei-2PpXSl-dWw" target="_FtukYMvBEei-2PpXSl-dWw">
     <element xmi:type="uml:Message" href="execution-busy.uml#_FtkzYcvBEei-2PpXSl-dWw"/>
     <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FtpE0cvBEei-2PpXSl-dWw"/>
     <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtpE0svBEei-2PpXSl-dWw" id="53"/>
-    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtpE08vBEei-2PpXSl-dWw" id="53"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtpE08vBEei-2PpXSl-dWw" id="start"/>
   </edges>
-  <edges xmi:type="notation:Connector" xmi:id="_FtsvMMvBEei-2PpXSl-dWw" type="Edge_Message" source="_-EVxI8vAEei-2PpXSl-dWw" target="_9UPw88vAEei-2PpXSl-dWw">
+  <edges xmi:type="notation:Connector" xmi:id="_FtsvMMvBEei-2PpXSl-dWw" type="Edge_Message" source="_FtukYMvBEei-2PpXSl-dWw" target="_9UPw88vAEei-2PpXSl-dWw">
     <element xmi:type="uml:Message" href="execution-busy.uml#_FtsIIsvBEei-2PpXSl-dWw"/>
     <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FtsvMcvBEei-2PpXSl-dWw"/>
-    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtsvMsvBEei-2PpXSl-dWw" id="168"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtsvMsvBEei-2PpXSl-dWw" id="end"/>
     <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtsvM8vBEei-2PpXSl-dWw" id="168"/>
   </edges>
   <edges xmi:type="notation:Connector" xmi:id="_cNxC0MvBEei-2PpXSl-dWw" type="Edge_Message" source="_FtukYMvBEei-2PpXSl-dWw" target="__vCYY8vAEei-2PpXSl-dWw">

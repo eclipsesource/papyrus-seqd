@@ -56,7 +56,7 @@ public class CompoundModelCommand extends StrictCompoundCommand {
 	 * @param second
 	 *            the second composed command
 	 */
-	CompoundModelCommand(Command first, Command second) {
+	protected CompoundModelCommand(Command first, Command second) {
 		super();
 
 		// The whole point of our compounds is that each step may have
@@ -91,11 +91,23 @@ public class CompoundModelCommand extends StrictCompoundCommand {
 		if (first instanceof CompoundModelCommand) {
 			((CompoundModelCommand)first).append(second);
 			return first;
-		} else if (TRANSACTIONAL_EDITING_DOMAIN_CLASS.isInstance(editingDomain)) {
+		} else if (isTransactional(editingDomain)) {
 			return new TransactionalCompoundModelCommand(editingDomain, first, second);
 		}
 
 		return new CompoundModelCommand(first, second);
+	}
+
+	/**
+	 * Queries whether an editing domain is of the {@linkplain TransactionalEditingDomain transactional}
+	 * variety, without requiring the <em>EMF Transaction API</em> to be on the classpath.
+	 * 
+	 * @param editingDomain
+	 *            an editing domain
+	 * @return whether it is a {@link TransactionalEditingDomain}
+	 */
+	protected static boolean isTransactional(EditingDomain editingDomain) {
+		return TRANSACTIONAL_EDITING_DOMAIN_CLASS.isInstance(editingDomain);
 	}
 
 	/**

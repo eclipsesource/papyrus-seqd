@@ -170,7 +170,7 @@ public interface DiagramHelper {
 	 *            {@linkplain Command#chain(Command) chain} to the result. May be {@code null}
 	 * @return the message connector creation command
 	 */
-	Command createMessageConnector(Supplier<Message> message, //
+	CreationCommand<Connector> createMessageConnector(Supplier<Message> message, //
 			Supplier<? extends View> source, IntSupplier sourceY, //
 			Supplier<? extends View> target, IntSupplier targetY, //
 			BiFunction<? super OccurrenceSpecification, ? super MessageEnd, Optional<Command>> collisionHandler);
@@ -211,6 +211,20 @@ public interface DiagramHelper {
 	Command reconnectSource(Connector connector, Shape newSource, int yPosition);
 
 	/**
+	 * Obtain a deferred command that reconnects the future source end of a {@code connector}.
+	 * 
+	 * @param connector
+	 *            the future connector to reconnect at its source end
+	 * @param newSource
+	 *            the future source-attached view for the connector
+	 * @param yPosition
+	 *            the future Y position on the source shape at which to anchor the {@code connector}
+	 * @return the command to effect the source end re-connection
+	 */
+	Command reconnectSource(Supplier<? extends Connector> connector, Supplier<? extends Shape> newSource,
+			IntSupplier yPosition);
+
+	/**
 	 * Obtain a command that reconnects the target end of a {@code connector}.
 	 * 
 	 * @param connector
@@ -222,6 +236,20 @@ public interface DiagramHelper {
 	 * @return the command to effect the target end re-connection
 	 */
 	Command reconnectTarget(Connector connector, Shape newTarget, int yPosition);
+
+	/**
+	 * Obtain a deferred command that reconnects the future target end of a {@code connector}.
+	 * 
+	 * @param connector
+	 *            the future connector to reconnect at its target end
+	 * @param newTarget
+	 *            the future target-attached view for the connector
+	 * @param yPosition
+	 *            the future Y position on the target shape at which to anchor the {@code connector}
+	 * @return the command to effect the target end re-connection
+	 */
+	Command reconnectTarget(Supplier<? extends Connector> connector, Supplier<? extends Shape> newTarget,
+			IntSupplier yPosition);
 
 	/**
 	 * Obtain a command to delete a given {@code connector}.

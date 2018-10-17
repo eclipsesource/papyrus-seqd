@@ -499,11 +499,23 @@ public class MLifelineTest extends MElementTest {
 		// The edge connects the lifeline bodies (not the heads)
 		Edge edge = message.getDiagramView().get();
 		assertThat(edge.getSource(), notNullValue());
-		assertThat(edge.getSource().getType(), containsString("Body"));
-		assertThat(edge.getSource().getElement(), is(getFixture().getElement()));
+		if (message.getSend().get().getFinishedExecution().isPresent()) {
+			assertThat(edge.getSource().getType(), containsString("Execution"));
+			assertThat(edge.getSource().getElement(),
+					is(message.getSend().get().getFinishedExecution().get().getElement()));
+		} else {
+			assertThat(edge.getSource().getType(), containsString("Body"));
+			assertThat(edge.getSource().getElement(), is(getFixture().getElement()));
+		}
 		assertThat(edge.getTarget(), notNullValue());
-		assertThat(edge.getTarget().getType(), containsString("Body"));
-		assertThat(edge.getTarget().getElement(), is(receiver.getElement()));
+		if (message.getReceive().get().getStartedExecution().isPresent()) {
+			assertThat(edge.getTarget().getType(), containsString("Execution"));
+			assertThat(edge.getTarget().getElement(),
+					is(message.getReceive().get().getStartedExecution().get().getElement()));
+		} else {
+			assertThat(edge.getTarget().getType(), containsString("Body"));
+			assertThat(edge.getTarget().getElement(), is(receiver.getElement()));
+		}
 	}
 
 	/**

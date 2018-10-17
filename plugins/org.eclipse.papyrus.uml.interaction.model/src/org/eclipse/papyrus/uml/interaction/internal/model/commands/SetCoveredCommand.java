@@ -34,6 +34,7 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MOccurrenceImpl;
 import org.eclipse.papyrus.uml.interaction.model.MDestruction;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
+import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
@@ -183,8 +184,15 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 							Shape lifelineBody = getLifelineBody().get();
 							int newYPosition = yPosition.orElseGet(() -> end.getTop().getAsInt());
 
-							// Are we connecting to an execution specification?
-							Optional<Shape> executionShape = executionShapeAt(lifelineBody, newYPosition);
+							// Are we connected to an execution that will be moving with us?
+							// If so, no reattachment will be necessary
+							Optional<MExecution> exec = (end.isFinish() || end.isStart()) ? end.getExecution()
+									: Optional.empty();
+							Optional<Shape> executionShape = exec.flatMap(MExecution::getDiagramView);
+							if (!executionShape.isPresent()) {
+								// Are we connecting to an execution specification?
+								executionShape = executionShapeAt(lifelineBody, newYPosition);
+							}
 							Shape newAttachedShape = executionShape.orElse(lifelineBody);
 
 							if (end.isSend()) {

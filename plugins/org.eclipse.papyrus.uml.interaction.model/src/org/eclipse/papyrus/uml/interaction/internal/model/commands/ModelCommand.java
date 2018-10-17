@@ -33,6 +33,7 @@ import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl;
+import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
@@ -251,7 +252,6 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 	 * @see #getTimeline(MInteraction)
 	 * @see #getInsertionPoint(List, int)
 	 */
-	@SuppressWarnings("unchecked")
 	private static <T extends MElement<? extends Element>> T ySearch(Class<T> type, int top) {
 		return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type },
 				(proxy, method, args) -> {
@@ -338,4 +338,50 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 			}
 		}).forEach(elementsBelow::add);
 	}
+
+	//
+	// Nested types
+	//
+
+	public static class Creation<T extends MElementImpl<?>, U extends Element> extends ModelCommand<T> implements CreationCommand<U> {
+		private final Class<? extends U> type;
+
+		private CreationCommand<U> resultCommand;
+
+		/**
+		 * Initializes me.
+		 *
+		 * @param target
+		 *            the logical model element on which I operate
+		 * @param type
+		 *            the type of UML element that I create
+		 */
+		public Creation(T target, Class<? extends U> type) {
+			super(target);
+
+			this.type = type;
+		}
+
+		@Override
+		public CreationCommand<U> chain(Command next) {
+			return andThen(getEditingDomain(), next);
+		}
+
+		@Override
+		public Class<? extends U> getType() {
+			return type;
+		}
+
+		@Override
+		public U getNewObject() {
+			return (resultCommand == null) ? null : resultCommand.get();
+		}
+
+		protected CreationCommand<U> setResult(CreationCommand<U> resultCommand) {
+			this.resultCommand = resultCommand;
+			return resultCommand;
+		}
+
+	}
+
 }

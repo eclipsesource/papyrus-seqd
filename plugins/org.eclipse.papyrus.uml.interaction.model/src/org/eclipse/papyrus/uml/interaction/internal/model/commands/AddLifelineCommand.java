@@ -30,13 +30,11 @@ import org.eclipse.uml2.uml.UMLPackage;
  *
  * @author Christian W. Damus
  */
-public class AddLifelineCommand extends ModelCommand<MInteractionImpl> implements CreationCommand<Lifeline> {
+public class AddLifelineCommand extends ModelCommand.Creation<MInteractionImpl, Lifeline> {
 
 	private final int xOffset;
 
 	private final int height;
-
-	private CreationCommand<Lifeline> resultCommand;
 
 	/**
 	 * Initializes me.
@@ -49,20 +47,10 @@ public class AddLifelineCommand extends ModelCommand<MInteractionImpl> implement
 	 *            the height of the lifeline, or {@code -1} for the default
 	 */
 	public AddLifelineCommand(MInteractionImpl owner, int xOffset, int height) {
-		super(owner);
+		super(owner, Lifeline.class);
 
 		this.xOffset = xOffset;
 		this.height = height;
-	}
-
-	@Override
-	public Class<? extends Lifeline> getType() {
-		return Lifeline.class;
-	}
-
-	@Override
-	public Lifeline getNewObject() {
-		return (resultCommand == null) ? null : resultCommand.getNewObject();
 	}
 
 	@Override
@@ -70,7 +58,7 @@ public class AddLifelineCommand extends ModelCommand<MInteractionImpl> implement
 		SemanticHelper semantics = semanticHelper();
 		CreationParameters params = CreationParameters.in(getTarget().getElement(),
 				UMLPackage.Literals.INTERACTION__LIFELINE);
-		resultCommand = semantics.createLifeline(params);
+		CreationCommand<Lifeline> resultCommand = setResult(semantics.createLifeline(params));
 
 		Shape frame = diagramHelper().getInteractionFrame(getTarget().getDiagramView().get());
 		Compartment compartment = diagramHelper().getShapeCompartment(frame);
@@ -90,4 +78,5 @@ public class AddLifelineCommand extends ModelCommand<MInteractionImpl> implement
 
 		return result;
 	}
+
 }

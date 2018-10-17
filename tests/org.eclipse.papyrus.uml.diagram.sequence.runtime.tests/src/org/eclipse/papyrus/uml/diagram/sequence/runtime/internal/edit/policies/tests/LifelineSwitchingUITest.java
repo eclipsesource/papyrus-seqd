@@ -219,11 +219,20 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		//
 
 		EditPart getExecutionEditPart() {
-			@SuppressWarnings("unchecked")
 			Optional<EditPart> editPart = Optional.of(messageEP).map(ConnectionEditPart.class::cast)
-					.map(ConnectionEditPart::getTarget).flatMap(lifeline -> lifeline.getChildren().stream()
-							.filter(ExecutionSpecificationEditPart.class::isInstance).findFirst());
+					.map(ConnectionEditPart::getTarget)
+					.filter(ExecutionSpecificationEditPart.class::isInstance);
 			return assuming(editPart, "No execution edit-part created");
+		}
+
+		@Override
+		int getGrabX() {
+			return super.getGrabX() - (EXEC_WIDTH / 2);
+		}
+
+		@Override
+		int getNewRecvX() {
+			return super.getNewRecvX() - (EXEC_WIDTH / 2);
 		}
 
 	}
@@ -489,7 +498,8 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		protected void switchLifeline(VerificationMode mode) {
 			super.switchLifeline(mode);
 
-			int execRight = getNewRecvX() + (EXEC_WIDTH / 2);
+			// Note that the new receive X is the *left* side of the execution
+			int execRight = getNewRecvX() + EXEC_WIDTH;
 
 			// Verify visuals of messages spanned by the execution
 			MMessage m2 = requireMessage("m2");
@@ -523,7 +533,7 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 			// Verify old visuals of messages spanned by the execution
 			MMessage m2 = requireMessage("m2");
 			EditPart m2EP = requireEditPart(m2);
-			mode.verify("m2 is not routed correctly", m2EP, runs(execRight, m2Y, getNewRecvX(), m2Y));
+			mode.verify("m2 is not routed correctly", m2EP, runs(execRight, m2Y, LIFELINE_3_BODY_X, m2Y));
 			MMessage m3 = requireMessage("m3");
 			EditPart m3EP = requireEditPart(m3);
 			mode.verify(m3EP, runs(execRight, m3Y, LIFELINE_4_BODY_X, m3Y));
@@ -554,6 +564,17 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 			messageEP = requireEditPart(request);
 			assumeThat(messageEP, runs(sendX, mesgY, getGrabX(), mesgY));
 		}
+
+		@Override
+		int getGrabX() {
+			return super.getGrabX() - (EXEC_WIDTH / 2);
+		}
+
+		@Override
+		int getNewRecvX() {
+			return super.getNewRecvX() - (EXEC_WIDTH / 2);
+		}
+
 	}
 
 	//
