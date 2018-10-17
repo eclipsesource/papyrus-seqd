@@ -25,6 +25,7 @@ import org.eclipse.papyrus.infra.gmfdiag.common.providers.DiagramElementTypes;
 import org.eclipse.papyrus.infra.gmfdiag.tooling.runtime.providers.DiagramElementTypeImages;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.uml2.uml.MessageSort;
 import org.eclipse.uml2.uml.UMLPackage;
 
 public final class SequenceElementTypes {
@@ -90,11 +91,9 @@ public final class SequenceElementTypes {
 		Object type = hint.getAdapter(IElementType.class);
 		if (elements == null) {
 			elements = new IdentityHashMap<IElementType, ENamedElement>();
-
 			elements.put(Package_SequenceDiagram, UMLPackage.eINSTANCE.getPackage());
-
 			elements.put(Interaction_Shape, UMLPackage.eINSTANCE.getInteraction());
-
+			elements.put(Lifeline_Shape, UMLPackage.eINSTANCE.getLifeline());
 		}
 		return elements.get(type);
 	}
@@ -161,5 +160,23 @@ public final class SequenceElementTypes {
 			}
 		}
 		return result;
+	}
+
+	public static IElementType getMessageType(MessageSort sort) {
+		switch (sort) {
+			case ASYNCH_CALL_LITERAL:
+			case ASYNCH_SIGNAL_LITERAL:
+				return Async_Message_Edge;
+			case SYNCH_CALL_LITERAL:
+				return Sync_Message_Edge;
+			case REPLY_LITERAL:
+				return Reply_Message_Edge;
+			case CREATE_MESSAGE_LITERAL:
+				return Create_Message_Edge;
+			case DELETE_MESSAGE_LITERAL:
+				return Delete_Message_Edge;
+			default:
+				throw new IllegalArgumentException("Unsupported message sort: " + sort); //$NON-NLS-1$
+		}
 	}
 }

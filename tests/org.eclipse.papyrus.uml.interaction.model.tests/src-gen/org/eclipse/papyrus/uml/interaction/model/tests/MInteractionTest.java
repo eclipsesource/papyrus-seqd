@@ -17,6 +17,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
 
 import java.util.Optional;
 
@@ -253,6 +254,20 @@ public class MInteractionTest extends MElementTest {
 		assertThat("Direct hit on left not found	", getFixture().getLifelineAt(137), isPresent(is(left)));
 		assertThat("Left of the leftmost not found", getFixture().getLifelineAt(52), isPresent(is(left)));
 		assertThat("Right of the righmost was found", getFixture().getLifelineAt(437), not(isPresent()));
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#getBottommostElement() <em>Get
+	 * Bottommost Element</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MInteraction#getBottommostElement()
+	 * @generated NOT
+	 */
+	public void testGetBottommostElement() {
+		Optional<? extends MElement<?>> element = getFixture()
+				.getElement(umlInteraction.getFragment("reply-recv"));
+		assumeThat(element, isPresent());
+		assertThat(getFixture().getBottommostElement(), is(element));
 	}
 
 } // MInteractionTest

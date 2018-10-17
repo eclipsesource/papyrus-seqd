@@ -22,9 +22,11 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.editpolicies.FeedbackHelper;
 import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.LifelineBodyFigure;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.ISequenceAnchor;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnetManager;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 
 /**
  * Feedback helper for messages that does not allow them to slope upwards and that ensures horizontality of
@@ -42,6 +44,8 @@ class MessageFeedbackHelper extends FeedbackHelper {
 	// In the case of moving the message, where it is grabbed
 	private Point grabbedAt;
 
+	private LayoutConstraints layoutConstraints;
+
 	/**
 	 * Initializes me.
 	 *
@@ -52,12 +56,14 @@ class MessageFeedbackHelper extends FeedbackHelper {
 	 * @param magnetManager
 	 *            the contextual magnet manager
 	 */
-	MessageFeedbackHelper(Mode mode, boolean synchronous, IMagnetManager magnetManager) {
+	MessageFeedbackHelper(Mode mode, boolean synchronous, IMagnetManager magnetManager,
+			LayoutConstraints layoutConstraints) {
 		super();
 
 		this.mode = mode;
 		this.synchronous = synchronous;
 		this.magnetManager = magnetManager;
+		this.layoutConstraints = layoutConstraints;
 
 		setMovingStartAnchor(mode.isMovingSource());
 	}
@@ -86,11 +92,13 @@ class MessageFeedbackHelper extends FeedbackHelper {
 					// Snap each point to the nearest magnet, if any, with priority to the
 					// receiving end
 					int magnetDelta = 0;
-					Optional<IMagnet> magnet = magnetManager.getCapturingMagnet(thisLocation);
+					Optional<IMagnet> magnet = magnetManager.getCapturingMagnet(thisLocation,
+							IMagnet.ownedBy(getConnection()));
 					if (magnet.isPresent()) {
 						magnetDelta = magnet.get().getLocation().y() - thisLocation.y();
 					} else {
-						magnet = magnetManager.getCapturingMagnet(otherLocation);
+						magnet = magnetManager.getCapturingMagnet(otherLocation,
+								IMagnet.ownedBy(getConnection()));
 						if (magnet.isPresent()) {
 							magnetDelta = magnet.get().getLocation().y() - otherLocation.y();
 						}
@@ -108,20 +116,34 @@ class MessageFeedbackHelper extends FeedbackHelper {
 				}
 			} else {
 				// Snap the point to the nearest magnet, if any
-				Optional<IMagnet> magnet = magnetManager.getCapturingMagnet(p);
+				Optional<IMagnet> magnet = magnetManager.getCapturingMagnet(p,
+						IMagnet.ownedBy(getConnection()));
 				magnet.map(IMagnet::getLocation).ifPresent(p::setLocation);
 
 				// Don't permit the message to go back in time if it's asynchronous
 				int delta = mode.isMovingTarget() ? p.y() - otherLocation.y() : otherLocation.y() - p.y();
-
-				if (synchronous || (delta < 0)) {
+				boolean selfMessage = onSameLifeline(anchor[0], other[0]);
+				if ((synchronous && !selfMessage) || (delta < 0)) {
 					// Constrain the message to horizontal
 					switch (mode) {
 						case CREATE:
-							// Bring the other end along (subject to magnet constraints)
-							otherLocation.setY(p.y());
+							if (!synchronous && delta < 0) {
+								/*
+								 * do not move an async message send up, because it can't be moved down since
+								 * we allow down-sloping. If slope up is small, allows horizontal creation
+								 * though
+								 */
+								if (Math.abs(delta) < layoutConstraints.getAsyncMessageSlopeThreshold()) {
+									thisLocation.setY(otherLocation.y());
+									recreateAnchor(anchor, thisLocation);
+								}
+							} else {
+								// Bring the other end along (subject to magnet constraints)
+								otherLocation.setY(p.y());
+							}
 
-							Optional<IMagnet> otherMagnet = magnetManager.getCapturingMagnet(otherLocation);
+							Optional<IMagnet> otherMagnet = magnetManager.getCapturingMagnet(otherLocation,
+									IMagnet.ownedBy(getConnection()));
 							otherMagnet.map(IMagnet::getLocation).ifPresent(m -> {
 								// Don't move this end if the other is stuck to a magnet
 								int dy = otherLocation.y() - m.y();
@@ -154,13 +176,33 @@ class MessageFeedbackHelper extends FeedbackHelper {
 				}
 			}
 		}
-
 		super.update(anchor[0], p);
 	}
 
 	private ConnectionAnchor getOtherAnchor() {
 		Connection connection = getConnection();
 		return mode.isMovingTarget() ? connection.getSourceAnchor() : connection.getTargetAnchor();
+	}
+
+	private boolean onSameLifeline(ConnectionAnchor a, ConnectionAnchor b) {
+		// Find the lifelines
+		IFigure llA = getLifelineBody(a);
+		IFigure llB = getLifelineBody(b);
+
+		return llA == llB;
+	}
+
+	private IFigure getLifelineBody(ConnectionAnchor anchor) {
+		IFigure result;
+
+		// Find the lifelines
+		for (result = anchor.getOwner(); result != null; result = result.getParent()) {
+			if (result instanceof LifelineBodyFigure) {
+				break;
+			}
+		}
+
+		return result;
 	}
 
 	static Point getLocation(ConnectionAnchor anchor) {

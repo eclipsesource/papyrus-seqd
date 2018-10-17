@@ -20,6 +20,7 @@ import java.util.function.Supplier;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.notation.Compartment;
+import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
@@ -102,6 +103,23 @@ public interface DiagramHelper {
 			Shape lifeline, int yPosition, int height);
 
 	/**
+	 * Obtain a command to create a shape for the given {@code execution} specification as a child of a
+	 * {@link lifeline} shape in the diagram.
+	 * 
+	 * @param execution
+	 *            an execution specification to be visualized in the diagram
+	 * @param lifeline
+	 *            the lifeline shape in which to create the {@code execution} shape
+	 * @param yPosition
+	 *            the vertical position of the {@code execution} shape to create
+	 * @param height
+	 *            the vertical extent of the {@code execution} shape to create
+	 * @return the execution shape creation command
+	 */
+	CreationCommand<Shape> createExecutionShape(Supplier<? extends ExecutionSpecification> execution,
+			Shape lifelineBody, IntSupplier yPosition, int height);
+
+	/**
 	 * Obtain a command to create a shape for the given {@code destruction} specification as a child of a
 	 * {@link lifeline} shape in the diagram.
 	 * 
@@ -141,6 +159,28 @@ public interface DiagramHelper {
 			BiFunction<? super OccurrenceSpecification, ? super MessageEnd, Optional<Command>> collisionHandler);
 
 	/**
+	 * Configure the routing of a self-message view.
+	 * 
+	 * @param message
+	 *            the self-message
+	 * @param messageView
+	 *            its diagram view
+	 * @return the routing configuration command
+	 */
+	Command configureSelfMessageConnector(Message message, Connector messageView);
+
+	/**
+	 * Configure the routing of a straight (non-self) message view.
+	 * 
+	 * @param message
+	 *            the message
+	 * @param messageView
+	 *            its diagram view
+	 * @return the routing configuration command
+	 */
+	Command configureStraightMessageConnector(Message message, Connector messageView);
+
+	/**
 	 * Obtain a command to delete a given {@code connector}.
 	 * 
 	 * @param diagramView
@@ -148,5 +188,4 @@ public interface DiagramHelper {
 	 * @return the deletion command
 	 */
 	Command deleteView(EObject diagramView);
-
 }

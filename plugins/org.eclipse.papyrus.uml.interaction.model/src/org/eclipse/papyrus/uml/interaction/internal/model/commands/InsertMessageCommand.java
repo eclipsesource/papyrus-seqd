@@ -13,16 +13,28 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import static java.lang.Integer.MAX_VALUE;
-import static java.lang.Math.max;
 import static org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil.invertSingle;
 import static org.eclipse.papyrus.uml.interaction.graph.util.Suppliers.compose;
+import static org.eclipse.uml2.uml.MessageSort.REPLY_LITERAL;
+import static org.eclipse.uml2.uml.UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION;
+import static org.eclipse.uml2.uml.UMLPackage.Literals.EXECUTION_SPECIFICATION__FINISH;
+import static org.eclipse.uml2.uml.UMLPackage.Literals.EXECUTION_SPECIFICATION__START;
+import static org.eclipse.uml2.uml.UMLPackage.Literals.INTERACTION__FRAGMENT;
+import static org.eclipse.uml2.uml.UMLPackage.Literals.INTERACTION__MESSAGE;
+import static org.eclipse.uml2.uml.UMLPackage.Literals.LIFELINE__COVERED_BY;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.Set;
+import java.util.function.BinaryOperator;
+import java.util.function.IntSupplier;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,17 +51,27 @@ import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugi
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MObjectImpl;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.Messages;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MMessage;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredAddCommand;
+import org.eclipse.papyrus.uml.interaction.model.spi.DeferredSetCommand;
+import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
+import org.eclipse.uml2.uml.Interaction;
+import org.eclipse.uml2.uml.InteractionFragment;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
 import org.eclipse.uml2.uml.MessageSort;
@@ -57,7 +79,6 @@ import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OccurrenceSpecification;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Signal;
-import org.eclipse.uml2.uml.UMLPackage;
 
 /**
  * A message creation operation.
@@ -83,6 +104,12 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	private final boolean syncMessage;
 
 	private CreationCommand<Message> resultCommand;
+
+	private ExecutionCreationCommandParameter executionCreationParameter;
+
+	private OptionalInt sendYReference;
+
+	private OptionalInt receiveYReference;
 
 	/**
 	 * Initializes me.
@@ -114,6 +141,32 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	 * 
 	 * @param sender
 	 *            the lifeline from which to create the message
+	 * @param before
+	 *            the element in the sequence after which to create the message send event
+	 * @param offset
+	 *            the offset from the reference element at which to create message send event
+	 * @param receiver
+	 *            the lifeline to receive the message
+	 * @param sort
+	 *            the message sort
+	 * @param signature
+	 *            the message signature, if any
+	 * @param executionCreationConfig
+	 *            the configuration for creating executions for the sync message to be created
+	 */
+	public InsertMessageCommand(MLifelineImpl sender, MElement<?> before, int offset, MLifeline receiver,
+			MessageSort sort, NamedElement signature,
+			ExecutionCreationCommandParameter executionCreationConfig) {
+
+		this(sender, before, offset, receiver, receiver, receiverOffset(before, offset, receiver), sort,
+				signature, executionCreationConfig);
+	}
+
+	/**
+	 * Initializes me.
+	 * 
+	 * @param sender
+	 *            the lifeline from which to create the message
 	 * @param beforeSend
 	 *            the element in the sequence after which to create the message send event
 	 * @param sendOffset
@@ -135,6 +188,13 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			MLifeline receiver, MElement<?> beforeRecv, int recvOffset, MessageSort sort,
 			NamedElement signature) {
 
+		this(sender, beforeSend, sendOffset, receiver, beforeRecv, recvOffset, sort, signature,
+				new ExecutionCreationCommandParameter());
+	}
+
+	public InsertMessageCommand(MLifelineImpl sender, MElement<?> beforeSend, int sendOffset,
+			MLifeline receiver, MElement<?> beforeRecv, int recvOffset, MessageSort sort,
+			NamedElement signature, ExecutionCreationCommandParameter executionCreationCommandParameter) {
 		super(sender);
 
 		checkInteraction(beforeSend);
@@ -159,6 +219,43 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		this.recvOffset = recvOffset;
 		this.sort = sort;
 		this.signature = signature;
+		this.executionCreationParameter = executionCreationCommandParameter;
+	}
+
+	@Override
+	public String getLabel() {
+		if (executionCreationParameter.isCreateExecution()) {
+			return MessageFormat.format(Messages.CreateMessageWithExecution, messageSortLabel(),
+					executionTypeLabel());
+		} else {
+			return MessageFormat.format(Messages.Create, messageSortLabel());
+		}
+	}
+
+	private String messageSortLabel() {
+		switch (sort) {
+			case ASYNCH_SIGNAL_LITERAL:
+				return Messages.SyncSignal;
+			case SYNCH_CALL_LITERAL:
+				return Messages.SyncCall;
+			case CREATE_MESSAGE_LITERAL:
+				return Messages.CreateMessage;
+			case DELETE_MESSAGE_LITERAL:
+				return Messages.DeleteMessage;
+			case REPLY_LITERAL:
+				return Messages.ReplyMessage;
+			case ASYNCH_CALL_LITERAL:
+			default:
+				return Messages.AsyncCall;
+		}
+	}
+
+	private Object executionTypeLabel() {
+		if (executionCreationParameter.getExecutionType().equals(ACTION_EXECUTION_SPECIFICATION)) {
+			return Messages.ActionExecutionSpecification;
+		} else {
+			return Messages.BehaviorExecutionSpecification;
+		}
 	}
 
 	/**
@@ -195,17 +292,13 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		return (resultCommand == null) ? null : resultCommand.getNewObject();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected Command createCommand() {
-		Vertex sendReference = vertex(beforeSend);
-		if (sendReference == null) {
+		if (!absoluteSendYReference().isPresent() || !absoluteReceiveYReference().isPresent()) {
 			return UnexecutableCommand.INSTANCE;
 		}
-		Vertex recvReference = vertex(beforeRecv);
-		if (recvReference == null) {
-			return UnexecutableCommand.INSTANCE;
-		}
+		int absoluteSendY = absoluteSendYReference().getAsInt();
+		int absoluteRecvY = absoluteReceiveYReference().getAsInt();
 
 		// Send: Is there actually an execution occurrence here?
 		int llTopSend = layoutHelper().getBottom(getTarget().getDiagramView().get());
@@ -246,39 +339,32 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			return UnexecutableCommand.INSTANCE;
 		}
 
-		OptionalInt sendReferenceY = beforeSend == getTarget() ? layoutHelper().getBottom(sendReference)
-				// Reference from the top of an execution specification to allow
-				// connections within its extent
-				: layoutHelper().getTop(sendReference);
-		if (!sendReferenceY.isPresent()) {
-			return UnexecutableCommand.INSTANCE;
-		}
-		OptionalInt recvReferenceY = beforeRecv == this.receiver ? layoutHelper().getBottom(recvReference)
-				// Reference from the top of an execution specification to allow
-				// connections within its extent
-				: layoutHelper().getTop(recvReference);
-		if (!recvReferenceY.isPresent()) {
-			return UnexecutableCommand.INSTANCE;
-		}
-
 		switch (sort) {
 			case CREATE_MESSAGE_LITERAL:
+				/* self-creation makes no sense */
+				if (isSelfMessage()) {
+					return UnexecutableCommand.INSTANCE;
+				}
+
 				/* receiver must have no elements before */
 				if (this.receiver.elementAt(recvOffset + relativeTopOfBefore()).isPresent()) {
 					return UnexecutableCommand.INSTANCE;
 				}
 				break;
 			case DELETE_MESSAGE_LITERAL:
-				/* receiver must have no element after */
-				int receiverLifelineTop = layoutHelper().getBottom(this.receiver.getDiagramView().get());
-				int messageEndTopBottom = receiverLifelineTop + recvOffset;
+				/*
+				 * receiver must have no element after. Use the sending location because deletes are
+				 * synchronous (horizontal) except in the case of self-destruct, in which case the recv
+				 * visually is later but semantically is at the send
+				 */
+				int absoluteDeleteY = absoluteSendY;
 				List<MElement<? extends Element>> elementsBelow = new ArrayList<>();
-				findElementsBelow(messageEndTopBottom, elementsBelow,
+				findElementsBelow(absoluteDeleteY, elementsBelow,
 						getTarget().getInteraction().getMessages().stream(), false);
 				if (!elementsBelow.isEmpty()) {
 					return UnexecutableCommand.INSTANCE;
 				}
-				findElementsBelow(messageEndTopBottom, elementsBelow, this.receiver.getExecutions().stream(),
+				findElementsBelow(absoluteDeleteY, elementsBelow, this.receiver.getExecutions().stream(),
 						false);
 				if (!elementsBelow.isEmpty()) {
 					return UnexecutableCommand.INSTANCE;
@@ -290,10 +376,10 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 
 		// Determine the semantic elements after which to insert each message end
 		List<MElement<? extends Element>> timeline = getTimeline(getTarget().getInteraction());
-		int absoluteSendY = sendReferenceY.getAsInt() + sendOffset;
-		int absoluteRecvY = recvReferenceY.getAsInt() + recvOffset;
-		Optional<MElement<? extends Element>> sendInsert = getInsertionPoint(timeline, absoluteSendY);
-		Optional<MElement<? extends Element>> recvInsert = getInsertionPoint(timeline, absoluteRecvY);
+		Optional<MElement<? extends Element>> sendInsert = getInsertionPoint(timeline, MMessageEnd.class,
+				absoluteSendY);
+		Optional<MElement<? extends Element>> recvInsert = getInsertionPoint(timeline, MMessageEnd.class,
+				absoluteRecvY);
 
 		SemanticHelper semantics = semanticHelper();
 		CreationParameters sendParams = endParams(
@@ -316,18 +402,17 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				recvEvent = semantics.createMessageOccurrence(recvParams);
 				break;
 		}
-		CreationParameters messageParams = CreationParameters.in(getTarget().getInteraction().getElement(),
-				UMLPackage.Literals.INTERACTION__MESSAGE);
+		CreationParameters messageParams = CreationParameters.in(interaction(), INTERACTION__MESSAGE);
 		resultCommand = semantics.createMessage(sendEvent, recvEvent, sort, signature, messageParams);
 
 		// Create these elements in the interaction
 		Command result = sendEvent.chain(recvEvent).chain(resultCommand);
 
 		// Cover the appropriate lifelines
-		result = result.chain(new DeferredAddCommand(getTarget().getElement(),
-				UMLPackage.Literals.LIFELINE__COVERED_BY, sendEvent));
-		result = result.chain(new DeferredAddCommand(this.receiver.getElement(),
-				UMLPackage.Literals.LIFELINE__COVERED_BY, recvEvent));
+		result = result
+				.chain(new DeferredAddCommand(getTarget().getElement(), LIFELINE__COVERED_BY, sendEvent));
+		result = result
+				.chain(new DeferredAddCommand(this.receiver.getElement(), LIFELINE__COVERED_BY, recvEvent));
 
 		// And the diagram visualization
 		Supplier<View> senderView = sender::getDiagramView;
@@ -342,11 +427,24 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				break;
 
 			case DELETE_MESSAGE_LITERAL:
+				int destructionOffset = absoluteRecvY;
+
+				/*
+				 * a self-destruct message requires the gap for bending around and, because it's a synchronous
+				 * message, has fixed size
+				 */
+				if (isSelfMessage()) {
+					destructionOffset = absoluteSendY
+							/* this is the minimum gap in self-messages */
+							+ layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE)
+							+ (layoutConstraints().getMinimumHeight(ViewTypes.DESTRUCTION_SPECIFICATION) / 2);
+				}
+
 				/* create destruction occurrence */
 				CreationCommand<Shape> destructionOccurrenceShape = diagramHelper()
 						.createDestructionOccurrenceShape(recvEvent,
 								diagramHelper().getLifelineBodyShape(receiver.getDiagramView()),
-								recvReferenceY.getAsInt() + recvOffset);
+								destructionOffset);
 				result = result.chain(destructionOccurrenceShape);
 				receiverView = destructionOccurrenceShape;
 				break;
@@ -359,42 +457,68 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				break;
 		}
 
+		/* Make sure we keep enough distance to the elements before us */
+		int additionalOffset = getAdditionalOffSet(timeline, //
+				sendInsert, absoluteSendY, //
+				recvInsert, absoluteRecvY);
+
+		/*
+		 * check if we can actually change the insertion offset or if we have to nudge the executions we are
+		 * connecting to instead
+		 */
+		Optional<MElement<?>> nudgeToEnforcePadding = Optional.empty();
+		int distanceToEnforcePadding = 0;
+		if (additionalOffset > 0) {
+			Set<MElement<?>> elementToNudge = new LinkedHashSet<MElement<?>>();
+			validateOffsetChange(sendingExec, absoluteSendY, additionalOffset, elementToNudge);
+			validateOffsetChange(receivingExec, absoluteRecvY, additionalOffset, elementToNudge);
+			if (!elementToNudge.isEmpty()) {
+				/* we need to to nudge instead of changing the insertion offset */
+				distanceToEnforcePadding = additionalOffset;
+				additionalOffset = 0;
+				nudgeToEnforcePadding = timeline.stream()//
+						.filter(elementToNudge::contains)//
+						.findFirst();
+			}
+		}
+
 		/* create message */
-		result = result.chain(diagramHelper().createMessageConnector(resultCommand, //
-				senderView, () -> sendReferenceY.getAsInt() + sendOffset, //
-				receiverView, () -> recvReferenceY.getAsInt() + recvOffset, //
-				this::replace));
+		int additionalOffsetSend = additionalOffset
+				+ (sendingExec.isPresent() ? 0 : distanceToEnforcePadding);
+		int additionalOffsetRecv = additionalOffset
+				+ (receivingExec.isPresent() ? 0 : distanceToEnforcePadding);
+		IntSupplier senderY = () -> absoluteSendY + additionalOffsetSend;
+		IntSupplier receiverY = () -> absoluteRecvY + additionalOffsetRecv;
+		result = result.chain(diagramHelper().createMessageConnector(resultCommand, senderView, senderY,
+				receiverView, receiverY, this::replace));
+
+		int recvYPosition = absoluteRecvY + additionalOffsetRecv;
 
 		switch (sort) {
 			case CREATE_MESSAGE_LITERAL:
 				List<Command> commands = new ArrayList<>(3);
 
-				View receiverShape = (this.receiver).getDiagramView().orElse(null);
-				int receiverBodyTop = layoutHelper()
-						.getTop(diagramHelper().getLifelineBodyShape(receiverShape));
+				View receiverShape = this.receiver.getDiagramView().orElse(null);
+				Shape receivingLifelineBodyShape = diagramHelper().getLifelineBodyShape(receiverShape);
+				int receiverBodyTop = layoutHelper().getTop(receivingLifelineBodyShape);
 				int receiverLifelineTop = this.receiver.getTop().orElse(0);
-
 				/* first make room to move created lifeline down by nudging all required elements down */
-				int creationMessageTop = recvReferenceY.getAsInt() + recvOffset;
 				List<MElement<? extends Element>> elementsToNudge = new ArrayList<>();
 
-				int movedReceiverlifelineTop = creationMessageTop
-						- ((receiverBodyTop - receiverLifelineTop) / 2);
-
-				int receiverDeltaY = movedReceiverlifelineTop - receiverLifelineTop;
+				int movedReceiverlifelineTop = absoluteRecvY - ((receiverBodyTop - receiverLifelineTop) / 2);
+				int receiverDeltaY = movedReceiverlifelineTop - receiverLifelineTop + additionalOffsetRecv;
 				int receiverDeltaYFinal = receiverDeltaY;
 
 				/* collect elements below */
-				findElementsBelow(creationMessageTop, elementsToNudge,
+				findElementsBelow(absoluteRecvY, elementsToNudge,
 						getTarget().getInteraction().getMessages().stream(), true);
-				findElementsBelow(creationMessageTop, elementsToNudge,
+				findElementsBelow(absoluteRecvY, elementsToNudge,
 						getTarget().getInteraction().getLifelines().stream()//
-								.filter(m -> m.getTop().orElse(0) < creationMessageTop)//
+								.filter(m -> m.getTop().orElse(0) < absoluteRecvY)//
 								.flatMap(l -> l.getExecutions().stream()),
 						true);
 				Collections.sort(elementsToNudge,
-						Comparator.comparingInt(e -> ((MElementImpl<? extends Element>)e).getTop().orElse(0))
-								.reversed());
+						Comparator.comparingInt(e -> ((MElementImpl<?>)e).getTop().orElse(0)).reversed());
 				List<Command> nudgeCommands = new ArrayList<>(elementsToNudge.size());
 				for (int i = 0; i < elementsToNudge.size(); i++) {
 					MElement<? extends Element> element = elementsToNudge.get(i);
@@ -417,6 +541,23 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			case DELETE_MESSAGE_LITERAL:
 				break;
 
+			case SYNCH_CALL_LITERAL:
+				/* if there is no execution yet, create one for sync calls */
+				if (!receivingExec.isPresent() && executionCreationParameter.isCreateExecution()) {
+					result = result.chain(
+							createAdditionalSyncMessageCommands(sendEvent, recvEvent, senderY, receiverY));
+					/* Fall through to create nudge command, but extend nudge height by execMinHeight */
+					recvYPosition += layoutConstraints().getMinimumHeight(ViewTypes.EXECUTION_SPECIFICATION);
+
+					if (isSelfMessage()) {
+						/* Make additional room for the one or even two self messages */
+						recvYPosition += layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE);
+						if (executionCreationParameter.isCreateReply()) {
+							recvYPosition += layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE);
+						}
+					}
+				}
+
 			default:
 				// Now we have commands to add the message specification. But, first we must make
 				// room for it in the diagram. Nudge the element that will follow the new receive event
@@ -424,21 +565,409 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				// If inserting after the start occurrence of an execution specification,
 				// then actually insert after the execution, itself, so that it can span
 				// the new message end
-				MElement<?> distanceFrom = (MElement<?>)Optional.of(beforeSend)
-						.filter(MOccurrence.class::isInstance).map(MOccurrence.class::cast)
-						.flatMap(MOccurrence::getStartedExecution).orElse(beforeSend);
-				Optional<Command> makeSpace = getTarget().following(distanceFrom).map(el -> {
-					OptionalInt distance = el.verticalDistance(distanceFrom);
-					return distance.isPresent() ? el.nudge(max(0, spaceRequired - distance.getAsInt()))
-							: null;
-				});
+				Optional<Command> makeSpace = createNudgeCommandForFollowingElements(timeline, spaceRequired,
+						sendInsert, sendingExec, senderY.getAsInt(), recvInsert, receivingExec,
+						recvYPosition);
 				if (makeSpace.isPresent()) {
 					result = makeSpace.get().chain(result);
 				}
 				break;
 		}
 
+		if (nudgeToEnforcePadding.isPresent()) {
+			result = result.chain(nudgeToEnforcePadding.get().nudge(distanceToEnforcePadding));
+		}
+
 		return result;
+	}
+
+	private OptionalInt absoluteSendYReference() {
+		OptionalInt yReference = getSendYReference();
+		if (!yReference.isPresent()) {
+			return OptionalInt.empty();
+		}
+		return OptionalInt.of(yReference.getAsInt() + sendOffset);
+	}
+
+	private OptionalInt absoluteReceiveYReference() {
+		OptionalInt yReference = getReceiveYReference();
+		if (!yReference.isPresent()) {
+			return OptionalInt.empty();
+		}
+		return OptionalInt.of(yReference.getAsInt() + recvOffset);
+	}
+
+	private OptionalInt getSendYReference() {
+		if (sendYReference == null) {
+			Vertex sendReference = vertex(beforeSend);
+			if (sendReference == null) {
+				sendYReference = OptionalInt.empty();
+			} else {
+				sendYReference = beforeSend == getTarget() ? layoutHelper().getBottom(sendReference)
+						// Reference from the top of an execution specification to allow
+						// connections within its extent
+						: layoutHelper().getTop(vertex(beforeSend));
+			}
+		}
+		return sendYReference;
+	}
+
+	private OptionalInt getReceiveYReference() {
+		if (receiveYReference == null) {
+			Vertex receiveReference = vertex(beforeRecv);
+			if (receiveReference == null) {
+				receiveYReference = OptionalInt.empty();
+			} else {
+				receiveYReference = beforeRecv == this.receiver ? layoutHelper().getBottom(receiveReference)
+						// Reference from the top of an execution specification to allow
+						// connections within its extent
+						: layoutHelper().getTop(vertex(beforeRecv));
+			}
+		}
+		return receiveYReference;
+	}
+
+	private boolean isSelfMessage() {
+		return receiver.getElement() == getTarget().getElement();
+	}
+
+	private Command createAdditionalSyncMessageCommands(Supplier<MessageEnd> sendEvent,
+			CreationCommand<MessageEnd> receiveEvent, IntSupplier senderY, IntSupplier receiverY) {
+
+		/* correct why positions if this is a self message */
+		IntSupplier actualReceiverY;
+		IntSupplier actualSenderY;
+		if (isSelfMessage()) {
+			actualReceiverY = () -> senderY.getAsInt()
+					+ layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE);
+			actualSenderY = () -> senderY.getAsInt()
+					+ layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE);
+		} else {
+			actualReceiverY = receiverY;
+			actualSenderY = senderY;
+		}
+
+		/* for sync calls, we want to create an execution specification */
+		List<Command> additionalCommands = new ArrayList<>();
+		CreationCommand<ExecutionSpecification> execution;
+		CreationParameters execParams = CreationParameters.in(interaction(), INTERACTION__FRAGMENT);
+		execParams.setEClass(executionCreationParameter.getExecutionType());
+		execParams.setInsertAfter(receiveEvent);
+		execution = semanticHelper().createExecutionSpecification(null, execParams);
+		Command setStart = new DeferredSetCommand(getEditingDomain(), execution,
+				EXECUTION_SPECIFICATION__START, receiveEvent);
+		additionalCommands.add(execution);
+		additionalCommands.add(setStart);
+
+		if (executionCreationParameter.isCreateReply()) {
+			additionalCommands.addAll(createAutomaticReplyMessageCommands(sendEvent, execution, actualSenderY,
+					actualReceiverY));
+		} else {
+			CreationCommand<OccurrenceSpecification> finish = semanticHelper().createFinish(execution,
+					CreationParameters.after(execution));
+			DeferredAddCommand addFinish = new DeferredAddCommand(receiver.getElement(), LIFELINE__COVERED_BY,
+					execution, finish);
+			additionalCommands.add(finish);
+			additionalCommands.add(addFinish);
+		}
+
+		/* create the shape of the execution specification */
+		CreationCommand<Shape> executionShape;
+		View recShape = receiver.getDiagramView().orElse(null);
+		int execMinHeight = layoutConstraints().getMinimumHeight(ViewTypes.EXECUTION_SPECIFICATION);
+		Shape receiverBody = diagramHelper().getLifelineBodyShape(recShape);
+		executionShape = diagramHelper().createExecutionShape(execution, receiverBody, actualReceiverY,
+				execMinHeight);
+		additionalCommands.add(executionShape);
+
+		return CompoundModelCommand.compose(getEditingDomain(), additionalCommands);
+	}
+
+	private List<Command> createAutomaticReplyMessageCommands(Supplier<MessageEnd> sendEvent,
+			CreationCommand<ExecutionSpecification> execution, IntSupplier senderY, IntSupplier receiverY) {
+		List<Command> commands = new ArrayList<>();
+		CreationCommand<MessageEnd> replySend = semanticHelper()
+				.createMessageOccurrence(CreationParameters.after(execution));
+		DeferredAddCommand addReplySend = new DeferredAddCommand(receiver.getElement(), LIFELINE__COVERED_BY,
+				execution, replySend);
+		DeferredSetCommand setFinish = new DeferredSetCommand(getEditingDomain(), execution,
+				EXECUTION_SPECIFICATION__FINISH, replySend);
+		commands.add(replySend);
+		commands.add(addReplySend);
+		commands.add(setFinish);
+
+		CreationCommand<MessageEnd> replyReceive = semanticHelper()
+				.createMessageOccurrence(CreationParameters.after(replySend));
+		DeferredAddCommand addReplyReceive = new DeferredAddCommand(getTarget().getElement(),
+				LIFELINE__COVERED_BY, replyReceive);
+		commands.add(replyReceive);
+		commands.add(addReplyReceive);
+
+		CreationParameters messageParams = CreationParameters.after(() -> sendEvent.get().getMessage());
+		CreationCommand<Message> replyMessage = semanticHelper().createMessage(replySend, replyReceive,
+				REPLY_LITERAL, null, messageParams);
+		commands.add(replyMessage);
+
+		Shape senderShape = diagramHelper().getLifelineBodyShape(receiver.getDiagramView().get());
+		Shape receiverShape = diagramHelper().getLifelineBodyShape(getTarget().getDiagramView().get());
+		int execMinHeight = layoutConstraints().getMinimumHeight(ViewTypes.EXECUTION_SPECIFICATION);
+
+		Command replyMessageView = diagramHelper().createMessageConnector(replyMessage, () -> senderShape,
+				() -> senderY.getAsInt() + execMinHeight, () -> receiverShape,
+				() -> receiverY.getAsInt() + execMinHeight, null);
+		commands.add(replyMessageView);
+		return commands;
+	}
+
+	protected LayoutConstraints layoutConstraints() {
+		return layoutHelper().getConstraints();
+	}
+
+	private void validateOffsetChange(Optional<MExecution> exec, int absoluteY, int additionalOffset,
+			Set<MElement<?>> elementToNudge) {
+		if (exec.isPresent()) {
+			OptionalInt top = exec.get().getTop();
+			if (top.isPresent() && (absoluteY == top.getAsInt())) {
+				// we are connecting to the top of the execution
+				// -> nudge start instead
+				exec.get().getStart().ifPresent(elementToNudge::add);
+			}
+
+			// check if we have place on the execution
+			OptionalInt bottom = exec.get().getBottom();
+			if (bottom.isPresent() && ((bottom.getAsInt() - absoluteY - additionalOffset) < 0)) {
+				// we would move over the end of the execution
+				// -> nudge finish instead
+				exec.get().getFinish().ifPresent(elementToNudge::add);
+			}
+		}
+	}
+
+	private Optional<Command> createNudgeCommandForFollowingElements(
+			List<MElement<? extends Element>> timeline, int spaceRequired,
+			Optional<MElement<? extends Element>> sendInsert, //
+			Optional<MExecution> sendingExec, int sendYPosition, //
+			Optional<MElement<? extends Element>> recvInsert, //
+			Optional<MExecution> receivingExec, int recvYPosition) {
+
+		if (sendingExec.isPresent() || receivingExec.isPresent()) {
+			return Optional.empty();
+		}
+
+		/* check if we are too close to following elements on send and/or receive side */
+		int additionalSendNudge = missingPadding(sendInsert, sendYPosition);
+		int additionalRecvNudge = missingPadding(recvInsert, recvYPosition);
+		int minNudge = Math.max(0, Math.max(additionalSendNudge, additionalRecvNudge));
+
+		int absoluteY = absoluteSendYReference().getAsInt();
+		MElement<?> latestElementBeforeY = getLatestElementBeforeY(beforeSend, absoluteY, timeline);
+		Optional<Command> makeSpace = getFollowingElement(timeline, latestElementBeforeY, absoluteY)
+				.map(el -> {
+					MElement<? extends Element> toNudge = el;
+					if (el instanceof MExecution) {
+						// We are inserting within the vertical span of an execution
+						// specification. Don't nudge the top of the execution, but
+						// rather the bottom (the finish occurrence), to make space
+						MExecution exec = (MExecution)el;
+						if (exec.getFinish().isPresent()) {
+							toNudge = exec.getFinish().get();
+						}
+					}
+					OptionalInt distance = toNudge.verticalDistance(latestElementBeforeY);
+					if (distance.isPresent()) {
+						return toNudge.nudge(Math.max(minNudge, spaceRequired - distance.getAsInt()));
+					} else {
+						return null;
+					}
+				});
+
+		/*
+		 * check if we did create a nudge command based on measured distance and the required space. if not,
+		 * but we need to enforce padding, create it based on insertion point
+		 */
+		if (!makeSpace.isPresent() && minNudge > 0) {
+			MElement<? extends Element> toNudge = additionalSendNudge > additionalRecvNudge ? sendInsert.get()
+					: recvInsert.get();
+			return Optional.of(toNudge.nudge(minNudge));
+		}
+		return makeSpace;
+	}
+
+	/**
+	 * Returns the latest element (wrt <code>timeline</code>) starting from <code>referenceElement</code> that
+	 * is still graphically before the specified <code>yPosition</code>.
+	 */
+	protected MElement<?> getLatestElementBeforeY(MElement<?> referenceElement, int yPosition,
+			List<MElement<? extends Element>> timeline) {
+		/* timeline after element before send or entire list, if element before send isn't included */
+		List<MElement<?>> elementsLaterThanBeforeSend = timeline
+				.subList(timeline.indexOf(referenceElement) + 1, timeline.size());
+		return elementsLaterThanBeforeSend.stream() //
+				.filter(isGraphicallyBefore(yPosition)) //
+				.reduce(last(timeline)) //
+				.orElse(referenceElement);
+	}
+
+	protected Predicate<? super MElement<?>> isGraphicallyBefore(int yPosition) {
+		return isGraphicallyBefore(OptionalInt.of(yPosition));
+	}
+
+	protected Predicate<? super MElement<?>> isGraphicallyBefore(OptionalInt yPosition) {
+		return e -> e.getBottom().orElse(Integer.MAX_VALUE) < yPosition.orElse(Integer.MAX_VALUE);
+	}
+
+	protected BinaryOperator<MElement<? extends Element>> last(List<MElement<? extends Element>> timeline) {
+		return (e1, e2) -> timeline.indexOf(e1) > timeline.indexOf(e1) ? e1 : e2;
+	}
+
+	private Optional<MElement<? extends Element>> getFollowingElement(
+			List<MElement<? extends Element>> fragments, MElement<?> distanceFrom, int yPosition) {
+		int index = fragments.indexOf(distanceFrom);
+		if (index == -1) {
+			if (distanceFrom instanceof MLifeline) {
+				// get the first element which comes after
+				return fragments.stream()//
+						.filter(e -> {
+							return e.getTop().orElse(yPosition) >= yPosition;
+						})//
+						.findFirst();
+			}
+			return getTarget().following(distanceFrom);
+		}
+		if (index + 1 < fragments.size()) {
+			return Optional.of(fragments.get(index + 1));
+		}
+		return getTarget().following(distanceFrom);
+	}
+
+	private int getAdditionalOffSet(List<MElement<? extends Element>> timeline, //
+			Optional<MElement<? extends Element>> elementAfterSend, int absoluteSendY, //
+			Optional<MElement<? extends Element>> elementAfterRecv, int absoluteRecvY) {
+		int additionalOffsetSend = getAdditionalOffset(timeline, elementAfterSend, absoluteSendY, beforeSend);
+		int additionalOffsetReceive = getAdditionalOffset(timeline, elementAfterRecv, absoluteRecvY,
+				beforeRecv);
+		return Math.max(additionalOffsetSend, additionalOffsetReceive);
+	}
+
+	private int getAdditionalOffset(List<MElement<? extends Element>> timeline,
+			Optional<MElement<? extends Element>> elementAfterMe, int absoluteY, MElement<?> before) {
+		MElement<? extends Element> elementBeforeMe = getElementBeforeMe(timeline, elementAfterMe, before);
+		Optional<View> diagramView = getDiagramView(elementBeforeMe);
+		if (!diagramView.isPresent()) {
+			return 0;
+		}
+		int curPadding = absoluteY - elementBeforeMe.getBottom().orElse(0);
+		int reqPadding = layoutConstraints().getPadding(RelativePosition.BOTTOM, diagramView.get())
+				+ layoutConstraints().getPadding(RelativePosition.TOP, ViewTypes.MESSAGE);
+		if (curPadding < reqPadding) {
+			return reqPadding - curPadding;
+		} else {
+			return 0;
+		}
+	}
+
+	/**
+	 * Returns for how many pixels the {@link MElement element after me} has to be nudged in order to fulfill
+	 * padding requirements.
+	 * 
+	 * @param elementAfterMe
+	 *            the element following me
+	 * @param myYPosition
+	 *            my insertion position
+	 * @return distance required to fulfil
+	 */
+	private int missingPadding(Optional<MElement<? extends Element>> elementAfterMe, int myYPosition) {
+		if (!elementAfterMe.isPresent()) {
+			return 0;
+		}
+		MElement<? extends Element> insertionPoint = elementAfterMe.get();
+		Optional<View> diagramView = getDiagramView(insertionPoint);
+		if (!diagramView.isPresent()) {
+			return 0;
+		}
+		int curPadding = insertionPoint.getTop().orElse(0) - myYPosition;
+		int reqPadding = layoutConstraints().getPadding(RelativePosition.BOTTOM, ViewTypes.MESSAGE)
+				+ layoutConstraints().getPadding(RelativePosition.TOP, diagramView.get());
+		if (curPadding < reqPadding) {
+			return reqPadding - curPadding;
+		} else {
+			return 0;
+		}
+	}
+
+	/**
+	 * Returns the element before me based on the element after me.
+	 */
+	private MElement<? extends Element> getElementBeforeMe(List<MElement<? extends Element>> timeline,
+			Optional<MElement<? extends Element>> elementAfterMe, MElement<?> before) {
+
+		MElement<? extends Element> fragmentBeforeMe = getFragmentBeforeMe(timeline, elementAfterMe, before);
+
+		/* for create messages we want to use the lifeline as a reference element */
+		if (fragmentBeforeMe instanceof MMessageEnd) {
+			MMessage message = MMessageEnd.class.cast(fragmentBeforeMe).getOwner();
+			if (message.getElement().getMessageSort() == MessageSort.CREATE_MESSAGE_LITERAL) {
+				Optional<MLifeline> createdLifeline = message.getReceiver();
+				if (createdLifeline.isPresent()) {
+					return createdLifeline.get();
+				}
+			}
+		}
+
+		return fragmentBeforeMe;
+	}
+
+	private MElement<? extends Element> getFragmentBeforeMe(List<MElement<? extends Element>> timeline,
+			Optional<MElement<? extends Element>> elementAfterMe, MElement<?> before) {
+
+		if (!elementAfterMe.isPresent()) {
+			if (before instanceof MLifeline) {
+				Optional<MElement<? extends Element>> after = getLastElementOnThisLifeline(timeline, before);
+				return after.orElse(before);
+			}
+			return before;
+		}
+
+		/* get the element based on timeline */
+		MElement<? extends Element> insertionPoint = elementAfterMe.get();
+		int index = timeline.indexOf(insertionPoint) - 1;
+		if (index >= 0 && index < timeline.size()) {
+			/* there is an earlier element in the timline */
+			MElement<? extends Element> element = timeline.get(index);
+			if (element instanceof MExecution) {
+				Optional<MOccurrence<?>> start = MExecution.class.cast(element).getStart();
+				if (start.isPresent()) {
+					return start.get();
+				}
+			}
+			return element;
+		} else if (index == -2 && before instanceof MLifeline) {
+			/*
+			 * we could not find an element in the timeline. since our fallback element is a lifeline and we
+			 * want to return fragment preferably, get the last fragment in this lifeline
+			 */
+			Optional<MElement<? extends Element>> after = getLastElementOnThisLifeline(timeline, before);
+			return after.orElse(before);
+		} else if (index == -1 && insertionPoint instanceof MOccurrence) {
+			@SuppressWarnings("unchecked")
+			Optional<MLifeline> covered = MOccurrence.class.cast(insertionPoint).getCovered();
+			if (covered.isPresent()) {
+				return covered.get();
+			}
+		}
+
+		/* fallback */
+		return before;
+	}
+
+	private Optional<MElement<? extends Element>> getLastElementOnThisLifeline(
+			List<MElement<? extends Element>> timeline, MElement<?> before) {
+		Set<InteractionFragment> covered = new LinkedHashSet<>(
+				MLifeline.class.cast(before).getElement().getCoveredBys());
+		Optional<MElement<? extends Element>> after = timeline.stream()//
+				.filter(e -> covered.contains(e.getElement()))//
+				.reduce((a, b) -> b);
+		return after;
 	}
 
 	private int relativeTopOfBefore() {
@@ -459,10 +988,13 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	}
 
 	private CreationParameters endParams(Supplier<? extends EObject> insertionPoint) {
-		CreationParameters result = CreationParameters.in(getTarget().getInteraction().getElement(),
-				UMLPackage.Literals.INTERACTION__FRAGMENT);
+		CreationParameters result = CreationParameters.in(interaction(), INTERACTION__FRAGMENT);
 		result.setInsertBefore(insertionPoint);
 		return result;
+	}
+
+	protected Interaction interaction() {
+		return getTarget().getInteraction().getElement();
 	}
 
 	private Optional<Command> replace(OccurrenceSpecification occurrence, MessageEnd msgEnd) {
@@ -475,12 +1007,18 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			// just delete the execution occurrence that is being replaced
 			Command result = DeleteCommand.create(getEditingDomain(), occurrence);
 
+			// It does not make sense to replace an execution start by a message send
+			// nor an execution finish by a message receive
 			if (isStart) {
-				result = result.chain(SetCommand.create(getEditingDomain(), exec,
-						UMLPackage.Literals.EXECUTION_SPECIFICATION__START, msgEnd));
+				result = msgEnd.isReceive()
+						? result.chain(SetCommand.create(getEditingDomain(), exec,
+								EXECUTION_SPECIFICATION__START, msgEnd))
+						: UnexecutableCommand.INSTANCE;
 			} else {
-				result = result.chain(SetCommand.create(getEditingDomain(), exec,
-						UMLPackage.Literals.EXECUTION_SPECIFICATION__FINISH, msgEnd));
+				result = msgEnd.isSend()
+						? result.chain(SetCommand.create(getEditingDomain(), exec,
+								EXECUTION_SPECIFICATION__FINISH, msgEnd))
+						: UnexecutableCommand.INSTANCE;
 			}
 
 			return result;
@@ -513,11 +1051,10 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	 * @return the started or finished execution
 	 */
 	Optional<ExecutionSpecification> getExecution(OccurrenceSpecification occurrence) {
-		Optional<ExecutionSpecification> result = invertSingle(occurrence,
-				UMLPackage.Literals.EXECUTION_SPECIFICATION__START, ExecutionSpecification.class);
+		Optional<ExecutionSpecification> result = invertSingle(occurrence, EXECUTION_SPECIFICATION__START,
+				ExecutionSpecification.class);
 		if (!result.isPresent()) {
-			result = invertSingle(occurrence, UMLPackage.Literals.EXECUTION_SPECIFICATION__FINISH,
-					ExecutionSpecification.class);
+			result = invertSingle(occurrence, EXECUTION_SPECIFICATION__FINISH, ExecutionSpecification.class);
 		}
 		return result;
 	}

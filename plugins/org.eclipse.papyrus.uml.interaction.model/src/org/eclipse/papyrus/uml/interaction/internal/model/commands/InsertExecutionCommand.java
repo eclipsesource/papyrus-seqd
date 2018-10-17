@@ -27,8 +27,10 @@ import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
+import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredAddCommand;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.Action;
@@ -150,8 +152,8 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 		// start and finish occurrences
 		List<MElement<? extends Element>> timeline = getTimeline(getTarget().getInteraction());
 		int absoluteExecY = referenceY.getAsInt() + offset;
-		Optional<MElement<? extends Element>> insertAt = getInsertionPoint(timeline, absoluteExecY)
-				.map(this::normalizeFragmentInsertionPoint);
+		Optional<MElement<? extends Element>> insertAt = getInsertionPoint(timeline, MExecution.class,
+				absoluteExecY).map(this::normalizeFragmentInsertionPoint);
 
 		SemanticHelper semantics = semanticHelper();
 		CreationParameters execParams = CreationParameters.in(getTarget().getInteraction().getElement(),
@@ -172,18 +174,52 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 		result = result.chain(new DeferredAddCommand(getTarget().getElement(),
 				UMLPackage.Literals.LIFELINE__COVERED_BY, start, resultCommand, finish));
 
+		// Make sure we keep enough distance to the element before us
+		int additionalOffset = getAdditionalOffset(timeline, insertAt, absoluteExecY);
+
 		result = result.chain(diagramHelper().createExecutionShape(resultCommand, getTargetView(),
-				referenceY.getAsInt() + offset, height));
+				absoluteExecY + additionalOffset, height));
 
 		// Now we have commands to add the execution specification. But, first we must make
 		// room for it in the diagram. Nudge the element that will follow the new execution
-		Optional<Command> makeSpace = insertAt
-				.flatMap(insertionPoint -> createNudgeCommand(insertionPoint, execParams.isInsertBefore()));
+		Optional<Command> makeSpace = insertAt.flatMap(
+				insertionPoint -> createNudgeCommand(insertionPoint, absoluteExecY + additionalOffset));
 		if (makeSpace.isPresent()) {
 			result = makeSpace.get().chain(result);
 		}
 
 		return result;
+	}
+
+	private int getAdditionalOffset(List<MElement<? extends Element>> timeline,
+			Optional<MElement<? extends Element>> elementAfterMe, int insertionY) {
+		MElement<? extends Element> elementBeforeMe = getElementBeforeMe(timeline, elementAfterMe);
+		Optional<View> diagramView = getDiagramView(elementBeforeMe);
+		if (!diagramView.isPresent()) {
+			return 0;
+		}
+		int curPadding = insertionY - elementBeforeMe.getBottom().orElse(0);
+		int reqPadding = layoutHelper().getConstraints().getPadding(RelativePosition.BOTTOM,
+				diagramView.get())
+				+ layoutHelper().getConstraints().getPadding(RelativePosition.TOP,
+						ViewTypes.EXECUTION_SPECIFICATION);
+		if (curPadding < reqPadding) {
+			return reqPadding - curPadding;
+		} else {
+			return 0;
+		}
+	}
+
+	private MElement<? extends Element> getElementBeforeMe(List<MElement<? extends Element>> timeline,
+			Optional<MElement<? extends Element>> elementAfterMe) {
+		if (!elementAfterMe.isPresent()) {
+			return before;
+		}
+		int index = timeline.indexOf(elementAfterMe.get()) - 1;
+		if (index >= 0 && index < timeline.size()) {
+			return timeline.get(index);
+		}
+		return before;
 	}
 
 	/**
@@ -195,26 +231,25 @@ public class InsertExecutionCommand extends ModelCommand<MLifelineImpl> implemen
 	 * 
 	 * @param insertionPoint
 	 *            the insertion point of the execution's insert command.
-	 * @param isInsertBefore
-	 *            whether or not, the insert command inserted before or after the insertion point.
+	 * @param insertionYPosition
+	 * @param additionalOffset
 	 * @return the nudge command.
 	 */
 	protected Optional<Command> createNudgeCommand(MElement<? extends Element> insertionPoint,
-			boolean isInsertBefore) {
-		final MElement<? extends Element> nudgeStart;
-		if (isInsertBefore) {
-			nudgeStart = getTarget().preceding(insertionPoint).orElse(before);
-		} else {
-			nudgeStart = insertionPoint;
+			int insertionYPosition) {
+		Optional<View> diagramView = getDiagramView(insertionPoint);
+		if (!diagramView.isPresent()) {
+			return Optional.of(insertionPoint.nudge(height));
 		}
-
-		MElement<?> distanceFrom = insertionPoint;
-		Optional<Command> makeSpace = getTarget().following(nudgeStart).map(el -> {
-			OptionalInt distance = el.verticalDistance(distanceFrom);
-			return distance.isPresent() ? el.nudge(height) : null;
-		});
-
-		return makeSpace;
+		int curPadding = insertionPoint.getTop().orElse(0) - insertionYPosition;
+		int reqPadding = layoutHelper().getConstraints().getPadding(RelativePosition.BOTTOM,
+				ViewTypes.EXECUTION_SPECIFICATION)
+				+ layoutHelper().getConstraints().getPadding(RelativePosition.TOP, diagramView.get());
+		if (curPadding < reqPadding) {
+			return Optional.of(insertionPoint.nudge(height + (reqPadding - curPadding)));
+		} else {
+			return Optional.of(insertionPoint.nudge(height));
+		}
 	}
 
 	/**

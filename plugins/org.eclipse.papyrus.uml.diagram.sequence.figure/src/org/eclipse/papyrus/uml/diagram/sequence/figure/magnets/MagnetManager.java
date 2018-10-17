@@ -12,12 +12,12 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.figure.magnets;
 
+import static java.util.Comparator.comparingDouble;
+
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.function.ToDoubleFunction;
 import java.util.stream.Stream;
 
 import org.eclipse.draw2d.geometry.Point;
@@ -50,35 +50,21 @@ public class MagnetManager implements IMagnetManager {
 		magnets.remove(magnet);
 	}
 
-	/**
-	 * Find the magnets within whose influence the given {@code location} lies, in increasing order of
-	 * distance from that location (and so decreasing order of influence).
-	 * 
-	 * @param location
-	 *            a location in the diagram, in absolute coördinates
-	 * @return the magnets whose influence is felt at that {@code location}
-	 */
 	@Override
-	public Stream<IMagnet> getMagnets(Point location) {
+	public Stream<IMagnet> getMagnets(Point location, Predicate<? super IMagnet> excluding) {
 		if (!isEnabled()) {
 			return Stream.empty();
 		}
 
-		return magnets.stream().filter(influences(location))
-				.sorted(Comparator.comparingDouble(distance(location)));
+		return magnets.stream().filter(excluding.negate()) //
+				.filter(influences(location)) //
+				.sorted(comparingDouble(m -> m.distance(location)));
 	}
 
-	/**
-	 * Find the magnet that captures a {@code location}.
-	 * 
-	 * @param location
-	 *            a location, in absolute coördinates
-	 * @return the magnet that captures the {@code location}
-	 */
 	@Override
-	public Optional<IMagnet> getCapturingMagnet(Point location) {
+	public Optional<IMagnet> getCapturingMagnet(Point location, Predicate<? super IMagnet> excluding) {
 		// The first magnet is the nearest, and if it isn't capturing, then none is
-		return getMagnets(location).findFirst().filter(captures(location));
+		return getMagnets(location, excluding).findFirst().filter(captures(location));
 	}
 
 	@Override
@@ -108,10 +94,6 @@ public class MagnetManager implements IMagnetManager {
 
 	private Predicate<IMagnet> captures(Point location) {
 		return magnet -> magnet.captures(location);
-	}
-
-	private ToDoubleFunction<IMagnet> distance(Point location) {
-		return magnet -> magnet.getLocation().getDistance(location);
 	}
 
 	public static Optional<MagnetManager> get(Object object) {

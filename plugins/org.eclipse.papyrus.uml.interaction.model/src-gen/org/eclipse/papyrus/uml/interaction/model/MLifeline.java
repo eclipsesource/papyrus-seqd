@@ -19,6 +19,8 @@ import java.util.OptionalInt;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.Shape;
+import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
+import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
@@ -76,6 +78,22 @@ public interface MLifeline extends MElement<Lifeline> {
 	 * @generated
 	 */
 	List<MExecution> getExecutions();
+
+	/**
+	 * Returns the value of the '<em><b>Destruction</b></em>' attribute. <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Destruction</em>' containment reference isn't clear, there really should be
+	 * more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Destruction</em>' attribute.
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMLifeline_Destruction()
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Optional&lt;org.eclipse.papyrus.uml.interaction.model.MDestruction&gt;"
+	 *        required="true" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	Optional<MDestruction> getDestruction();
 
 	/**
 	 * Returns the value of the '<em><b>Left</b></em>' attribute. <!-- begin-user-doc -->
@@ -168,6 +186,15 @@ public interface MLifeline extends MElement<Lifeline> {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Optional&lt;org.eclipse.papyrus.uml.interaction.model.MDestruction&gt;"
+	 *        required="true" destructionRequired="true"
+	 * @generated
+	 */
+	Optional<MDestruction> getDestruction(DestructionOccurrenceSpecification destruction);
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.CreationCommand&lt;org.eclipse.uml2.uml.ExecutionSpecification&gt;"
 	 *        required="true" beforeRequired="true" offsetRequired="true" heightRequired="true"
 	 *        specificationRequired="true"
@@ -243,6 +270,73 @@ public interface MLifeline extends MElement<Lifeline> {
 	 */
 	CreationCommand<Message> insertMessageAfter(MElement<?> beforeSend, int sendOffset, MLifeline receiver,
 			MElement<?> beforeRecv, int recvOffset, MessageSort sort, NamedElement signature);
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * 
+	 * @param beforeSend
+	 *            The element after which to insert the message send event. If it is an interaction fragment
+	 *            on this lifeline, then the new message’s send event is inserted after this element. If it is
+	 *            a message, then the new message’s send event is inserted after the referenced message’s end
+	 *            that covers this lifeline.
+	 * @param sendOffset
+	 *            Vertical offset of the send event from the element before it, or from the lifeline head if
+	 *            none.
+	 * @param receiver
+	 *            The lifeline to receive the message. May be the same as is sending it (this lifeline).
+	 * @param beforeRecv
+	 *            The element after which to insert the message receive event. If it is an interaction
+	 *            fragment on the {@code receiver}, then the new message’s receive event is inserted after
+	 *            this element. If it is a message, then the new message’s receive event is inserted after the
+	 *            referenced message’s end that covers this lifeline.
+	 * @param recvOffset
+	 *            Vertical offset of the receive end from the element before it, or from the lifeline head if
+	 *            none.
+	 * @param sort
+	 *            The sort of message to create.
+	 * @param signature
+	 *            An optional message signature, either a signal or an operation.
+	 * @param executionCreationConfig
+	 *            The configuration specifying details about the creation of an execution associated for the
+	 *            message. <!-- end-model-doc -->
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.CreationCommand&lt;org.eclipse.uml2.uml.Message&gt;"
+	 *        required="true" beforeSendRequired="true" sendOffsetRequired="true" receiverRequired="true"
+	 *        beforeRecvRequired="true" recvOffsetRequired="true" sortRequired="true"
+	 *        executionCreationConfigDataType="org.eclipse.papyrus.uml.interaction.model.ExecutionCreationConfig"
+	 * @generated
+	 */
+	CreationCommand<Message> insertMessageAfter(MElement<?> beforeSend, int sendOffset, MLifeline receiver,
+			MElement<?> beforeRecv, int recvOffset, MessageSort sort, NamedElement signature,
+			ExecutionCreationCommandParameter executionCreationCommandParameter);
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * 
+	 * @param before
+	 *            The element after which to insert the message. If it is an interaction fragment on this
+	 *            lifeline, then the new message’s send event is inserted after this element. If it is a
+	 *            message, then the new message’s send event is inserted after the referenced message’s end
+	 *            that covers this lifeline.
+	 * @param offset
+	 *            Vertical offset of the message from the element {@code before} it.
+	 * @param receiver
+	 *            The lifeline to receive the message. May be the same as is sending it (this lifeline).
+	 * @param sort
+	 *            The sort of message to create.
+	 * @param signature
+	 *            An optional message signature, either a signal or an operation.
+	 * @param executionCreationConfig
+	 *            The configuration specifying details about the creation of an execution associated for the
+	 *            message. <!-- end-model-doc -->
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.CreationCommand&lt;org.eclipse.uml2.uml.Message&gt;"
+	 *        required="true" beforeRequired="true" offsetRequired="true" receiverRequired="true"
+	 *        sortRequired="true"
+	 *        executionCreationConfigDataType="org.eclipse.papyrus.uml.interaction.model.ExecutionCreationConfig"
+	 * @generated
+	 */
+	CreationCommand<Message> insertMessageAfter(MElement<?> before, int offset, MLifeline receiver,
+			MessageSort sort, NamedElement signature,
+			ExecutionCreationCommandParameter executionCreationCommandParameter);
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> Query the element covering this

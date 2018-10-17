@@ -21,7 +21,6 @@ import java.util.Optional;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
-import org.eclipse.uml2.uml.InteractionFragment;
 
 import junit.textui.TestRunner;
 
@@ -92,9 +91,9 @@ public class MExecutionTest extends MElementTest {
 	protected void initializeFixture() {
 		/* remove test may remove execution -> avoid NPE */
 		List<MExecution> executions = interaction.getLifelines().get(1).getExecutions();
-		if(executions.isEmpty()) {
+		if (executions.isEmpty()) {
 			setFixture(null);
-		}else {
+		} else {
 			setFixture(executions.get(0));
 		}
 	}
@@ -126,13 +125,14 @@ public class MExecutionTest extends MElementTest {
 
 	@Override
 	public void testGetTop() {
-		// 12 {frame} + 30 {title} + 25 {lifeline} + 25 {head} + 25 {y}
-		assertThat(getFixture().getTop(), isPresent(117));
+		// Note that this diagram has no interaction name label!
+		// 12 {frame} + 5 {insets} + 25 {lifeline} + 25 {head} + 25 {y}
+		assertThat(getFixture().getTop(), isPresent(92));
 	}
 
 	@Override
 	public void testGetBottom() {
-		assertThat(getFixture().getBottom(), isPresent(267)); // 117 {top} + 150 {height}
+		assertThat(getFixture().getBottom(), isPresent(242)); // 92 {top} + 150 {height}
 	}
 
 	@Override
@@ -189,32 +189,33 @@ public class MExecutionTest extends MElementTest {
 		super.testGetDiagramView();
 		assertThat(getFixture().getDiagramView().get().getType(), is("Shape_Execution_Specification"));
 	}
-	
+
+	@Override
 	public void testRemove() {
 		MExecution execution = getFixture();
-		
+
 		/* act */
 		Command command = execution.remove();
 		assertThat(command, executable());
 		execute(command);
-		
+
 		/* assert execution with messages removed */
 		/* assert logical representation */
 		assertEquals(2, interaction.getLifelines().size());
 		assertTrue(interaction.getLifelines().get(1).getExecutions().isEmpty());
 		assertTrue(interaction.getMessages().isEmpty());
-		
+
 		/* assert semantics */
 		assertEquals(2, umlInteraction.getLifelines().size());
 		assertTrue(umlInteraction.getLifelines().get(1).getCoveredBys().isEmpty());
 		assertTrue(umlInteraction.getFragments().isEmpty());
 		assertTrue(umlInteraction.getMessages().isEmpty());
-		
+
 		/* assert diagram */
 		assertTrue(sequenceDiagram.getEdges().isEmpty());
 		Optional<Shape> lifeLineView = interaction.getLifelines().get(1).getDiagramView();
 		assertTrue(lifeLineView.isPresent());
-		assertFalse(findTypeInChildren(lifeLineView.get(),"Shape_Execution_Specification").isPresent());
+		assertFalse(findTypeInChildren(lifeLineView.get(), "Shape_Execution_Specification").isPresent());
 	}
 
 } // MExecutionTest

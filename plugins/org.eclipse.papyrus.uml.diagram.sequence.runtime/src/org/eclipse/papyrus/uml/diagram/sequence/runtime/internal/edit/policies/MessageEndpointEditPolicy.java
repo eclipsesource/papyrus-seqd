@@ -97,9 +97,8 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 			Message message = (Message)((IGraphicalEditPart)getHost()).resolveSemanticElement();
 			boolean synch = MessageUtil.isSynchronous(message.getMessageSort());
 			boolean source = request.isMovingStartAnchor();
-
 			feedbackHelper = new MessageFeedbackHelper(source ? Mode.MOVE_SOURCE : Mode.MOVE_TARGET, synch,
-					getMagnetManager());
+					getMagnetManager(), getLayoutConstraints());
 			feedbackHelper.setConnection(getConnection());
 		}
 		return feedbackHelper;
@@ -178,7 +177,8 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 			Message message = (Message)((IGraphicalEditPart)getHost()).resolveSemanticElement();
 			boolean synch = MessageUtil.isSynchronous(message.getMessageSort());
 
-			feedbackHelper = new MessageFeedbackHelper(Mode.MOVE_BOTH, synch, getMagnetManager());
+			feedbackHelper = new MessageFeedbackHelper(Mode.MOVE_BOTH, synch, getMagnetManager(),
+					getLayoutConstraints());
 			feedbackHelper.setConnection(getConnection());
 
 			Point grabbedAt = lastMouseLocation;
@@ -219,13 +219,15 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 
 			int magnetDelta = 0;
 			// Target-end magnets have precedence
-			Optional<IMagnet> magnet = getMagnetManager().getCapturingMagnet(targetLocation);
+			Optional<IMagnet> magnet = getMagnetManager().getCapturingMagnet(targetLocation,
+					IMagnet.ownedBy(getHostFigure()));
 			if (magnet.isPresent()) {
 				Point newTargetLocation = targetLocation.getCopy();
 				newTargetLocation.setLocation(magnet.get().getLocation());
 				magnetDelta = newTargetLocation.y() - targetLocation.y();
 			} else {
-				magnet = getMagnetManager().getCapturingMagnet(sourceLocation);
+				magnet = getMagnetManager().getCapturingMagnet(sourceLocation,
+						IMagnet.ownedBy(getHostFigure()));
 				if (magnet.isPresent()) {
 					Point newSourceLocation = sourceLocation.getCopy();
 					newSourceLocation.setLocation(magnet.get().getLocation());

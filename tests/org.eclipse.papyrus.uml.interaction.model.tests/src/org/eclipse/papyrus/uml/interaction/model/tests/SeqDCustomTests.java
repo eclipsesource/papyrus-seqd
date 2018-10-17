@@ -14,11 +14,15 @@ package org.eclipse.papyrus.uml.interaction.model.tests;
 
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.tests.DefaultLayoutHelperTest;
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.tests.LogicalModelAdapterTest;
+import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateDeleteMessageTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateExecutionTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateMessageTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateMessageTestB;
+import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateSyncMessageTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.SemanticOrderAfterCreationOfElementOnTopTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.SemanticOrderAfterInsertingBetweenMsgStartAndFinishTest;
+import org.eclipse.papyrus.uml.interaction.model.tests.creation.padding.CreateExecutionPaddingTest;
+import org.eclipse.papyrus.uml.interaction.model.tests.creation.padding.CreateMessagePaddingTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.deletion.BasicDeletionTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.deletion.CreationMessageDeletionTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.deletion.DeleteExecutionTest;
@@ -36,13 +40,15 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ //
 		DefaultLayoutHelperTest.class, //
-		CreateMessageTest.class, CreateMessageTestB.class, //
+		CreateMessageTest.class, CreateSyncMessageTest.class, CreateMessageTestB.class,
+		CreateDeleteMessageTest.class, //
 		CreateExecutionTest.class, DeleteExecutionTest.class, //
 		CreationMessageDeletionTest.class, BasicDeletionTest.class, DeletionMessageDeletionTest.class, //
 		SemanticOrderAfterCreationOfElementOnTopTest.class,
 		SemanticOrderAfterInsertingBetweenMsgStartAndFinishTest.class, //
 		LogicalModelAdapterTest.class, //
 		LogicalModelPredicatesTest.class, //
+		CreateExecutionPaddingTest.class, CreateMessagePaddingTest.class//
 })
 
 public class SeqDCustomTests {

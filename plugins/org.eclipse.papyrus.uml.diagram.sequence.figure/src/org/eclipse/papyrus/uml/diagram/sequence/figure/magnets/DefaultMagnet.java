@@ -12,12 +12,15 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.figure.magnets;
 
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 
 /**
  * A simple implementation of the {@linkplain IMagnet magnet} protocol.
  */
 public class DefaultMagnet implements IMagnet {
+
+	private final IFigure owner;
 
 	private final int strength;
 
@@ -26,13 +29,21 @@ public class DefaultMagnet implements IMagnet {
 	/**
 	 * Initializes me with my {@code strength}.
 	 * 
+	 * @param owner
+	 *            my owner
 	 * @param strength
 	 *            my strength
 	 */
-	public DefaultMagnet(int strength) {
+	public DefaultMagnet(IFigure owner, int strength) {
 		super();
 
+		this.owner = owner;
 		this.strength = strength;
+	}
+
+	@Override
+	public IFigure getOwner() {
+		return owner;
 	}
 
 	@Override

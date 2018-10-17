@@ -11,16 +11,25 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal;
 
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.core.preferences.PreferencesHint;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.papyrus.infra.core.log.LogHelper;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.layout.DiagramFontHelper;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.preferences.LightweightSequenceDiagramPreferences;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
+import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -38,6 +47,8 @@ public class Activator extends AbstractUIPlugin {
 
 	private static Activator instance;
 
+	private LightweightSequenceDiagramPreferences preferences;
+
 	/**
 	 * The constructor
 	 */
@@ -50,6 +61,8 @@ public class Activator extends AbstractUIPlugin {
 		instance = this;
 		PreferencesHint.registerPreferenceStore(DIAGRAM_PREFERENCES_HINT, getPreferenceStore());
 		log = new LogHelper(instance);
+
+		LogicalModelPlugin.getInstance().setFontHelperFactory(DiagramFontHelper::new);
 	}
 
 	@Override
@@ -65,6 +78,17 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static Activator getDefault() {
 		return instance;
+	}
+
+	/**
+	 * Obtain the diagram helper for an editing domain.
+	 * 
+	 * @param editingDomain
+	 *            an editing domain
+	 * @return its diagram helper
+	 */
+	public DiagramHelper getDiagramHelper(EditingDomain editingDomain) {
+		return LogicalModelPlugin.INSTANCE.getDiagramHelper(editingDomain);
 	}
 
 	/**
@@ -119,4 +143,23 @@ public class Activator extends AbstractUIPlugin {
 	public SemanticHelper getSemanticHelper(EditingDomain editingDomain) {
 		return LogicalModelPlugin.INSTANCE.getSemanticHelper(editingDomain);
 	}
+
+	/**
+	 * Provide this plug-in's preference store, which searches values in {@link InstanceScope}, then
+	 * {@link ConfigurationScope}, and then {@link DefaultScope}.
+	 */
+	@Override
+	public IPreferenceStore getPreferenceStore() {
+		ScopedPreferenceStore store = (ScopedPreferenceStore)super.getPreferenceStore();
+		store.setSearchContexts(new IScopeContext[] {InstanceScope.INSTANCE, ConfigurationScope.INSTANCE });
+		return store;
+	}
+
+	public LightweightSequenceDiagramPreferences getPreferences() {
+		if (preferences == null) {
+			preferences = new LightweightSequenceDiagramPreferences(getPreferenceStore());
+		}
+		return preferences;
+	}
+
 }

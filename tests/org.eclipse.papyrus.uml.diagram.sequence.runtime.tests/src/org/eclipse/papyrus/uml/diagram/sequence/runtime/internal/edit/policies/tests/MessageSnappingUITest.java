@@ -28,13 +28,10 @@ import java.util.Arrays;
 import java.util.function.Function;
 
 import org.eclipse.draw2d.Connection;
-import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
-import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.commands.SetBoundsCommand;
 import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
 import org.eclipse.gmf.runtime.notation.Location;
@@ -43,6 +40,7 @@ import org.eclipse.papyrus.commands.wrappers.GMFtoGEFCommandWrapper;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineBodyGraphicalNodeEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.eclipse.uml2.uml.ExecutionSpecification;
@@ -50,11 +48,14 @@ import org.eclipse.uml2.uml.Message;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.internal.runners.model.ReflectiveCallable;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.junit.runners.model.Statement;
 
 /**
  * Integration test cases for the {@link LifelineBodyGraphicalNodeEditPolicy}
@@ -67,6 +68,11 @@ import org.junit.runners.Parameterized.Parameters;
 @Maximized
 @RunWith(Parameterized.class)
 public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
+
+	@ClassRule
+	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs()
+			.dontCreateExecutionsForSyncMessages();
+
 	// Horizontal position of the first lifeline's body
 	private static final int LL1_BODY_X = 121;
 
@@ -79,11 +85,11 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	private static final boolean EXEC_FINISH = false;
 	private static final int EXEC_HEIGHT = 60;
 
+	private final boolean snapping;
 	private final EditorFixture.Modifiers modifiers;
 	private final Function<Matcher<?>, Matcher<?>> modifiersMatcherFunction;
+	private EditPart execEP;
 	private ExecutionSpecification exec;
-	private int execTop;
-	private int execBottom;
 
 	/**
 	 * Initializes me.
@@ -97,23 +103,56 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	public MessageSnappingUITest(boolean withSnap, String snapString) {
 		super();
 
+		this.snapping = withSnap;
 		this.modifiers = withSnap ? editor.unmodified() : editor.modifierKey(MODIFIER_NO_SNAPPING);
 		modifiersMatcherFunction = withSnap ? CoreMatchers::is : CoreMatchers::not;
 	}
 
 	@Test
-	public void createSyncCallMessage() {
-		EditPart messageEP = editor.with(modifiers,
-				() -> createConnection(SequenceElementTypes.Sync_Message_Edge,
-						at(LL1_BODY_X, withinMagnet(EXEC_START)),
-						at(LL2_BODY_X, withinMagnet(EXEC_START))));
+	public void createSyncCallMessage() throws Throwable {
+		// The outer test context disables the creation of execution specifications,
+		// but we need to verify that there wouldn't be a prompt to create an execution
+		// even if the preference is set when binding to the execution start. Unless,
+		// of course, we aren't snapping because then we won't be on the execution
+		LightweightSeqDPrefs prefs = this.snapping
+				? new LightweightSeqDPrefs().createExecutionsForSyncMessages()
+				: new LightweightSeqDPrefs().dontCreateExecutionsForSyncMessages();
 
-		// The receiving end snaps to the exec start and the sending end matches
-		assertThat(messageEP, withModifiers(runs(LL1_BODY_X, execTop, LL2_BODY_X, execTop, 1)));
+		Statement test = new Statement() {
 
-		// The message receive event starts the execution
-		Message message = (Message) messageEP.getAdapter(EObject.class);
-		assertThat(exec.getStart(), withModifiers(is(message.getReceiveEvent())));
+			@Override
+			public void evaluate() throws Throwable {
+				EditPart messageEP = editor.with(modifiers,
+						() -> createConnection(SequenceElementTypes.Sync_Message_Edge,
+								at(LL1_BODY_X, withinMagnet(EXEC_START)),
+								at(LL2_BODY_X, withinMagnet(EXEC_START))));
+
+				// The receiving end snaps to the exec start and the sending end matches
+				int execTop = getTop(execEP);
+				assertThat(messageEP, withModifiers(runs(LL1_BODY_X, execTop, LL2_BODY_X, execTop, 1)));
+
+				// The message receive event starts the execution
+				Message message = (Message) messageEP.getAdapter(EObject.class);
+				assertThat(exec.getStart(), withModifiers(is(message.getReceiveEvent())));
+
+				// The message send and receive both are semantically before the execution
+				assertThat("Message ends out of order", message.getSendEvent(),
+						editor.semanticallyPrecedes(message.getReceiveEvent()));
+				assertThat("Execution out of order", exec,
+						editor.semanticallyFollows(message.getReceiveEvent()));
+				assertThat("Execution finish out of order", exec,
+						editor.semanticallyPrecedes(exec.getFinish()));
+			}
+		};
+
+		new ReflectiveCallable() {
+
+			@Override
+			protected Object runReflectiveCall() throws Throwable {
+				prefs.apply(test, Description.EMPTY).evaluate();
+				return null;
+			}
+		}.run();
 	}
 
 	@Test
@@ -123,6 +162,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 						at(LL2_BODY_X, withinMagnet(EXEC_START))));
 
 		// The receiving end snaps to the exec start. The sending end doesn't match
+		int execTop = getTop(execEP);
 		assertThat(messageEP, withModifiers(runs(LL1_BODY_X, 120, LL2_BODY_X, execTop, 1)));
 
 		// The message receive event starts the execution
@@ -138,6 +178,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 						at(LL1_BODY_X, withinMagnet(EXEC_FINISH))));
 
 		// The sending end snaps to the exec start and the receiving end matches
+		int execBottom = getBottom(execEP);
 		assertThat(messageEP, withModifiers(runs(LL2_BODY_X, execBottom, LL1_BODY_X, execBottom, 1)));
 
 		// The message send event finishes the execution
@@ -158,10 +199,10 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		assumeThat("Message not moved", newMessageMidpoint,
 				not(isPoint(midMessage.x(), midMessage.y(), 5)));
 
+		int execTop = getTop(execEP);
 		assertThat(messageEP, withModifiers(runs(LL1_BODY_X, execTop, LL2_BODY_X, execTop, 1)));
 	}
 
-	@Ignore("Logical model not calculating bottom of execution correctly.")
 	@Test
 	public void moveReplyMessage() {
 		EditPart messageEP = createConnection(SequenceElementTypes.Reply_Message_Edge, at(LL2_BODY_X, 240),
@@ -171,6 +212,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		// The sending end snaps to the exec start and the receiving end matches
 		editor.with(modifiers,
 				() -> editor.moveSelection(midMessage, at(midMessage.x(), withinMagnet(EXEC_FINISH))));
+		int execBottom = getBottom(execEP);
 		assertThat(messageEP, withModifiers(runs(LL2_BODY_X, execBottom, LL1_BODY_X, execBottom, 1)));
 	}
 
@@ -185,6 +227,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 
 		// First, extend the bottom edge of the execution specification. Have to
 		// subtract 1 to grab on (inside-ish) the actual bottom edge
+		int execBottom = getBottom(execEP);
 		editor.moveSelection(at(LL2_BODY_X, execBottom - 1), at(LL2_BODY_X, execBottom + 100));
 
 		int newBottomY = getBottom(getLastCreatedEditPart());
@@ -219,14 +262,14 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		editor.getDiagramEditPart().getDiagramEditDomain().getDiagramCommandStack()
 				.execute(GMFtoGEFCommandWrapper.wrap(command));
 
-		int newTopY = execTop + 100;
+		int newTopY = getTop(execEP);
 
 		EditPart messageEP = editor.with(modifiers,
-				() -> createConnection(SequenceElementTypes.Reply_Message_Edge, //
-						at(LL2_BODY_X, withinMagnet(newTopY, EXEC_START)),
-						at(LL1_BODY_X, withinMagnet(newTopY, EXEC_START))));
+				() -> createConnection(SequenceElementTypes.Sync_Message_Edge, //
+						at(LL1_BODY_X, withinMagnet(newTopY, EXEC_START)),
+						at(LL2_BODY_X, withinMagnet(newTopY, EXEC_START))));
 		assertThat("No snap: infer that magnet not moved", messageEP,
-				runs(LL2_BODY_X, newTopY, LL1_BODY_X, newTopY, 1));
+				runs(LL1_BODY_X, newTopY, LL2_BODY_X, newTopY, 1));
 	}
 
 	//
@@ -243,16 +286,11 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	@Before
 	public void createExecutionSpecification() {
-		EditPart exec = createShape(SequenceElementTypes.Behavior_Execution_Shape,
+		execEP = createShape(SequenceElementTypes.Behavior_Execution_Shape, //
 				at(LL2_BODY_X, EXEC_START_Y), sized(0, EXEC_HEIGHT));
-		assumeThat("Execution specification not created", exec, notNullValue());
+		assumeThat("Execution specification not created", execEP, notNullValue());
 
-		this.exec = (ExecutionSpecification) exec.getAdapter(EObject.class);
-
-		// Get the top and bottom of the execution as realized in the diagram editor,
-		// which may differ slightly from the expectation in a platform-dependent way
-		this.execTop = getTop(exec);
-		this.execBottom = getBottom(exec);
+		exec = (ExecutionSpecification) execEP.getAdapter(EObject.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -261,25 +299,11 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	}
 
 	int withinMagnet(boolean execStart) {
-		return withinMagnet(execStart ? execTop : execBottom, execStart);
+		return withinMagnet(execStart ? getTop(execEP) : getBottom(execEP), execStart);
 	}
 
 	int withinMagnet(int y, boolean execStart) {
 		return execStart ? y - 9 : y + 9;
-	}
-
-	static int getTop(EditPart editPart) {
-		IFigure figure = ((GraphicalEditPart) editPart).getFigure();
-		Rectangle bounds = figure.getBounds().getCopy();
-		figure.getParent().translateToAbsolute(bounds);
-		return bounds.y();
-	}
-
-	static int getBottom(EditPart editPart) {
-		IFigure figure = ((GraphicalEditPart) editPart).getFigure();
-		Rectangle bounds = figure.getBounds().getCopy();
-		figure.getParent().translateToAbsolute(bounds);
-		return bounds.bottom();
 	}
 
 	static Point getMessageGrabPoint(EditPart editPart) {

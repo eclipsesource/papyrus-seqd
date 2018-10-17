@@ -29,8 +29,12 @@ import org.eclipse.papyrus.uml.interaction.graph.GroupKind;
 import org.eclipse.papyrus.uml.interaction.graph.Tag;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
+import org.eclipse.papyrus.uml.interaction.model.MMessage;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Message;
+import org.eclipse.uml2.uml.MessageEnd;
 
 /**
  * A vertical nudge operation. A nudge moves an element up or down and all of its dependents with it. It does
@@ -140,7 +144,9 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 					int sourceY = layoutHelper().getYPosition(source, sourceOn);
 					int targetY = layoutHelper().getYPosition(target, targetOn);
 
-					chain(layoutHelper().setYPosition(source, sourceOn, sourceY + delta));
+					if (!skipMove(sourceOn)) {
+						chain(layoutHelper().setYPosition(source, sourceOn, sourceY + delta));
+					}
 
 					Vertex targetVtx = vertex.graph().vertex(message.getReceiveEvent());
 					if (targetVtx.hasTag(Tag.LIFELINE_CREATION)) {
@@ -159,7 +165,9 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 						});
 					} else {
 						// Ordinary message end. Move it down
-						chain(layoutHelper().setYPosition(target, targetOn, targetY + delta));
+						if (!skipMove(targetOn)) {
+							chain(layoutHelper().setYPosition(target, targetOn, targetY + delta));
+						}
 					}
 				}
 			} else if (vertex.hasTag(Tag.EXECUTION_FINISH)) {
@@ -175,7 +183,37 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 			} else if (view instanceof Diagram) {
 				// Can't nudge the diagram, of course
 				chain(UnexecutableCommand.INSTANCE);
+			} else if (isReceiveMessageEndNudgeCommand(element)) {
+				/*
+				 * If this is an explicit nudge command for a message end, make sure that the message receive
+				 * end is nudged, but not the start
+				 */
+				Optional<Connector> connector = getTarget().getInteraction().getElement(element)//
+						.filter(MMessageEnd.class::isInstance).map(MMessageEnd.class::cast)//
+						.map(MMessageEnd::getOwner)//
+						.map(MMessage::getDiagramView)//
+						.filter(Optional::isPresent).map(Optional::get);
+				if (connector.isPresent()) {
+					IdentityAnchor target = (IdentityAnchor)connector.get().getTargetAnchor();
+					Shape targetOn = (Shape)connector.get().getTarget();
+					int targetY = layoutHelper().getYPosition(target, targetOn);
+					chain(layoutHelper().setYPosition(target, targetOn, targetY + delta));
+				}
 			}
+		}
+
+		private boolean isReceiveMessageEndNudgeCommand(Element element) {
+			if (element != NudgeCommand.this.getTarget().getElement()) {
+				return false; // nudge command was created for different element
+			}
+			return element instanceof MessageEnd && MessageEnd.class.cast(element).isReceive();
+		}
+
+		/**
+		 * Only move message ends when anchored on lifeline.
+		 */
+		private boolean skipMove(Shape shape) {
+			return !ViewTypes.LIFELINE_BODY.equals(shape.getType());
 		}
 	}
 

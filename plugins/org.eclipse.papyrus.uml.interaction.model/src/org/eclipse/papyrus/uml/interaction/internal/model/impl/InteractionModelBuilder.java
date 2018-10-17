@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.uml.interaction.graph.Graph;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
+import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Interaction;
@@ -135,8 +136,19 @@ public class InteractionModelBuilder {
 				return lifeline.addExecutionOccurrence(occurrence);
 			}
 
-			// TODO: Destruction occurrences
-			// TODO: Occurrences withing the scope of executions
+			@Override
+			public MElementImpl<?> caseDestructionOccurrenceSpecification(
+					DestructionOccurrenceSpecification occurrence) {
+
+				if (occurrence.getMessage() != null) {
+					// Message ends are handled separately
+					return null;
+				}
+
+				return lifeline.addDestruction(occurrence);
+			}
+
+			// TODO: Occurrences within the scope of executions
 			// TODO: Nested executions
 
 		}::doSwitch;

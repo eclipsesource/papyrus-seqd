@@ -14,6 +14,8 @@ package org.eclipse.papyrus.uml.interaction.internal.model.spi.impl;
 
 import static org.eclipse.papyrus.uml.interaction.graph.util.Suppliers.compose;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.IntSupplier;
@@ -24,6 +26,7 @@ import org.eclipse.emf.common.command.CommandWrapper;
 import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.command.DeleteCommand;
+import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.notation.Bounds;
@@ -34,9 +37,12 @@ import org.eclipse.gmf.runtime.notation.LayoutConstraint;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.NotationFactory;
 import org.eclipse.gmf.runtime.notation.NotationPackage;
+import org.eclipse.gmf.runtime.notation.RelativeBendpoints;
+import org.eclipse.gmf.runtime.notation.Routing;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.Size;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.gmf.runtime.notation.datatype.RelativeBendpoint;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredCreateCommand;
@@ -49,6 +55,7 @@ import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
+import org.eclipse.uml2.uml.MessageSort;
 import org.eclipse.uml2.uml.OccurrenceSpecification;
 import org.eclipse.uml2.uml.UMLPackage;
 
@@ -169,6 +176,12 @@ public class DefaultDiagramHelper implements DiagramHelper {
 	@Override
 	public CreationCommand<Shape> createExecutionShape(Supplier<? extends ExecutionSpecification> execution,
 			Shape lifelineBody, int yPosition, int height) {
+		return createExecutionShape(execution, lifelineBody, () -> yPosition, height);
+	}
+
+	@Override
+	public CreationCommand<Shape> createExecutionShape(Supplier<? extends ExecutionSpecification> execution,
+			Shape lifelineBody, IntSupplier yPosition, int height) {
 
 		// TODO: The Logical Model is required to have no dependencies on the diagram editor,
 		// but this is usually the responsibility of a View Provider. That should be okay ...
@@ -187,8 +200,9 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			result.setElement(execution.get());
 
 			Bounds bounds = NotationFactory.eINSTANCE.createBounds();
-			bounds.setX((width - execWidth) / 2); // Relative to the parent
-			bounds.setY(layoutHelper().toRelativeY(result, lifelineBody, yPosition)); // Relative to parent
+			// x and y relative to the parent
+			bounds.setX((width - execWidth) / 2);
+			bounds.setY(layoutHelper().toRelativeY(result, lifelineBody, yPosition.getAsInt()));
 			bounds.setWidth(execWidth);
 			bounds.setHeight(height);
 			result.setLayoutConstraint(bounds);
@@ -247,10 +261,19 @@ public class DefaultDiagramHelper implements DiagramHelper {
 		Supplier<Connector> connector = () -> {
 			Connector result = NotationFactory.eINSTANCE.createConnector();
 			result.setType(ViewTypes.MESSAGE);
-			result.setElement(message.get());
+			Message semanticMessage = message.get();
+			result.setElement(semanticMessage);
 
 			Shape sourceView = (Shape)source.get();
 			Shape targetView = (Shape)target.get();
+
+			// Is this a self-message? Note that in the case of gates or lost/found
+			// messages, one or both ends may not trace to a lifeline
+			Lifeline sourceLL = getLifeline(sourceView);
+			Lifeline targetLL = getLifeline(targetView);
+			boolean selfMessage = (sourceLL != null) && (sourceLL == targetLL);
+			boolean syncMessage = semanticMessage.getMessageSort() != MessageSort.ASYNCH_CALL_LITERAL
+					&& semanticMessage.getMessageSort() != MessageSort.ASYNCH_SIGNAL_LITERAL;
 
 			AnchorFactory anchorFactory = new AnchorFactory(result, layoutHelper());
 
@@ -258,12 +281,36 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			anchorFactory.builderFor(sourceView).from(sourceView).to(targetView).at(sourceDistance)
 					.sourceEnd().build();
 
-			int targetDistance = targetY.getAsInt() - layoutHelper().getTop(targetView);
+			int targetDistance = targetY.getAsInt()
+					- layoutHelper().getTop(ViewTypes.DESTRUCTION_SPECIFICATION.equals(targetView.getType())
+							? (Shape)targetView.eContainer() // Calculate relative to the lifeline
+							: targetView);
+			if (selfMessage) {
+				// A self message is fixed at the minimal gap if it is of a synchronous sort
+				int minTargetDistance = sourceDistance
+						+ layoutHelper().getConstraints().getMinimumHeight(result);
+				targetDistance = syncMessage ? minTargetDistance
+						: Math.max(targetDistance, minTargetDistance);
+			}
 			anchorFactory.builderFor(targetView).from(sourceView).to(targetView).at(targetDistance)
 					.targetEnd().build();
 
 			// We need to have a bendpoints list, even if it's empty
-			result.createBendpoints(NotationPackage.Literals.RELATIVE_BENDPOINTS);
+			RelativeBendpoints bendpoints = (RelativeBendpoints)result
+					.createBendpoints(NotationPackage.Literals.RELATIVE_BENDPOINTS);
+
+			// Specific routing for self-messages
+			if (selfMessage) {
+				result.setRouting(Routing.RECTILINEAR_LITERAL);
+
+				int xOffset = layoutHelper().getConstraints().getMinimumWidth(result);
+				int yOffset = layoutHelper().getConstraints().getMinimumHeight(result);
+				RelativeBendpoint bp1 = new RelativeBendpoint(0, 0, 0, -yOffset);
+				RelativeBendpoint bp2 = new RelativeBendpoint(xOffset, 0, xOffset, -yOffset);
+				RelativeBendpoint bp3 = new RelativeBendpoint(xOffset, yOffset, xOffset, 0);
+				RelativeBendpoint bp4 = new RelativeBendpoint(0, yOffset, 0, 0);
+				bendpoints.setPoints(Arrays.asList(bp1, bp2, bp3, bp4));
+			}
 
 			return result;
 		};
@@ -293,9 +340,17 @@ public class DefaultDiagramHelper implements DiagramHelper {
 						ExecutionSpecification exec = (ExecutionSpecification)target.get().getElement();
 						replace = collisionHandler.apply(exec.getStart(), message.get().getReceiveEvent());
 					} else if (AnchorFactory.isExecutionSpecificationFinish(created.getSourceAnchor())) {
-						// Replace the execution occurrence start occurrence
+						// Replace the execution occurrence finish occurrence
 						ExecutionSpecification exec = (ExecutionSpecification)source.get().getElement();
 						replace = collisionHandler.apply(exec.getFinish(), message.get().getSendEvent());
+					} else if (AnchorFactory.isExecutionSpecificationStart(created.getSourceAnchor())) {
+						// Replace the execution occurrence start occurrence, if permitted
+						ExecutionSpecification exec = (ExecutionSpecification)source.get().getElement();
+						replace = collisionHandler.apply(exec.getStart(), message.get().getSendEvent());
+					} else if (AnchorFactory.isExecutionSpecificationFinish(created.getTargetAnchor())) {
+						// Replace the execution occurrence finish occurrence, if permitted
+						ExecutionSpecification exec = (ExecutionSpecification)target.get().getElement();
+						replace = collisionHandler.apply(exec.getFinish(), message.get().getReceiveEvent());
 					}
 
 					// If we don't have a replace command, we still need something to execute
@@ -305,6 +360,43 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			result = result.chain(deferredCollisionHandler);
 		}
 
+		return result;
+	}
+
+	@Override
+	public Command configureSelfMessageConnector(Message message, Connector messageView) {
+		Command result = SetCommand.create(editingDomain, messageView,
+				NotationPackage.Literals.ROUTING_STYLE__ROUTING, Routing.RECTILINEAR_LITERAL);
+
+		// Compute the target anchor
+		Shape source = (Shape)messageView.getSource();
+		AnchorFactory anchorFactory = new AnchorFactory(messageView, layoutHelper());
+		int sourceDistance = layoutHelper().getYPosition(messageView.getSourceAnchor(), source)
+				- layoutHelper().getTop(source);
+		int targetDistance = sourceDistance + layoutHelper().getConstraints().getMinimumHeight(messageView);
+		String id = anchorFactory.builderFor(source).from(source).to(source).at(targetDistance).targetEnd()
+				.computeIdentity();
+		result = result.chain(SetCommand.create(editingDomain, messageView.getTargetAnchor(),
+				NotationPackage.Literals.IDENTITY_ANCHOR__ID, id));
+
+		int xOffset = layoutHelper().getConstraints().getMinimumWidth(messageView);
+		int yOffset = layoutHelper().getConstraints().getMinimumHeight(messageView);
+		RelativeBendpoint bp1 = new RelativeBendpoint(0, 0, 0, -yOffset);
+		RelativeBendpoint bp2 = new RelativeBendpoint(xOffset, 0, xOffset, -yOffset);
+		RelativeBendpoint bp3 = new RelativeBendpoint(xOffset, yOffset, xOffset, 0);
+		RelativeBendpoint bp4 = new RelativeBendpoint(0, yOffset, 0, 0);
+		result = result.chain(SetCommand.create(editingDomain, messageView.getBendpoints(),
+				NotationPackage.Literals.RELATIVE_BENDPOINTS__POINTS, Arrays.asList(bp1, bp2, bp3, bp4)));
+
+		return result;
+	}
+
+	@Override
+	public Command configureStraightMessageConnector(Message message, Connector messageView) {
+		Command result = SetCommand.create(editingDomain, messageView,
+				NotationPackage.Literals.ROUTING_STYLE__ROUTING, Routing.MANUAL_LITERAL);
+		result = result.chain(SetCommand.create(editingDomain, messageView.getBendpoints(),
+				NotationPackage.Literals.RELATIVE_BENDPOINTS__POINTS, Collections.EMPTY_LIST));
 		return result;
 	}
 
@@ -321,4 +413,16 @@ public class DefaultDiagramHelper implements DiagramHelper {
 		return layoutHelper.get();
 	}
 
+	private Lifeline getLifeline(View end) {
+		Lifeline result = null;
+
+		for (View view = end; view != null && result == null; view = ViewUtil.getContainerView(view)) {
+			EObject semantic = ViewUtil.resolveSemanticElement(view);
+			if (semantic instanceof Lifeline) {
+				result = (Lifeline)semantic;
+			}
+		}
+
+		return result;
+	}
 }

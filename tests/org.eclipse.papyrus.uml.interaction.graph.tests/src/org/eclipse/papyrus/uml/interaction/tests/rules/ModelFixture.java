@@ -12,6 +12,7 @@
 
 package org.eclipse.papyrus.uml.interaction.tests.rules;
 
+import static org.eclipse.uml2.uml.util.UMLUtil.getQualifiedText;
 import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -24,6 +25,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -52,12 +54,15 @@ import org.eclipse.uml2.common.util.CacheAdapter;
 import org.eclipse.uml2.common.util.UML2Util;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Interaction;
+import org.eclipse.uml2.uml.InteractionFragment;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.edit.providers.UMLItemProviderAdapterFactory;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 import org.eclipse.uml2.uml.util.UMLUtil;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.junit.ClassRule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -343,6 +348,59 @@ public class ModelFixture implements TestRule {
 
 		rset.getResourceFactoryRegistry().getExtensionToFactoryMap().put("notation",
 				new XMIResourceFactoryImpl());
+	}
+
+	public boolean semanticallyPrecedes(NamedElement fragment, NamedElement other) {
+		List<InteractionFragment> fragments = getInteraction().getFragments();
+		int indexOfOne = fragments.indexOf(fragment);
+		int indexOfOther = fragments.indexOf(other);
+		return (indexOfOne >= 0) && (indexOfOther >= 0) && (indexOfOther > indexOfOne);
+	}
+
+	public <T extends NamedElement> Matcher<T> semanticallyFollows(NamedElement other) {
+		return new TypeSafeDiagnosingMatcher<T>() {
+
+			@Override
+			protected boolean matchesSafely(T item, org.hamcrest.Description mismatchDescription) {
+				boolean result = semanticallyPrecedes(other, item);
+				if (!result) {
+					mismatchDescription.appendText(getQualifiedText(item));
+					mismatchDescription.appendText(" semantically precedes "); //$NON-NLS-1$
+					mismatchDescription.appendText(getQualifiedText(other));
+				}
+				return result;
+			}
+
+			@Override
+			public void describeTo(org.hamcrest.Description description) {
+				description.appendText("semantically follows "); //$NON-NLS-1$
+				description.appendText(getQualifiedText(other));
+			}
+
+		};
+	}
+
+	public <T extends NamedElement> Matcher<T> semanticallyPrecedes(NamedElement other) {
+		return new TypeSafeDiagnosingMatcher<T>() {
+
+			@Override
+			protected boolean matchesSafely(T item, org.hamcrest.Description mismatchDescription) {
+				boolean result = semanticallyPrecedes(item, other);
+				if (!result) {
+					mismatchDescription.appendText(getQualifiedText(item));
+					mismatchDescription.appendText(" semantically follows "); //$NON-NLS-1$
+					mismatchDescription.appendText(getQualifiedText(other));
+				}
+				return result;
+			}
+
+			@Override
+			public void describeTo(org.hamcrest.Description description) {
+				description.appendText("semantically precedes "); //$NON-NLS-1$
+				description.appendText(getQualifiedText(other));
+			}
+
+		};
 	}
 
 	//

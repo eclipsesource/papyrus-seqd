@@ -12,26 +12,33 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.spi.impl;
 
+import static org.eclipse.gmf.runtime.diagram.core.util.ViewUtil.getContainerView;
+import static org.eclipse.gmf.runtime.diagram.core.util.ViewUtil.resolveSemanticElement;
+
 import org.eclipse.gmf.runtime.notation.Anchor;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.gmf.runtime.notation.NotationPackage;
 import org.eclipse.gmf.runtime.notation.Shape;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
+import org.eclipse.uml2.uml.Lifeline;
 
 /**
  * A black-box factory for connection anchors in the sequence diagram.
  */
 class AnchorFactory {
 
+	public static final String LEFT = "left;"; //$NON-NLS-1$
+
+	public static final String RIGHT = "right;"; //$NON-NLS-1$
+
 	public static final String START = "start"; //$NON-NLS-1$
 
 	public static final String END = "end"; //$NON-NLS-1$
 
-	public static final String LEFT = "left;"; //$NON-NLS-1$
-
-	public static final String RIGHT = "right;"; //$NON-NLS-1$
+	private static final String DESTRUCTION = "(0.9,0.5)"; //$NON-NLS-1$
 
 	private NullAnchorBuilder nullAnchor;
 
@@ -40,6 +47,8 @@ class AnchorFactory {
 	private LifelineHeadAnchorBuilder lifelineHeadBuilder;
 
 	private ExecutionSpecificationAnchorBuilder execSpecBuilder;
+
+	private DestructionOccurrenceSpecificationAnchorBuilder destructionSpecBuilder;
 
 	private final Connector connector;
 
@@ -77,6 +86,9 @@ class AnchorFactory {
 				case ViewTypes.EXECUTION_SPECIFICATION:
 					result = executionSpecificationBuilder();
 					break;
+				case ViewTypes.DESTRUCTION_SPECIFICATION:
+					result = destructionOccurrenceSpecificationBuilder();
+					break;
 				default:
 					result = defaultAnchorBuilder();
 			}
@@ -113,6 +125,13 @@ class AnchorFactory {
 		return execSpecBuilder;
 	}
 
+	public AnchorBuilder destructionOccurrenceSpecificationBuilder() {
+		if (destructionSpecBuilder == null) {
+			destructionSpecBuilder = new DestructionOccurrenceSpecificationAnchorBuilder();
+		}
+		return destructionSpecBuilder;
+	}
+
 	public static boolean isExecutionSpecificationStart(Anchor anchor) {
 		return (anchor instanceof IdentityAnchor) && START.equals(((IdentityAnchor)anchor).getId());
 	}
@@ -130,7 +149,11 @@ class AnchorFactory {
 
 		Shape sourceView;
 
+		View sourceLifeline;
+
 		Shape targetView;
+
+		View targetLifeline;
 
 		int distance;
 
@@ -140,12 +163,26 @@ class AnchorFactory {
 
 		public AnchorBuilder from(Shape view) {
 			sourceView = view;
+			sourceLifeline = getLifeline(view);
 			return this;
 		}
 
 		public AnchorBuilder to(Shape view) {
 			targetView = view;
+			targetLifeline = getLifeline(view);
 			return this;
+		}
+
+		private View getLifeline(View view) {
+			View result = null;
+
+			for (View next = view; result == null && next != null; next = getContainerView(next)) {
+				if (resolveSemanticElement(next) instanceof Lifeline) {
+					result = next;
+				}
+			}
+
+			return result;
 		}
 
 		public AnchorBuilder sourceEnd() {
@@ -181,7 +218,7 @@ class AnchorFactory {
 			return result;
 		}
 
-		protected abstract String computeIdentity();
+		public abstract String computeIdentity();
 	}
 
 	private final class NullAnchorBuilder extends AnchorBuilder {
@@ -227,7 +264,6 @@ class AnchorFactory {
 	}
 
 	private final class ExecutionSpecificationAnchorBuilder extends AnchorBuilder {
-
 		private ExecutionSpecificationAnchorBuilder() {
 			super();
 		}
@@ -241,14 +277,32 @@ class AnchorFactory {
 				result = START;
 			} else if (distance >= layout.getHeight(getAnchorView())) {
 				result = END;
-			} else // Which direction?
-			if (isLeftToRight() == isConnectionSource) {
-				result = RIGHT + distance;
 			} else {
-				result = LEFT + distance;
+				String side;
+				boolean isSelfMessage = sourceLifeline == targetLifeline;
+				if (isSelfMessage) {
+					// Self message always received on same side as sent
+					side = isLeftToRight() ? RIGHT : LEFT;
+				} else {
+					// Which direction?
+					side = (isLeftToRight() == isConnectionSource) ? RIGHT : LEFT;
+				}
+
+				result = side + distance;
 			}
 
 			return result;
+		}
+	}
+
+	private final class DestructionOccurrenceSpecificationAnchorBuilder extends AnchorBuilder {
+		private DestructionOccurrenceSpecificationAnchorBuilder() {
+			super();
+		}
+
+		@Override
+		public String computeIdentity() {
+			return DESTRUCTION;
 		}
 	}
 }
