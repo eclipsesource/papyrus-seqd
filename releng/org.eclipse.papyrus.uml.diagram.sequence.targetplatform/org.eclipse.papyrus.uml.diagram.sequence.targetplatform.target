@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
-<!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Sequence Diagram" sequenceNumber="1525448365">
+<!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
+<target name="Sequence Diagram" sequenceNumber="1538636285">
   <locations>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.platform.feature.group" version="4.7.3.v20180330-0640"/>
@@ -25,8 +25,8 @@
       <repository id="oxygen-release" location="http://download.eclipse.org/releases/oxygen"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.papyrus.sdk.feature.feature.group" version="3.3.0.201803070847"/>
-      <unit id="org.eclipse.papyrus.sdk.feature.source.feature.group" version="3.3.0.201803070847"/>
+      <unit id="org.eclipse.papyrus.sdk.feature.feature.group" version="3.4.0.201805210649"/>
+      <unit id="org.eclipse.papyrus.sdk.feature.source.feature.group" version="3.4.0.201805210649"/>
       <repository id="papyrus-oxygen" location="http://download.eclipse.org/modeling/mdt/papyrus/updates/releases/oxygen"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
@@ -39,7 +39,7 @@
       <unit id="org.junit" version="4.12.0.v201504281640"/>
       <unit id="org.hamcrest.library" version="1.3.0.v201505072020"/>
       <unit id="org.mockito" version="1.9.5.v201605172210"/>
-      <repository id="orbit" location="http://download.eclipse.org/tools/orbit/R-builds/R20170516192513/repository/"/>
+      <repository id="orbit" location="http://download.eclipse.org/tools/orbit/R-builds/R20170516192513/repository"/>
     </location>
   </locations>
 </target>

@@ -48,16 +48,16 @@ public class InteractionFigure extends NodeFigure {
 	public ConnectionAnchor getConnectionAnchor(String terminal) {
 		final String distanceStr;
 		final int side;
-		if (terminal.startsWith("north;")) {
+		if (terminal.startsWith("north;")) { //$NON-NLS-1$
 			distanceStr = terminal.substring(6);
 			side = PositionConstants.NORTH;
-		} else if (terminal.startsWith("south;")) {
+		} else if (terminal.startsWith("south;")) { //$NON-NLS-1$
 			distanceStr = terminal.substring(6);
 			side = PositionConstants.SOUTH;
-		} else if (terminal.startsWith("east;")) {
+		} else if (terminal.startsWith("east;")) { //$NON-NLS-1$
 			distanceStr = terminal.substring(5);
 			side = PositionConstants.EAST;
-		} else if (terminal.startsWith("west;")) {
+		} else if (terminal.startsWith("west;")) { //$NON-NLS-1$
 			distanceStr = terminal.substring(5);
 			side = PositionConstants.WEST;
 		} else {
