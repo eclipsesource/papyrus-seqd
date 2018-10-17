@@ -36,4 +36,11 @@
             </adapter>
          </factory>
       </extension>
+      <extension
+            point="org.eclipse.papyrus.infra.gmfdiag.css.domElementAdapter">
+         <factory
+               factory="org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.css.LightweightSequenceCSSElementProviderFactory"
+               order="20">
+         </factory>
+      </extension>
 </plugin>
