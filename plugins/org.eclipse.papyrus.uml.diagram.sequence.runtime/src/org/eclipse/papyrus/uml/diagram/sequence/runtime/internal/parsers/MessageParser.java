@@ -29,8 +29,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.gmf.runtime.emf.ui.services.parser.ISemanticParser;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.OperationUtil;
 import org.eclipse.papyrus.uml.internationalization.utils.utils.UMLLabelInternationalization;
@@ -61,6 +63,47 @@ public class MessageParser extends MessageFormatParser implements ISemanticParse
 	 */
 	public MessageParser() {
 		super(new EAttribute[] {UMLPackage.Literals.NAMED_ELEMENT__NAME });
+	}
+
+	protected EStructuralFeature getEStructuralFeature(Object notification) {
+		EStructuralFeature featureImpl = null;
+		if (notification instanceof Notification) {
+			Object feature = ((Notification)notification).getFeature();
+			if (feature instanceof EStructuralFeature) {
+				featureImpl = (EStructuralFeature)feature;
+			}
+		}
+		return featureImpl;
+	}
+
+	@Override
+	public boolean isAffectingEvent(Object event, int flags) {
+		EStructuralFeature feature = getEStructuralFeature(event);
+		return isValidFeature(feature);
+	}
+
+	@Override
+	public boolean areSemanticElementsAffected(EObject listener, Object notification) {
+		EStructuralFeature feature = getEStructuralFeature(notification);
+		return isValidFeature(feature);
+	}
+
+	/**
+	 * Determines if the given feature has to be taken into account in this parser
+	 *
+	 * @param feature
+	 *            the feature to test
+	 * @return true if is valid, false otherwise
+	 */
+	private boolean isValidFeature(EStructuralFeature feature) {
+		return UMLPackage.eINSTANCE.getNamedElement_Name().equals(feature)
+				|| UMLPackage.Literals.TYPED_ELEMENT__TYPE.equals(feature)
+				|| UMLPackage.eINSTANCE.getLiteralInteger_Value().equals(feature)
+				|| UMLPackage.eINSTANCE.getLiteralUnlimitedNatural_Value().equals(feature)
+				|| UMLPackage.eINSTANCE.getLiteralBoolean_Value().equals(feature)
+				|| UMLPackage.eINSTANCE.getLiteralString_Value().equals(feature)
+				|| UMLPackage.Literals.MESSAGE__SIGNATURE.equals(feature)
+				|| UMLPackage.Literals.BEHAVIORAL_FEATURE__OWNED_PARAMETER.equals(feature);
 	}
 
 	@Override
@@ -283,11 +326,6 @@ public class MessageParser extends MessageFormatParser implements ISemanticParse
 			result.append(": "); //$NON-NLS-1$
 			append(returnResult, result);
 		}
-	}
-
-	@Override
-	public boolean areSemanticElementsAffected(EObject listener, Object notification) {
-		return true;
 	}
 
 	@Override

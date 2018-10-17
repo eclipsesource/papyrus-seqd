@@ -396,7 +396,6 @@ public class DefaultSemanticHelper implements SemanticHelper {
 			Supplier<? extends MessageEnd> recvEvent, MessageSort sort, NamedElement signature,
 			CreationParameters parameters) {
 
-		Interaction interaction = (Interaction)parameters.getContainer();
 		parameters.setEClass(UMLPackage.Literals.MESSAGE);
 		Supplier<Message> message = () -> {
 			MessageEnd send = sendEvent.get();
@@ -407,6 +406,7 @@ public class DefaultSemanticHelper implements SemanticHelper {
 			result.setReceiveEvent(recv);
 			result.setMessageSort(sort);
 			result.setSignature(signature);
+			Interaction interaction = (Interaction)parameters.getContainer();
 			autoname(result, getNameBase(sort), interaction.getMessages());
 			return result;
 		};

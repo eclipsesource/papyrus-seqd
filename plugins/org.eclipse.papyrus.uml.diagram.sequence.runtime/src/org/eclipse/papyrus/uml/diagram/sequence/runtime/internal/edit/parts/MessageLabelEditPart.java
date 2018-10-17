@@ -11,6 +11,8 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts;
 
+import java.util.List;
+
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.common.notify.Notification;
@@ -46,6 +48,9 @@ import org.eclipse.uml2.uml.MessageSort;
 public class MessageLabelEditPart extends LabelEditPart implements ITextAwareEditPart, ISequenceEditPart {
 	private IParser parser;
 
+	/** the element to listen to as suggested by the parser */
+	private List<?> parserElements = null;
+
 	private WrappingLabel label;
 
 	static {
@@ -60,6 +65,32 @@ public class MessageLabelEditPart extends LabelEditPart implements ITextAwareEdi
 	protected IFigure createFigure() {
 		label = new WrappingLabel();
 		return label;
+	}
+
+	@Override
+	protected void addSemanticListeners() {
+		if (getParser() instanceof ISemanticParser) {
+			EObject semanticElement = resolveSemanticElement();
+			parserElements = ((ISemanticParser)getParser()).getSemanticElementsBeingParsed(semanticElement);
+
+			for (int i = 0; i < parserElements.size(); i++) {
+				addListenerFilter("SemanticModel" + i, this, (EObject)parserElements.get(i)); //$NON-NLS-1$
+			}
+
+		} else {
+			super.addSemanticListeners();
+		}
+	}
+
+	@Override
+	protected void removeSemanticListeners() {
+		if (parserElements != null) {
+			for (int i = 0; i < parserElements.size(); i++) {
+				removeListenerFilter("SemanticModel" + i); //$NON-NLS-1$
+			}
+		} else {
+			super.removeSemanticListeners();
+		}
 	}
 
 	protected EObject getParserElement() {
