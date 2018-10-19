@@ -23,8 +23,6 @@ import static org.junit.Assert.fail;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
@@ -515,6 +513,56 @@ public class EditorFixture extends ModelFixture.Edit {
 	 *            selection
 	 */
 	public void moveSelection(Point start, Point finish) {
+		select(start);
+		drag(start, finish);
+	}
+
+	/**
+	 * Select an object in the diagram.
+	 *
+	 * @param where
+	 *            the location (mouse pointer) at which to make the selection
+	 */
+	public void select(Point where) {
+		DiagramEditPart diagram = getDiagramEditPart();
+		EditPartViewer viewer = diagram.getViewer();
+
+		SelectionTool tool = createSelectionTool();
+
+		Event mouse = new Event();
+		mouse.display = editor.getSite().getShell().getDisplay();
+		mouse.widget = viewer.getControl();
+		mouse.x = where.x();
+		mouse.y = where.y();
+
+		viewer.getEditDomain().setActiveTool(tool);
+		tool.setViewer(viewer);
+
+		// Move the mouse to the selection location
+		mouse.type = SWT.MouseMove;
+		tool.mouseMove(new MouseEvent(mouse), viewer);
+
+		// Click to select
+		mouse.button = mouseButton;
+		mouse.stateMask = modifierKeys;
+		mouse.type = SWT.MouseDown;
+		tool.mouseDown(new MouseEvent(mouse), viewer);
+		mouse.type = SWT.MouseUp;
+		tool.mouseUp(new MouseEvent(mouse), viewer);
+
+		flushDisplayEvents();
+	}
+
+	/**
+	 * Drag an object in the diagram to another location.
+	 *
+	 * @param start
+	 *            the location (mouse pointer) at which to start dragging the object
+	 * @param finish
+	 *            the location (mouse pointer) at which to finish dragging the
+	 *            object
+	 */
+	public void drag(Point start, Point finish) {
 		DiagramEditPart diagram = getDiagramEditPart();
 		EditPartViewer viewer = diagram.getViewer();
 
@@ -533,29 +581,17 @@ public class EditorFixture extends ModelFixture.Edit {
 		mouse.type = SWT.MouseMove;
 		tool.mouseMove(new MouseEvent(mouse), viewer);
 
-		// Click to select
+		// Mouse down to start dragging
 		mouse.button = mouseButton;
 		mouse.stateMask = modifierKeys;
 		mouse.type = SWT.MouseDown;
-		tool.mouseDown(new MouseEvent(mouse), viewer);
-		mouse.type = SWT.MouseUp;
-		tool.mouseUp(new MouseEvent(mouse), viewer);
-
-		flushDisplayEvents();
-
-		viewer.getEditDomain().setActiveTool(tool);
-		tool.setViewer(viewer);
-
-		// Mouse down to start dragging
-		mouse.type = SWT.MouseDown;
-		// button is still 1
 		tool.mouseDown(new MouseEvent(mouse), viewer);
 
 		flushDisplayEvents();
 
 		// Drag in 5-pixel increments
 		mouse.type = SWT.MouseMove;
-		// button is still 1
+		// button and modifiers unchanged
 		do {
 			if (mouse.x < finish.x()) {
 				mouse.x = min(mouse.x + 5, finish.x());
@@ -573,8 +609,7 @@ public class EditorFixture extends ModelFixture.Edit {
 		} while ((mouse.x != finish.x()) || (mouse.y != finish.y()));
 
 		// Release
-		mouse.type = SWT.MouseDown;
-		// button is still 1
+		// button and modifiers unchanged
 		mouse.type = SWT.MouseUp;
 		tool.mouseUp(new MouseEvent(mouse), viewer);
 

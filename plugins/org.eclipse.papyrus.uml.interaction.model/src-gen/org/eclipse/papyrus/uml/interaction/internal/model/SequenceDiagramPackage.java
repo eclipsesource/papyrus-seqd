@@ -876,7 +876,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT = MELEMENT_OPERATION_COUNT + 2;
+	int MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT_OPTIONALINT = MELEMENT_OPERATION_COUNT + 2;
 
 	/**
 	 * The operation id for the '<em>Create Start</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
@@ -1622,13 +1622,22 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MMESSAGE__RECEIVER = MELEMENT_FEATURE_COUNT + 5;
 
 	/**
+	 * The feature id for the '<em><b>Synchronous</b></em>' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE__SYNCHRONOUS = MELEMENT_FEATURE_COUNT + 6;
+
+	/**
 	 * The number of structural features of the '<em>MMessage</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MMESSAGE_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 6;
+	int MMESSAGE_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 7;
 
 	/**
 	 * The operation id for the '<em>Vertical Distance</em>' operation. <!-- begin-user-doc --> <!--
@@ -2598,15 +2607,15 @@ public interface SequenceDiagramPackage extends EPackage {
 
 	/**
 	 * Returns the meta object for the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline, java.util.OptionalInt)
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline, java.util.OptionalInt, java.util.OptionalInt)
 	 * <em>Set Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @return the meta object for the '<em>Set Owner</em>' operation.
 	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline,
-	 *      java.util.OptionalInt)
+	 *      java.util.OptionalInt, java.util.OptionalInt)
 	 * @generated
 	 */
-	EOperation getMExecution__SetOwner__MLifeline_OptionalInt();
+	EOperation getMExecution__SetOwner__MLifeline_OptionalInt_OptionalInt();
 
 	/**
 	 * Returns the meta object for the
@@ -2917,6 +2926,18 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getMMessage_Receiver();
+
+	/**
+	 * Returns the meta object for the attribute
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#isSynchronous <em>Synchronous</em>}'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Synchronous</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MMessage#isSynchronous()
+	 * @see #getMMessage()
+	 * @generated
+	 */
+	EAttribute getMMessage_Synchronous();
 
 	/**
 	 * Returns the meta object for the '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getOwner()
@@ -3513,8 +3534,8 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EOperation MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT = eINSTANCE
-				.getMExecution__SetOwner__MLifeline_OptionalInt();
+		EOperation MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT_OPTIONALINT = eINSTANCE
+				.getMExecution__SetOwner__MLifeline_OptionalInt_OptionalInt();
 
 		/**
 		 * The meta object literal for the '<em><b>Create Start</b></em>' operation. <!-- begin-user-doc -->
@@ -3746,6 +3767,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute MMESSAGE__RECEIVER = eINSTANCE.getMMessage_Receiver();
+
+		/**
+		 * The meta object literal for the '<em><b>Synchronous</b></em>' attribute feature. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute MMESSAGE__SYNCHRONOUS = eINSTANCE.getMMessage_Synchronous();
 
 		/**
 		 * The meta object literal for the '<em><b>Get Owner</b></em>' operation. <!-- begin-user-doc --> <!--

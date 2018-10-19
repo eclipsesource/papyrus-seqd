@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -34,6 +35,7 @@ import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
+import org.eclipse.uml2.uml.MessageSort;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>MMessage</b></em>'. <!-- end-user-doc
@@ -50,6 +52,9 @@ import org.eclipse.uml2.uml.MessageEnd;
  * @generated
  */
 public class MMessageImpl extends MElementImpl<Message> implements MMessage {
+	private static final EnumSet<MessageSort> SYNC_MESSAGE_SORTS = EnumSet
+			.complementOf(EnumSet.of(MessageSort.ASYNCH_CALL_LITERAL, MessageSort.ASYNCH_SIGNAL_LITERAL));
+
 	/**
 	 * The cached value of the '{@link #getSendEnd() <em>Send End</em>}' containment reference. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
@@ -69,6 +74,16 @@ public class MMessageImpl extends MElementImpl<Message> implements MMessage {
 	 * @ordered
 	 */
 	protected MMessageEnd receiveEnd;
+
+	/**
+	 * The default value of the '{@link #isSynchronous() <em>Synchronous</em>}' attribute. <!-- begin-user-doc
+	 * --> <!-- end-user-doc -->
+	 * 
+	 * @see #isSynchronous()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean SYNCHRONOUS_EDEFAULT = false;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -249,6 +264,18 @@ public class MMessageImpl extends MElementImpl<Message> implements MMessage {
 	 * @generated NOT
 	 */
 	@Override
+	public boolean isSynchronous() {
+		Message uml = getElement();
+		// Assume synchronous if no UML underpinning
+		return (uml == null) || SYNC_MESSAGE_SORTS.contains(uml.getMessageSort());
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
 	public MInteraction getOwner() {
 		return (MInteraction)super.getOwner();
 	}
@@ -299,6 +326,8 @@ public class MMessageImpl extends MElementImpl<Message> implements MMessage {
 				return getSender();
 			case SequenceDiagramPackage.MMESSAGE__RECEIVER:
 				return getReceiver();
+			case SequenceDiagramPackage.MMESSAGE__SYNCHRONOUS:
+				return isSynchronous();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -359,6 +388,8 @@ public class MMessageImpl extends MElementImpl<Message> implements MMessage {
 				return getSender() != null;
 			case SequenceDiagramPackage.MMESSAGE__RECEIVER:
 				return getReceiver() != null;
+			case SequenceDiagramPackage.MMESSAGE__SYNCHRONOUS:
+				return isSynchronous() != SYNCHRONOUS_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}

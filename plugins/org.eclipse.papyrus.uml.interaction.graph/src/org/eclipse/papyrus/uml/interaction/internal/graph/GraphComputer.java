@@ -26,14 +26,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.gmf.runtime.notation.Location;
 import org.eclipse.gmf.runtime.notation.Node;
+import org.eclipse.papyrus.uml.interaction.graph.Graph;
 import org.eclipse.papyrus.uml.interaction.graph.GroupKind;
 import org.eclipse.papyrus.uml.interaction.graph.Tag;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
@@ -161,6 +164,59 @@ public class GraphComputer {
 		}
 
 		return result;
+	}
+
+	Stream<EdgeImpl> incoming(VertexImpl v) {
+		return v.incoming().stream().map(EdgeImpl.class::cast);
+	}
+
+	Stream<EdgeImpl> outgoing(VertexImpl v) {
+		return v.outgoing().stream().map(EdgeImpl.class::cast);
+	}
+
+	static Function<EdgeImpl, TaggableImpl<?>> withFrom() {
+		return TaggableImpl.andTag(EdgeImpl::from);
+	}
+
+	static Function<EdgeImpl, TaggableImpl<?>> withTo() {
+		return TaggableImpl.andTag(EdgeImpl::to);
+	}
+
+	static Consumer<TaggableImpl<?>> untag(Tag tag) {
+		return TaggableImpl.untagging(tag);
+	}
+
+	/**
+	 * Create an incremental updater of my graph that accepts new elements created in a specific
+	 * {@code context}.
+	 * 
+	 * @param context
+	 *            an element within the {@code graph} in which context some new element(s) have been created
+	 * @return the updater that accepts the new elements
+	 */
+	Consumer<Element> createUpdater(Element context) {
+		return newElement -> {
+			UMLSwitch<Graph> graphUpdater = new UMLSwitch<Graph>() {
+				@Override
+				public Graph caseExecutionSpecification(ExecutionSpecification object) {
+					if (object.getStart() == newElement) {
+						// Un-tag existing edges
+						incoming(graph.vertex(object)).map(withFrom()).forEach(untag(Tag.EXECUTION_START));
+						// Create and tag new edge
+						edge(tag(newElement, Tag.EXECUTION_START), object).tag(Tag.EXECUTION_START);
+					} else if (object.getFinish() == newElement) {
+						// Un-tag existing edges
+						outgoing(graph.vertex(object)).map(withTo()).forEach(untag(Tag.EXECUTION_FINISH));
+						// Create and tag new edge
+						edge(object, tag(newElement, Tag.EXECUTION_FINISH)).tag(Tag.EXECUTION_FINISH);
+					}
+
+					return graph;
+				}
+			};
+
+			graphUpdater.doSwitch(context);
+		};
 	}
 
 	//

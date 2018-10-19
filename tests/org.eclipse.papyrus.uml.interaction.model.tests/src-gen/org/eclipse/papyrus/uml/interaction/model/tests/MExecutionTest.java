@@ -248,21 +248,21 @@ public class MExecutionTest extends MElementTest {
 
 	/**
 	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline, java.util.OptionalInt)
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline, java.util.OptionalInt, java.util.OptionalInt)
 	 * <em>Set Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline,
-	 *      java.util.OptionalInt)
+	 *      java.util.OptionalInt, java.util.OptionalInt)
 	 * @generated NOT
 	 */
-	public void testSetOwner__MLifeline_OptionalInt() {
+	public void testSetOwner__MLifeline_OptionalInt_OptionalInt() {
 		// Get the other lifeline
 		MLifeline other = getFixture().getInteraction().getLifelines().stream()
 				.filter(((Predicate<MLifeline>)getFixture().getOwner()::equals).negate()).findFirst()
 				.orElseThrow(() -> new AssertionError("Only one lifeline"));
 		String name = other.getName();
 
-		Command setOwner = getFixture().setOwner(other, OptionalInt.empty());
+		Command setOwner = getFixture().setOwner(other, OptionalInt.empty(), OptionalInt.empty());
 		assertThat(setOwner, executable());
 		execute(setOwner);
 
@@ -304,8 +304,10 @@ public class MExecutionTest extends MElementTest {
 		assertThat(fragments.indexOf(end), lt(fragments.indexOf(start)));
 		assertThat(fragments.indexOf(start), lt(fragments.indexOf(fixture.getElement())));
 
-		assertThat("Message not attached to lifeline", messageConnector.getTarget().getElement(),
-				is(covered));
+		// The message end is still incoming at the beginning of the execution, so it
+		// should be visually attached to it
+		assertThat("Message not attached to execution", messageConnector.getTarget().getElement(),
+				is(getFixture().getElement()));
 	}
 
 	/**
@@ -337,8 +339,10 @@ public class MExecutionTest extends MElementTest {
 		assertThat(fragments.indexOf(end), gt(fragments.indexOf(finish)));
 		assertThat(fragments.indexOf(finish), gt(fragments.indexOf(fixture.getElement())));
 
-		assertThat("Message not attached to lifeline", messageConnector.getSource().getElement(),
-				is(covered));
+		// The message end is still incoming at the beginning of the execution, so it
+		// should be visually attached to it
+		assertThat("Message not attached to execution", messageConnector.getSource().getElement(),
+				is(getFixture().getElement()));
 	}
 
 	@Override

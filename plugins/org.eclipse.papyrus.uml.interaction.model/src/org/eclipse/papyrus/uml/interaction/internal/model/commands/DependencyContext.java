@@ -21,6 +21,12 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.command.CommandWrapper;
+import org.eclipse.emf.common.command.IdentityCommand;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
+
 /**
  * A tracker of the current set of (inter-)dependent objects for which commands are being created. This allows
  * the commands to void redundant (and, worse, cyclic) creation of commands for dependents that have already
@@ -118,6 +124,19 @@ public class DependencyContext {
 				}
 
 				return result;
+			}
+
+			@SuppressWarnings("boxing")
+			@Override
+			public boolean put(Object subject, Object key) {
+				return withContext(ctx -> ctx.put(subject, key));
+			}
+
+			@Override
+			public <T> T get(Object subject, Class<T> keyType, Predicate<? super T> filter,
+					Supplier<? extends T> keySupplier) {
+
+				return withContext(ctx -> ctx.get(subject, keyType, filter, keySupplier));
 			}
 		};
 	}
@@ -365,4 +384,57 @@ public class DependencyContext {
 	static Object contextKey(Object key) {
 		return (key == null) ? NO_KEY : key;
 	}
+
+	/**
+	 * Obtain a command that will be computed later in whatever is the current context.
+	 * 
+	 * @param futureCommand
+	 *            a future command
+	 * @return a deferred command that captures the current context and applies it in the future
+	 */
+	public static Command defer(Supplier<? extends Command> futureCommand) {
+		// Capture the current context for later
+		return getDynamic().withContext(() -> new CommandWrapper() {
+			private final DependencyContext ctx = DependencyContext.get();
+
+			@Override
+			protected Command createCommand() {
+				Command result = ctx.withContext(futureCommand);
+				if (result == null) {
+					// The deferral is optional
+					result = IdentityCommand.INSTANCE;
+				}
+				return result;
+			}
+		});
+	}
+
+	/**
+	 * Obtain a creation command that will be computed later in whatever is the current context.
+	 * 
+	 * @param futureCommand
+	 *            a future creation command
+	 * @return a deferred command that captures the current context and applies it in the future
+	 */
+	public static <T extends EObject> CreationCommand<T> deferCreate(
+			Supplier<? extends CreationCommand<T>> futureCommand) {
+
+		// Capture the current context for later
+		return getDynamic().withContext(() -> new CreationCommand.Wrapper<T>(null) {
+			private final DependencyContext ctx = DependencyContext.get();
+
+			@Override
+			public CreationCommand<T> getCommand() {
+				// This cast is safe by construction
+				@SuppressWarnings("cast")
+				CreationCommand<T> result = (CreationCommand<T>)super.getCommand();
+				if (result == null) {
+					result = ctx.withContext(futureCommand);
+					this.command = result;
+				}
+				return result;
+			}
+		});
+	}
+
 }

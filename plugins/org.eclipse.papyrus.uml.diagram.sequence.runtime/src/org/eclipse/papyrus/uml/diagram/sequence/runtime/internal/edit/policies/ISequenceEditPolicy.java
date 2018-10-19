@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.draw2d.IFigure;
@@ -32,6 +33,7 @@ import org.eclipse.papyrus.commands.wrappers.OperationToGEFCommandWrapper;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnetManager;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ISequenceEditPart;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.CompoundModelCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
@@ -54,6 +56,10 @@ public interface ISequenceEditPolicy extends EditPolicy {
 	 * @return the transactional GEF command
 	 */
 	default Command wrap(org.eclipse.emf.common.command.Command emfCommand) {
+		if (emfCommand == null) {
+			return null;
+		}
+
 		TransactionalEditingDomain domain = __getEditingDomain(this);
 		return (domain == null) ? UnexecutableCommand.INSTANCE
 				: wrap(new EMFCommandOperation(domain, emfCommand) {
@@ -143,5 +149,23 @@ public interface ISequenceEditPolicy extends EditPolicy {
 
 	default IMagnetManager getMagnetManager() {
 		return IMagnetManager.get(getHost());
+	}
+
+	default org.eclipse.emf.common.command.Command chain(org.eclipse.emf.common.command.Command first,
+			org.eclipse.emf.common.command.Command second) {
+
+		if (first == null) {
+			return second;
+		}
+		if (second == null) {
+			return first;
+		}
+		return CompoundModelCommand.compose(__getEditingDomain(this), first, second);
+	}
+
+	default UnaryOperator<org.eclipse.emf.common.command.Command> chaining(
+			org.eclipse.emf.common.command.Command first) {
+
+		return second -> chain(first, second);
 	}
 }

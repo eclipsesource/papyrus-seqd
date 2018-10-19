@@ -489,11 +489,12 @@
     </eOperations>
     <eOperations name="setOwner" lowerBound="1" eType="#//Command">
       <eParameters name="newOwner" lowerBound="1" eType="#//MLifeline"/>
-      <eParameters name="yPosition" lowerBound="1" eType="#//OptionalInt">
+      <eParameters name="top" lowerBound="1" eType="#//OptionalInt">
         <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
           <details key="documentation" value="the absolute Y position at which to place the top of the execution on the lifeline, or empty to maintain the current Y position."/>
         </eAnnotations>
       </eParameters>
+      <eParameters name="bottom" lowerBound="1" eType="#//OptionalInt"/>
     </eOperations>
     <eOperations name="createStart" lowerBound="1">
       <eGenericType eClassifier="#//CreationCommand">
@@ -681,6 +682,13 @@
       <eGenericType eClassifier="#//Optional">
         <eTypeArguments eClassifier="#//MLifeline"/>
       </eGenericType>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="synchronous" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" changeable="false"
+        volatile="true" transient="true" derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Whether the message is of a synchronous sort, strictly horizontal, instantaneous in time."/>
+      </eAnnotations>
     </eStructuralFeatures>
     <eGenericSuperTypes eClassifier="#//MElement">
       <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Message"/>

@@ -34,9 +34,6 @@ import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.draw2d.Connection;
-import org.eclipse.draw2d.ConnectionAnchor;
-import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gef.Request;
@@ -389,24 +386,14 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		// If the message didn't have a send end, we wouldn't be reconnecting it
 		MMessageEnd sourceEnd = message.getSend().get();
-		org.eclipse.emf.common.command.Command setCovered = sourceEnd.setCovered(lifeline.get(), yPosition);
+		org.eclipse.emf.common.command.Command createFinish = null;
 		if (sourceEnd.getFinishedExecution().isPresent() && isAllowSemanticReordering(request)
 				&& !isAttachingToOtherLifeline(sourceEnd)) {
 			// Disconnect the message end from the execution that it finishes
-			setCovered = sourceEnd.getFinishedExecution().get().createFinish().chain(setCovered);
+			createFinish = sourceEnd.getFinishedExecution().get().createFinish();
 		}
-		Command result = wrap(setCovered);
-
-		// Of course, we don't mess with the other end of an asynchronous message
-		if (!isForce(request) && MessageUtil.isSynchronous(message.getElement().getMessageSort())) {
-			// Need feedback constraints in addition to semantic constraints
-			Connection connection = (Connection)connectionEP.getFigure();
-			Point targetLocation = getLocation(connection.getTargetAnchor());
-
-			// Apply constraints implemented in the feedback
-			result = result.chain(wrap(message.getReceive().get().setCovered(message.getReceiver().get(),
-					OptionalInt.of(targetLocation.y()))));
-		}
+		org.eclipse.emf.common.command.Command setCovered = sourceEnd.setCovered(lifeline.get(), yPosition);
+		Command result = wrap(chain(createFinish, setCovered));
 
 		result = constrainReconnection(request, sourceEnd).orElse(result);
 
@@ -504,24 +491,15 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		// If the message didn't have a receive end, we wouldn't be reconnecting it
 		MMessageEnd targetEnd = message.getReceive().get();
-		org.eclipse.emf.common.command.Command setCovered = targetEnd.setCovered(lifeline.get(), yPosition);
+		org.eclipse.emf.common.command.Command createStart = null;
 		if (targetEnd.getStartedExecution().isPresent() && isAllowSemanticReordering(request)
 				&& !isAttachingToOtherLifeline(targetEnd)) {
 			// Disconnect the message end from the execution that it starts
-			setCovered = targetEnd.getStartedExecution().get().createStart().chain(setCovered);
+			createStart = targetEnd.getStartedExecution().get().createStart();
 		}
-		Command result = wrap(setCovered);
-
-		// Of course, we don't mess with the other end of an asynchronous message
-		if (!isForce(request) && MessageUtil.isSynchronous(message.getElement().getMessageSort())) {
-			// Need feedback constraints in addition to semantic constraints
-			Connection connection = (Connection)connectionEP.getFigure();
-			Point sourceLocation = getLocation(connection.getSourceAnchor());
-
-			// Apply constraints implemented in the feedback
-			result = result.chain(wrap(message.getSend().get().setCovered(message.getSender().get(),
-					OptionalInt.of(sourceLocation.y()))));
-		}
+		// Then, set coverage
+		org.eclipse.emf.common.command.Command setCovered = targetEnd.setCovered(lifeline.get(), yPosition);
+		Command result = wrap(chain(createStart, setCovered));
 
 		result = constrainReconnection(request, targetEnd).orElse(result);
 
@@ -551,13 +529,6 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		}
 
 		return result;
-	}
-
-	private Point getLocation(ConnectionAnchor anchor) {
-		IFigure owner = anchor.getOwner();
-		Point ownerOrigin = owner.getBounds().getLocation();
-		owner.getParent().translateToAbsolute(ownerOrigin);
-		return anchor.getLocation(ownerOrigin);
 	}
 
 	protected boolean shouldCreateExecution() {

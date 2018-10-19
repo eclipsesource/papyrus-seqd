@@ -13,21 +13,15 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
-import org.eclipse.gmf.runtime.notation.Connector;
-import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
 import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
-import org.eclipse.papyrus.uml.interaction.model.MMessage;
-import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredAddCommand;
-import org.eclipse.papyrus.uml.interaction.model.util.Optionals;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 import org.eclipse.uml2.uml.UMLPackage;
 
@@ -36,7 +30,7 @@ import org.eclipse.uml2.uml.UMLPackage;
  * finish (respectively) is already an execution occurrence specification; it is valid only in the case of
  * that role being played by a message occurrence specification.
  */
-public class CreateExecutionOccurrenceCommand extends ModelCommandWithDependencies.Creation<MExecutionImpl, ExecutionOccurrenceSpecification> {
+public abstract class CreateExecutionOccurrenceCommand extends ModelCommandWithDependencies.Creation<MExecutionImpl, ExecutionOccurrenceSpecification> {
 
 	private final boolean isFinish;
 
@@ -48,10 +42,14 @@ public class CreateExecutionOccurrenceCommand extends ModelCommandWithDependenci
 	 * @param isFinish
 	 *            whether I create the finish occurrence (otherwise the start)
 	 */
-	public CreateExecutionOccurrenceCommand(MExecutionImpl target, boolean isFinish) {
+	private CreateExecutionOccurrenceCommand(MExecutionImpl target, boolean isFinish) {
 		super(target, ExecutionOccurrenceSpecification.class);
 
 		this.isFinish = isFinish;
+
+		// Ensure that the current occurrence at this end knows that it's being replace
+		DependencyContext.getDynamic().put(isFinish ? target.getFinish() : target.getStart(),
+				CreateExecutionOccurrenceCommand.class);
 	}
 
 	public boolean isFinish() {
@@ -81,30 +79,43 @@ public class CreateExecutionOccurrenceCommand extends ModelCommandWithDependenci
 		result = result.chain(new DeferredAddCommand(getTarget().getOwner().getElement(),
 				UMLPackage.Literals.LIFELINE__COVERED_BY, result));
 
-		// Dependencies: disconnect the previous occurrence specification
-		Optional<MMessageEnd> end = Optionals.as(previous, MMessageEnd.class);
-		Optional<Connector> messageConnector = end.map(MMessageEnd::getOwner)
-				.flatMap(MMessage::getDiagramView);
-		Optional<Shape> lifelineBody = getTarget().getOwner().getDiagramView()
-				.map(diagramHelper()::getLifelineBodyShape);
-		if (lifelineBody.isPresent()) {
-			// Reconnect this message end to the lifeline body
-			result = messageConnector.map(mc -> {
-				MMessageEnd theEnd = end.get(); // Known to exist by connector
-				int y = theEnd.getTop().orElse(0);
-				return theEnd.isSend() ? diagramHelper().reconnectSource(mc, lifelineBody.get(), y)
-						: diagramHelper().reconnectTarget(mc, lifelineBody.get(), y);
-			}).map(result::chain).orElse(result);
-		}
-
 		return result;
 	}
 
-	static Predicate<CreateExecutionOccurrenceCommand> filterFinish() {
-		return c -> c.isFinish();
+	//
+	// Nested types
+	//
+
+	/**
+	 * Concrete command for creation of the start occurrence of an execution.
+	 */
+	public static final class Start extends CreateExecutionOccurrenceCommand {
+
+		/**
+		 * Initializes me.
+		 *
+		 * @param target
+		 */
+		public Start(MExecutionImpl target) {
+			super(target, false);
+		}
+
 	}
 
-	static Predicate<CreateExecutionOccurrenceCommand> filterStart() {
-		return filterFinish().negate();
+	/**
+	 * Concrete command for creation of the finish occurrence of an execution.
+	 */
+	public static final class Finish extends CreateExecutionOccurrenceCommand {
+
+		/**
+		 * Initializes me.
+		 *
+		 * @param target
+		 */
+		public Finish(MExecutionImpl target) {
+			super(target, true);
+		}
+
 	}
+
 }

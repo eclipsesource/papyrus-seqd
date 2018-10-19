@@ -12,8 +12,16 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.tests;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
@@ -21,10 +29,17 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.LayerConstants;
+import org.eclipse.gef.editparts.LayerManager;
+import org.eclipse.gef.handles.ResizeHandle;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture;
 import org.junit.After;
+import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.rules.TestRule;
 
 /**
  * Abstract skeleton of a test that exercises graphical edit-policies.
@@ -32,6 +47,16 @@ import org.junit.Rule;
  * @author Christian W. Damus
  */
 public abstract class AbstractGraphicalEditPolicyUITest {
+
+	// Size of a resize handle figure
+	private static final int RESIZE_HANDLE_SIZE = 7;
+
+	// Tolerance for assertion of locations based on the dragging of a resize handle
+	protected static final int RESIZE_TOLERANCE = (int) Math.floor(RESIZE_HANDLE_SIZE / 2.0);
+
+	/** Some Linux environments are off by 1 in a lot of test scenarios. */
+	@ClassRule
+	public static final TestRule TOLERANCE = GEFMatchers.defaultTolerance(1, Platform.OS_LINUX);
 
 	protected static Rectangle getBounds(EditPart editPart) {
 		IFigure figure = ((GraphicalEditPart) editPart).getFigure();
@@ -46,6 +71,59 @@ public abstract class AbstractGraphicalEditPolicyUITest {
 
 	protected static int getBottom(EditPart editPart) {
 		return getBounds(editPart).bottom();
+	}
+
+	protected static Point getCenter(EditPart editPart) {
+		return getBounds(editPart).getCenter();
+	}
+
+	protected static IFigure getResizeHandle(EditPart editPart, int position) {
+		((IGraphicalEditPart) editPart).getFigure();
+		LayerManager manager = (LayerManager) editPart.getViewer().getEditPartRegistry()
+				.get(LayerManager.ID);
+		IFigure handleLayer = manager.getLayer(LayerConstants.HANDLE_LAYER);
+
+		Rectangle bounds = getBounds(editPart);
+		Point hitTarget;
+		switch (position) {
+		case PositionConstants.NORTH_WEST:
+			hitTarget = bounds.getTopLeft();
+			break;
+		case PositionConstants.NORTH:
+			hitTarget = bounds.getTop();
+			break;
+		case PositionConstants.NORTH_EAST:
+			hitTarget = bounds.getTopRight();
+			break;
+		case PositionConstants.EAST:
+			hitTarget = bounds.getRight();
+			break;
+		case PositionConstants.SOUTH_EAST:
+			hitTarget = bounds.getBottomRight();
+			break;
+		case PositionConstants.SOUTH:
+			hitTarget = bounds.getBottom();
+			break;
+		case PositionConstants.SOUTH_WEST:
+			hitTarget = bounds.getBottomLeft();
+			break;
+		case PositionConstants.WEST:
+			hitTarget = bounds.getLeft();
+			break;
+		default:
+			throw new IllegalArgumentException("position : " + position);
+		}
+
+		@SuppressWarnings("unchecked")
+		List<? extends IFigure> handles = handleLayer.getChildren();
+		Optional<? extends IFigure> result = handles.stream().filter(ResizeHandle.class::isInstance)
+				.filter(h -> h.getBounds().contains(hitTarget)).findAny();
+		assertThat("Resize handle not found", result.isPresent(), is(true));
+		return result.get();
+	}
+
+	protected static Point getResizeHandleGrabPoint(EditPart editPart, int position) {
+		return getResizeHandle(editPart, position).getBounds().getCenter();
 	}
 
 	protected static int getSourceY(EditPart connectionEditPart) {

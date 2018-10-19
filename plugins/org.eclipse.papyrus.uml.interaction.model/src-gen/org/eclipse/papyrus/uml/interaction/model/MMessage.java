@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.interaction.model;
 
 import java.util.Optional;
+
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
@@ -96,6 +97,18 @@ public interface MMessage extends MElement<Message> {
 	 * @generated
 	 */
 	Optional<MLifeline> getReceiver();
+
+	/**
+	 * Returns the value of the '<em><b>Synchronous</b></em>' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc --> <!-- begin-model-doc --> Whether the message is of a synchronous sort, strictly
+	 * horizontal, instantaneous in time. <!-- end-model-doc -->
+	 * 
+	 * @return the value of the '<em>Synchronous</em>' attribute.
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage#getMMessage_Synchronous()
+	 * @model required="true" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	boolean isSynchronous();
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->

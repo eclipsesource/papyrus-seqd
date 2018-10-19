@@ -16,14 +16,13 @@ import static java.util.Collections.singletonList;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
-import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToInt;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.IdentityCommand;
@@ -169,75 +168,108 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 
 	protected Optional<Command> dependencies(MOccurrence<? extends Element> occurrence) {
 		List<Command> result = new ArrayList<>();
+		Consumer<Command> commandSink = cmd -> Optional.ofNullable(cmd).ifPresent(result::add);
 
-		Predicate<MExecution> hasCreateExecOccCommand = x -> hasDependency(x,
-				CreateExecutionOccurrenceCommand.class);
 		boolean isDisconnectingMessageEnd = Optionals
-				.elseMaybe(occurrence.getStartedExecution().filter(hasCreateExecOccCommand),
-						occurrence.getFinishedExecution().filter(hasCreateExecOccCommand))
+				.elseMaybe(
+						occurrence.getStartedExecution()
+								.filter(x -> hasDependency(x, CreateExecutionOccurrenceCommand.Start.class)),
+						occurrence.getFinishedExecution()
+								.filter(x -> hasDependency(x, CreateExecutionOccurrenceCommand.Finish.class)))
 				.isPresent();
+		boolean isThisMessageEndBeingDisconnected = isDisconnectingMessageEnd
+				&& (occurrence instanceof MMessageEnd);
 
-		if (!isDisconnectingMessageEnd) {
-			occurrence.getStartedExecution().map(exec -> exec.setOwner(lifeline, yPosition))
+		if (!isThisMessageEndBeingDisconnected) {
+			// Either we aren't disconnecting the message end, or it's not a message
+			// end that we're moving
+			occurrence.getStartedExecution()
+					.map(exec -> exec.setOwner(lifeline, yPosition, OptionalInt.empty()))
 					.ifPresent(result::add);
-			occurrence.getFinishedExecution().map(exec -> exec.setOwner(lifeline, OptionalInt.empty()))
+			occurrence.getFinishedExecution()
+					.map(exec -> exec.setOwner(lifeline, OptionalInt.empty(), yPosition))
 					.ifPresent(result::add);
 		}
 
-		as(Optional.of(occurrence), MMessageEnd.class)
-				.filter(end -> isChangingLifeline() || isChangingPosition()).ifPresent(end -> {
-
-					// Destructions are handled differently
-					if (!(end instanceof MDestruction)) {
-						MMessage message = end.getOwner();
-						Optional<Connector> edge = message.getDiagramView();
-						edge.ifPresent(connector -> {
-							Shape lifelineBody = getLifelineBody().get();
-							int newYPosition = yPosition.orElseGet(() -> end.getTop().getAsInt());
-
-							Optional<MExecutionOccurrence> replacement = end.isSend()
-									? getExecutionFinish(newYPosition)
-									: getExecutionStart(newYPosition);
-							if (replacement.isPresent()) {
-								// Replace the start/finish occurrence by this message end
-								replacement.map(occ -> occ.replaceBy(end)).ifPresent(result::add);
-							} else {
-								// Are we connected to an execution that will be moving with us?
-								// If so, no reattachment will be necessary
-								Optional<MExecution> exec = ((end.isFinish() || end.isStart())
-										// But not if we're disconnecting from it
-										&& !isDisconnectingMessageEnd) //
-												? end.getExecution()
-												: Optional.empty();
-								Optional<Shape> executionShape = exec.flatMap(MExecution::getDiagramView);
-								if (!executionShape.isPresent()) {
-									// Are we connecting to an execution specification?
-									executionShape = executionShapeAt(lifelineBody, newYPosition);
-								}
-								Shape newAttachedShape = executionShape.orElse(lifelineBody);
-
-								if (end.isSend()) {
-									result.add(diagramHelper().reconnectSource(connector, newAttachedShape,
-											newYPosition));
-									end.getOtherEnd().flatMap(this::handleSelfMessageChange)
-											.ifPresent(result::add);
-								} else if (end.isReceive()) {
-									result.add(diagramHelper().reconnectTarget(connector, newAttachedShape,
-											newYPosition));
-									end.getOtherEnd().flatMap(this::handleSelfMessageChange)
-											.ifPresent(result::add);
-								} // else don't know what to do with it
-							}
-						});
-					}
-				});
-
-		// If we're moving the start/finish of an execution on the lifeline, pin the other end
-		if (!isChangingLifeline() && isChangingPosition() && !isDisconnectingMessageEnd) {
-			pinOtherEnd(occurrence).ifPresent(result::add);
+		// Destructions are handled differently
+		if ((occurrence instanceof MMessageEnd) && !(occurrence instanceof MDestruction)) {
+			MMessageEnd end = (MMessageEnd)occurrence;
+			if (isChangingLifeline() || isChangingPosition()) {
+				collectMessageDependencies(end, isDisconnectingMessageEnd, commandSink);
+			}
+		} else if (occurrence instanceof MExecutionOccurrence) {
+			MExecutionOccurrence execOcc = (MExecutionOccurrence)occurrence;
+			if (isChangingLifeline() || isChangingPosition()) {
+				collectExecutionOccurrenceDependencies(execOcc, commandSink);
+			}
 		}
 
 		return result.stream().reduce(chaining());
+	}
+
+	/**
+	 * Collect commands for dependencies of a message {@code end}.
+	 * 
+	 * @param end
+	 *            the message end being moved
+	 * @param isDisconnecting
+	 *            whether the {@code end} is being disconnected from the start/finish of an execution
+	 *            specification
+	 * @param commandSink
+	 *            accumulator of dependency commands (accepts {@code null} values)
+	 */
+	private void collectMessageDependencies(MMessageEnd end, boolean isDisconnecting,
+			Consumer<? super Command> commandSink) {
+
+		MMessage message = end.getOwner();
+		Optional<Connector> edge = message.getDiagramView();
+		if (!edge.isPresent()) {
+			// nothing to do for the visuals
+			return;
+		}
+
+		Connector connector = edge.get();
+		Shape lifelineBody = getLifelineBody().get();
+		int newYPosition = yPosition.orElseGet(() -> end.getTop().getAsInt());
+
+		// Handle attached execution specification, unless we're detaching from a message end
+		Optional<MExecutionOccurrence> replacement = isDisconnecting ? Optional.empty()
+				: end.isSend() ? getExecutionFinish(newYPosition) : getExecutionStart(newYPosition);
+		if (replacement.isPresent()) {
+			// Replace the start/finish occurrence by this message end
+			replacement.map(occ -> occ.replaceBy(end)).ifPresent(commandSink);
+		} else {
+			// Are we connected to an execution that will be moving with us?
+			// If so, no reattachment will be necessary
+			Optional<MExecution> exec = (end.isFinish() || end.isStart()) //
+					? end.getExecution()
+					: Optional.empty();
+			Optional<Shape> executionShape = exec.flatMap(MExecution::getDiagramView);
+			if (!executionShape.isPresent()) {
+				// Are we connecting to an execution specification?
+				executionShape = executionShapeAt(lifelineBody, newYPosition);
+			}
+			Shape newAttachedShape = executionShape.orElse(lifelineBody);
+
+			if (end.isSend()) {
+				commandSink
+						.accept(diagramHelper().reconnectSource(connector, newAttachedShape, newYPosition));
+				end.getOtherEnd().flatMap(this::handleSelfMessageChange).ifPresent(commandSink);
+			} else if (end.isReceive()) {
+				commandSink
+						.accept(diagramHelper().reconnectTarget(connector, newAttachedShape, newYPosition));
+				end.getOtherEnd().flatMap(this::handleSelfMessageChange).ifPresent(commandSink);
+			} // else don't know what to do with it
+		}
+
+		// Handle the opposite end if the message is of a synchronous (strictly horizontal) sort
+		Optional<MMessageEnd> other = end.getOtherEnd();
+		if (yPosition.isPresent() && other.isPresent() && message.isSynchronous()) {
+			MMessageEnd opposite = other.get();
+			Optional<MLifeline> otherCovered = opposite.getCovered();
+			// Track this end
+			otherCovered.map(ll -> opposite.setCovered(ll, yPosition)).ifPresent(commandSink);
+		}
 	}
 
 	Optional<Shape> executionShapeAt(Shape lifelineBody, int absoluteY) {
@@ -294,6 +326,27 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 		}
 
 		return result;
+	}
+
+	/**
+	 * Collect commands for dependencies of an execution {@code occurrence}.
+	 * 
+	 * @param occurrence
+	 *            the execution occurrence being moved
+	 * @param commandSink
+	 *            accumulator of dependency commands (accepts {@code null} values)
+	 */
+	private void collectExecutionOccurrenceDependencies(MExecutionOccurrence occurrence,
+			Consumer<? super Command> commandSink) {
+
+		boolean shouldReplace = (occurrence.isStart() || occurrence.isFinish())
+				&& !hasDependency(occurrence.getExecution().get(), CreateExecutionOccurrenceCommand.class);
+		if (shouldReplace) {
+			// Replace it by a message end? But not if we exist because of separation
+			// of a message end from the execution in the first place
+			Optional<MMessageEnd> end = getMessageEnd(yPosition);
+			end.map(occurrence::replaceBy).ifPresent(commandSink);
+		}
 	}
 
 	/**
@@ -433,32 +486,25 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 	private Optional<MExecutionOccurrence> getExecutionOccurrence(int y,
 			Function<MExecution, Optional<MOccurrence<?>>> occurrenceFunction) {
 		OptionalInt y_ = OptionalInt.of(y);
-		return as(Optional.of(lifeline).flatMap(ll -> ll.getExecutions().stream() //
+		return as(lifeline.getExecutions().stream() //
 				.map(occurrenceFunction).filter(Optional::isPresent).map(Optional::get)
 				// Note that the 'top' of the finish occurrence is the bottom of the execution
-				.filter(occ -> occ.getTop().equals(y_)).findFirst()), MExecutionOccurrence.class);
+				.filter(occ -> occ.getTop().equals(y_)).findFirst(), MExecutionOccurrence.class);
 	}
 
-	protected Optional<Command> pinOtherEnd(MOccurrence<?> occurrence) {
-		Optional<Command> result;
-
-		if (occurrence.isStart()) {
-			// Pin the bottom
-			Optional<MExecution> started = occurrence.getStartedExecution();
-			OptionalInt y = flatMapToInt(started, MExecution::getBottom);
-			result = started.flatMap(MExecution::getDiagramView)
-					.map(exec -> layoutHelper().setBottom(exec, y::getAsInt));
-		} else if (occurrence.isFinish()) {
-			// Expand the height to allow the bottom to find its new place.
-			// We know that the yPosition is defined because a precondition of
-			// this operation is that we are changing the Y position
-			Optional<MExecution> finished = occurrence.getFinishedExecution();
-			result = finished.flatMap(MExecution::getDiagramView)
-					.map(exec -> layoutHelper().setBottom(exec, yPosition::getAsInt));
-		} else {
-			result = Optional.empty();
-		}
-
-		return result;
+	/**
+	 * Find a message end at the given absolute {@code y} position on my lifeline.
+	 * 
+	 * @param y
+	 *            an absolute Y position
+	 * @return a message end at that place on my lifeline
+	 */
+	protected Optional<MMessageEnd> getMessageEnd(OptionalInt y) {
+		return lifeline.getMessageEnds().stream() //
+				// Not already starting or finishing an execution
+				.filter(end -> !end.isStart() && !end.isFinish())
+				// Note that the 'top' of the message end is its Y position (same as bottom)
+				.filter(end -> end.getTop().equals(y)).findFirst();
 	}
+
 }

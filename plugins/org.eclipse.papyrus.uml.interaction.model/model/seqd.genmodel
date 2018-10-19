@@ -160,7 +160,8 @@
       <genOperations ecoreOperation="seqd.ecore#//MExecution/getDiagramView"/>
       <genOperations ecoreOperation="seqd.ecore#//MExecution/setOwner">
         <genParameters ecoreParameter="seqd.ecore#//MExecution/setOwner/newOwner"/>
-        <genParameters ecoreParameter="seqd.ecore#//MExecution/setOwner/yPosition"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/setOwner/top"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/setOwner/bottom"/>
       </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MExecution/createStart"/>
       <genOperations ecoreOperation="seqd.ecore#//MExecution/createFinish"/>
@@ -199,6 +200,7 @@
       <genFeatures property="None" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/receive"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/sender"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/receiver"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/synchronous"/>
       <genOperations ecoreOperation="seqd.ecore#//MMessage/getOwner"/>
       <genOperations ecoreOperation="seqd.ecore#//MMessage/getDiagramView"/>
       <genOperations ecoreOperation="seqd.ecore#//MMessage/getEnd">

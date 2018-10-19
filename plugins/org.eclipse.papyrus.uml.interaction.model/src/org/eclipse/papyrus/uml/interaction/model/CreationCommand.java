@@ -179,7 +179,7 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 
 		private final CreationCommand<? extends T> outer;
 
-		Wrapper(CreationCommand<? extends T> outer) {
+		public Wrapper(CreationCommand<? extends T> outer) {
 			super();
 
 			this.outer = outer;

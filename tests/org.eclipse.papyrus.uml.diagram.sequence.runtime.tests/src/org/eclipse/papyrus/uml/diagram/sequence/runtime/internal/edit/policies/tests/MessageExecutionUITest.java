@@ -12,15 +12,16 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.tests;
 
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.isRect;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.isBounded;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.runs;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.at;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assume.assumeThat;
 
 import org.eclipse.draw2d.Connection;
+import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
@@ -37,6 +38,7 @@ import org.eclipse.uml2.uml.MessageEnd;
 import org.eclipse.uml2.uml.OccurrenceSpecification;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -90,7 +92,7 @@ public class MessageExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 		int oldBottom = execBounds.bottom();
 		execBounds.setY(dropRequest.y);
 		execBounds.setHeight(oldBottom - execBounds.y);
-		assertThat("Execution not moved/resized", execEP, isBounded(is(execBounds)));
+		assertThat("Execution not moved/resized", execEP, isBounded(isRect(execBounds)));
 	}
 
 	@Test
@@ -105,7 +107,7 @@ public class MessageExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 				runs(LL2_BODY_X - (EXEC_WIDTH / 2), dropReply.y, LL1_BODY_X, dropReply.y));
 
 		execBounds.setHeight(dropReply.y - execBounds.y);
-		assertThat("Execution moved or resized", execEP, isBounded(is(execBounds)));
+		assertThat("Execution not moved or resized", execEP, isBounded(isRect(execBounds)));
 	}
 
 	@Test
@@ -118,7 +120,7 @@ public class MessageExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 
 		assertThat("Request not moved", requestEP,
 				runs(LL1_BODY_X, dropRequest.y, LL2_BODY_X, dropRequest.y));
-		assertThat("Execution moved or resized", execEP, isBounded(is(execBounds)));
+		assertThat("Execution moved or resized", execEP, isBounded(isRect(execBounds)));
 	}
 
 	@Test
@@ -130,7 +132,92 @@ public class MessageExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 		editor.with(editor.allowSemanticReordering(), () -> editor.moveSelection(grabReply, dropReply));
 
 		assertThat("Reply not moved", replyEP, runs(LL2_BODY_X, dropReply.y, LL1_BODY_X, dropReply.y));
-		assertThat("Execution moved or resized", execEP, isBounded(is(execBounds)));
+		assertThat("Execution moved or resized", execEP, isBounded(isRect(execBounds)));
+	}
+
+	@Test
+	public void moveExecutionStart() {
+		// First, select the execution to activate selection handles
+		editor.select(getCenter(execEP));
+
+		Point grabStart = at(LL2_BODY_X, getTop(execEP));
+		Point dropStart = new Point(grabStart.x, grabStart.y - 50);
+		Point grabAt = getResizeHandleGrabPoint(execEP, PositionConstants.NORTH);
+		Rectangle execBounds = getBounds(execEP);
+
+		editor.drag(grabAt, dropStart);
+
+		assertThat("Request message not moved", requestEP, runs(LL1_BODY_X, dropStart.y,
+				LL2_BODY_X - (EXEC_WIDTH / 2), dropStart.y, RESIZE_TOLERANCE));
+
+		int oldBottom = execBounds.bottom();
+		execBounds.setY(dropStart.y);
+		execBounds.setHeight(oldBottom - execBounds.y);
+		assertThat("Execution not moved/resized", execEP, isBounded(isRect(execBounds, RESIZE_TOLERANCE)));
+	}
+
+	@Test
+	public void moveExecutionFinish() {
+		// First, select the execution to activate selection handles
+		editor.select(getCenter(execEP));
+
+		Point grabFinish = at(LL2_BODY_X, getBottom(execEP));
+		Point dropFinish = new Point(grabFinish.x, grabFinish.y + 50);
+		Point grabAt = getResizeHandleGrabPoint(execEP, PositionConstants.SOUTH);
+		Rectangle execBounds = getBounds(execEP);
+
+		editor.drag(grabAt, dropFinish);
+
+		assertThat("Reply message not moved", replyEP, runs(LL2_BODY_X - (EXEC_WIDTH / 2), dropFinish.y,
+				LL1_BODY_X, dropFinish.y, RESIZE_TOLERANCE));
+
+		execBounds.setHeight(dropFinish.y - execBounds.y);
+		assertThat("Execution not moved or resized", execEP,
+				isBounded(isRect(execBounds, RESIZE_TOLERANCE)));
+	}
+
+	@Test
+	public void disconnectExecutionStart() {
+		// First, select the execution to activate selection handles
+		editor.select(getCenter(execEP));
+
+		Point grabStart = at(LL2_BODY_X, getTop(execEP));
+		Point dropStart = new Point(grabStart.x, grabStart.y - 50);
+		Point grabAt = getResizeHandleGrabPoint(execEP, PositionConstants.NORTH);
+		Rectangle execBounds = getBounds(execEP);
+		int msgY = getSourceY(requestEP);
+
+		editor.with(editor.allowSemanticReordering(), () -> editor.drag(grabAt, dropStart));
+
+		assertThat("Request message moved", requestEP,
+				runs(LL1_BODY_X, msgY, LL2_BODY_X - (EXEC_WIDTH / 2), msgY, RESIZE_TOLERANCE));
+
+		int oldBottom = execBounds.bottom();
+		execBounds.setY(dropStart.y);
+		execBounds.setHeight(oldBottom - execBounds.y);
+		assertThat("Execution not moved/resized", execEP, isBounded(isRect(execBounds, RESIZE_TOLERANCE)));
+	}
+
+	@Ignore("The Ctrl key modifier for semantic reordering conflicts with GEF standard behavior on Linux")
+	@Test
+	public void disconnectExecutionFinish() {
+		// First, select the execution to activate selection handles
+		editor.select(getCenter(execEP));
+
+		Point grabFinish = at(LL2_BODY_X, getBottom(execEP));
+		Point dropFinish = new Point(grabFinish.x, grabFinish.y + 50);
+		Point grabAt = getResizeHandleGrabPoint(execEP, PositionConstants.SOUTH);
+		Rectangle execBounds = getBounds(execEP);
+		int msgY = getSourceY(replyEP);
+
+		editor.with(editor.allowSemanticReordering(), () -> editor.drag(grabAt, dropFinish));
+
+		assertThat("Reply message moved", replyEP,
+				runs(LL2_BODY_X - (EXEC_WIDTH / 2), msgY, LL1_BODY_X, msgY, RESIZE_TOLERANCE));
+
+		execBounds.setHeight(dropFinish.y - execBounds.y);
+		assertThat("Execution not moved or resized", execEP,
+				isBounded(isRect(execBounds, RESIZE_TOLERANCE)));
 	}
 
 	//

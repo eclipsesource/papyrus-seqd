@@ -772,7 +772,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
-	public EOperation getMExecution__SetOwner__MLifeline_OptionalInt() {
+	public EOperation getMExecution__SetOwner__MLifeline_OptionalInt_OptionalInt() {
 		return mExecutionEClass.getEOperations().get(2);
 	}
 
@@ -1052,6 +1052,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EAttribute getMMessage_Synchronous() {
+		return (EAttribute)mMessageEClass.getEStructuralFeatures().get(6);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EOperation getMMessage__GetOwner() {
 		return mMessageEClass.getEOperations().get(0);
 	}
@@ -1238,7 +1248,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEReference(mExecutionEClass, MEXECUTION__OCCURRENCES);
 		createEOperation(mExecutionEClass, MEXECUTION___GET_OWNER);
 		createEOperation(mExecutionEClass, MEXECUTION___GET_DIAGRAM_VIEW);
-		createEOperation(mExecutionEClass, MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT);
+		createEOperation(mExecutionEClass, MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT_OPTIONALINT);
 		createEOperation(mExecutionEClass, MEXECUTION___CREATE_START);
 		createEOperation(mExecutionEClass, MEXECUTION___CREATE_FINISH);
 
@@ -1270,6 +1280,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEAttribute(mMessageEClass, MMESSAGE__RECEIVE);
 		createEAttribute(mMessageEClass, MMESSAGE__SENDER);
 		createEAttribute(mMessageEClass, MMESSAGE__RECEIVER);
+		createEAttribute(mMessageEClass, MMESSAGE__SYNCHRONOUS);
 		createEOperation(mMessageEClass, MMESSAGE___GET_OWNER);
 		createEOperation(mMessageEClass, MMESSAGE___GET_DIAGRAM_VIEW);
 		createEOperation(mMessageEClass, MMESSAGE___GET_END__MESSAGEEND);
@@ -1776,10 +1787,11 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		g1.getETypeArguments().add(g2);
 		initEOperation(op, g1);
 
-		op = initEOperation(getMExecution__SetOwner__MLifeline_OptionalInt(), this.getCommand(), "setOwner", //$NON-NLS-1$
-				1, 1, IS_UNIQUE, IS_ORDERED);
+		op = initEOperation(getMExecution__SetOwner__MLifeline_OptionalInt_OptionalInt(), this.getCommand(),
+				"setOwner", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 		addEParameter(op, this.getMLifeline(), "newOwner", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
-		addEParameter(op, this.getOptionalInt(), "yPosition", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, this.getOptionalInt(), "top", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, this.getOptionalInt(), "bottom", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		op = initEOperation(getMExecution__CreateStart(), null, "createStart", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 		g1 = createEGenericType(this.getCreationCommand());
@@ -1899,6 +1911,9 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		g1.getETypeArguments().add(g2);
 		initEAttribute(getMMessage_Receiver(), g1, "receiver", null, 1, 1, MMessage.class, IS_TRANSIENT, //$NON-NLS-1$
 				IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
+		initEAttribute(getMMessage_Synchronous(), ecorePackage.getEBoolean(), "synchronous", null, 1, 1, //$NON-NLS-1$
+				MMessage.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				IS_DERIVED, IS_ORDERED);
 
 		initEOperation(getMMessage__GetOwner(), this.getMInteraction(), "getOwner", 0, 1, IS_UNIQUE, //$NON-NLS-1$
 				IS_ORDERED);

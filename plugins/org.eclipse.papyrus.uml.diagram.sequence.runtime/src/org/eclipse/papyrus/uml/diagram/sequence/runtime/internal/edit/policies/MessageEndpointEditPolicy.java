@@ -49,6 +49,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.M
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.handles.SequenceConnectionEndpointHandle;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.CommandCreatedEvent;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.DependencyContext;
 import org.eclipse.uml2.uml.Message;
 
 /**
@@ -82,17 +83,20 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 
 	@Override
 	public Command getCommand(Request request) {
-		Command result;
+		// Provide a dependency context for all command construction
+		return DependencyContext.getDynamic().withContext(() -> {
+			Command result;
 
-		if (REQ_CREATE_BENDPOINT.equals(request.getType())) {
-			result = getMoveConnectionCommand((BendpointRequest)request);
-		} else {
-			result = super.getCommand(request);
-		}
+			if (REQ_CREATE_BENDPOINT.equals(request.getType())) {
+				result = getMoveConnectionCommand((BendpointRequest)request);
+			} else {
+				result = super.getCommand(request);
+			}
 
-		bus.post(new CommandCreatedEvent(request, result));
+			bus.post(new CommandCreatedEvent(request, result));
 
-		return result;
+			return result;
+		});
 	}
 
 	/**

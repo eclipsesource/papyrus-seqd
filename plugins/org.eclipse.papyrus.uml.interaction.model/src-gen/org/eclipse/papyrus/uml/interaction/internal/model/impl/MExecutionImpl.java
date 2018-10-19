@@ -156,9 +156,9 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	 * @generated NOT
 	 */
 	@Override
-	public Command setOwner(MLifeline newOwner, OptionalInt yPosition) {
+	public Command setOwner(MLifeline newOwner, OptionalInt top, OptionalInt bottom) {
 		// Avoid cycling through this execution again
-		return withPadding(SetOwnerCommand.class, () -> new SetOwnerCommand(this, newOwner, yPosition));
+		return withPadding(SetOwnerCommand.class, () -> new SetOwnerCommand(this, newOwner, top, bottom));
 	}
 
 	/**
@@ -168,7 +168,19 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	 */
 	@Override
 	public CreationCommand<ExecutionOccurrenceSpecification> createStart() {
-		return new CreateExecutionOccurrenceCommand(this, false);
+		// Avoid cycling through this execution again
+		return wrap(withDependencies(CreateExecutionOccurrenceCommand.Start.class,
+				() -> new CreateExecutionOccurrenceCommand.Start(this)));
+	}
+
+	// Create the logical model for my new start/finish occurrence
+	private CreationCommand<ExecutionOccurrenceSpecification> wrap(
+			CreationCommand<ExecutionOccurrenceSpecification> create) {
+		return (create == null) ? null : create.andThen(this::create);
+	}
+
+	private void create(ExecutionOccurrenceSpecification occurrence) {
+		InteractionModelBuilder.getInstance(getInteraction()).add(getElement(), occurrence);
 	}
 
 	/**
@@ -178,7 +190,9 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	 */
 	@Override
 	public CreationCommand<ExecutionOccurrenceSpecification> createFinish() {
-		return new CreateExecutionOccurrenceCommand(this, true);
+		// Avoid cycling through this execution again
+		return wrap(withDependencies(CreateExecutionOccurrenceCommand.Finish.class,
+				() -> new CreateExecutionOccurrenceCommand.Finish(this)));
 	}
 
 	/**
@@ -229,8 +243,9 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 				return getOwner();
 			case SequenceDiagramPackage.MEXECUTION___GET_DIAGRAM_VIEW:
 				return getDiagramView();
-			case SequenceDiagramPackage.MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT:
-				return setOwner((MLifeline)arguments.get(0), (OptionalInt)arguments.get(1));
+			case SequenceDiagramPackage.MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT_OPTIONALINT:
+				return setOwner((MLifeline)arguments.get(0), (OptionalInt)arguments.get(1),
+						(OptionalInt)arguments.get(2));
 			case SequenceDiagramPackage.MEXECUTION___CREATE_START:
 				return createStart();
 			case SequenceDiagramPackage.MEXECUTION___CREATE_FINISH:
