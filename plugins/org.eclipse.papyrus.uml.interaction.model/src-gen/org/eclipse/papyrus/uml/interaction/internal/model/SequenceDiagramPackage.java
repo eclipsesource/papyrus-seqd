@@ -879,13 +879,31 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT = MELEMENT_OPERATION_COUNT + 2;
 
 	/**
+	 * The operation id for the '<em>Create Start</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION___CREATE_START = MELEMENT_OPERATION_COUNT + 3;
+
+	/**
+	 * The operation id for the '<em>Create Finish</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION___CREATE_FINISH = MELEMENT_OPERATION_COUNT + 4;
+
+	/**
 	 * The number of operations of the '<em>MExecution</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MEXECUTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 3;
+	int MEXECUTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 5;
 
 	/**
 	 * The meta object id for the
@@ -2591,6 +2609,28 @@ public interface SequenceDiagramPackage extends EPackage {
 	EOperation getMExecution__SetOwner__MLifeline_OptionalInt();
 
 	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#createStart() <em>Create Start</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Create Start</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#createStart()
+	 * @generated
+	 */
+	EOperation getMExecution__CreateStart();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#createFinish() <em>Create Finish</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Create Finish</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#createFinish()
+	 * @generated
+	 */
+	EOperation getMExecution__CreateFinish();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence
 	 * <em>MOccurrence</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -3475,6 +3515,22 @@ public interface SequenceDiagramPackage extends EPackage {
 		 */
 		EOperation MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT = eINSTANCE
 				.getMExecution__SetOwner__MLifeline_OptionalInt();
+
+		/**
+		 * The meta object literal for the '<em><b>Create Start</b></em>' operation. <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MEXECUTION___CREATE_START = eINSTANCE.getMExecution__CreateStart();
+
+		/**
+		 * The meta object literal for the '<em><b>Create Finish</b></em>' operation. <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MEXECUTION___CREATE_FINISH = eINSTANCE.getMExecution__CreateFinish();
 
 		/**
 		 * The meta object literal for the

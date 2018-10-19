@@ -782,6 +782,26 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EOperation getMExecution__CreateStart() {
+		return mExecutionEClass.getEOperations().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMExecution__CreateFinish() {
+		return mExecutionEClass.getEOperations().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EClass getMOccurrence() {
 		return mOccurrenceEClass;
 	}
@@ -1219,6 +1239,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEOperation(mExecutionEClass, MEXECUTION___GET_OWNER);
 		createEOperation(mExecutionEClass, MEXECUTION___GET_DIAGRAM_VIEW);
 		createEOperation(mExecutionEClass, MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT);
+		createEOperation(mExecutionEClass, MEXECUTION___CREATE_START);
+		createEOperation(mExecutionEClass, MEXECUTION___CREATE_FINISH);
 
 		mOccurrenceEClass = createEClass(MOCCURRENCE);
 		createEAttribute(mOccurrenceEClass, MOCCURRENCE__COVERED);
@@ -1758,6 +1780,18 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 				1, 1, IS_UNIQUE, IS_ORDERED);
 		addEParameter(op, this.getMLifeline(), "newOwner", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 		addEParameter(op, this.getOptionalInt(), "yPosition", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		op = initEOperation(getMExecution__CreateStart(), null, "createStart", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getCreationCommand());
+		g2 = createEGenericType(theUMLPackage.getExecutionOccurrenceSpecification());
+		g1.getETypeArguments().add(g2);
+		initEOperation(op, g1);
+
+		op = initEOperation(getMExecution__CreateFinish(), null, "createFinish", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getCreationCommand());
+		g2 = createEGenericType(theUMLPackage.getExecutionOccurrenceSpecification());
+		g1.getETypeArguments().add(g2);
+		initEOperation(op, g1);
 
 		initEClass(mOccurrenceEClass, MOccurrence.class, "MOccurrence", IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);

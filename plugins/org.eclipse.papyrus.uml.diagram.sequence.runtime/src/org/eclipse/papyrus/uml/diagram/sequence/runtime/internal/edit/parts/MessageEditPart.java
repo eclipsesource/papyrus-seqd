@@ -15,8 +15,6 @@ import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Mo
 
 import com.google.common.eventbus.EventBus;
 
-import java.util.Optional;
-
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.Graphics;
@@ -38,6 +36,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.L
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageBendpointsEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageEndpointEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.MessageMoveTracker;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceConnectionSelectionTracker;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.UMLPackage;
 
@@ -187,7 +186,6 @@ public class MessageEditPart extends ConnectionNodeEditPart implements ISequence
 
 	@Override
 	public DragTracker getDragTracker(Request req) {
-		return Optional.ofNullable(super.getDragTracker(req))
-				.map(trk -> new MessageMoveTracker(this, trk, bus)).orElse(null);
+		return new MessageMoveTracker(this, new SequenceConnectionSelectionTracker(this), bus);
 	}
 }

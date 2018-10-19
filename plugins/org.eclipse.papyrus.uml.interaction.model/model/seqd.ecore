@@ -495,6 +495,16 @@
         </eAnnotations>
       </eParameters>
     </eOperations>
+    <eOperations name="createStart" lowerBound="1">
+      <eGenericType eClassifier="#//CreationCommand">
+        <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//ExecutionOccurrenceSpecification"/>
+      </eGenericType>
+    </eOperations>
+    <eOperations name="createFinish" lowerBound="1">
+      <eGenericType eClassifier="#//CreationCommand">
+        <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//ExecutionOccurrenceSpecification"/>
+      </eGenericType>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="start" lowerBound="1" changeable="false"
         volatile="true" transient="true" derived="true">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">

@@ -18,6 +18,7 @@ import com.google.common.collect.Multimap;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -28,6 +29,8 @@ import java.util.function.Supplier;
 public class DependencyContext {
 
 	private static final Object NO_KEY = new Object();
+
+	private static final Predicate<Object> TRUE = __ -> true;
 
 	/** A dependency context that tracks nothing and applies no guard at all. */
 	private static final DependencyContext NULL_CONTEXT = new DependencyContext() {
@@ -91,7 +94,12 @@ public class DependencyContext {
 		return new DependencyContext() {
 			@Override
 			public <T, R> Optional<R> apply(T subject, Object key, Function<? super T, ? extends R> action) {
-				Optional<R> result;
+				return withContext(ctx -> ctx.apply(subject, key, action));
+			}
+
+			@Override
+			public <T> T withContext(Function<? super DependencyContext, ? extends T> action) {
+				T result;
 
 				// If there is not currently a shared context, establish it and use it. Otherwise,
 				// use whatever's already there
@@ -99,14 +107,14 @@ public class DependencyContext {
 				if (delegate == null) {
 					delegate = new DependencyContext();
 					try {
-						result = delegate.withContext(ctx -> ctx.apply(subject, key, action));
+						result = delegate.withContext(action);
 					} finally {
 						if (onClose != null) {
 							onClose.accept(delegate);
 						}
 					}
 				} else {
-					result = delegate.apply(subject, key, action);
+					result = delegate.withContext(action);
 				}
 
 				return result;
@@ -259,7 +267,25 @@ public class DependencyContext {
 	 * @return some key of the requested type
 	 */
 	public <T> Optional<T> get(Object subject, Class<T> keyType) {
-		return context.get(subject).stream().filter(keyType::isInstance).map(keyType::cast).findAny();
+		return get(subject, keyType, TRUE);
+	}
+
+	/**
+	 * Obtain the context key of some type associated with a given {@code subject}. In case of multiple
+	 * context keys of this type associated with a subject, which key is returned is determined by the
+	 * {@link filter}.
+	 * 
+	 * @param subject
+	 *            a subject of contextual operations
+	 * @param keyType
+	 *            the type of key to retrieve
+	 * @param filter
+	 *            a predicate matching the specific key to retrieve
+	 * @return some key of the requested type
+	 */
+	public <T> Optional<T> get(Object subject, Class<T> keyType, Predicate<? super T> filter) {
+		return context.get(subject).stream().filter(keyType::isInstance).map(keyType::cast).filter(filter)
+				.findAny();
 	}
 
 	/**
@@ -277,9 +303,30 @@ public class DependencyContext {
 	 * @return some key of the requested type, supplied and registered if necessary
 	 */
 	public <T> T get(Object subject, Class<T> keyType, Supplier<? extends T> keySupplier) {
+		return get(subject, keyType, TRUE, keySupplier);
+	}
+
+	/**
+	 * Obtain or create the context key of some type associated with a given {@code subject}. In case of
+	 * multiple context keys of this type associated with a subject, which key is returned is determined by
+	 * the {@link filter}. And in the case that the key is not yet present, obtain it from the given supplier
+	 * and {@link #put(Object, Object) put it}.
+	 * 
+	 * @param subject
+	 *            a subject of contextual operations
+	 * @param keyType
+	 *            the type of key to retrieve
+	 * @param filter
+	 *            a predicate matching the specific key to retrieve
+	 * @param keySupplier
+	 *            a supplier of the key in case it is absent
+	 * @return some key of the requested type, supplied and registered if necessary
+	 */
+	public <T> T get(Object subject, Class<T> keyType, Predicate<? super T> filter,
+			Supplier<? extends T> keySupplier) {
 		T result;
 
-		Optional<T> existing = get(subject, keyType);
+		Optional<T> existing = get(subject, keyType, filter);
 		if (existing.isPresent()) {
 			result = existing.get();
 		} else {

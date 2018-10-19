@@ -15,6 +15,8 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.getOriginalMouseLocation;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.getOriginalSourceLocation;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.getOriginalTargetLocation;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.isAllowSemanticReordering;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setAllowSemanticReordering;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setForce;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setOriginalMouseLocation;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setOriginalSourceLocation;
@@ -251,6 +253,7 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 			sourceReq.setConnectionEditPart(connection);
 			sourceReq.setLocation(sourceLocation);
 			setForce(sourceReq, true);
+			setAllowSemanticReordering(sourceReq, isAllowSemanticReordering(request));
 
 			// In case the result of the drag moves the source end to a different edit-part
 			// (for example, a different execution specification)
@@ -262,6 +265,7 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 			targetReq.setConnectionEditPart(connection);
 			targetReq.setLocation(targetLocation);
 			setForce(targetReq, true);
+			setAllowSemanticReordering(targetReq, isAllowSemanticReordering(request));
 
 			// In case the result of the drag moves the target end to a different edit-part
 			target = retargetRequest(target, targetReq);

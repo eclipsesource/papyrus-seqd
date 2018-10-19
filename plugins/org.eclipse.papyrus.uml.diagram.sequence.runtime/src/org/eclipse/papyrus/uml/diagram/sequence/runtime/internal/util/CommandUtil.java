@@ -83,9 +83,11 @@ public class CommandUtil {
 			Command next = iter.next();
 			if (next instanceof CreationCommand<?>) {
 				CreationCommand<?> nextCreation = (CreationCommand<?>)next;
-				result = nextCreation.as(viewType);
-				if (result != null) {
-					break;
+				if (viewType.isAssignableFrom(nextCreation.getType())) {
+					result = nextCreation.as(viewType);
+					if (result != null) {
+						break;
+					}
 				}
 			}
 		}

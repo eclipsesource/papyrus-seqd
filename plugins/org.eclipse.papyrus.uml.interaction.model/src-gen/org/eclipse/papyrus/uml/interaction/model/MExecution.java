@@ -19,6 +19,7 @@ import java.util.OptionalInt;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 
 /**
@@ -123,5 +124,23 @@ public interface MExecution extends MElement<ExecutionSpecification> {
 	 * @generated
 	 */
 	Command setOwner(MLifeline newOwner, OptionalInt yPosition);
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.CreationCommand&lt;org.eclipse.uml2.uml.ExecutionOccurrenceSpecification&gt;"
+	 *        required="true"
+	 * @generated
+	 */
+	CreationCommand<ExecutionOccurrenceSpecification> createStart();
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.CreationCommand&lt;org.eclipse.uml2.uml.ExecutionOccurrenceSpecification&gt;"
+	 *        required="true"
+	 * @generated
+	 */
+	CreationCommand<ExecutionOccurrenceSpecification> createFinish();
 
 } // MExecution

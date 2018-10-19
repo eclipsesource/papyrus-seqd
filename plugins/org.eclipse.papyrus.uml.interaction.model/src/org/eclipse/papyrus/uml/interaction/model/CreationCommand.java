@@ -64,7 +64,7 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 			@SuppressWarnings("unchecked")
 			Cast() {
 				// This cast is checked externally, below
-				super((CreationCommand<U>)CreationCommand.this);
+				super((CreationCommand<U>)CreationCommand.this, WRAP_TOKEN);
 			}
 
 			@Override
@@ -78,7 +78,9 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 			}
 		}
 
-		if (subtype.isAssignableFrom(getType())) {
+		// If the subtype is a class, then we can enforce conformance. Otherwise,
+		// it's an interface, so the cast may or may not work at run-time
+		if (subtype.isInterface() || getType().isAssignableFrom(subtype)) {
 			return new Cast();
 		}
 
@@ -101,7 +103,7 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 			private final List<Command> toCompose = new ArrayList<>(3);
 
 			AndThen(Command followUp) {
-				super();
+				super(CreationCommand.this);
 
 				toCompose.add(followUp);
 			}
@@ -144,7 +146,7 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 	default CreationCommand<T> andThen(Consumer<? super T> sideEffect) {
 		class AndThen extends Wrapper<T> {
 			AndThen() {
-				super(CreationCommand.this);
+				super(CreationCommand.this, WRAP_TOKEN);
 			}
 
 			@Override
@@ -173,12 +175,21 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 	 */
 	class Wrapper<T extends EObject> extends CommandWrapper implements CreationCommand<T> {
 
-		Wrapper() {
+		static final Object WRAP_TOKEN = new Object();
+
+		private final CreationCommand<? extends T> outer;
+
+		Wrapper(CreationCommand<? extends T> outer) {
 			super();
+
+			this.outer = outer;
 		}
 
-		Wrapper(CreationCommand<T> wrapped) {
-			super(wrapped);
+		Wrapper(CreationCommand<? extends T> outer, Object wrapToken) {
+			super(outer);
+			assert wrapToken == WRAP_TOKEN;
+
+			this.outer = outer;
 		}
 
 		@SuppressWarnings("unchecked")
@@ -190,22 +201,22 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 
 		@Override
 		public String getLabel() {
-			return getCommand().getLabel();
+			return outer.getLabel();
 		}
 
 		@Override
 		public String getDescription() {
-			return getCommand().getDescription();
+			return outer.getDescription();
 		}
 
 		@Override
 		public Class<? extends T> getType() {
-			return getCommand().getType();
+			return outer.getType();
 		}
 
 		@Override
 		public T getNewObject() {
-			return getCommand().getNewObject();
+			return outer.getNewObject();
 		}
 
 		@Override

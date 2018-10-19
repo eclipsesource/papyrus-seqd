@@ -26,12 +26,15 @@ import org.eclipse.emf.common.util.UniqueEList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.CreateExecutionOccurrenceCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.RemoveExecutionCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.SetOwnerCommand;
+import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 
 /**
@@ -104,7 +107,7 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	 */
 	@Override
 	public List<MOccurrence<? extends Element>> getOccurrences() {
-		EList<MOccurrence<? extends Element>> result = new UniqueEList.FastCompare<MOccurrence<? extends Element>>();
+		EList<MOccurrence<? extends Element>> result = new UniqueEList.FastCompare<>();
 
 		getOwner().getOccurrences().stream().filter(spannedBy(this)).forEach(result::add);
 
@@ -161,6 +164,26 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public CreationCommand<ExecutionOccurrenceSpecification> createStart() {
+		return new CreateExecutionOccurrenceCommand(this, false);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public CreationCommand<ExecutionOccurrenceSpecification> createFinish() {
+		return new CreateExecutionOccurrenceCommand(this, true);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -208,6 +231,10 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 				return getDiagramView();
 			case SequenceDiagramPackage.MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT:
 				return setOwner((MLifeline)arguments.get(0), (OptionalInt)arguments.get(1));
+			case SequenceDiagramPackage.MEXECUTION___CREATE_START:
+				return createStart();
+			case SequenceDiagramPackage.MEXECUTION___CREATE_FINISH:
+				return createFinish();
 		}
 		return super.eInvoke(operationID, arguments);
 	}

@@ -162,6 +162,8 @@
         <genParameters ecoreParameter="seqd.ecore#//MExecution/setOwner/newOwner"/>
         <genParameters ecoreParameter="seqd.ecore#//MExecution/setOwner/yPosition"/>
       </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MExecution/createStart"/>
+      <genOperations ecoreOperation="seqd.ecore#//MExecution/createFinish"/>
     </genClasses>
     <genClasses image="false" ecoreClass="seqd.ecore#//MOccurrence">
       <genTypeParameters ecoreTypeParameter="seqd.ecore#//MOccurrence/T"/>
