@@ -34,6 +34,7 @@ import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.notation.Bounds;
 import org.eclipse.gmf.runtime.notation.Compartment;
 import org.eclipse.gmf.runtime.notation.Connector;
+import org.eclipse.gmf.runtime.notation.DecorationNode;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.gmf.runtime.notation.LayoutConstraint;
@@ -331,7 +332,8 @@ public class DefaultDiagramHelper implements DiagramHelper {
 				bendpoints.setPoints(Arrays.asList(bp1, bp2, bp3, bp4));
 			}
 
-			Shape nameLabel = (Shape)result.createChild(NotationPackage.Literals.SHAPE);
+			// create a decoration node to be seen by CSS rules
+			DecorationNode nameLabel = (DecorationNode)result.createChild(NotationPackage.Literals.DECORATION_NODE);
 			nameLabel.setType(ViewTypes.MESSAGE_NAME);
 			return result;
 		};
