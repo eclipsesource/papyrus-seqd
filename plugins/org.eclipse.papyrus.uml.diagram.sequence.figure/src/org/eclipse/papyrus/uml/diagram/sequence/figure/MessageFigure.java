@@ -61,10 +61,37 @@ public class MessageFigure extends PolylineConnectionEx {
 
 	MessageDirection computeDirection() {
 		PointList points = getPoints();
+
+		Point c = naiveCentroid(points);
 		Point source = points.getFirstPoint();
 		Point target = points.getLastPoint();
 
-		return (target.x >= source.x) ? MessageDirection.LEFT_TO_RIGHT : MessageDirection.RIGHT_TO_LEFT;
+		if (source.x < c.x) {
+			// It's either left-to-right or a right-side self-message
+			return target.x >= c.x ? MessageDirection.LEFT_TO_RIGHT : MessageDirection.SELF_RIGHT;
+		} else {
+			// It's either right-to-left or a left-side self-message
+			return target.x <= c.x ? MessageDirection.RIGHT_TO_LEFT : MessageDirection.SELF_LEFT;
+		}
+	}
+
+	// We don't need a particularly accurate centroid, nor a more difficult "visual center"
+	// because the user doesn't have the freedom to draw arbitrary paths: only either a
+	// straight line segment or a rectangular self-message
+	private Point naiveCentroid(PointList points) {
+		Point result = new Point();
+		Point scratch = new Point();
+		int count = points.size();
+
+		for (int i = 0; i < count; i++) {
+			points.getPoint(scratch, i);
+			result.setLocation(result.x + scratch.x, result.y + scratch.y);
+		}
+
+		result.x = result.x / count;
+		result.y = result.y / count;
+
+		return result;
 	}
 
 	//
@@ -72,12 +99,28 @@ public class MessageFigure extends PolylineConnectionEx {
 	//
 
 	enum MessageDirection {
-		LEFT_TO_RIGHT, RIGHT_TO_LEFT;
+		/** Ordinary message from left to right. */
+		LEFT_TO_RIGHT,
+		/** Ordinary message from right to left. */
+		RIGHT_TO_LEFT,
+		/** Self-message on the right of the lifeline. */
+		SELF_RIGHT,
+		/** Self-message on the left side of the lifeline. */
+		SELF_LEFT;
 
 		int getExecutionSide(boolean sourceAnchor) {
-			return sourceAnchor //
-					? (this == RIGHT_TO_LEFT) ? PositionConstants.LEFT : PositionConstants.RIGHT
-					: (this == LEFT_TO_RIGHT) ? PositionConstants.LEFT : PositionConstants.RIGHT;
+			switch (this) {
+				case LEFT_TO_RIGHT:
+					return sourceAnchor ? PositionConstants.RIGHT : PositionConstants.LEFT;
+				case RIGHT_TO_LEFT:
+					return sourceAnchor ? PositionConstants.LEFT : PositionConstants.RIGHT;
+				case SELF_RIGHT:
+					return PositionConstants.RIGHT;
+				case SELF_LEFT:
+					return PositionConstants.LEFT;
+				default:
+					throw new IncompatibleClassChangeError("unknown enum value " + name()); //$NON-NLS-1$
+			}
 		}
 	}
 
