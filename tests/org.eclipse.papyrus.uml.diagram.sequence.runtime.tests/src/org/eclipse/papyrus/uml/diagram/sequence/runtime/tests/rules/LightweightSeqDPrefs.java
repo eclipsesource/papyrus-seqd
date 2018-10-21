@@ -81,7 +81,7 @@ public class LightweightSeqDPrefs extends ExternalResource {
 	}
 
 	@Override
-	protected void before() throws Throwable {
+	protected void before() {
 		befores.forEach(Runnable::run);
 	}
 
@@ -115,6 +115,23 @@ public class LightweightSeqDPrefs extends ExternalResource {
 		afters.add(0, wasDefault[0] // Reverse order in case of multiple setting of same preference
 				? () -> store.setToDefault(prefKey) //
 				: () -> setter.accept(store, prefKey, (T) oldValue[0]));
+	}
+
+	/**
+	 * Run some <em>ad hoc</em> runnable with the preferences that I specify.
+	 *
+	 * @param test
+	 *            some fragment of a test scenario to run with my preferences if
+	 *            effect
+	 */
+	public void run(Runnable test) {
+		before();
+
+		try {
+			test.run();
+		} finally {
+			after();
+		}
 	}
 
 	//

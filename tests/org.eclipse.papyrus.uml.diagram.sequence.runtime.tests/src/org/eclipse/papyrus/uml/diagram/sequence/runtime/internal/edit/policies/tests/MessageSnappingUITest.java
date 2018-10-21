@@ -50,12 +50,9 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.internal.runners.model.ReflectiveCallable;
-import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.junit.runners.model.Statement;
 
 /**
  * Integration test cases for the {@link LifelineBodyGraphicalNodeEditPolicy}
@@ -119,42 +116,28 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 				? new LightweightSeqDPrefs().createExecutionsForSyncMessages()
 				: new LightweightSeqDPrefs().dontCreateExecutionsForSyncMessages();
 
-		Statement test = new Statement() {
+		prefs.run(() -> {
+			EditPart messageEP = editor.with(modifiers,
+					() -> createConnection(SequenceElementTypes.Sync_Message_Edge,
+							at(LL1_BODY_X, withinMagnet(EXEC_START)),
+							at(LL2_BODY_X, withinMagnet(EXEC_START))));
 
-			@Override
-			public void evaluate() throws Throwable {
-				EditPart messageEP = editor.with(modifiers,
-						() -> createConnection(SequenceElementTypes.Sync_Message_Edge,
-								at(LL1_BODY_X, withinMagnet(EXEC_START)),
-								at(LL2_BODY_X, withinMagnet(EXEC_START))));
+			// The receiving end snaps to the exec start and the sending end matches
+			int execTop = getTop(execEP);
+			assertThat(messageEP, withModifiers(runs(LL1_BODY_X, execTop, left(LL2_BODY_X), execTop, 1)));
 
-				// The receiving end snaps to the exec start and the sending end matches
-				int execTop = getTop(execEP);
-				assertThat(messageEP,
-						withModifiers(runs(LL1_BODY_X, execTop, left(LL2_BODY_X), execTop, 1)));
+			// The message receive event starts the execution
+			Message message = (Message) messageEP.getAdapter(EObject.class);
+			assertThat(exec.getStart(), withModifiers(is(message.getReceiveEvent())));
 
-				// The message receive event starts the execution
-				Message message = (Message) messageEP.getAdapter(EObject.class);
-				assertThat(exec.getStart(), withModifiers(is(message.getReceiveEvent())));
-
-				// The message send and receive both are semantically before the execution
-				assertThat("Message ends out of order", message.getSendEvent(),
-						editor.semanticallyPrecedes(message.getReceiveEvent()));
-				assertThat("Execution out of order", exec,
-						editor.semanticallyFollows(message.getReceiveEvent()));
-				assertThat("Execution finish out of order", exec,
-						editor.semanticallyPrecedes(exec.getFinish()));
-			}
-		};
-
-		new ReflectiveCallable() {
-
-			@Override
-			protected Object runReflectiveCall() throws Throwable {
-				prefs.apply(test, Description.EMPTY).evaluate();
-				return null;
-			}
-		}.run();
+			// The message send and receive both are semantically before the execution
+			assertThat("Message ends out of order", message.getSendEvent(),
+					editor.semanticallyPrecedes(message.getReceiveEvent()));
+			assertThat("Execution out of order", exec,
+					editor.semanticallyFollows(message.getReceiveEvent()));
+			assertThat("Execution finish out of order", exec,
+					editor.semanticallyPrecedes(exec.getFinish()));
+		});
 	}
 
 	@Test

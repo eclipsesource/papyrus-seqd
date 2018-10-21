@@ -46,8 +46,9 @@ import org.junit.runners.Parameterized.Parameters;
 public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest {
 
 	@ClassRule
-	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs().dontCreateExecutionsForSyncMessages();
-	
+	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs()
+			.dontCreateExecutionsForSyncMessages();
+
 	// Horizontal position of the first lifeline's body
 	private static final int LIFELINE_1_BODY_X = 121;
 
@@ -79,6 +80,14 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 
 	@Test
 	public void createSelfMessage() {
+		if (mode == CreationMode.WITH_EXECUTION) {
+			new LightweightSeqDPrefs().createExecutionsForSyncMessages().run(this::doCreateSelfMessage);
+		} else {
+			doCreateSelfMessage();
+		}
+	}
+
+	private void doCreateSelfMessage() {
 		IElementType type = SequenceElementTypes.getMessageType(messageSort);
 
 		EditPart messageEP;
@@ -109,7 +118,10 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 			}
 			break;
 		default:
-			assertThat(messageEP, runs(x(), top(), x(), bottom(), 2));
+			if (mode != CreationMode.WITH_EXECUTION) {
+				assertThat(messageEP, runs(x(), top(), x(), bottom(), 2));
+			} // TODO: Assert the self-message shape with execution when we draw it properly
+
 			break;
 		}
 	}
@@ -124,6 +136,7 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 				{ MessageSort.SYNCH_CALL_LITERAL, CreationMode.ON_LIFELINE }, //
 				{ MessageSort.SYNCH_CALL_LITERAL, CreationMode.ON_EXECUTION }, //
 				{ MessageSort.SYNCH_CALL_LITERAL, CreationMode.ON_LIFELINE_TALL }, //
+				{ MessageSort.SYNCH_CALL_LITERAL, CreationMode.WITH_EXECUTION }, //
 				{ MessageSort.ASYNCH_CALL_LITERAL, CreationMode.ON_LIFELINE }, //
 				{ MessageSort.ASYNCH_CALL_LITERAL, CreationMode.ON_EXECUTION }, //
 				{ MessageSort.ASYNCH_CALL_LITERAL, CreationMode.ON_LIFELINE_TALL }, //
@@ -192,7 +205,9 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 		// Draw a tall self-message shape (with a gap, not just in one place)
 		ON_LIFELINE_TALL,
 		// Draw a self-message around an existing execution occurrence
-		AROUND_OCCURRENCE;
+		AROUND_OCCURRENCE,
+		// Create an execution occurrence for the sync call message
+		WITH_EXECUTION;
 
 		@Override
 		public String toString() {
