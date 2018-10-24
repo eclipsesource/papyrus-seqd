@@ -163,7 +163,7 @@ public class CreateMessagePaddingTest {
 		execute(command);
 
 		/* assert */
-		assertEquals(execution1Top + 20, lifeline1().getExecutions().get(0).getTop().getAsInt());
+		assertEquals(execution1Top + 25, lifeline1().getExecutions().get(0).getTop().getAsInt());
 		assertEquals(lifelineBottom + 25, message1().getSend().get().getTop().getAsInt());
 		assertEquals(lifelineBottom + 25, message1().getReceive().get().getTop().getAsInt());
 	}
@@ -184,8 +184,7 @@ public class CreateMessagePaddingTest {
 		execute(command);
 
 		/* assert */
-		/* from 30 to 50 (2*25) */
-		assertEquals(execution1Top + 20, lifeline2().getExecutions().get(0).getTop().getAsInt());
+		assertEquals(execution1Top + 25, lifeline2().getExecutions().get(0).getTop().getAsInt());
 		assertEquals(lifelineBottom + 25, message1().getSend().get().getTop().getAsInt());
 		assertEquals(lifelineBottom + 25, message1().getReceive().get().getTop().getAsInt());
 	}

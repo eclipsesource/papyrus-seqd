@@ -19,6 +19,7 @@ import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateDeleteMess
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateExecutionTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateMessageTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateMessageTestB;
+import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateSelfMessageNudgeTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateSyncMessageTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.SemanticOrderAfterCreationOfElementOnTopTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.SemanticOrderAfterInsertingBetweenMsgStartAndFinishTest;
@@ -42,7 +43,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ //
 		DefaultLayoutHelperTest.class, //
 		CreateMessageTest.class, CreateSyncMessageTest.class, CreateMessageTestB.class,
-		CreateDeleteMessageTest.class, //
+		CreateDeleteMessageTest.class, CreateSelfMessageNudgeTest.class, //
 		CreateExecutionTest.class, DeleteExecutionTest.class, //
 		CreationMessageDeletionTest.class, BasicDeletionTest.class, DeletionMessageDeletionTest.class, //
 		SetCoveredCommandTest.class, //
