@@ -12,7 +12,13 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition.LEFT;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition.RIGHT;
+import static org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes.LIFELINE_HEADER;
+
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.gmf.runtime.notation.Compartment;
@@ -53,6 +59,7 @@ public class AddLifelineCommand extends ModelCommand.Creation<MInteractionImpl, 
 		this.height = height;
 	}
 
+	@SuppressWarnings("boxing")
 	@Override
 	protected Command createCommand() {
 		SemanticHelper semantics = semanticHelper();
@@ -63,16 +70,56 @@ public class AddLifelineCommand extends ModelCommand.Creation<MInteractionImpl, 
 		Shape frame = diagramHelper().getInteractionFrame(getTarget().getDiagramView().get());
 		Compartment compartment = diagramHelper().getShapeCompartment(frame);
 
-		int absoluteX = layoutHelper().toAbsoluteX(null, compartment, xOffset);
+		List<MLifeline> leftToRight = getTarget().getLifelines().stream()//
+				.sorted((ll1, ll2) -> {
+					int ll1Left = ll1.getDiagramView().map(layoutHelper()::getLeft).orElse(-1);
+					int ll2Left = ll2.getDiagramView().map(layoutHelper()::getLeft).orElse(-1);
+					if (ll1Left == ll2Left) {
+						return -1;
+					}
+					return ll1Left - ll2Left;
+				})//
+				.collect(Collectors.toList());
+
+		int insertionAbsoluteX = layoutHelper().toAbsoluteX(null, compartment, xOffset);
+
+		/*
+		 * do we need to move our offset, because we attempt to insert on top of a lifeline starting to the
+		 * left of us?
+		 */
+		int abosluteXWithoutPadding = insertionAbsoluteX
+				- layoutHelper().getConstraints().getPadding(LEFT, LIFELINE_HEADER)
+				- layoutHelper().getConstraints().getPadding(RIGHT, LIFELINE_HEADER);
+		Optional<MLifeline> llUnderMe = leftToRight.stream()//
+				.filter(ll -> {
+					int left = ll.getDiagramView().map(layoutHelper()::getLeft)
+							.orElse(abosluteXWithoutPadding);
+					int right = ll.getDiagramView().map(layoutHelper()::getRight)
+							.orElse(abosluteXWithoutPadding);
+					return left < abosluteXWithoutPadding && right > abosluteXWithoutPadding;
+				})//
+				.findFirst();
+
+		int absoluteX;
+		if (llUnderMe.isPresent()) {
+			absoluteX = llUnderMe.get()//
+					.getDiagramView().map(layoutHelper()::getRight).orElse(insertionAbsoluteX)
+					+ layoutHelper().getConstraints().getPadding(LEFT, LIFELINE_HEADER)
+					+ layoutHelper().getConstraints().getPadding(RIGHT, LIFELINE_HEADER);
+		} else {
+			absoluteX = insertionAbsoluteX;
+		}
 
 		Command result = resultCommand.chain(diagramHelper().createLifelineShape(resultCommand,
 				getTarget().getDiagramView().get(), absoluteX, height));
 
-		// Are we inserting this amongst existing lifelines?
+		/* do we need to nudge elements to the right of us? */
 		Optional<MLifeline> existing = getTarget().getLifelineAt(absoluteX);
 		if (existing.isPresent()) {
 			// Make room for it
-			int spaceRequired = 90; // FIXME: LayoutHelper should compute space needed
+			int spaceRequired = layoutHelper().getConstraints().getMinimumWidth(LIFELINE_HEADER)
+					+ layoutHelper().getConstraints().getPadding(LEFT, LIFELINE_HEADER)
+					+ layoutHelper().getConstraints().getPadding(RIGHT, LIFELINE_HEADER);
 			result = existing.get().nudgeHorizontally(spaceRequired).chain(result);
 		}
 
