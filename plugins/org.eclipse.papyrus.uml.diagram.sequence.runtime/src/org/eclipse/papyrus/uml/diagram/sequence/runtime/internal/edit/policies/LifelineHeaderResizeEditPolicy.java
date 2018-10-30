@@ -51,6 +51,7 @@ import org.eclipse.uml2.uml.Element;
  * This policy also constrains the Drag/Move behavior to the horizontal dimension.
  * </p>
  */
+@SuppressWarnings("boxing")
 public class LifelineHeaderResizeEditPolicy extends ResizableShapeEditPolicy {
 
 	public LifelineHeaderResizeEditPolicy() {
@@ -79,22 +80,72 @@ public class LifelineHeaderResizeEditPolicy extends ResizableShapeEditPolicy {
 		ChangeBoundsRequest newRequest = new ChangeBoundsRequest(request.getType());
 		newRequest.setMoveDelta(getMoveDelta(current, rectangle));
 		newRequest.setSizeDelta(getSizeDelta(current, rectangle));
+		if (!PrivateRequestUtils.isAllowSemanticReordering(request)) {
+			// if semantic reorder not allowed show feedback with regard to our neighbours
+			getMaxMoveDelta().ifPresent(md -> {
+				if (newRequest.getMoveDelta().x() < 0) {
+					md.leftDelta.ifPresent(d -> {
+						if (d > newRequest.getMoveDelta().x()) {
+							newRequest.getMoveDelta().setX(d);
+						}
+					});
+				} else {
+					md.rightDelta.ifPresent(d -> {
+						if (d < newRequest.getMoveDelta().x()) {
+							newRequest.getMoveDelta().setX(d);
+						}
+					});
+				}
+			});
+		}
 		super.showChangeBoundsFeedback(newRequest);
 	}
 
 	@Override
 	protected Command getMoveCommand(ChangeBoundsRequest request) {
 		if (PrivateRequestUtils.isAllowSemanticReordering(request)) {
-			// TODO when pressing ctrl it currently allows any move. This should also make place and fix the
-			// order of elements in the uml model
+			// Logic for issue #32 (Reorder lifeline) goes here. For now simply delegate to regular move
+			// command
 			return super.getMoveCommand(request);
 		} else {
 			return getMoveLifelineCommand(request);
 		}
 	}
 
-	@SuppressWarnings("boxing")
 	private Command getMoveLifelineCommand(ChangeBoundsRequest request) {
+		Optional<MoveDelta> maxMoveDelta = getMaxMoveDelta();
+		if (!maxMoveDelta.isPresent()) {
+			return org.eclipse.gef.commands.UnexecutableCommand.INSTANCE;
+		}
+
+		Optional<Integer> leftDelta = maxMoveDelta.get().leftDelta;
+		Optional<Integer> rightDelta = maxMoveDelta.get().rightDelta;
+
+		int moveDelta = request.getMoveDelta().x();
+		if (moveDelta < 0 && leftDelta.isPresent()) {
+			/* left */
+			if (leftDelta.get() > moveDelta) {
+				return getAdjustedMoveLifelineCommand(request, leftDelta.get());
+			}
+		} else if (moveDelta > 0 && rightDelta.isPresent()) {
+			/* right */
+			if (rightDelta.get() < moveDelta) {
+				return getAdjustedMoveLifelineCommand(request, rightDelta.get());
+			}
+		}
+
+		return super.getMoveCommand(request);
+	}
+
+	private Command getAdjustedMoveLifelineCommand(ChangeBoundsRequest request, int x) {
+		ChangeBoundsRequest newRequest = new ChangeBoundsRequest(request.getType());
+		newRequest.setMoveDelta(request.getMoveDelta().getCopy());
+		newRequest.setSizeDelta(request.getSizeDelta().getCopy());
+		newRequest.getMoveDelta().setX(x);
+		return super.getMoveCommand(newRequest);
+	}
+
+	private Optional<MoveDelta> getMaxMoveDelta() {
 		List<MLifeline> leftToRight = getInteraction().getLifelines().stream()//
 				.sorted((ll1, ll2) -> {
 					int ll1Left = ll1.getDiagramView().map(layoutHelper()::getLeft).orElse(-1);
@@ -108,11 +159,11 @@ public class LifelineHeaderResizeEditPolicy extends ResizableShapeEditPolicy {
 
 		Optional<MLifeline> lifeline = getLifeline();
 		if (!lifeline.isPresent()) {
-			return org.eclipse.gef.commands.UnexecutableCommand.INSTANCE;
+			return Optional.empty();
 		}
 		int index = leftToRight.indexOf(lifeline.get());
 		if (index < 0) {
-			return org.eclipse.gef.commands.UnexecutableCommand.INSTANCE;
+			return Optional.empty();
 		}
 
 		Optional<MLifeline> leftLl = Optional.ofNullable(index > 0 ? leftToRight.get(index - 1) : null);
@@ -122,25 +173,12 @@ public class LifelineHeaderResizeEditPolicy extends ResizableShapeEditPolicy {
 		int padding = layoutHelper().getConstraints().getPadding(LEFT, LIFELINE_HEADER)
 				+ layoutHelper().getConstraints().getPadding(RIGHT, LIFELINE_HEADER);
 
-		Optional<Integer> leftDelta = leftLl
+		MoveDelta result = new MoveDelta();
+		result.leftDelta = leftLl
 				.map(left -> left.getRight().orElse(0) - lifeline.get().getLeft().orElse(0) + padding);
-		Optional<Integer> rightDelta = righttLl
+		result.rightDelta = righttLl
 				.map(right -> right.getLeft().orElse(0) - lifeline.get().getRight().orElse(0) - padding);
-
-		int moveDelta = request.getMoveDelta().x();
-		if (moveDelta < 0 && leftDelta.isPresent()) {
-			/* left */
-			if (leftDelta.get() > moveDelta) {
-				return org.eclipse.gef.commands.UnexecutableCommand.INSTANCE;
-			}
-		} else if (moveDelta > 0 && rightDelta.isPresent()) {
-			/* right */
-			if (rightDelta.get() < moveDelta) {
-				return org.eclipse.gef.commands.UnexecutableCommand.INSTANCE;
-			}
-		}
-
-		return super.getMoveCommand(request);
+		return Optional.of(result);
 	}
 
 	LayoutHelper layoutHelper() {
@@ -163,5 +201,11 @@ public class LifelineHeaderResizeEditPolicy extends ResizableShapeEditPolicy {
 	Optional<MLifeline> getLifeline() {
 		EObject element = getGraphicalHost().resolveSemanticElement();
 		return as(getInteraction().getElement((Element)element), MLifeline.class);
+	}
+
+	private class MoveDelta {
+		Optional<Integer> leftDelta = Optional.empty();
+
+		Optional<Integer> rightDelta = Optional.empty();
 	}
 }

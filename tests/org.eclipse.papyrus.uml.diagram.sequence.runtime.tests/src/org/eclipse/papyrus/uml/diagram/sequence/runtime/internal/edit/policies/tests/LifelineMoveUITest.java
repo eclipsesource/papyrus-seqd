@@ -111,7 +111,7 @@ public class LifelineMoveUITest extends AbstractGraphicalEditPolicyUITest {
 		if (ctrlPressed) {
 			assertThat(lifelineEP2, isAt(isNear(LIFELINE_2_X - 50), not(LIFELINE_HEADER_Y)));
 		} else {
-			assertThat(lifelineEP2, isAt(isNear(LIFELINE_2_X), not(LIFELINE_HEADER_Y)));
+			assertThat(lifelineEP2, isAt(isNear(LIFELINE_2_X - 40), not(LIFELINE_HEADER_Y)));
 		}
 		assertThat(lifelineEP3, isAt(isNear(LIFELINE_3_X), not(LIFELINE_HEADER_Y)));
 	}
@@ -135,7 +135,7 @@ public class LifelineMoveUITest extends AbstractGraphicalEditPolicyUITest {
 		if (ctrlPressed) {
 			assertThat(lifelineEP2, isAt(isNear(LIFELINE_2_X + 50), not(LIFELINE_HEADER_Y)));
 		} else {
-			assertThat(lifelineEP2, isAt(isNear(LIFELINE_2_X), not(LIFELINE_HEADER_Y)));
+			assertThat(lifelineEP2, isAt(isNear(LIFELINE_2_X + 40), not(LIFELINE_HEADER_Y)));
 		}
 		assertThat(lifelineEP3, isAt(isNear(LIFELINE_3_X), not(LIFELINE_HEADER_Y)));
 	}
@@ -159,7 +159,7 @@ public class LifelineMoveUITest extends AbstractGraphicalEditPolicyUITest {
 		if (ctrlPressed) {
 			assertThat(lifelineEP2, isAt(isNear(LIFELINE_2_X + 300), not(LIFELINE_HEADER_Y)));
 		} else {
-			assertThat(lifelineEP2, isAt(isNear(LIFELINE_2_X), not(LIFELINE_HEADER_Y)));
+			assertThat(lifelineEP2, isAt(isNear(LIFELINE_2_X + 40), not(LIFELINE_HEADER_Y)));
 		}
 		assertThat(lifelineEP3, isAt(isNear(LIFELINE_3_X), not(LIFELINE_HEADER_Y)));
 	}
