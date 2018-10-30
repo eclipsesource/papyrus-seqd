@@ -82,9 +82,19 @@ public class LifelineHeaderResizeEditPolicy extends ResizableShapeEditPolicy {
 		super.showChangeBoundsFeedback(newRequest);
 	}
 
-	@SuppressWarnings("boxing")
 	@Override
 	protected Command getMoveCommand(ChangeBoundsRequest request) {
+		if (PrivateRequestUtils.isAllowSemanticReordering(request)) {
+			// TODO when pressing ctrl it currently allows any move. This should also make place and fix the
+			// order of elements in the uml model
+			return super.getMoveCommand(request);
+		} else {
+			return getMoveLifelineCommand(request);
+		}
+	}
+
+	@SuppressWarnings("boxing")
+	private Command getMoveLifelineCommand(ChangeBoundsRequest request) {
 		List<MLifeline> leftToRight = getInteraction().getLifelines().stream()//
 				.sorted((ll1, ll2) -> {
 					int ll1Left = ll1.getDiagramView().map(layoutHelper()::getLeft).orElse(-1);
