@@ -212,6 +212,7 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 		// Inset of the viewport figure
 		result.put(ViewTypes.INTERACTION_CONTENTS, 5);
 		result.put(ViewTypes.LIFELINE_HEADER, 25);
+		result.put(ViewTypes.MESSAGE_NAME, -10);
 		return result;
 	}
 

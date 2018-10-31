@@ -94,6 +94,9 @@ public final class SequenceElementTypes {
 			elements.put(Package_SequenceDiagram, UMLPackage.eINSTANCE.getPackage());
 			elements.put(Interaction_Shape, UMLPackage.eINSTANCE.getInteraction());
 			elements.put(Lifeline_Shape, UMLPackage.eINSTANCE.getLifeline());
+			elements.put(Async_Message_Edge, UMLPackage.eINSTANCE.getMessage());
+			elements.put(Sync_Message_Edge, UMLPackage.eINSTANCE.getMessage());			elements.put(Reply_Message_Edge, UMLPackage.eINSTANCE.getMessage());			elements.put(Create_Message_Edge, UMLPackage.eINSTANCE.getMessage());			elements.put(Lifeline_Shape, UMLPackage.eINSTANCE.getLifeline());
+			elements.put(Delete_Message_Edge, UMLPackage.eINSTANCE.getMessage());
 		}
 		return elements.get(type);
 	}
