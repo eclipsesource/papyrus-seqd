@@ -84,13 +84,12 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	 * @generated
 	 */
 	protected void addInteractionPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
-				getString("_UI_MElement_interaction_feature"), //$NON-NLS-1$
-				getString("_UI_PropertyDescriptor_description", "_UI_MElement_interaction_feature", //$NON-NLS-1$ //$NON-NLS-2$
-						"_UI_MElement_type"), //$NON-NLS-1$
-				SequenceDiagramPackage.Literals.MELEMENT__INTERACTION, false, false, false, null, null,
-				null));
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_MElement_interaction_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_MElement_interaction_feature", //$NON-NLS-1$ //$NON-NLS-2$
+								"_UI_MElement_type"), //$NON-NLS-1$
+						SequenceDiagramPackage.Literals.MELEMENT__INTERACTION, false, false, false, null, null, null));
 	}
 
 	/**
@@ -100,12 +99,12 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	 * @generated
 	 */
 	protected void addElementPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
-				getString("_UI_MElement_element_feature"), //$NON-NLS-1$
-				getString("_UI_PropertyDescriptor_description", "_UI_MElement_element_feature", //$NON-NLS-1$ //$NON-NLS-2$
-						"_UI_MElement_type"), //$NON-NLS-1$
-				SequenceDiagramPackage.Literals.MELEMENT__ELEMENT, false, false, false, null, null, null));
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_MElement_element_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_MElement_element_feature", //$NON-NLS-1$ //$NON-NLS-2$
+								"_UI_MElement_type"), //$NON-NLS-1$
+						SequenceDiagramPackage.Literals.MELEMENT__ELEMENT, false, false, false, null, null, null));
 	}
 
 	/**
@@ -115,13 +114,13 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	 * @generated
 	 */
 	protected void addTopPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
-				getString("_UI_MElement_top_feature"), //$NON-NLS-1$
-				getString("_UI_PropertyDescriptor_description", "_UI_MElement_top_feature", //$NON-NLS-1$ //$NON-NLS-2$
-						"_UI_MElement_type"), //$NON-NLS-1$
-				SequenceDiagramPackage.Literals.MELEMENT__TOP, false, false, false,
-				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_MElement_top_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_MElement_top_feature", //$NON-NLS-1$ //$NON-NLS-2$
+								"_UI_MElement_type"), //$NON-NLS-1$
+						SequenceDiagramPackage.Literals.MELEMENT__TOP, false, false, false,
+						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -131,13 +130,13 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	 * @generated
 	 */
 	protected void addBottomPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
-				getString("_UI_MElement_bottom_feature"), //$NON-NLS-1$
-				getString("_UI_PropertyDescriptor_description", "_UI_MElement_bottom_feature", //$NON-NLS-1$ //$NON-NLS-2$
-						"_UI_MElement_type"), //$NON-NLS-1$
-				SequenceDiagramPackage.Literals.MELEMENT__BOTTOM, false, false, false,
-				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_MElement_bottom_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_MElement_bottom_feature", //$NON-NLS-1$ //$NON-NLS-2$
+								"_UI_MElement_type"), //$NON-NLS-1$
+						SequenceDiagramPackage.Literals.MELEMENT__BOTTOM, false, false, false,
+						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -147,13 +146,13 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	 * @generated
 	 */
 	protected void addNamePropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
-				getString("_UI_MElement_name_feature"), //$NON-NLS-1$
-				getString("_UI_PropertyDescriptor_description", "_UI_MElement_name_feature", //$NON-NLS-1$ //$NON-NLS-2$
-						"_UI_MElement_type"), //$NON-NLS-1$
-				SequenceDiagramPackage.Literals.MELEMENT__NAME, false, false, false,
-				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_MElement_name_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_MElement_name_feature", //$NON-NLS-1$ //$NON-NLS-2$
+								"_UI_MElement_type"), //$NON-NLS-1$
+						SequenceDiagramPackage.Literals.MELEMENT__NAME, false, false, false,
+						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -197,7 +196,7 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	@Override
 	public String getText(Object object) {
 		String label = ((MElement<?>) object).getName();
-		return (label == null) || (label.length() == 0) ? getString("_UI_MElement_type") : //$NON-NLS-1$
+		return label == null || label.length() == 0 ? getString("_UI_MElement_type") : //$NON-NLS-1$
 				getString("_UI_MElement_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -216,8 +215,7 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 		case SequenceDiagramPackage.MELEMENT__TOP:
 		case SequenceDiagramPackage.MELEMENT__BOTTOM:
 		case SequenceDiagramPackage.MELEMENT__NAME:
-			fireNotifyChanged(
-					new ViewerNotification(notification, notification.getNotifier(), false, true));
+			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;
 		}
 		super.notifyChanged(notification);
@@ -262,25 +260,23 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 
 	@Override
 	protected ItemPropertyDescriptor createItemPropertyDescriptor(AdapterFactory adapterFactory,
-			ResourceLocator resourceLocator, String displayName, String description,
-			EStructuralFeature feature, boolean isSettable, boolean multiLine, boolean sortChoices,
-			Object staticImage, String category, String[] filterFlags) {
+			ResourceLocator resourceLocator, String displayName, String description, EStructuralFeature feature,
+			boolean isSettable, boolean multiLine, boolean sortChoices, Object staticImage, String category,
+			String[] filterFlags) {
 
 		if (feature instanceof EAttribute) {
 			Class<?> attrType = ((EAttribute) feature).getEAttributeType().getInstanceClass();
 			if (attrType == Optional.class) {
-				return new OptionalPropertyDescriptor(adapterFactory, resourceLocator, displayName,
-						description, feature, isSettable, multiLine, sortChoices, staticImage, category,
-						filterFlags);
+				return new OptionalPropertyDescriptor(adapterFactory, resourceLocator, displayName, description,
+						feature, isSettable, multiLine, sortChoices, staticImage, category, filterFlags);
 			} else if (attrType == OptionalInt.class) {
-				return new OptionalIntPropertyDescriptor(adapterFactory, resourceLocator, displayName,
-						description, feature, isSettable, multiLine, sortChoices, staticImage, category,
-						filterFlags);
+				return new OptionalIntPropertyDescriptor(adapterFactory, resourceLocator, displayName, description,
+						feature, isSettable, multiLine, sortChoices, staticImage, category, filterFlags);
 			}
 		}
 
-		return super.createItemPropertyDescriptor(adapterFactory, resourceLocator, displayName, description,
-				feature, isSettable, multiLine, sortChoices, staticImage, category, filterFlags);
+		return super.createItemPropertyDescriptor(adapterFactory, resourceLocator, displayName, description, feature,
+				isSettable, multiLine, sortChoices, staticImage, category, filterFlags);
 	}
 
 	//
@@ -294,8 +290,7 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 
 		protected OptionalPropertyDescriptor(AdapterFactory adapterFactory, ResourceLocator resourceLocator,
 				String displayName, String description, EStructuralFeature feature, boolean isSettable,
-				boolean multiLine, boolean sortChoices, Object staticImage, String category,
-				String[] filterFlags) {
+				boolean multiLine, boolean sortChoices, Object staticImage, String category, String[] filterFlags) {
 			super(adapterFactory, resourceLocator, displayName, description, feature, isSettable, multiLine,
 					sortChoices, null, category, filterFlags);
 		}
@@ -342,10 +337,9 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	 */
 	protected class OptionalIntPropertyDescriptor extends ItemPropertyDescriptor {
 
-		protected OptionalIntPropertyDescriptor(AdapterFactory adapterFactory,
-				ResourceLocator resourceLocator, String displayName, String description,
-				EStructuralFeature feature, boolean isSettable, boolean multiLine, boolean sortChoices,
-				Object staticImage, String category, String[] filterFlags) {
+		protected OptionalIntPropertyDescriptor(AdapterFactory adapterFactory, ResourceLocator resourceLocator,
+				String displayName, String description, EStructuralFeature feature, boolean isSettable,
+				boolean multiLine, boolean sortChoices, Object staticImage, String category, String[] filterFlags) {
 			super(adapterFactory, resourceLocator, displayName, description, feature, isSettable, multiLine,
 					sortChoices, ItemPropertyDescriptor.INTEGRAL_VALUE_IMAGE, category, filterFlags);
 		}

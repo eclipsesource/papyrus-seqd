@@ -102,6 +102,8 @@ import junit.textui.TestRunner;
  * Level Executions</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrenceSpecifications() <em>Get
  * Occurrence Specifications</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#makeCreatedAt(java.util.OptionalInt)
+ * <em>Make Created At</em>}</li>
  * </ul>
  * </p>
  * 
@@ -776,6 +778,32 @@ public class MLifelineTest extends MElementTest {
 		assertEquals(mExec1_fsh, getFixture().getOccurrenceSpecifications().get(2));
 		assertEquals(mFinish, getFixture().getOccurrenceSpecifications().get(3));
 
+	}
+
+	/**
+	 * Tests the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#makeCreatedAt(java.util.OptionalInt)
+	 * <em>Make Created At</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#makeCreatedAt(java.util.OptionalInt)
+	 * @generated NOT
+	 */
+	public void testMakeCreatedAt__OptionalInt() {
+		MLifeline right = interaction.getLifeline(interaction.getElement().getLifeline("RightLine")).get();
+
+		OptionalInt expectedTop = right.getTop();
+		assumeThat("No Y location for RightLine", expectedTop, isPresentInt());
+
+		MMessage createRight = interaction.getMessage(interaction.getElement().getMessage("leftToRight"))
+				.get();
+		OptionalInt createdAtY = createRight.getReceive().get().getBottom();
+		assumeThat("No Y location for receive end of RightLine creation", expectedTop, isPresentInt());
+
+		Command setCreation = getFixture().makeCreatedAt(createdAtY);
+		assertThat(setCreation, executable());
+		execute(setCreation);
+
+		assertThat("Center line not moved", getFixture().getTop(), isPresent(expectedTop.getAsInt()));
 	}
 
 } // MLifelineTest

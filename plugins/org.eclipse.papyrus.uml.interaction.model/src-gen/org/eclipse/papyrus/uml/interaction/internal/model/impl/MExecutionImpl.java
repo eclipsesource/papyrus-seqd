@@ -13,11 +13,13 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 
 import static org.eclipse.papyrus.uml.interaction.graph.GraphPredicates.covers;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.spannedBy;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Stack;
 import java.util.function.Predicate;
 
@@ -31,9 +33,11 @@ import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.InsertNestedExecutionCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.RemoveExecutionCommand;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.SetOwnerCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
+import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
@@ -108,7 +112,7 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	 */
 	@Override
 	public List<MOccurrence<? extends Element>> getOccurrences() {
-		EList<MOccurrence<? extends Element>> result = new UniqueEList.FastCompare<MOccurrence<? extends Element>>();
+		EList<MOccurrence<? extends Element>> result = new UniqueEList.FastCompare<>();
 
 		getOwner().getOccurrences().stream().filter(spannedBy(this)).forEach(result::add);
 
@@ -241,6 +245,17 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Command setOwner(MLifeline newOwner, OptionalInt yPosition) {
+		// Avoid cycling through this execution again
+		return withPadding(SetOwnerCommand.class, () -> new SetOwnerCommand(this, newOwner, yPosition));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -296,6 +311,8 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 				return elementAt((Integer)arguments.get(0));
 			case SequenceDiagramPackage.MEXECUTION___GET_NESTED_EXECUTIONS:
 				return getNestedExecutions();
+			case SequenceDiagramPackage.MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT:
+				return setOwner((MLifeline)arguments.get(0), (OptionalInt)arguments.get(1));
 		}
 		return super.eInvoke(operationID, arguments);
 	}

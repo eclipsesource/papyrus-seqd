@@ -722,6 +722,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EOperation getMLifeline__MakeCreatedAt__OptionalInt() {
+		return mLifelineEClass.getEOperations().get(17);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EClass getMExecution() {
 		return mExecutionEClass;
 	}
@@ -814,6 +824,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	@Override
 	public EOperation getMExecution__GetNestedExecutions() {
 		return mExecutionEClass.getEOperations().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMExecution__SetOwner__MLifeline_OptionalInt() {
+		return mExecutionEClass.getEOperations().get(6);
 	}
 
 	/**
@@ -1252,6 +1272,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEOperation(mLifelineEClass, MLIFELINE___NUDGE_HORIZONTALLY__INT);
 		createEOperation(mLifelineEClass, MLIFELINE___GET_FIRST_LEVEL_EXECUTIONS);
 		createEOperation(mLifelineEClass, MLIFELINE___GET_OCCURRENCE_SPECIFICATIONS);
+		createEOperation(mLifelineEClass, MLIFELINE___MAKE_CREATED_AT__OPTIONALINT);
 
 		mExecutionEClass = createEClass(MEXECUTION);
 		createEAttribute(mExecutionEClass, MEXECUTION__START);
@@ -1265,6 +1286,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 				MEXECUTION___INSERT_NESTED_EXECUTION_AFTER__MELEMENT_INT_INT_ECLASS);
 		createEOperation(mExecutionEClass, MEXECUTION___ELEMENT_AT__INT);
 		createEOperation(mExecutionEClass, MEXECUTION___GET_NESTED_EXECUTIONS);
+		createEOperation(mExecutionEClass, MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT);
 
 		mOccurrenceEClass = createEClass(MOCCURRENCE);
 		createEAttribute(mOccurrenceEClass, MOCCURRENCE__COVERED);
@@ -1767,6 +1789,10 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		g1.getETypeArguments().add(g2);
 		initEOperation(op, g1);
 
+		op = initEOperation(getMLifeline__MakeCreatedAt__OptionalInt(), this.getCommand(), "makeCreatedAt", 1, //$NON-NLS-1$
+				1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getOptionalInt(), "yPosition", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
 		initEClass(mExecutionEClass, MExecution.class, "MExecution", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);
 		g1 = createEGenericType(this.getOptional());
@@ -1847,6 +1873,11 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 
 		initEOperation(getMExecution__GetNestedExecutions(), this.getMExecution(), "getNestedExecutions", 0, //$NON-NLS-1$
 				-1, IS_UNIQUE, IS_ORDERED);
+
+		op = initEOperation(getMExecution__SetOwner__MLifeline_OptionalInt(), this.getCommand(), "setOwner", //$NON-NLS-1$
+				1, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getMLifeline(), "newOwner", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, this.getOptionalInt(), "yPosition", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(mOccurrenceEClass, MOccurrence.class, "MOccurrence", IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);

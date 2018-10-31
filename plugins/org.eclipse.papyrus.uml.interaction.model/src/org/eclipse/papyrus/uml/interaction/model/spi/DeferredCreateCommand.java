@@ -90,7 +90,7 @@ public class DeferredCreateCommand<T extends EObject> extends CreationCommandImp
 
 	private static <T> Supplier<T> memoize(Supplier<? extends T> supplier) {
 		return new Supplier<T>() {
-			private AtomicMarkableReference<T> result = new AtomicMarkableReference<T>(null, false);
+			private AtomicMarkableReference<T> result = new AtomicMarkableReference<>(null, false);
 
 			@Override
 			public T get() {

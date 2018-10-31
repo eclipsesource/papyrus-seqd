@@ -43,7 +43,7 @@ import org.eclipse.uml2.uml.UMLPackage;
  *
  * @author Christian W. Damus
  */
-public class InsertNestedExecutionCommand extends ModelCommand<MExecutionImpl> implements CreationCommand<ExecutionSpecification> {
+public class InsertNestedExecutionCommand extends ModelCommand.Creation<MExecutionImpl, ExecutionSpecification> {
 
 	private final MElement<?> before;
 
@@ -74,7 +74,7 @@ public class InsertNestedExecutionCommand extends ModelCommand<MExecutionImpl> i
 	public InsertNestedExecutionCommand(MExecutionImpl owner, MElement<?> before, int offset, int height,
 			Element specification) {
 
-		super(owner);
+		super(owner, ExecutionSpecification.class);
 
 		checkInteraction(before);
 		if (specification != null && !(specification instanceof Action)
@@ -107,7 +107,7 @@ public class InsertNestedExecutionCommand extends ModelCommand<MExecutionImpl> i
 	public InsertNestedExecutionCommand(MExecutionImpl owner, MElement<?> before, int offset, int height,
 			EClass eClass) {
 
-		super(owner);
+		super(owner, ExecutionSpecification.class);
 
 		checkInteraction(before);
 		if (!UMLPackage.Literals.EXECUTION_SPECIFICATION.isSuperTypeOf(eClass) || eClass.isAbstract()) {

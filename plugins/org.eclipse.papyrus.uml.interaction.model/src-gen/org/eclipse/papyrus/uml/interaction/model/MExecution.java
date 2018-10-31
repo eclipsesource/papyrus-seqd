@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
@@ -153,5 +153,19 @@ public interface MExecution extends MElement<ExecutionSpecification> {
 	 * @generated
 	 */
 	List<MExecution> getNestedExecutions();
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * 
+	 * @param yPosition
+	 *            the absolute Y position at which to place the top of the execution on the lifeline, or empty
+	 *            to maintain the current Y position. <!-- end-model-doc -->
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Command" required="true"
+	 *        newOwnerRequired="true"
+	 *        yPositionDataType="org.eclipse.papyrus.uml.interaction.model.OptionalInt"
+	 *        yPositionRequired="true"
+	 * @generated
+	 */
+	Command setOwner(MLifeline newOwner, OptionalInt yPosition);
 
 } // MExecution

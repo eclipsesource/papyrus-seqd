@@ -67,13 +67,13 @@ public class MMessageItemProvider extends MElementItemProvider {
 	 * @generated
 	 */
 	protected void addSenderPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
-				getString("_UI_MMessage_sender_feature"), //$NON-NLS-1$
-				getString("_UI_PropertyDescriptor_description", "_UI_MMessage_sender_feature", //$NON-NLS-1$ //$NON-NLS-2$
-						"_UI_MMessage_type"), //$NON-NLS-1$
-				SequenceDiagramPackage.Literals.MMESSAGE__SENDER, false, false, false,
-				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_MMessage_sender_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_MMessage_sender_feature", //$NON-NLS-1$ //$NON-NLS-2$
+								"_UI_MMessage_type"), //$NON-NLS-1$
+						SequenceDiagramPackage.Literals.MMESSAGE__SENDER, false, false, false,
+						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -83,13 +83,13 @@ public class MMessageItemProvider extends MElementItemProvider {
 	 * @generated
 	 */
 	protected void addReceiverPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
-				getString("_UI_MMessage_receiver_feature"), //$NON-NLS-1$
-				getString("_UI_PropertyDescriptor_description", "_UI_MMessage_receiver_feature", //$NON-NLS-1$ //$NON-NLS-2$
-						"_UI_MMessage_type"), //$NON-NLS-1$
-				SequenceDiagramPackage.Literals.MMESSAGE__RECEIVER, false, false, false,
-				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_MMessage_receiver_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_MMessage_receiver_feature", //$NON-NLS-1$ //$NON-NLS-2$
+								"_UI_MMessage_type"), //$NON-NLS-1$
+						SequenceDiagramPackage.Literals.MMESSAGE__RECEIVER, false, false, false,
+						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -144,7 +144,7 @@ public class MMessageItemProvider extends MElementItemProvider {
 	@Override
 	public String getText(Object object) {
 		String label = ((MMessage) object).getName();
-		return (label == null) || (label.length() == 0) ? getString("_UI_MMessage_type") : //$NON-NLS-1$
+		return label == null || label.length() == 0 ? getString("_UI_MMessage_type") : //$NON-NLS-1$
 				getString("_UI_MMessage_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -164,13 +164,11 @@ public class MMessageItemProvider extends MElementItemProvider {
 		case SequenceDiagramPackage.MMESSAGE__RECEIVE:
 		case SequenceDiagramPackage.MMESSAGE__SENDER:
 		case SequenceDiagramPackage.MMESSAGE__RECEIVER:
-			fireNotifyChanged(
-					new ViewerNotification(notification, notification.getNotifier(), false, true));
+			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;
 		case SequenceDiagramPackage.MMESSAGE__SEND_END:
 		case SequenceDiagramPackage.MMESSAGE__RECEIVE_END:
-			fireNotifyChanged(
-					new ViewerNotification(notification, notification.getNotifier(), true, false));
+			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
 			return;
 		}
 		super.notifyChanged(notification);

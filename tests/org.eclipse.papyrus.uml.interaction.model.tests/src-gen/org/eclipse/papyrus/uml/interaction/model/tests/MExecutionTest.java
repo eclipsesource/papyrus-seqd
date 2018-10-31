@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.interaction.model.tests;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -29,7 +30,10 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
+import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.uml2.uml.ActionExecutionSpecification;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.UMLFactory;
@@ -333,6 +337,35 @@ public class MExecutionTest extends MElementTest {
 		assertTrue(getFixture().getNestedExecutions().equals(Arrays.asList(mexec)));
 
 		assertTrue(mexec.getNestedExecutions().isEmpty());
+	}
+
+	/**
+	 * Tests the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline, java.util.OptionalInt)
+	 * <em>Set Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline,
+	 *      java.util.OptionalInt)
+	 * @generated NOT
+	 */
+	public void testSetOwner__MLifeline_OptionalInt() {
+		// Get the other lifeline
+		MLifeline other = getFixture().getInteraction().getLifelines().stream()
+				.filter(((Predicate<MLifeline>)getFixture().getOwner()::equals).negate()).findFirst()
+				.orElseThrow(() -> new AssertionError("Only one lifeline"));
+		String name = other.getName();
+
+		Command setOwner = getFixture().setOwner(other, OptionalInt.empty());
+		assertThat(setOwner, executable());
+		execute(setOwner);
+
+		// The automatic reinitialization doesn't work because it's based on
+
+		assertThat("Execution not moved", getFixture().getOwner(), named(name));
+		assertThat("Start not moved", getFixture().getStart().flatMap(MOccurrence::getCovered),
+				isPresent(named(name)));
+		assertThat("Finish not moved", getFixture().getFinish().flatMap(MOccurrence::getCovered),
+				isPresent(named(name)));
 	}
 
 	@Override

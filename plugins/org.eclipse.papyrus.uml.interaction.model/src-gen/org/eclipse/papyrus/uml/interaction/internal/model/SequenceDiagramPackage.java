@@ -724,13 +724,22 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MLIFELINE___GET_OCCURRENCE_SPECIFICATIONS = MELEMENT_OPERATION_COUNT + 16;
 
 	/**
+	 * The operation id for the '<em>Make Created At</em>' operation. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___MAKE_CREATED_AT__OPTIONALINT = MELEMENT_OPERATION_COUNT + 17;
+
+	/**
 	 * The number of operations of the '<em>MLifeline</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 17;
+	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 18;
 
 	/**
 	 * The meta object id for the
@@ -915,13 +924,21 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MEXECUTION___GET_NESTED_EXECUTIONS = MELEMENT_OPERATION_COUNT + 5;
 
 	/**
+	 * The operation id for the '<em>Set Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT = MELEMENT_OPERATION_COUNT + 6;
+
+	/**
 	 * The number of operations of the '<em>MExecution</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MEXECUTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 6;
+	int MEXECUTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 7;
 
 	/**
 	 * The meta object id for the
@@ -2559,6 +2576,17 @@ public interface SequenceDiagramPackage extends EPackage {
 	EOperation getMLifeline__GetOccurrenceSpecifications();
 
 	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#makeCreatedAt(java.util.OptionalInt)
+	 * <em>Make Created At</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Make Created At</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#makeCreatedAt(java.util.OptionalInt)
+	 * @generated
+	 */
+	EOperation getMLifeline__MakeCreatedAt__OptionalInt();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MExecution
 	 * <em>MExecution</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2670,6 +2698,18 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EOperation getMExecution__GetNestedExecutions();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline, java.util.OptionalInt)
+	 * <em>Set Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Set Owner</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline,
+	 *      java.util.OptionalInt)
+	 * @generated
+	 */
+	EOperation getMExecution__SetOwner__MLifeline_OptionalInt();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence
@@ -3506,6 +3546,15 @@ public interface SequenceDiagramPackage extends EPackage {
 				.getMLifeline__GetOccurrenceSpecifications();
 
 		/**
+		 * The meta object literal for the '<em><b>Make Created At</b></em>' operation. <!-- begin-user-doc
+		 * --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MLIFELINE___MAKE_CREATED_AT__OPTIONALINT = eINSTANCE
+				.getMLifeline__MakeCreatedAt__OptionalInt();
+
+		/**
 		 * The meta object literal for the
 		 * '{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl
 		 * <em>MExecution</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -3589,6 +3638,15 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation MEXECUTION___GET_NESTED_EXECUTIONS = eINSTANCE.getMExecution__GetNestedExecutions();
+
+		/**
+		 * The meta object literal for the '<em><b>Set Owner</b></em>' operation. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT = eINSTANCE
+				.getMExecution__SetOwner__MLifeline_OptionalInt();
 
 		/**
 		 * The meta object literal for the

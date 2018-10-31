@@ -459,7 +459,7 @@ public class DefaultSemanticHelper implements SemanticHelper {
 			/*
 			 * if this end is a start or finish is has to be replaced by an ExecutionOccurrenceSpecification
 			 */
-			List<Command> commandList = new ArrayList<Command>(executionSpecifications.size() + 1);
+			List<Command> commandList = new ArrayList<>(executionSpecifications.size() + 1);
 			commandList.add(delete(messageEnd));
 			executionSpecifications.forEach(es -> {
 				boolean isStart = es.getStart() == messageEnd;

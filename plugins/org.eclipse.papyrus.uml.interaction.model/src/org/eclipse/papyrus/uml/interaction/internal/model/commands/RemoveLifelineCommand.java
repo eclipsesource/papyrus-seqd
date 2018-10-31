@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.command.Command;
@@ -25,7 +24,6 @@ import org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MMessageImpl;
-import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.ElementRemovalCommandImpl;
 import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
@@ -117,14 +115,4 @@ public class RemoveLifelineCommand extends ModelCommand<MLifelineImpl> implement
 		}
 		return delegate.getElementsToRemove();
 	}
-
-	public static class IsDirectlyNested implements Predicate<MExecution> {
-
-		@Override
-		public boolean test(MExecution t) {
-			return false;
-		}
-
-	}
-
 }

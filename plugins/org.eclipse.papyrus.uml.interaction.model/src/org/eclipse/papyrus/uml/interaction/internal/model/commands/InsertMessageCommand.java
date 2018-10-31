@@ -299,8 +299,8 @@ public class InsertMessageCommand extends ModelCommand.Creation<MLifelineImpl, M
 				: beforeSend.getTop().orElse(llTopSend) - llTopSend + sendOffset;
 		Optional<MExecution> sendingExec = getTarget().elementAt(whereSend).flatMap(this::getExecution)
 				.filter(exec -> //
-				((exec.getBottom().orElse(-1) - llTopSend) >= whereSend) //
-						&& ((exec.getTop().orElse(MAX_VALUE) - llTopSend) <= whereSend));
+		((exec.getBottom().orElse(-1) - llTopSend) >= whereSend) //
+				&& ((exec.getTop().orElse(MAX_VALUE) - llTopSend) <= whereSend));
 		Vertex sender = sendingExec.map(this::vertex).orElseGet(this::vertex);
 		if (sender == null || sender.getDiagramView() == null) {
 			return UnexecutableCommand.INSTANCE;
@@ -462,7 +462,7 @@ public class InsertMessageCommand extends ModelCommand.Creation<MLifelineImpl, M
 		Optional<MElement<?>> nudgeToEnforcePadding = Optional.empty();
 		int distanceToEnforcePadding = 0;
 		if (additionalOffset > 0) {
-			Set<MElement<?>> elementToNudge = new LinkedHashSet<MElement<?>>();
+			Set<MElement<?>> elementToNudge = new LinkedHashSet<>();
 			validateOffsetChange(sendingExec, absoluteSendY, additionalOffset, elementToNudge);
 			validateOffsetChange(receivingExec, absoluteRecvY, additionalOffset, elementToNudge);
 			if (!elementToNudge.isEmpty()) {

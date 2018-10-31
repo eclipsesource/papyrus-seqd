@@ -50,6 +50,7 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
@@ -539,6 +540,16 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 * @generated NOT
 	 */
 	@Override
+	public Command makeCreatedAt(OptionalInt yPosition) {
+		return new SetLifelineCreationCommand(this, yPosition);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
 	public Command remove() {
 		return new RemoveLifelineCommand(this, true);
 	}
@@ -701,6 +712,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return getFirstLevelExecutions();
 			case SequenceDiagramPackage.MLIFELINE___GET_OCCURRENCE_SPECIFICATIONS:
 				return getOccurrenceSpecifications();
+			case SequenceDiagramPackage.MLIFELINE___MAKE_CREATED_AT__OPTIONALINT:
+				return makeCreatedAt((OptionalInt)arguments.get(0));
 		}
 		return super.eInvoke(operationID, arguments);
 	}

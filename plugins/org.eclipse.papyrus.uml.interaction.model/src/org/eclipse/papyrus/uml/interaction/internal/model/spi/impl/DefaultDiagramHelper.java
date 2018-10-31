@@ -217,7 +217,7 @@ public class DefaultDiagramHelper implements DiagramHelper {
 				NotationPackage.Literals.VIEW__PERSISTED_CHILDREN);
 		return new DeferredCreateCommand<>(Shape.class, editingDomain, parameters, shape);
 	}
-	
+
 	@Override
 	public CreationCommand<Shape> createNestedExecutionShape(
 			Supplier<? extends ExecutionSpecification> execution, Shape parentExecution, int yPosition,
@@ -249,7 +249,6 @@ public class DefaultDiagramHelper implements DiagramHelper {
 				NotationPackage.Literals.VIEW__PERSISTED_CHILDREN);
 		return new DeferredCreateCommand<>(Shape.class, editingDomain, parameters, shape);
 	}
-	
 
 	@Override
 	public CreationCommand<Shape> createDestructionOccurrenceShape(Supplier<? extends MessageEnd> destruction,
