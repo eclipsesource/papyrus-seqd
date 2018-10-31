@@ -23,7 +23,6 @@ import org.eclipse.uml2.uml.MessageSort;
 import org.junit.Rule;
 import org.junit.Test;
 
-@SuppressWarnings("nls")
 @ModelResource({"SemanticOrderAfterCreationTest.uml", "SemanticOrderAfterCreationTest.notation" })
 public class SemanticOrderAfterCreationOfElementOnTopTest {
 

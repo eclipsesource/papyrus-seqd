@@ -25,12 +25,22 @@ import org.eclipse.emf.transaction.RollbackException;
 import org.eclipse.emf.transaction.Transaction;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.impl.InternalTransactionalEditingDomain;
+import org.eclipse.emf.transaction.util.BasicTransactionOptionMetadata;
+import org.eclipse.emf.transaction.util.BasicTransactionOptionMetadataRegistry;
 
 /**
  * A composition of {@link Command}s that accounts for dependencies in the deferred calculation of changes to
  * the semantics and visualization of the <em>UML Interaction</em>.
  */
 public class CompoundModelCommand extends StrictCompoundCommand {
+
+	/**
+	 * Transaction option for the unprotected transaction used by the transactional variant of the
+	 * {@link CompoundModelCommand} to perform its pessimistic preparation, to tag it as such. This lets
+	 * transaction-aware components detect that changes are triggered during execution of commands that are
+	 * just going to be undone anyways during this command preparation, so that they may be ignored
+	 */
+	public static final String OPTION_COMMAND_PREPARATION = "$command_prep"; //$NON-NLS-1$
 
 	private static final Class<?> TRANSACTIONAL_EDITING_DOMAIN_CLASS;
 
@@ -56,7 +66,7 @@ public class CompoundModelCommand extends StrictCompoundCommand {
 	 * @param second
 	 *            the second composed command
 	 */
-	CompoundModelCommand(Command first, Command second) {
+	protected CompoundModelCommand(Command first, Command second) {
 		super();
 
 		// The whole point of our compounds is that each step may have
@@ -88,11 +98,26 @@ public class CompoundModelCommand extends StrictCompoundCommand {
 			return UnexecutableCommand.INSTANCE;
 		}
 
-		if (TRANSACTIONAL_EDITING_DOMAIN_CLASS.isInstance(editingDomain)) {
+		if (first instanceof CompoundModelCommand) {
+			((CompoundModelCommand)first).append(second);
+			return first;
+		} else if (isTransactional(editingDomain)) {
 			return new TransactionalCompoundModelCommand(editingDomain, first, second);
 		}
 
 		return new CompoundModelCommand(first, second);
+	}
+
+	/**
+	 * Queries whether an editing domain is of the {@linkplain TransactionalEditingDomain transactional}
+	 * variety, without requiring the <em>EMF Transaction API</em> to be on the classpath.
+	 * 
+	 * @param editingDomain
+	 *            an editing domain
+	 * @return whether it is a {@link TransactionalEditingDomain}
+	 */
+	protected static boolean isTransactional(EditingDomain editingDomain) {
+		return TRANSACTIONAL_EDITING_DOMAIN_CLASS.isInstance(editingDomain);
 	}
 
 	/**
@@ -138,6 +163,14 @@ public class CompoundModelCommand extends StrictCompoundCommand {
 	 */
 	protected static class TransactionalCompoundModelCommand extends CompoundModelCommand {
 
+		static {
+			Transaction.OptionMetadata.Registry reg = Transaction.OptionMetadata.Registry.INSTANCE;
+			if (reg instanceof BasicTransactionOptionMetadataRegistry) {
+				((BasicTransactionOptionMetadataRegistry)reg).register(new BasicTransactionOptionMetadata(
+						OPTION_COMMAND_PREPARATION, true, true, Boolean.class, Boolean.FALSE));
+			}
+		}
+
 		private final InternalTransactionalEditingDomain domain;
 
 		protected TransactionalCompoundModelCommand(EditingDomain domain, Command first, Command second) {
@@ -162,6 +195,7 @@ public class CompoundModelCommand extends StrictCompoundCommand {
 					Map<Object, Object> options = new HashMap<>();
 					options.put(Transaction.OPTION_UNPROTECTED, Boolean.TRUE);
 					options.put(Transaction.OPTION_NO_NOTIFICATIONS, Boolean.TRUE);
+					options.put(OPTION_COMMAND_PREPARATION, Boolean.TRUE);
 
 					transaction = domain.startTransaction(false, options);
 				}

@@ -22,3 +22,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.papyrus.uml.diagram.common
 Bundle-ActivationPolicy: lazy
 Import-Package: com.google.common.util.concurrent
+Automatic-Module-Name: org.eclipse.papyrus.uml.interaction.model.view

@@ -17,9 +17,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
-import org.eclipse.gmf.runtime.diagram.ui.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewRequest;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.AbstractSequenceGraphicalNodeEditPolicy.StartMessageCommand;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.CreateRequestSwitch;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
@@ -34,7 +32,13 @@ import org.eclipse.uml2.uml.util.UMLSwitch;
  *
  * @author Johannes Faltermeier
  */
-public class LifelineHeaderGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy implements ISequenceEditPolicy {
+public class LifelineHeaderGraphicalNodeEditPolicy extends AbstractSequenceGraphicalNodeEditPolicy {
+
+	@Override
+	protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
+		// We don't create connections from the lifeline head
+		return org.eclipse.gef.commands.UnexecutableCommand.INSTANCE;
+	}
 
 	@Override
 	protected Command getConnectionCompleteCommand(CreateConnectionRequest request) {

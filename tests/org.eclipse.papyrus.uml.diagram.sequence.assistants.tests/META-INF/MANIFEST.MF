@@ -22,3 +22,4 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.13.0,4.0.0)",
  org.eclipse.papyrus.uml.service.types;bundle-version="[3.1.0,4.0.0)"
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.papyrus.uml.interaction.tests.util;version="[1.0.0,2.0.0)"
+Automatic-Module-Name: org.eclipse.papyrus.uml.diagram.sequence.assistants.tests

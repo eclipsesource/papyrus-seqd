@@ -20,9 +20,11 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.gmf.runtime.notation.Diagram;
@@ -33,6 +35,7 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ActionExecutionSpecification;
@@ -60,6 +63,8 @@ import junit.textui.TestRunner;
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getDestruction() <em>Destruction</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getLeft() <em>Left</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getRight() <em>Right</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getMessageEnds() <em>Message Ends</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrences() <em>Occurrences</em>}</li>
  * </ul>
  * </p>
  * <p>
@@ -148,7 +153,10 @@ public class MLifelineTest extends MElementTest {
 		int which;
 		switch (getName()) {
 			case "testNudgeHorizontally__int":
+			case "testMakeCreatedAt__OptionalInt":
+			case "testMakeCreatedAt__OptionalInt__empty":
 				which = 2; // The 'CenterLine' in this diagram
+				break;
 			default:
 				which = 1; // The 'RightLine' in most diagrams
 				break;
@@ -207,12 +215,46 @@ public class MLifelineTest extends MElementTest {
 		assertThat(getFixture().getRight(), isPresent(299)); // 215 {left} + 84 {width}
 	}
 
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getMessageEnds() <em>Message
+	 * Ends</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getMessageEnds()
+	 * @generated NOT
+	 */
+	public void testGetMessageEnds() {
+		List<MMessageEnd> messageEnds = getFixture().getMessageEnds();
+		assertThat("Wrong number of message ends", messageEnds.size(), is(2));
+		assertThat(messageEnds, hasItem(named("request-recv")));
+		assertThat(messageEnds, hasItem(named("reply-send")));
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrences()
+	 * <em>Occurrences</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrences()
+	 * @generated NOT
+	 */
+	public void testGetOccurrences() {
+		List<MOccurrence<?>> occurrences = getFixture().getOccurrences();
+		assertThat("Wrong number of occurrences", occurrences.size(), is(4));
+		assertThat(occurrences, hasItem(named("request-recv")));
+		assertThat(occurrences, hasItem(named("reply-send")));
+		assertThat(occurrences, hasItem(named("ActionExecutionSpecification1Start")));
+		assertThat(occurrences, hasItem(named("ActionExecutionSpecification1Finish")));
+	}
+
 	@Override
 	protected String getInteractionName() {
 		switch (getName()) {
 			case "testGetExecutionOccurrence__ExecutionOccurrenceSpecification":
+			case "testGetMessageEnds":
+			case "testGetOccurrences":
 				return "ExecutionSpecificationSideAnchors";
 			case "testNudgeHorizontally__int":
+			case "testMakeCreatedAt__OptionalInt":
+			case "testMakeCreatedAt__OptionalInt__empty":
 				return "LifelineHeaderAnchor";
 			case "testGetDestruction__DestructionOccurrenceSpecification":
 			case "testGetDestruction":
@@ -472,11 +514,23 @@ public class MLifelineTest extends MElementTest {
 		// The edge connects the lifeline bodies (not the heads)
 		Edge edge = message.getDiagramView().get();
 		assertThat(edge.getSource(), notNullValue());
-		assertThat(edge.getSource().getType(), containsString("Body"));
-		assertThat(edge.getSource().getElement(), is(getFixture().getElement()));
+		if (message.getSend().get().getFinishedExecution().isPresent()) {
+			assertThat(edge.getSource().getType(), containsString("Execution"));
+			assertThat(edge.getSource().getElement(),
+					is(message.getSend().get().getFinishedExecution().get().getElement()));
+		} else {
+			assertThat(edge.getSource().getType(), containsString("Body"));
+			assertThat(edge.getSource().getElement(), is(getFixture().getElement()));
+		}
 		assertThat(edge.getTarget(), notNullValue());
-		assertThat(edge.getTarget().getType(), containsString("Body"));
-		assertThat(edge.getTarget().getElement(), is(receiver.getElement()));
+		if (message.getReceive().get().getStartedExecution().isPresent()) {
+			assertThat(edge.getTarget().getType(), containsString("Execution"));
+			assertThat(edge.getTarget().getElement(),
+					is(message.getReceive().get().getStartedExecution().get().getElement()));
+		} else {
+			assertThat(edge.getTarget().getType(), containsString("Body"));
+			assertThat(edge.getTarget().getElement(), is(receiver.getElement()));
+		}
 	}
 
 	/**

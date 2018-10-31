@@ -38,6 +38,13 @@
       <eParameters name="deltaY" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     </eOperations>
     <eOperations name="remove" lowerBound="1" eType="#//Command"/>
+    <eOperations name="precedes" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eParameters name="other" lowerBound="1">
+        <eGenericType eClassifier="#//MElement">
+          <eTypeArguments/>
+        </eGenericType>
+      </eParameters>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="interaction" lowerBound="1"
         eType="#//MInteraction" changeable="false" volatile="true" transient="true"
         derived="true" resolveProxies="false"/>
@@ -427,10 +434,26 @@
         <eTypeArguments/>
       </eGenericType>
     </eOperations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="executionOccurrences" upperBound="-1"
-        eType="#//MExecutionOccurrence" changeable="false" containment="true" resolveProxies="false"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="executions" upperBound="-1"
-        eType="#//MExecution" changeable="false" containment="true" resolveProxies="false"/>
+    <eOperations name="makeCreatedAt" lowerBound="1" eType="#//Command">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Obtain a command that makes the receiver created at some Y position in the diagram."/>
+      </eAnnotations>
+      <eParameters name="yPosition" lowerBound="1" eType="#//OptionalInt">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The absolute Y position at which to show the receiver as created (where the create message is received), or empty to revert to an uncreated lifeline."/>
+        </eAnnotations>
+      </eParameters>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="executionOccurrences" ordered="false"
+        upperBound="-1" eType="#//MExecutionOccurrence" changeable="false" containment="true"
+        resolveProxies="false">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="owned execution occurrences covering this lifeline. A subset of the list of all {@link #getOccurrences() occurrences}"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="executions" ordered="false"
+        upperBound="-1" eType="#//MExecution" changeable="false" containment="true"
+        resolveProxies="false"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="ownedDestruction" eType="#//MDestruction"
         containment="true">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -448,6 +471,24 @@
         changeable="false" volatile="true" transient="true" derived="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="right" lowerBound="1" eType="#//OptionalInt"
         changeable="false" volatile="true" transient="true" derived="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="messageEnds" ordered="false"
+        upperBound="-1" eType="#//MMessageEnd" changeable="false" volatile="true"
+        transient="true" derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="message ends covering this lifeline. A subset of the list of all {@link #getOccurrences() occurrences}"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="occurrences" ordered="false"
+        upperBound="-1" changeable="false" volatile="true" transient="true" derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="all occurrences covering this lifeline. A derived union of the {@link #getMessageEnds() message ends} and owned {@link #getExecutionOccurrences() execution occurrences}"/>
+      </eAnnotations>
+      <eGenericType eClassifier="#//MOccurrence">
+        <eTypeArguments>
+          <eUpperBound eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
+        </eTypeArguments>
+      </eGenericType>
+    </eStructuralFeatures>
     <eGenericSuperTypes eClassifier="#//MElement">
       <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Lifeline"/>
     </eGenericSuperTypes>
@@ -503,19 +544,49 @@
       </eParameters>
     </eOperations>
     <eOperations name="getNestedExecutions" upperBound="-1" eType="#//MExecution"/>
+    <eOperations name="setOwner" lowerBound="1" eType="#//Command">
+      <eParameters name="newOwner" lowerBound="1" eType="#//MLifeline"/>
+      <eParameters name="yPosition" lowerBound="1" eType="#//OptionalInt">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="the absolute Y position at which to place the top of the execution on the lifeline, or empty to maintain the current Y position."/>
+        </eAnnotations>
+      </eParameters>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="start" lowerBound="1" changeable="false"
         volatile="true" transient="true" derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="the starting occurrence, a subset of all of the spanned {@link #getOccurrences() occurrences}"/>
+      </eAnnotations>
       <eGenericType eClassifier="#//Optional">
         <eTypeArguments eClassifier="#//MOccurrence">
-          <eTypeArguments/>
+          <eTypeArguments>
+            <eUpperBound eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
+          </eTypeArguments>
         </eTypeArguments>
       </eGenericType>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="finish" lowerBound="1"
         changeable="false" volatile="true" transient="true" derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="the finishing occurrence, a subset of all of the spanned {@link #getOccurrences() occurrences}"/>
+      </eAnnotations>
       <eGenericType eClassifier="#//Optional">
         <eTypeArguments eClassifier="#//MOccurrence">
-          <eTypeArguments/>
+          <eTypeArguments>
+            <eUpperBound eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
+          </eTypeArguments>
+        </eTypeArguments>
+      </eGenericType>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="occurrences" ordered="false"
+        lowerBound="2" upperBound="-1" changeable="false" volatile="true" transient="true"
+        derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="list of all occurrences on its lifeline that are spanned by the execution, including the {@link #getStart() start} and {@link #getFinish() finish}"/>
+      </eAnnotations>
+      <eGenericType eClassifier="#//MOccurrence">
+        <eTypeArguments>
+          <eUpperBound eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
         </eTypeArguments>
       </eGenericType>
     </eStructuralFeatures>
@@ -527,6 +598,14 @@
     <eTypeParameters name="T">
       <eBounds eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
     </eTypeParameters>
+    <eOperations name="setCovered" lowerBound="1" eType="#//Command">
+      <eParameters name="lifeline" lowerBound="1" eType="#//MLifeline"/>
+      <eParameters name="yPosition" lowerBound="1" eType="#//OptionalInt">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="the absolute Y position at which to place the occurrence on the lifeline, or empty to maintain the current Y position."/>
+        </eAnnotations>
+      </eParameters>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="covered" lowerBound="1"
         changeable="false" volatile="true" transient="true" derived="true">
       <eGenericType eClassifier="#//Optional">
@@ -550,6 +629,15 @@
         <eTypeArguments eClassifier="#//MExecution"/>
       </eGenericType>
     </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="execution" lowerBound="1"
+        changeable="false" volatile="true" transient="true" derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="The execution that an occurrence either {@linkplain #getStartedExecution() starts} or {@linkplain #getFinishedExecution() finishes}, or the most nested execution during which span the occurrence happens on its covered lifeline."/>
+      </eAnnotations>
+      <eGenericType eClassifier="#//Optional">
+        <eTypeArguments eClassifier="#//MExecution"/>
+      </eGenericType>
+    </eStructuralFeatures>
     <eGenericSuperTypes eClassifier="#//MElement">
       <eTypeArguments eTypeParameter="#//MOccurrence/T"/>
     </eGenericSuperTypes>
@@ -560,6 +648,9 @@
       <eGenericType eClassifier="#//Optional">
         <eTypeArguments eClassifier="ecore:EClass ../../org.eclipse.gmf.runtime.notation/model/notation.ecore#//IdentityAnchor"/>
       </eGenericType>
+    </eOperations>
+    <eOperations name="replaceBy" lowerBound="1" eType="#//Command">
+      <eParameters name="messageEnd" lowerBound="1" eType="#//MMessageEnd"/>
     </eOperations>
     <eGenericSuperTypes eClassifier="#//MOccurrence">
       <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//ExecutionOccurrenceSpecification"/>

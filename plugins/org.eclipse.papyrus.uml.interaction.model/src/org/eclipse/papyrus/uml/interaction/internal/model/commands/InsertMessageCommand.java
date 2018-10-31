@@ -15,6 +15,7 @@ package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 import static java.lang.Integer.MAX_VALUE;
 import static org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil.invertSingle;
 import static org.eclipse.papyrus.uml.interaction.graph.util.Suppliers.compose;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelOrdering.vertically;
 import static org.eclipse.uml2.uml.MessageSort.REPLY_LITERAL;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.EXECUTION_SPECIFICATION__FINISH;
@@ -26,7 +27,6 @@ import static org.eclipse.uml2.uml.UMLPackage.Literals.LIFELINE__COVERED_BY;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -36,19 +36,17 @@ import java.util.function.BinaryOperator;
 import java.util.function.IntSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.command.DeleteCommand;
 import org.eclipse.emf.edit.command.SetCommand;
+import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
-import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MObjectImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.Messages;
@@ -85,7 +83,7 @@ import org.eclipse.uml2.uml.Signal;
  *
  * @author Christian W. Damus
  */
-public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements CreationCommand<Message> {
+public class InsertMessageCommand extends ModelCommand.Creation<MLifelineImpl, Message> {
 
 	private final MElement<?> beforeSend;
 
@@ -102,8 +100,6 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	private final NamedElement signature;
 
 	private final boolean syncMessage;
-
-	private CreationCommand<Message> resultCommand;
 
 	private ExecutionCreationCommandParameter executionCreationParameter;
 
@@ -195,7 +191,8 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	public InsertMessageCommand(MLifelineImpl sender, MElement<?> beforeSend, int sendOffset,
 			MLifeline receiver, MElement<?> beforeRecv, int recvOffset, MessageSort sort,
 			NamedElement signature, ExecutionCreationCommandParameter executionCreationCommandParameter) {
-		super(sender);
+
+		super(sender, Message.class);
 
 		checkInteraction(beforeSend);
 		checkInteraction(beforeRecv);
@@ -285,11 +282,6 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 
 		int llTop = layout.getBottom(receiver.getDiagramView().get());
 		return absoluteY - llTop;
-	}
-
-	@Override
-	public Message getNewObject() {
-		return (resultCommand == null) ? null : resultCommand.getNewObject();
 	}
 
 	@Override
@@ -403,7 +395,8 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				break;
 		}
 		CreationParameters messageParams = CreationParameters.in(interaction(), INTERACTION__MESSAGE);
-		resultCommand = semantics.createMessage(sendEvent, recvEvent, sort, signature, messageParams);
+		CreationCommand<Message> resultCommand = setResult(
+				semantics.createMessage(sendEvent, recvEvent, sort, signature, messageParams));
 
 		// Create these elements in the interaction
 		Command result = sendEvent.chain(recvEvent).chain(resultCommand);
@@ -489,8 +482,9 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				+ (receivingExec.isPresent() ? 0 : distanceToEnforcePadding);
 		IntSupplier senderY = () -> absoluteSendY + additionalOffsetSend;
 		IntSupplier receiverY = () -> absoluteRecvY + additionalOffsetRecv;
-		result = result.chain(diagramHelper().createMessageConnector(resultCommand, senderView, senderY,
-				receiverView, receiverY, this::replace));
+		CreationCommand<Connector> messageConnector = diagramHelper().createMessageConnector(resultCommand,
+				senderView, senderY, receiverView, receiverY, this::replace);
+		result = result.chain(messageConnector);
 
 		int recvYPosition = absoluteRecvY + additionalOffsetRecv;
 
@@ -517,8 +511,7 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 								.filter(m -> m.getTop().orElse(0) < absoluteRecvY)//
 								.flatMap(l -> l.getExecutions().stream()),
 						true);
-				Collections.sort(elementsToNudge,
-						Comparator.comparingInt(e -> ((MElementImpl<?>)e).getTop().orElse(0)).reversed());
+				Collections.sort(elementsToNudge, vertically().reversed());
 				List<Command> nudgeCommands = new ArrayList<>(elementsToNudge.size());
 				for (int i = 0; i < elementsToNudge.size(); i++) {
 					MElement<? extends Element> element = elementsToNudge.get(i);
@@ -544,8 +537,8 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			case SYNCH_CALL_LITERAL:
 				/* if there is no execution yet, create one for sync calls */
 				if (!receivingExec.isPresent() && executionCreationParameter.isCreateExecution()) {
-					result = result.chain(
-							createAdditionalSyncMessageCommands(sendEvent, recvEvent, senderY, receiverY));
+					result = result.chain(createAdditionalSyncMessageCommands(messageConnector, sendEvent,
+							recvEvent, senderY, receiverY));
 					/* Fall through to create nudge command, but extend nudge height by execMinHeight */
 					recvYPosition += layoutConstraints().getMinimumHeight(ViewTypes.EXECUTION_SPECIFICATION);
 
@@ -561,13 +554,11 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 			default:
 				// Now we have commands to add the message specification. But, first we must make
 				// room for it in the diagram. Nudge the element that will follow the new receive event
-				int spaceRequired = 2 * sendOffset;
 				// If inserting after the start occurrence of an execution specification,
 				// then actually insert after the execution, itself, so that it can span
 				// the new message end
-				Optional<Command> makeSpace = createNudgeCommandForFollowingElements(timeline, spaceRequired,
-						sendInsert, sendingExec, senderY.getAsInt(), recvInsert, receivingExec,
-						recvYPosition);
+				Optional<Command> makeSpace = createNudgeCommandForFollowingElements(timeline, sendInsert,
+						sendingExec, senderY.getAsInt(), recvInsert, receivingExec, recvYPosition);
 				if (makeSpace.isPresent()) {
 					result = makeSpace.get().chain(result);
 				}
@@ -631,8 +622,9 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		return receiver.getElement() == getTarget().getElement();
 	}
 
-	private Command createAdditionalSyncMessageCommands(Supplier<MessageEnd> sendEvent,
-			CreationCommand<MessageEnd> receiveEvent, IntSupplier senderY, IntSupplier receiverY) {
+	private Command createAdditionalSyncMessageCommands(Supplier<Connector> messageConnector,
+			Supplier<MessageEnd> sendEvent, CreationCommand<MessageEnd> receiveEvent, IntSupplier senderY,
+			IntSupplier receiverY) {
 
 		/* correct why positions if this is a self message */
 		IntSupplier actualReceiverY;
@@ -659,18 +651,6 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 		additionalCommands.add(execution);
 		additionalCommands.add(setStart);
 
-		if (executionCreationParameter.isCreateReply()) {
-			additionalCommands.addAll(createAutomaticReplyMessageCommands(sendEvent, execution, actualSenderY,
-					actualReceiverY));
-		} else {
-			CreationCommand<OccurrenceSpecification> finish = semanticHelper().createFinish(execution,
-					CreationParameters.after(execution));
-			DeferredAddCommand addFinish = new DeferredAddCommand(receiver.getElement(), LIFELINE__COVERED_BY,
-					execution, finish);
-			additionalCommands.add(finish);
-			additionalCommands.add(addFinish);
-		}
-
 		/* create the shape of the execution specification */
 		CreationCommand<Shape> executionShape;
 		View recShape = receiver.getDiagramView().orElse(null);
@@ -680,11 +660,28 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				execMinHeight);
 		additionalCommands.add(executionShape);
 
+		if (executionCreationParameter.isCreateReply()) {
+			additionalCommands.addAll(createAutomaticReplyMessageCommands(sendEvent, execution,
+					executionShape, actualSenderY, actualReceiverY));
+		} else {
+			CreationCommand<OccurrenceSpecification> finish = semanticHelper().createFinish(execution,
+					CreationParameters.after(execution));
+			DeferredAddCommand addFinish = new DeferredAddCommand(receiver.getElement(), LIFELINE__COVERED_BY,
+					execution, finish);
+			additionalCommands.add(finish);
+			additionalCommands.add(addFinish);
+		}
+
+		/* and attach the request message to it */
+		additionalCommands.add(diagramHelper().reconnectTarget(messageConnector, executionShape, () -> 0));
+
 		return CompoundModelCommand.compose(getEditingDomain(), additionalCommands);
 	}
 
 	private List<Command> createAutomaticReplyMessageCommands(Supplier<MessageEnd> sendEvent,
-			CreationCommand<ExecutionSpecification> execution, IntSupplier senderY, IntSupplier receiverY) {
+			Supplier<ExecutionSpecification> execution, Supplier<Shape> executionShape, IntSupplier senderY,
+			IntSupplier receiverY) {
+
 		List<Command> commands = new ArrayList<>();
 		CreationCommand<MessageEnd> replySend = semanticHelper()
 				.createMessageOccurrence(CreationParameters.after(execution));
@@ -708,14 +705,14 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 				REPLY_LITERAL, null, messageParams);
 		commands.add(replyMessage);
 
-		Shape senderShape = diagramHelper().getLifelineBodyShape(receiver.getDiagramView().get());
 		Shape receiverShape = diagramHelper().getLifelineBodyShape(getTarget().getDiagramView().get());
 		int execMinHeight = layoutConstraints().getMinimumHeight(ViewTypes.EXECUTION_SPECIFICATION);
 
-		Command replyMessageView = diagramHelper().createMessageConnector(replyMessage, () -> senderShape,
+		Command replyMessageView = diagramHelper().createMessageConnector(replyMessage, executionShape,
 				() -> senderY.getAsInt() + execMinHeight, () -> receiverShape,
 				() -> receiverY.getAsInt() + execMinHeight, null);
 		commands.add(replyMessageView);
+
 		return commands;
 	}
 
@@ -744,7 +741,7 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 	}
 
 	private Optional<Command> createNudgeCommandForFollowingElements(
-			List<MElement<? extends Element>> timeline, int spaceRequired,
+			List<MElement<? extends Element>> timeline, //
 			Optional<MElement<? extends Element>> sendInsert, //
 			Optional<MExecution> sendingExec, int sendYPosition, //
 			Optional<MElement<? extends Element>> recvInsert, //
@@ -775,7 +772,12 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 					}
 					OptionalInt distance = toNudge.verticalDistance(latestElementBeforeY);
 					if (distance.isPresent()) {
-						return toNudge.nudge(Math.max(minNudge, spaceRequired - distance.getAsInt()));
+						int deltaToKeepDistance = (recvYPosition + distance.getAsInt())
+								- toNudge.getTop().getAsInt();
+						if (isSelfMessage() && (sendYPosition == recvYPosition)) {
+							deltaToKeepDistance += layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE);
+						}
+						return toNudge.nudge(Math.max(minNudge, deltaToKeepDistance));
 					} else {
 						return null;
 					}
@@ -972,19 +974,6 @@ public class InsertMessageCommand extends ModelCommand<MLifelineImpl> implements
 
 	private int relativeTopOfBefore() {
 		return beforeSend.getTop().getAsInt() - layoutHelper().getBottom(getTarget().getDiagramView().get());
-	}
-
-	private static void findElementsBelow(int yPosition, List<MElement<? extends Element>> elementsBelow,
-			Stream<?> stream, boolean useTop) {
-		stream//
-				.filter(MElementImpl.class::isInstance).map(MElementImpl.class::cast).filter(m -> {
-					if (useTop) {
-						return m.getTop().orElse(0) >= yPosition;
-					} else {
-						return m.getBottom().orElse(0) >= yPosition;
-					}
-				})//
-				.collect(Collectors.toCollection(() -> elementsBelow));
 	}
 
 	private CreationParameters endParams(Supplier<? extends EObject> insertionPoint) {

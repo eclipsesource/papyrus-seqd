@@ -22,7 +22,9 @@ import java.util.Stack;
 import java.util.function.Predicate;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.UniqueEList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
@@ -47,6 +49,8 @@ import org.eclipse.uml2.uml.ExecutionSpecification;
  * <em>Start</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl#getFinish
  * <em>Finish</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl#getOccurrences
+ * <em>Occurrences</em>}</li>
  * </ul>
  *
  * @generated
@@ -95,6 +99,36 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	public Optional<MOccurrence<?>> getFinish() {
 		return Optional.ofNullable(getElement().getFinish()).flatMap(getInteractionImpl()::getElement)
 				.map(MOccurrence.class::cast);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public List<MOccurrence<? extends Element>> getOccurrences() {
+		EList<MOccurrence<? extends Element>> result = new UniqueEList.FastCompare<MOccurrence<? extends Element>>();
+
+		getOwner().getOccurrences().stream().filter(spannedBy(this)).forEach(result::add);
+
+		getStart().ifPresent(start -> {
+			if (!result.contains(start)) {
+				result.add(0, start);
+			} else {
+				result.move(0, start);
+			}
+		});
+
+		getFinish().ifPresent(finish -> {
+			if (!result.contains(finish)) {
+				result.add(finish);
+			} else {
+				result.move(result.size() - 1, finish);
+			}
+		});
+
+		return ECollections.unmodifiableEList(result);
 	}
 
 	/**
@@ -216,6 +250,8 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 				return getStart();
 			case SequenceDiagramPackage.MEXECUTION__FINISH:
 				return getFinish();
+			case SequenceDiagramPackage.MEXECUTION__OCCURRENCES:
+				return getOccurrences();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -232,6 +268,8 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 				return getStart() != null;
 			case SequenceDiagramPackage.MEXECUTION__FINISH:
 				return getFinish() != null;
+			case SequenceDiagramPackage.MEXECUTION__OCCURRENCES:
+				return !getOccurrences().isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

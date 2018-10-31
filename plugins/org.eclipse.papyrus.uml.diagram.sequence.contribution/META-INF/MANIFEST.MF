@@ -15,3 +15,4 @@ Require-Bundle: org.eclipse.ui;bundle-version="[3.109.0,4.0.0)",
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.papyrus.uml.diagram.sequence.contribution.internal;x-internal:=true
+Automatic-Module-Name: org.eclipse.papyrus.uml.diagram.sequence.contribution

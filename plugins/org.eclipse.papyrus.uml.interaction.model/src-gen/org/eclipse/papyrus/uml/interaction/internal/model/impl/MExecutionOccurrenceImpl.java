@@ -15,12 +15,15 @@ package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.RemoveExecutionOccurrenceCommand;
 import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 
 /**
@@ -76,6 +79,26 @@ public class MExecutionOccurrenceImpl extends MOccurrenceImpl<ExecutionOccurrenc
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Command replaceBy(MMessageEnd messageEnd) {
+		return new ReplaceOccurrenceCommand(this, messageEnd);
+	}
+
+	@Override
+	public Optional<MLifeline> getCovered() {
+		return Optional.of(getOwner());
+	}
+
+	@Override
+	public Command remove() {
+		return new RemoveExecutionOccurrenceCommand(this);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -85,6 +108,8 @@ public class MExecutionOccurrenceImpl extends MOccurrenceImpl<ExecutionOccurrenc
 				return getOwner();
 			case SequenceDiagramPackage.MEXECUTION_OCCURRENCE___GET_DIAGRAM_VIEW:
 				return getDiagramView();
+			case SequenceDiagramPackage.MEXECUTION_OCCURRENCE___REPLACE_BY__MMESSAGEEND:
+				return replaceBy((MMessageEnd)arguments.get(0));
 		}
 		return super.eInvoke(operationID, arguments);
 	}

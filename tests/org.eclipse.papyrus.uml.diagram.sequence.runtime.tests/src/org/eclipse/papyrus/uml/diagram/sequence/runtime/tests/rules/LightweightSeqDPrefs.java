@@ -12,6 +12,8 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules;
 
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.preferences.LightweightSequenceDiagramPreferences.CREATE_EXEC_FOR_SYNC_MESSAGE;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.preferences.LightweightSequenceDiagramPreferences.CREATE_REPLY_MESSAGE_FOR_SYNC_CALL;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.preferences.LightweightSequenceDiagramPreferences.SYNC_MESSAGE_EXECUTION_TYPE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.function.BiFunction;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
+import org.eclipse.uml2.uml.UMLPackage;
 import org.junit.rules.ExternalResource;
 
 @SuppressWarnings("restriction")
@@ -32,7 +35,19 @@ public class LightweightSeqDPrefs extends ExternalResource {
 	}
 
 	public LightweightSeqDPrefs createExecutionsForSyncMessages() {
-		return with(CREATE_EXEC_FOR_SYNC_MESSAGE, true);
+		return with(CREATE_EXEC_FOR_SYNC_MESSAGE, true)
+				// Force the execution metaclass instead of trying to automate selection from
+				// the pop-up menu
+				.with(SYNC_MESSAGE_EXECUTION_TYPE,
+						UMLPackage.Literals.BEHAVIOR_EXECUTION_SPECIFICATION.getName());
+	}
+
+	public LightweightSeqDPrefs dontCreateRepliesForSyncCalls() {
+		return createExecutionsForSyncMessages().with(CREATE_REPLY_MESSAGE_FOR_SYNC_CALL, false);
+	}
+
+	public LightweightSeqDPrefs createRepliesForSyncCalls() {
+		return createExecutionsForSyncMessages().with(CREATE_REPLY_MESSAGE_FOR_SYNC_CALL, true);
 	}
 
 	public LightweightSeqDPrefs with(String prefKey, boolean value) {
@@ -66,15 +81,13 @@ public class LightweightSeqDPrefs extends ExternalResource {
 	}
 
 	@Override
-	protected void before() throws Throwable {
+	protected void before() {
 		befores.forEach(Runnable::run);
-		befores.clear();
 	}
 
 	@Override
 	protected void after() {
 		afters.forEach(Runnable::run);
-		afters.clear();
 	}
 
 	public void reset() {
@@ -102,6 +115,23 @@ public class LightweightSeqDPrefs extends ExternalResource {
 		afters.add(0, wasDefault[0] // Reverse order in case of multiple setting of same preference
 				? () -> store.setToDefault(prefKey) //
 				: () -> setter.accept(store, prefKey, (T) oldValue[0]));
+	}
+
+	/**
+	 * Run some <em>ad hoc</em> runnable with the preferences that I specify.
+	 *
+	 * @param test
+	 *            some fragment of a test scenario to run with my preferences if
+	 *            effect
+	 */
+	public void run(Runnable test) {
+		before();
+
+		try {
+			test.run();
+		} finally {
+			after();
+		}
 	}
 
 	//

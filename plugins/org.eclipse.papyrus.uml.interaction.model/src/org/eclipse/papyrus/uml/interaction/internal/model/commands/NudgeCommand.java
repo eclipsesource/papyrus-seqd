@@ -12,6 +12,8 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
+
 import java.util.Optional;
 
 import org.eclipse.emf.common.command.Command;
@@ -170,7 +172,7 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 						}
 					}
 				}
-			} else if (vertex.hasTag(Tag.EXECUTION_FINISH)) {
+			} else if (vertex.hasTag(Tag.EXECUTION_FINISH) && !isMessageEndNudgeCommand(element)) {
 				// Stretch the execution specification, but only if we didn't nudge the top
 				Optional<Vertex> exec = vertex.predecessor(Tag.EXECUTION_FINISH);
 				if (!visited(exec)) {
@@ -183,30 +185,33 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 			} else if (view instanceof Diagram) {
 				// Can't nudge the diagram, of course
 				chain(UnexecutableCommand.INSTANCE);
-			} else if (isReceiveMessageEndNudgeCommand(element)) {
+			} else if (isMessageEndNudgeCommand(element)) {
 				/*
-				 * If this is an explicit nudge command for a message end, make sure that the message receive
-				 * end is nudged, but not the start
+				 * If this is an explicit nudge command for a message end, make sure that this end is nudged,
+				 * but not the opposite end.
 				 */
-				Optional<Connector> connector = getTarget().getInteraction().getElement(element)//
-						.filter(MMessageEnd.class::isInstance).map(MMessageEnd.class::cast)//
-						.map(MMessageEnd::getOwner)//
+				Optional<MMessageEnd> end = as(getTarget().getInteraction().getElement(element),
+						MMessageEnd.class);
+				Optional<Connector> connector = end.map(MMessageEnd::getOwner)//
 						.map(MMessage::getDiagramView)//
 						.filter(Optional::isPresent).map(Optional::get);
 				if (connector.isPresent()) {
-					IdentityAnchor target = (IdentityAnchor)connector.get().getTargetAnchor();
-					Shape targetOn = (Shape)connector.get().getTarget();
-					int targetY = layoutHelper().getYPosition(target, targetOn);
-					chain(layoutHelper().setYPosition(target, targetOn, targetY + delta));
+					MMessageEnd end_ = end.get();
+					IdentityAnchor anchor = (IdentityAnchor)(end_.isSend() ? connector.get().getSourceAnchor()
+							: connector.get().getTargetAnchor());
+					Shape anchorOn = (Shape)(end_.isSend() ? connector.get().getSource()
+							: connector.get().getTarget());
+					int targetY = layoutHelper().getYPosition(anchor, anchorOn);
+					chain(layoutHelper().setYPosition(anchor, anchorOn, targetY + delta));
 				}
 			}
 		}
 
-		private boolean isReceiveMessageEndNudgeCommand(Element element) {
+		private boolean isMessageEndNudgeCommand(Element element) {
 			if (element != NudgeCommand.this.getTarget().getElement()) {
 				return false; // nudge command was created for different element
 			}
-			return element instanceof MessageEnd && MessageEnd.class.cast(element).isReceive();
+			return element instanceof MessageEnd;
 		}
 
 		/**

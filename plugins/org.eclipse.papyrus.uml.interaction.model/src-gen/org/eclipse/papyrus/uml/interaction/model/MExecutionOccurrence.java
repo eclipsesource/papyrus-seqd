@@ -14,6 +14,7 @@ package org.eclipse.papyrus.uml.interaction.model;
 
 import java.util.Optional;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 
@@ -45,5 +46,14 @@ public interface MExecutionOccurrence extends MOccurrence<ExecutionOccurrenceSpe
 	 */
 	@Override
 	Optional<IdentityAnchor> getDiagramView();
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Command" required="true"
+	 *        messageEndRequired="true"
+	 * @generated
+	 */
+	Command replaceBy(MMessageEnd messageEnd);
 
 } // MExecutionOccurrence

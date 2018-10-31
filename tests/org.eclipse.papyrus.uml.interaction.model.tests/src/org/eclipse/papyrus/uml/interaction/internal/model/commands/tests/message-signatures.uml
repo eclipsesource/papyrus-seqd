@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_CGW5gM2MEeibJKzk6Q8eKg" name="message-signatures">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_CPF-wM2MEeibJKzk6Q8eKg">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Class" xmi:id="_DRUQwM2MEeibJKzk6Q8eKg" name="A">
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_FOrVUM2MEeibJKzk6Q8eKg" name="b" type="_D4gzoM2MEeibJKzk6Q8eKg" association="_FOknoM2MEeibJKzk6Q8eKg">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_FOtxkM2MEeibJKzk6Q8eKg"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_FOtxkc2MEeibJKzk6Q8eKg" value="1"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_D4gzoM2MEeibJKzk6Q8eKg" name="B">
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_Gbftwc2MEeibJKzk6Q8eKg" name="c" type="_EZxGkM2MEeibJKzk6Q8eKg" association="_GbfGsM2MEeibJKzk6Q8eKg">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Gbftws2MEeibJKzk6Q8eKg"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Gbftw82MEeibJKzk6Q8eKg" value="1"/>
+    </ownedAttribute>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_JoM6UM2MEeibJKzk6Q8eKg" name="foo">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_WMZasM2MEeibJKzk6Q8eKg" name="i">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_EZxGkM2MEeibJKzk6Q8eKg" name="C">
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_P2H1IM2MEeibJKzk6Q8eKg" name="bar">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_ZY6aAM2MEeibJKzk6Q8eKg" name="a" type="_DRUQwM2MEeibJKzk6Q8eKg"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_FOknoM2MEeibJKzk6Q8eKg" memberEnd="_FOrVUM2MEeibJKzk6Q8eKg _FOtxks2MEeibJKzk6Q8eKg">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_FOqHMM2MEeibJKzk6Q8eKg" source="org.eclipse.papyrus">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_FOqHMc2MEeibJKzk6Q8eKg" key="nature" value="UML_Nature"/>
+    </eAnnotations>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_FOtxks2MEeibJKzk6Q8eKg" name="a" type="_DRUQwM2MEeibJKzk6Q8eKg" association="_FOknoM2MEeibJKzk6Q8eKg"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_GbfGsM2MEeibJKzk6Q8eKg" memberEnd="_Gbftwc2MEeibJKzk6Q8eKg _GbftxM2MEeibJKzk6Q8eKg">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_GbfGsc2MEeibJKzk6Q8eKg" source="org.eclipse.papyrus">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_GbftwM2MEeibJKzk6Q8eKg" key="nature" value="UML_Nature"/>
+    </eAnnotations>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_GbftxM2MEeibJKzk6Q8eKg" name="b" type="_D4gzoM2MEeibJKzk6Q8eKg" association="_GbfGsM2MEeibJKzk6Q8eKg"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Collaboration" xmi:id="_lC7KEM2MEeibJKzk6Q8eKg" name="Scenario" classifierBehavior="_m-OZIM2MEeibJKzk6Q8eKg">
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_xXzcEM2MEeibJKzk6Q8eKg" name="a" visibility="public" type="_DRUQwM2MEeibJKzk6Q8eKg"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_z21qUM2MEeibJKzk6Q8eKg" name="b" visibility="public" type="_D4gzoM2MEeibJKzk6Q8eKg"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_1WNyYM2MEeibJKzk6Q8eKg" name="c" visibility="public" type="_EZxGkM2MEeibJKzk6Q8eKg"/>
+    <ownedBehavior xmi:type="uml:Interaction" xmi:id="_m-OZIM2MEeibJKzk6Q8eKg" name="interaction">
+      <lifeline xmi:type="uml:Lifeline" xmi:id="_skKG4M2MEeibJKzk6Q8eKg" name="a" represents="_xXzcEM2MEeibJKzk6Q8eKg" coveredBy="_-rm0cM2MEeibJKzk6Q8eKg _-rv-Yc2MEeibJKzk6Q8eKg"/>
+      <lifeline xmi:type="uml:Lifeline" xmi:id="_tMPakM2MEeibJKzk6Q8eKg" name="b" represents="_z21qUM2MEeibJKzk6Q8eKg" coveredBy="_-roCkM2MEeibJKzk6Q8eKg _-rvXUM2MEeibJKzk6Q8eKg _-rv-YM2MEeibJKzk6Q8eKg"/>
+      <lifeline xmi:type="uml:Lifeline" xmi:id="_twfXIM2MEeibJKzk6Q8eKg" name="c" represents="_1WNyYM2MEeibJKzk6Q8eKg"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_-rm0cM2MEeibJKzk6Q8eKg" covered="_skKG4M2MEeibJKzk6Q8eKg" message="_-ropoM2MEeibJKzk6Q8eKg"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_-roCkM2MEeibJKzk6Q8eKg" covered="_tMPakM2MEeibJKzk6Q8eKg" message="_-ropoM2MEeibJKzk6Q8eKg"/>
+      <fragment xmi:type="uml:BehaviorExecutionSpecification" xmi:id="_-rvXUM2MEeibJKzk6Q8eKg" name="exec1" covered="_tMPakM2MEeibJKzk6Q8eKg" finish="_-rv-YM2MEeibJKzk6Q8eKg" start="_-roCkM2MEeibJKzk6Q8eKg"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_-rv-YM2MEeibJKzk6Q8eKg" covered="_tMPakM2MEeibJKzk6Q8eKg" message="_-rwlcM2MEeibJKzk6Q8eKg"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_-rv-Yc2MEeibJKzk6Q8eKg" covered="_skKG4M2MEeibJKzk6Q8eKg" message="_-rwlcM2MEeibJKzk6Q8eKg"/>
+      <message xmi:type="uml:Message" xmi:id="_-ropoM2MEeibJKzk6Q8eKg" name="request" receiveEvent="_-roCkM2MEeibJKzk6Q8eKg" sendEvent="_-rm0cM2MEeibJKzk6Q8eKg" signature="_JoM6UM2MEeibJKzk6Q8eKg">
+        <argument xmi:type="uml:LiteralInteger" xmi:id="_JThOUM2NEeibJKzk6Q8eKg" value="42"/>
+      </message>
+      <message xmi:type="uml:Message" xmi:id="_-rwlcM2MEeibJKzk6Q8eKg" name="reply" messageSort="reply" receiveEvent="_-rv-Yc2MEeibJKzk6Q8eKg" sendEvent="_-rv-YM2MEeibJKzk6Q8eKg"/>
+    </ownedBehavior>
+  </packagedElement>
+</uml:Model>

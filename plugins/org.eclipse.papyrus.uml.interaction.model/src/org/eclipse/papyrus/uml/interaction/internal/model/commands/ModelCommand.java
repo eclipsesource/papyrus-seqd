@@ -18,7 +18,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandWrapper;
@@ -29,6 +33,7 @@ import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl;
+import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
@@ -247,7 +252,6 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 	 * @see #getTimeline(MInteraction)
 	 * @see #getInsertionPoint(List, int)
 	 */
-	@SuppressWarnings("unchecked")
 	private static <T extends MElement<? extends Element>> T ySearch(Class<T> type, int top) {
 		return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type },
 				(proxy, method, args) -> {
@@ -296,4 +300,88 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 	public Command chain(Command next) {
 		return CompoundModelCommand.compose(getEditingDomain(), this, next);
 	}
+
+	protected Command chain(Command first, Command second) {
+		return (first instanceof ModelCommand<?>) ? first.chain(second)
+				: CompoundModelCommand.compose(getEditingDomain(second), first, second);
+	}
+
+	private EditingDomain getEditingDomain(Command c) {
+		return (c instanceof ModelCommand<?>) ? ((ModelCommand<?>)c).getEditingDomain() : getEditingDomain();
+	}
+
+	protected Function<Command, Command> chaining(Command initial) {
+		return c -> chain(initial, c);
+	}
+
+	protected BinaryOperator<Command> chaining() {
+		return (first, second) -> chain(first, second);
+	}
+
+	protected Command defer(Supplier<? extends Command> futureCommand) {
+		return new CommandWrapper() {
+			@Override
+			protected Command createCommand() {
+				return futureCommand.get();
+			}
+		};
+	}
+
+	protected static void findElementsBelow(int yPosition, List<MElement<? extends Element>> elementsBelow,
+			Stream<? extends MElement<? extends Element>> stream, boolean useTop) {
+
+		stream.filter(m -> {
+			if (useTop) {
+				return m.getTop().orElse(0) >= yPosition;
+			} else {
+				return m.getBottom().orElse(Integer.MAX_VALUE) >= yPosition;
+			}
+		}).forEach(elementsBelow::add);
+	}
+
+	//
+	// Nested types
+	//
+
+	public static class Creation<T extends MElementImpl<?>, U extends Element> extends ModelCommand<T> implements CreationCommand<U> {
+		private final Class<? extends U> type;
+
+		private CreationCommand<U> resultCommand;
+
+		/**
+		 * Initializes me.
+		 *
+		 * @param target
+		 *            the logical model element on which I operate
+		 * @param type
+		 *            the type of UML element that I create
+		 */
+		public Creation(T target, Class<? extends U> type) {
+			super(target);
+
+			this.type = type;
+		}
+
+		@Override
+		public CreationCommand<U> chain(Command next) {
+			return andThen(getEditingDomain(), next);
+		}
+
+		@Override
+		public Class<? extends U> getType() {
+			return type;
+		}
+
+		@Override
+		public U getNewObject() {
+			return (resultCommand == null) ? null : resultCommand.get();
+		}
+
+		protected CreationCommand<U> setResult(CreationCommand<U> resultCommand) {
+			this.resultCommand = resultCommand;
+			return resultCommand;
+		}
+
+	}
+
 }

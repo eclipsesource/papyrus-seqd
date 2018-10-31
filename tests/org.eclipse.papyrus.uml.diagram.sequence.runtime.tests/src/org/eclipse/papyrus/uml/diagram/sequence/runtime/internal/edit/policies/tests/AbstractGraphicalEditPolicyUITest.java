@@ -33,18 +33,19 @@ import org.junit.Rule;
  */
 public abstract class AbstractGraphicalEditPolicyUITest {
 
-	protected static int getTop(EditPart editPart) {
+	protected static Rectangle getBounds(EditPart editPart) {
 		IFigure figure = ((GraphicalEditPart) editPart).getFigure();
-		Rectangle bounds = figure.getBounds().getCopy();
-		figure.getParent().translateToAbsolute(bounds);
-		return bounds.y();
+		Rectangle result = figure.getBounds().getCopy();
+		figure.getParent().translateToAbsolute(result);
+		return result;
+	}
+
+	protected static int getTop(EditPart editPart) {
+		return getBounds(editPart).y();
 	}
 
 	protected static int getBottom(EditPart editPart) {
-		IFigure figure = ((GraphicalEditPart) editPart).getFigure();
-		Rectangle bounds = figure.getBounds().getCopy();
-		figure.getParent().translateToAbsolute(bounds);
-		return bounds.bottom();
+		return getBounds(editPart).bottom();
 	}
 
 	protected static int getSourceY(EditPart connectionEditPart) {
