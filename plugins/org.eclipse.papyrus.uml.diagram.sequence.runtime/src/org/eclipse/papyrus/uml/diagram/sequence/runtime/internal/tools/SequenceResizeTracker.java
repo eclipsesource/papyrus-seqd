@@ -15,6 +15,8 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.PrivateToolUtils.getAllowSemanticReorderingModifier;
 
 import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.Request;
+import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.tools.ResizeTracker;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils;
 
@@ -34,6 +36,26 @@ public class SequenceResizeTracker extends ResizeTracker {
 	 */
 	public SequenceResizeTracker(GraphicalEditPart owner, int direction) {
 		super(owner, direction);
+	}
+
+	@Override
+	protected Request createSourceRequest() {
+		ChangeBoundsRequest result = new ChangeBoundsRequest(REQ_RESIZE) {
+			@Override
+			public void setCenteredResize(boolean value) {
+				// We don't do centered resizing in this diagram
+			}
+
+			@Override
+			public boolean isCenteredResize() {
+				// We don't do centered resizing in this diagram
+				return false;
+			}
+		};
+
+		result.setResizeDirection(getResizeDirection());
+
+		return result;
 	}
 
 	@Override

@@ -38,7 +38,6 @@ import org.eclipse.uml2.uml.MessageEnd;
 import org.eclipse.uml2.uml.OccurrenceSpecification;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -198,7 +197,6 @@ public class MessageExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 		assertThat("Execution not moved/resized", execEP, isBounded(isRect(execBounds, RESIZE_TOLERANCE)));
 	}
 
-	@Ignore("The Ctrl key modifier for semantic reordering conflicts with GEF standard behavior on Linux")
 	@Test
 	public void disconnectExecutionFinish() {
 		// First, select the execution to activate selection handles
