@@ -23,6 +23,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
@@ -39,6 +40,7 @@ import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.graph.Graph;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.AddLifelineCommand;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.SortSemanticsCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
@@ -259,9 +261,9 @@ public class MInteractionImpl extends MElementImpl<Interaction> implements MInte
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case SequenceDiagramPackage.MINTERACTION__LIFELINES:
-				return lifelines != null && !lifelines.isEmpty();
+				return (lifelines != null) && !lifelines.isEmpty();
 			case SequenceDiagramPackage.MINTERACTION__MESSAGES:
-				return messages != null && !messages.isEmpty();
+				return (messages != null) && !messages.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
@@ -289,6 +291,8 @@ public class MInteractionImpl extends MElementImpl<Interaction> implements MInte
 				return getLifelineAt((Integer)arguments.get(0));
 			case SequenceDiagramPackage.MINTERACTION___GET_BOTTOMMOST_ELEMENT:
 				return getBottommostElement();
+			case SequenceDiagramPackage.MINTERACTION___SORT:
+				return sort();
 		}
 		return super.eInvoke(operationID, arguments);
 	}
@@ -370,6 +374,16 @@ public class MInteractionImpl extends MElementImpl<Interaction> implements MInte
 				.map(Optional::get);
 		return Stream.concat(messageEnds, occurrences)
 				.max(Comparator.comparingInt(this::bottomOfMElement).thenComparing(this::messageEndness));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Command sort() {
+		return withDependencies(SortSemanticsCommand.class, () -> new SortSemanticsCommand(this));
 	}
 
 	private int bottomOfMElement(MElement<? extends Element> mElement) {

@@ -69,6 +69,7 @@
         <genParameters ecoreParameter="seqd.ecore#//MInteraction/getLifelineAt/offset"/>
       </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MInteraction/getBottommostElement"/>
+      <genOperations ecoreOperation="seqd.ecore#//MInteraction/sort"/>
     </genClasses>
     <genClasses ecoreClass="seqd.ecore#//MLifeline">
       <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/executionOccurrences"/>

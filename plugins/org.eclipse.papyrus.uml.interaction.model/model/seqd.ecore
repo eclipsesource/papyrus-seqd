@@ -135,6 +135,11 @@
         </eTypeArguments>
       </eGenericType>
     </eOperations>
+    <eOperations name="sort" lowerBound="1" eType="#//Command">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Obtain a command that sorts the interaction's fragments in time order."/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="lifelines" upperBound="-1"
         eType="#//MLifeline" changeable="false" containment="true" resolveProxies="false"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="messages" upperBound="-1"

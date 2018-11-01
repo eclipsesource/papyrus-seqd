@@ -157,8 +157,10 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	 */
 	@Override
 	public Command setOwner(MLifeline newOwner, OptionalInt top, OptionalInt bottom) {
-		// Avoid cycling through this execution again
-		return withPadding(SetOwnerCommand.class, () -> new SetOwnerCommand(this, newOwner, top, bottom));
+		// This can have an impact on the semantic ordering of interaction fragments
+		return withSemanticSorting(
+				// Avoid cycling through this execution again
+				withPadding(SetOwnerCommand.class, () -> new SetOwnerCommand(this, newOwner, top, bottom)));
 	}
 
 	/**

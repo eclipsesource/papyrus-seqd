@@ -388,13 +388,21 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MINTERACTION___GET_BOTTOMMOST_ELEMENT = MELEMENT_OPERATION_COUNT + 6;
 
 	/**
+	 * The operation id for the '<em>Sort</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MINTERACTION___SORT = MELEMENT_OPERATION_COUNT + 7;
+
+	/**
 	 * The number of operations of the '<em>MInteraction</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MINTERACTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 7;
+	int MINTERACTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 8;
 
 	/**
 	 * The meta object id for the
@@ -2244,6 +2252,16 @@ public interface SequenceDiagramPackage extends EPackage {
 	EOperation getMInteraction__GetBottommostElement();
 
 	/**
+	 * Returns the meta object for the '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#sort()
+	 * <em>Sort</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Sort</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MInteraction#sort()
+	 * @generated
+	 */
+	EOperation getMInteraction__Sort();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline
 	 * <em>MLifeline</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -3263,6 +3281,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation MINTERACTION___GET_BOTTOMMOST_ELEMENT = eINSTANCE.getMInteraction__GetBottommostElement();
+
+		/**
+		 * The meta object literal for the '<em><b>Sort</b></em>' operation. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MINTERACTION___SORT = eINSTANCE.getMInteraction__Sort();
 
 		/**
 		 * The meta object literal for the

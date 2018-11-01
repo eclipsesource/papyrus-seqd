@@ -195,6 +195,10 @@ public class MessageExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 		execBounds.setY(dropStart.y);
 		execBounds.setHeight(oldBottom - execBounds.y);
 		assertThat("Execution not moved/resized", execEP, isBounded(isRect(execBounds, RESIZE_TOLERANCE)));
+
+		MessageEnd requestRecv = request.getReceiveEvent();
+		assertThat("Incorrect semantic ordering", exec.getStart(),
+				editor.semanticallyPrecedes(requestRecv));
 	}
 
 	@Test
@@ -216,6 +220,9 @@ public class MessageExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 		execBounds.setHeight(dropFinish.y - execBounds.y);
 		assertThat("Execution not moved or resized", execEP,
 				isBounded(isRect(execBounds, RESIZE_TOLERANCE)));
+
+		MessageEnd replySend = reply.getSendEvent();
+		assertThat("Incorrect semantic ordering", exec.getFinish(), editor.semanticallyFollows(replySend));
 	}
 
 	//

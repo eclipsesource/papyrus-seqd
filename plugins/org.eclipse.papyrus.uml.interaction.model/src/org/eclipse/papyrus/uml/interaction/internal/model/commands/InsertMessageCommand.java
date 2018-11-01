@@ -49,7 +49,6 @@ import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MObjectImpl;
-import org.eclipse.papyrus.uml.interaction.internal.model.impl.Messages;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
@@ -222,36 +221,36 @@ public class InsertMessageCommand extends ModelCommand.Creation<MLifelineImpl, M
 	@Override
 	public String getLabel() {
 		if (executionCreationParameter.isCreateExecution()) {
-			return MessageFormat.format(Messages.CreateMessageWithExecution, messageSortLabel(),
-					executionTypeLabel());
+			return MessageFormat.format(LogicalModelPlugin.INSTANCE.getString("CreateMessageWithExecution"), //$NON-NLS-1$
+					messageSortLabel(), executionTypeLabel());
 		} else {
-			return MessageFormat.format(Messages.Create, messageSortLabel());
+			return MessageFormat.format(LogicalModelPlugin.INSTANCE.getString("Create"), messageSortLabel()); //$NON-NLS-1$
 		}
 	}
 
 	private String messageSortLabel() {
 		switch (sort) {
 			case ASYNCH_SIGNAL_LITERAL:
-				return Messages.SyncSignal;
+				return LogicalModelPlugin.INSTANCE.getString("SyncSignal"); //$NON-NLS-1$
 			case SYNCH_CALL_LITERAL:
-				return Messages.SyncCall;
+				return LogicalModelPlugin.INSTANCE.getString("SyncCall"); //$NON-NLS-1$
 			case CREATE_MESSAGE_LITERAL:
-				return Messages.CreateMessage;
+				return LogicalModelPlugin.INSTANCE.getString("CreateMessage"); //$NON-NLS-1$
 			case DELETE_MESSAGE_LITERAL:
-				return Messages.DeleteMessage;
+				return LogicalModelPlugin.INSTANCE.getString("DeleteMessage"); //$NON-NLS-1$
 			case REPLY_LITERAL:
-				return Messages.ReplyMessage;
+				return LogicalModelPlugin.INSTANCE.getString("ReplyMessage"); //$NON-NLS-1$
 			case ASYNCH_CALL_LITERAL:
 			default:
-				return Messages.AsyncCall;
+				return LogicalModelPlugin.INSTANCE.getString("AsyncCall"); //$NON-NLS-1$
 		}
 	}
 
 	private Object executionTypeLabel() {
 		if (executionCreationParameter.getExecutionType().equals(ACTION_EXECUTION_SPECIFICATION)) {
-			return Messages.ActionExecutionSpecification;
+			return LogicalModelPlugin.INSTANCE.getString("ActionExecutionSpecification"); //$NON-NLS-1$
 		} else {
-			return Messages.BehaviorExecutionSpecification;
+			return LogicalModelPlugin.INSTANCE.getString("BehaviorExecutionSpecification"); //$NON-NLS-1$
 		}
 	}
 

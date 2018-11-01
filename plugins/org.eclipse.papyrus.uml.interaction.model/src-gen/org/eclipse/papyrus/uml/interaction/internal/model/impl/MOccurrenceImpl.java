@@ -205,8 +205,10 @@ public abstract class MOccurrenceImpl<T extends Element> extends MElementImpl<T>
 	 */
 	@Override
 	public Command setCovered(MLifeline lifeline, OptionalInt yPosition) {
-		// Avoid cycling through this occurrence again
-		return withPadding(SetCoveredCommand.class, () -> new SetCoveredCommand(this, lifeline, yPosition));
+		// This can have an impact on the semantic ordering of interaction fragments
+		return withSemanticSorting(
+				// Avoid cycling through this occurrence again
+				withPadding(SetCoveredCommand.class, () -> new SetCoveredCommand(this, lifeline, yPosition)));
 	}
 
 	/**

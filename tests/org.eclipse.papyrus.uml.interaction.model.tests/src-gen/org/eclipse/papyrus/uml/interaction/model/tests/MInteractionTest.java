@@ -19,8 +19,15 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.util.ECollections;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.gmf.runtime.notation.Bounds;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
@@ -29,8 +36,10 @@ import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.uml2.uml.InteractionFragment;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
+import org.eclipse.uml2.uml.NamedElement;
 
 import junit.textui.TestRunner;
 
@@ -268,6 +277,33 @@ public class MInteractionTest extends MElementTest {
 				.getElement(umlInteraction.getFragment("reply-recv"));
 		assumeThat(element, isPresent());
 		assertThat(getFixture().getBottommostElement(), is(element));
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#sort() <em>Sort</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MInteraction#sort()
+	 * @generated NOT
+	 */
+	public void testSort() {
+		EList<InteractionFragment> fragments = getFixture().getElement().getFragments();
+		List<String> correctOrder = fragments.stream().map(NamedElement::getName)
+				.collect(Collectors.toList());
+
+		Command sort = getFixture().sort();
+		assertThat("Cannot sort", sort, executable());
+
+		// Scramble the semantic order. Note that a unique EList cannot be shuffled in situ
+		List<InteractionFragment> shuffle = new ArrayList<>(fragments);
+		Collections.shuffle(shuffle);
+		ECollections.setEList(fragments, shuffle);
+
+		// And fix it
+		execute(sort);
+
+		List<String> sortedOrder = fragments.stream().map(NamedElement::getName).collect(Collectors.toList());
+		assertThat("Fragments not correctly sorted", sortedOrder, is(correctOrder));
 	}
 
 } // MInteractionTest

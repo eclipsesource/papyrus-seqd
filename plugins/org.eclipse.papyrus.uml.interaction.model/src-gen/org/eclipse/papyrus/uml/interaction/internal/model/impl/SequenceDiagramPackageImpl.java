@@ -462,6 +462,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EOperation getMInteraction__Sort() {
+		return mInteractionEClass.getEOperations().get(7);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EClass getMLifeline() {
 		return mLifelineEClass;
 	}
@@ -1210,6 +1220,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEOperation(mInteractionEClass, MINTERACTION___ADD_LIFELINE__INT_INT);
 		createEOperation(mInteractionEClass, MINTERACTION___GET_LIFELINE_AT__INT);
 		createEOperation(mInteractionEClass, MINTERACTION___GET_BOTTOMMOST_ELEMENT);
+		createEOperation(mInteractionEClass, MINTERACTION___SORT);
 
 		mLifelineEClass = createEClass(MLIFELINE);
 		createEReference(mLifelineEClass, MLIFELINE__EXECUTION_OCCURRENCES);
@@ -1515,6 +1526,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		EGenericType g5 = createEGenericType(theUMLPackage.getElement());
 		g4.setEUpperBound(g5);
 		initEOperation(op, g1);
+
+		initEOperation(getMInteraction__Sort(), this.getCommand(), "sort", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(mLifelineEClass, MLifeline.class, "MLifeline", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);

@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
@@ -296,6 +297,37 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 		}
 
 		return result;
+	}
+
+	/**
+	 * Ensure that the semantic ordering of interaction fragments is reestablished as necessary after
+	 * completion of a {@code command}, accounting for nested commands that would do the same and preventing
+	 * redundant sorting.
+	 * 
+	 * @param command
+	 *            a command to wrap with sorting, or {@code null} if it was elided by (e.g.) the
+	 *            {@link #withDependencies(Class, Supplier)} mechanism
+	 * @return the {@code command}, wrapped with sorting if necessary
+	 */
+	protected Command withSemanticSorting(Command command) {
+		List<Command> result = new ArrayList<>(2);
+
+		Command sort = getInteraction().sort();
+		if (sort != null) {
+			result.add(sort);
+		}
+
+		// Avoid cycling through this element again if it has already created this command
+		if (command != null) {
+			result.add(0, command); // Do this first, then sorting
+		}
+
+		if (!result.isEmpty()) {
+			// Don't use a pessimistic compound because sorting is expensive and has no dependencies
+			return new CompoundCommand(0, result);
+		}
+
+		return null;
 	}
 
 	/**
