@@ -26,6 +26,7 @@ import org.eclipse.emf.common.command.CommandWrapper;
 import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
+import org.eclipse.papyrus.uml.interaction.model.MElement;
 
 /**
  * A tracker of the current set of (inter-)dependent objects for which commands are being created. This allows
@@ -303,8 +304,19 @@ public class DependencyContext {
 	 * @return some key of the requested type
 	 */
 	public <T> Optional<T> get(Object subject, Class<T> keyType, Predicate<? super T> filter) {
-		return context.get(subject).stream().filter(keyType::isInstance).map(keyType::cast).filter(filter)
-				.findAny();
+		return context.get(normalizeSubject(subject)).stream().filter(keyType::isInstance).map(keyType::cast)
+				.filter(filter).findAny();
+	}
+
+	private static Object normalizeSubject(Object subject) {
+		Object result = subject;
+
+		if (subject instanceof MElement<?>) {
+			// The identity of a logical model element is the underlying UML element
+			result = ((MElement<?>)subject).getElement();
+		}
+
+		return result;
 	}
 
 	/**
@@ -374,7 +386,7 @@ public class DependencyContext {
 	 * @see #apply(Object, Object, Function)
 	 */
 	public boolean put(Object subject, Object key) {
-		return context.put(subject, contextKey(key));
+		return context.put(normalizeSubject(subject), contextKey(key));
 	}
 
 	private final boolean guardAction(Object subject, Object key) {

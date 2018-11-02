@@ -29,7 +29,6 @@ import org.eclipse.gef.tools.ResizeTracker;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceResizeTracker;
-import org.eclipse.papyrus.uml.interaction.internal.model.commands.DependencyContext;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
@@ -52,8 +51,8 @@ public class ExecutionSpecificationDragEditPolicy extends ResizableBorderItemPol
 
 	@Override
 	public Command getCommand(Request request) {
-		// Provide a dependency context for all command construction
-		return DependencyContext.getDynamic().withContext(() -> super.getCommand(request));
+		// Ensure padding, if required
+		return withPadding(() -> super.getCommand(request));
 	}
 
 	protected MExecution getExecution() {

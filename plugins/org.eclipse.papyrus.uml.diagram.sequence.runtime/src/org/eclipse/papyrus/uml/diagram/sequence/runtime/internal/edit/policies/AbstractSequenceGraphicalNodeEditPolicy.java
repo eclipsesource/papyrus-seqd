@@ -57,7 +57,6 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.M
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.WeakEventBusDelegator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.CreateRequestSwitch;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
-import org.eclipse.papyrus.uml.interaction.internal.model.commands.DependencyContext;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
@@ -93,8 +92,8 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 	@Override
 	public Command getCommand(Request request) {
-		// Provide a dependency context for all command construction
-		return DependencyContext.getDynamic().withContext(() -> super.getCommand(request));
+		// Ensure padding, if required
+		return withPadding(() -> super.getCommand(request));
 	}
 
 	@Override
