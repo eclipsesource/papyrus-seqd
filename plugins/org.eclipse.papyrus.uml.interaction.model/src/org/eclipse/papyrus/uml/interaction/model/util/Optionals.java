@@ -222,4 +222,19 @@ public class Optionals {
 	public static <T> Stream<T> stream(Optional<? extends T>... optionals) {
 		return Stream.of(optionals).filter(Optional::isPresent).map(Optional::get);
 	}
+
+	/**
+	 * Is an optional integer less than another?
+	 * 
+	 * @param a
+	 *            an optional integer
+	 * @param b
+	 *            another optional integer
+	 * @return {@code true} if both values are present and {@code a} is less than {@code b}; {@code false}
+	 *         under any other circumstance
+	 */
+	public static boolean lessThan(OptionalInt a, OptionalInt b) {
+		return a.orElse(Integer.MAX_VALUE) < b.orElse(Integer.MIN_VALUE);
+	}
+
 }

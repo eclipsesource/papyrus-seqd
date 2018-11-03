@@ -19,6 +19,7 @@ import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredica
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToInt;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.lessThan;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,17 +74,17 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 	/**
 	 * Initializes me.
 	 *
-	 * @param target
+	 * @param occurrence
 	 */
-	public SetCoveredCommand(MOccurrenceImpl<? extends Element> end, MLifeline lifeline,
+	public SetCoveredCommand(MOccurrenceImpl<? extends Element> occurrence, MLifeline lifeline,
 			OptionalInt yPosition) {
-		super(end);
+		super(occurrence);
 
 		this.lifeline = lifeline;
 		this.yPosition = yPosition;
 
 		nextOnLifeline = Lifelines.elementAfterAbsolute(lifeline,
-				yPosition.orElseGet(() -> end.getTop().orElse(0)));
+				yPosition.orElseGet(() -> occurrence.getTop().orElse(0)));
 	}
 
 	protected boolean isChangingLifeline() {
@@ -159,9 +160,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			}
 		}
 
-		if (isChangingLifeline()) {
-			ensurePadding();
-		}
+		ensurePadding();
 
 		return result;
 	}
@@ -266,12 +265,14 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 		}
 
 		// Handle the opposite end if the message is of a synchronous (strictly horizontal) sort
-		Optional<MMessageEnd> other = end.getOtherEnd();
-		if (yPosition.isPresent() && other.isPresent() && message.isSynchronous()) {
-			MMessageEnd opposite = other.get();
-			Optional<MLifeline> otherCovered = opposite.getCovered();
+		// or if it would slope backwards
+		MMessageEnd other = end.getOtherEnd().orElse(null);
+		if (yPosition.isPresent() && (other != null)
+				&& (message.isSynchronous() || (other.isReceive() && lessThan(other.getTop(), yPosition)))) {
+
+			Optional<MLifeline> otherCovered = other.getCovered();
 			// Track this end
-			otherCovered.map(ll -> opposite.setCovered(ll, yPosition)).ifPresent(commandSink);
+			otherCovered.map(ll -> other.setCovered(ll, yPosition)).ifPresent(commandSink);
 		}
 	}
 
@@ -445,16 +446,13 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 	}
 
 	protected void ensurePadding() {
-		MElement<? extends Element> element = getTarget();
 		// From which element do we need to ensure padding?
-		MElement<? extends Element> padFrom = element instanceof MMessageEnd
-				? ((MMessageEnd)element).getOwner()
-				: element;
+		MElement<? extends Element> padFrom = getTarget();
 
 		// Do we have an element that needs padding before it?
 		MElement<? extends Element> nudge = nextOnLifeline.orElse(null);
 
-		DeferredPaddingCommand.get(element).padFrom(padFrom).nudge(nudge);
+		DeferredPaddingCommand.get(padFrom).pad(padFrom, nudge);
 	}
 
 	/**

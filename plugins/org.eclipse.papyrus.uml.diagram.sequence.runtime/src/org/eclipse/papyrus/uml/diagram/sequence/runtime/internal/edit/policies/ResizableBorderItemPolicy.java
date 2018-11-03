@@ -69,11 +69,11 @@ public class ResizableBorderItemPolicy extends BorderItemResizableEditPolicy {
 
 		Rectangle newBounds = bounds.translate(scaledMovedDelta).resize(scaledSizeDelta);
 
-		return getSetBoundsCommand(request, (Node)shapeView, newBounds);
+		return getResizeCommand(request, (Node)shapeView, newBounds);
 	}
 
 	/**
-	 * Get a command to change the bounds of the given execution specification shape.
+	 * Get a command to change the bounds of the given execution specification shape on <em>resize</em>.
 	 * 
 	 * @param request
 	 *            the change-bounds request
@@ -83,7 +83,54 @@ public class ResizableBorderItemPolicy extends BorderItemResizableEditPolicy {
 	 *            the new bounds requested for the execution specification
 	 * @return the command
 	 */
-	protected Command getSetBoundsCommand(ChangeBoundsRequest request, Node execShape, Rectangle newBounds) {
+	protected Command getResizeCommand(ChangeBoundsRequest request, Node execShape, Rectangle newBounds) {
+		TransactionalEditingDomain editingDomain = ((IGraphicalEditPart)getHost()).getEditingDomain();
+		ICommand result = new SetBoundsCommand(editingDomain,
+				DiagramUIMessages.SetLocationCommand_Label_Resize, new EObjectAdapter(execShape), newBounds);
+		return new ICommandProxy(result);
+	}
+
+	@Override
+	protected Command getMoveCommand(ChangeBoundsRequest request) {
+		IFigure figure = getHostFigure();
+		if (figure == null) {
+			return super.getMoveCommand(request);
+		}
+
+		View shapeView = NotationHelper.findView(getHost());
+		Integer x = (Integer)ViewUtil.getStructuralFeatureValue(shapeView,
+				NotationPackage.eINSTANCE.getLocation_X());
+		Integer y = (Integer)ViewUtil.getStructuralFeatureValue(shapeView,
+				NotationPackage.eINSTANCE.getLocation_Y());
+		Integer width = (Integer)ViewUtil.getStructuralFeatureValue(shapeView,
+				NotationPackage.eINSTANCE.getSize_Width());
+		Integer height = (Integer)ViewUtil.getStructuralFeatureValue(shapeView,
+				NotationPackage.eINSTANCE.getSize_Height());
+
+		Rectangle bounds = new Rectangle(x.intValue(), y.intValue(), width.intValue(), height.intValue());
+
+		// apply transformation with scaling to get new bounds (missing from getTrasnformedRectangle)
+		double scale = FigureUtils.getScale(getHostFigure());
+		Point scaledMovedDelta = request.getMoveDelta().getCopy();
+		scaledMovedDelta.performScale(1 / scale);
+
+		Rectangle newBounds = bounds.translate(scaledMovedDelta);
+
+		return getMoveCommand(request, (Node)shapeView, newBounds);
+	}
+
+	/**
+	 * Get a command to change the bounds of the given execution specification shape on <em>move</em>.
+	 * 
+	 * @param request
+	 *            the change-bounds request
+	 * @param execShape
+	 *            the execution specification shape to change
+	 * @param newBounds
+	 *            the new bounds requested for the execution specification
+	 * @return the command
+	 */
+	protected Command getMoveCommand(ChangeBoundsRequest request, Node execShape, Rectangle newBounds) {
 		TransactionalEditingDomain editingDomain = ((IGraphicalEditPart)getHost()).getEditingDomain();
 		ICommand result = new SetBoundsCommand(editingDomain,
 				DiagramUIMessages.SetLocationCommand_Label_Resize, new EObjectAdapter(execShape), newBounds);

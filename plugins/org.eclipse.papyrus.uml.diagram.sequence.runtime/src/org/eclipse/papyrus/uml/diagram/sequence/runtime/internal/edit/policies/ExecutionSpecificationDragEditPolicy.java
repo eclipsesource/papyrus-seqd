@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
 
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
@@ -28,9 +29,11 @@ import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.tools.ResizeTracker;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.notation.Node;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.LifelineHeaderEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceResizeTracker;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
+import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.uml2.uml.Element;
@@ -61,7 +64,7 @@ public class ExecutionSpecificationDragEditPolicy extends ResizableBorderItemPol
 	}
 
 	@Override
-	protected Command getSetBoundsCommand(ChangeBoundsRequest request, Node execShape, Rectangle newBounds) {
+	protected Command getResizeCommand(ChangeBoundsRequest request, Node execShape, Rectangle newBounds) {
 		org.eclipse.emf.common.command.Command result = null;
 
 		MExecution execution = getExecution();
@@ -143,4 +146,55 @@ public class ExecutionSpecificationDragEditPolicy extends ResizableBorderItemPol
 	protected ResizeTracker getResizeTracker(int direction) {
 		return new SequenceResizeTracker((GraphicalEditPart)getHost(), direction);
 	}
+
+	@Override
+	protected Rectangle getInitialFeedbackBounds() {
+		Rectangle result = super.getInitialFeedbackBounds().getCopy();
+
+		// FIXME: Why is this correction necessary?
+		IFigure lifelineHead = ((LifelineHeaderEditPart)getHost().getParent().getParent())
+				.getLifelineHeaderFigure();
+		int headBottom = lifelineHead.getBounds().bottom();
+		result.translate(0, -headBottom);
+
+		return result;
+	}
+
+	@Override
+	protected Command getMoveCommand(ChangeBoundsRequest request, Node execShape, Rectangle newBounds) {
+		org.eclipse.emf.common.command.Command result = null;
+
+		MExecution execution = getExecution();
+
+		OptionalInt top = execution.getTop();
+		OptionalInt bottom = execution.getBottom();
+
+		int absTop = getLayoutHelper().toAbsoluteY(execShape, newBounds.y());
+		int absBottom = getLayoutHelper().toAbsoluteY(execShape, newBounds.bottom());
+
+		if (top.isPresent() && (top.getAsInt() != absTop) && bottom.isPresent()
+				&& (bottom.getAsInt() != absBottom)) {
+			result = getMoveExecutionCommand(request, execution, absTop, absBottom);
+		}
+
+		return wrap(result);
+	}
+
+	protected org.eclipse.emf.common.command.Command getMoveExecutionCommand(ChangeBoundsRequest request,
+			MExecution execution, int top, int bottom) {
+
+		org.eclipse.emf.common.command.Command result = null;
+
+		// TODO: Handle changing lifeline
+		MLifeline newOwner = execution.getOwner();
+
+		if (isAllowSemanticReordering(request)) {
+			// TODO: handle semantic reordering
+		}
+
+		result = chain(result, execution.setOwner(newOwner, OptionalInt.of(top), OptionalInt.of(bottom)));
+
+		return result;
+	}
+
 }
