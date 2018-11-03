@@ -15,7 +15,12 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.isAllowSemanticReordering;
 import static org.eclipse.papyrus.uml.interaction.internal.model.commands.DependencyContext.defer;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.filter;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToInt;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToObj;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.mapToInt;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
@@ -25,19 +30,25 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
+import org.eclipse.gef.tools.DragEditPartsTracker;
 import org.eclipse.gef.tools.ResizeTracker;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.LifelineHeaderEditPart;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceDragTracker;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceResizeTracker;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
+import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
+import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
+import org.eclipse.uml2.uml.InteractionFragment;
 import org.eclipse.uml2.uml.OccurrenceSpecification;
 
 /**
@@ -148,6 +159,11 @@ public class ExecutionSpecificationDragEditPolicy extends ResizableBorderItemPol
 	}
 
 	@Override
+	protected DragEditPartsTracker getDragTracker() {
+		return new SequenceDragTracker(getHost());
+	}
+
+	@Override
 	protected Rectangle getInitialFeedbackBounds() {
 		Rectangle result = super.getInitialFeedbackBounds().getCopy();
 
@@ -166,6 +182,12 @@ public class ExecutionSpecificationDragEditPolicy extends ResizableBorderItemPol
 
 		MExecution execution = getExecution();
 
+		// Check for semantic re-ordering
+		if (!isAllowSemanticReordering(request)
+				&& impliesFragmentReordering(execution, execShape, newBounds)) {
+			return UnexecutableCommand.INSTANCE;
+		}
+
 		OptionalInt top = execution.getTop();
 		OptionalInt bottom = execution.getBottom();
 
@@ -174,10 +196,46 @@ public class ExecutionSpecificationDragEditPolicy extends ResizableBorderItemPol
 
 		if (top.isPresent() && (top.getAsInt() != absTop) && bottom.isPresent()
 				&& (bottom.getAsInt() != absBottom)) {
+
 			result = getMoveExecutionCommand(request, execution, absTop, absBottom);
 		}
 
 		return wrap(result);
+	}
+
+	protected boolean impliesFragmentReordering(MExecution execution, Node execShape, Rectangle newBounds) {
+		MInteraction interaction = execution.getInteraction();
+		List<InteractionFragment> fragments = interaction.getElement().getFragments();
+
+		// Get the element above that is being moved and could be re-ordered
+		Optional<? extends MElement<? extends Element>> normalizedStart = execution.getStart();
+		Optional<MMessageEnd> startEnd = as(normalizedStart, MMessageEnd.class);
+		if (startEnd.filter(MMessageEnd::isReceive).isPresent()) {
+			// Take the send end
+			normalizedStart = startEnd.flatMap(MMessageEnd::getOtherEnd);
+		}
+		OptionalInt startIndex = filter(
+				mapToInt(normalizedStart, start -> fragments.indexOf(start.getElement())), i -> i > 0);
+		Optional<? extends MElement<? extends Element>> above = flatMapToObj(startIndex,
+				i -> interaction.getElement(fragments.get(i - 1)));
+
+		// Get the element below that is being moved and could be re-ordered
+		Optional<? extends MElement<? extends Element>> normalizedFinish = execution.getFinish();
+		Optional<MMessageEnd> finishEnd = as(normalizedFinish, MMessageEnd.class);
+		if (finishEnd.filter(MMessageEnd::isSend).isPresent()) {
+			// Take the receive end
+			normalizedFinish = finishEnd.flatMap(MMessageEnd::getOtherEnd);
+		}
+		OptionalInt finishIndex = filter(
+				mapToInt(normalizedFinish, finish -> fragments.indexOf(finish.getElement())),
+				i -> i < (fragments.size() - 1));
+		Optional<? extends MElement<? extends Element>> below = flatMapToObj(finishIndex,
+				i -> interaction.getElement(fragments.get(i + 1)));
+
+		int absNewTop = getLayoutHelper().toAbsoluteY(execShape, newBounds.y());
+		int absNewBottom = getLayoutHelper().toAbsoluteY(execShape, newBounds.bottom());
+		return filter(flatMapToInt(above, MElement::getBottom), b -> b >= absNewTop).isPresent()
+				|| filter(flatMapToInt(below, MElement::getTop), t -> t <= absNewBottom).isPresent();
 	}
 
 	protected org.eclipse.emf.common.command.Command getMoveExecutionCommand(ChangeBoundsRequest request,

@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.IntPredicate;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
@@ -237,4 +238,16 @@ public class Optionals {
 		return a.orElse(Integer.MAX_VALUE) < b.orElse(Integer.MIN_VALUE);
 	}
 
+	/**
+	 * Filter an optional integer {@code value}.
+	 * 
+	 * @param value
+	 *            an optional integer value
+	 * @param predicate
+	 *            an integer predicate
+	 * @return the {@code value} if it satisfies the {@code predicate}, otherwise empty
+	 */
+	public static OptionalInt filter(OptionalInt value, IntPredicate predicate) {
+		return (value.isPresent() && predicate.test(value.getAsInt())) ? value : OptionalInt.empty();
+	}
 }

@@ -106,6 +106,45 @@ public class ExecutionSpecificationDragEditPolicyUITest extends AbstractGraphica
 				isBounded(anything(), is(execBounds.bottom() + padding), anything(), anything()));
 	}
 
+	/**
+	 * Verify that a move that would require semantic re-ordering is blocked without
+	 * the keyboard modifier.
+	 */
+	@Test
+	public void attemptMoveWithSemanticReordering() {
+		int delta = 60;
+		Rectangle execBounds = getBounds(execEP);
+
+		// First, select the execution to activate selection handles
+		Point grabAt = getCenter(execEP);
+		editor.select(grabAt);
+
+		Point dropAt = new Point(grabAt.x(), grabAt.y() + delta);
+		editor.drag(grabAt, dropAt);
+
+		assertThat("Execution moved", execEP, isBounded(isRect(execBounds)));
+	}
+
+	/**
+	 * Verify that a move that requires semantic re-ordering is allowed with the
+	 * keyboard modifier.
+	 */
+	@Test
+	public void moveWithSemanticReordering() {
+		int delta = 60;
+		Rectangle execBounds = getBounds(execEP);
+
+		// First, select the execution to activate selection handles
+		Point grabAt = getCenter(execEP);
+		editor.select(grabAt);
+
+		Point dropAt = new Point(grabAt.x(), grabAt.y() + delta);
+		editor.with(editor.allowSemanticReordering(), () -> editor.drag(grabAt, dropAt));
+
+		execBounds.translate(0, delta);
+		assertThat("Execution not moved", execEP, isBounded(isRect(execBounds)));
+	}
+
 	//
 	// Nested types
 	//
