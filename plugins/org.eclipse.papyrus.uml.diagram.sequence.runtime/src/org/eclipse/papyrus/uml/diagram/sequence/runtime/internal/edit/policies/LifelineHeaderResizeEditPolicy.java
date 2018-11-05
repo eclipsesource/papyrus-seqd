@@ -81,18 +81,18 @@ public class LifelineHeaderResizeEditPolicy extends ResizableShapeEditPolicy {
 		newRequest.setMoveDelta(getMoveDelta(current, rectangle));
 		newRequest.setSizeDelta(getSizeDelta(current, rectangle));
 		if (!PrivateRequestUtils.isAllowSemanticReordering(request)) {
-			// if semantic reorder is forbidding, show feedback with regard to our neighbors
+			// if semantic reorder not allowed show feedback with regard to our neighbours
 			getMaxMoveDelta().ifPresent(md -> {
 				if (newRequest.getMoveDelta().x() < 0) {
 					md.leftDelta.ifPresent(d -> {
-						if (d > newRequest.getMoveDelta().x() || d > newRequest.getSizeDelta().width()) {
-							correctMoveAndResizeDelta(newRequest, d);
+						if (d > newRequest.getMoveDelta().x()) {
+							newRequest.getMoveDelta().setX(d);
 						}
 					});
 				} else {
 					md.rightDelta.ifPresent(d -> {
-						if (d < newRequest.getMoveDelta().x() || d < newRequest.getSizeDelta().width()) {
-							correctMoveAndResizeDelta(newRequest, d);
+						if (d < newRequest.getMoveDelta().x()) {
+							newRequest.getMoveDelta().setX(d);
 						}
 					});
 				}
@@ -101,52 +101,21 @@ public class LifelineHeaderResizeEditPolicy extends ResizableShapeEditPolicy {
 		super.showChangeBoundsFeedback(newRequest);
 	}
 
-	private void correctMoveAndResizeDelta(ChangeBoundsRequest newRequest, Integer maxDelta) {
-		int originalMoveX = newRequest.getMoveDelta().x();
-		boolean isMove = newRequest.getMoveDelta().x() != 0;
-		boolean isResize = newRequest.getSizeDelta().width() != 0;
-		if (isMove && !isResize) {
-			// move only
-			newRequest.getMoveDelta().setX(maxDelta);
-		} else if (isMove && isResize && maxDelta < newRequest.getSizeDelta().width()) {
-			// increase size to the right (move and resize)
-			newRequest.getMoveDelta().setX(maxDelta);
-			int correctedWidth = newRequest.getSizeDelta().width() - maxDelta + originalMoveX;
-			newRequest.getSizeDelta().setWidth(correctedWidth);
-		} else if (!isMove && isResize && newRequest.getSizeDelta().width() > 0
-				&& maxDelta < newRequest.getSizeDelta().width()) {
-			// increase size to the left
-			newRequest.getSizeDelta().setWidth(maxDelta);
-		} else if (isMove && isResize
-				&& (newRequest.getMoveDelta().x() + newRequest.getSizeDelta().width()) > 0) {
-			// decrease size from the left to the right further than original right position
-			// prevent this from happening to prevent semantic move
-			newRequest.getSizeDelta().setWidth(-maxDelta);
-			newRequest.getMoveDelta().setX(maxDelta);
-		}
-	}
-
 	@Override
 	protected Command getMoveCommand(ChangeBoundsRequest request) {
 		if (PrivateRequestUtils.isAllowSemanticReordering(request)) {
-			// Logic for issue #32 (Reorder lifeline) goes here.
-			// For now simply delegate to regular move command
+			// Logic for issue #32 (Reorder lifeline) goes here. For now simply delegate to regular move
+			// command
 			return super.getMoveCommand(request);
 		} else {
-			return super.getMoveCommand(correctMoveOrResizeDelta(request));
+			return getMoveLifelineCommand(request);
 		}
 	}
 
-	@Override
-	protected Command getResizeCommand(ChangeBoundsRequest request) {
-		// only support resizing so that it doesn't semantically reorder
-		return super.getResizeCommand(correctMoveOrResizeDelta(request));
-	}
-
-	private ChangeBoundsRequest correctMoveOrResizeDelta(ChangeBoundsRequest request) {
+	private Command getMoveLifelineCommand(ChangeBoundsRequest request) {
 		Optional<MoveDelta> maxMoveDelta = getMaxMoveDelta();
 		if (!maxMoveDelta.isPresent()) {
-			return null;
+			return org.eclipse.gef.commands.UnexecutableCommand.INSTANCE;
 		}
 
 		Optional<Integer> leftDelta = maxMoveDelta.get().leftDelta;
@@ -156,30 +125,24 @@ public class LifelineHeaderResizeEditPolicy extends ResizableShapeEditPolicy {
 		if (moveDelta < 0 && leftDelta.isPresent()) {
 			/* left */
 			if (leftDelta.get() > moveDelta) {
-				return createAdjustedChangeBoundsRequest(request, leftDelta.get());
+				return getAdjustedMoveLifelineCommand(request, leftDelta.get());
 			}
 		} else if (moveDelta > 0 && rightDelta.isPresent()) {
 			/* right */
 			if (rightDelta.get() < moveDelta) {
-				return createAdjustedChangeBoundsRequest(request, rightDelta.get());
+				return getAdjustedMoveLifelineCommand(request, rightDelta.get());
 			}
-		} else if (request.getMoveDelta().x() == 0 && moveDelta < request.getSizeDelta().width()
-				&& rightDelta.isPresent()) {
-			return createAdjustedChangeBoundsRequest(request, rightDelta.get());
-		} else if (request.getMoveDelta().x() == 0 && moveDelta > request.getSizeDelta().width()
-				&& leftDelta.isPresent()) {
-			return createAdjustedChangeBoundsRequest(request, leftDelta.get());
 		}
 
-		return request;
+		return super.getMoveCommand(request);
 	}
 
-	private ChangeBoundsRequest createAdjustedChangeBoundsRequest(ChangeBoundsRequest request, int x) {
+	private Command getAdjustedMoveLifelineCommand(ChangeBoundsRequest request, int x) {
 		ChangeBoundsRequest newRequest = new ChangeBoundsRequest(request.getType());
 		newRequest.setMoveDelta(request.getMoveDelta().getCopy());
 		newRequest.setSizeDelta(request.getSizeDelta().getCopy());
-		correctMoveAndResizeDelta(newRequest, x);
-		return newRequest;
+		newRequest.getMoveDelta().setX(x);
+		return super.getMoveCommand(newRequest);
 	}
 
 	private Optional<MoveDelta> getMaxMoveDelta() {
