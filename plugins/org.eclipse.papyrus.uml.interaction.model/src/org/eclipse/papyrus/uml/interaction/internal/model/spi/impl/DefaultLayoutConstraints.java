@@ -20,6 +20,8 @@ import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Mo
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.LINE;
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.NO_MODIFIER;
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition.BOTTOM;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition.LEFT;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition.RIGHT;
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition.TOP;
 
 import java.util.HashMap;
@@ -277,6 +279,9 @@ public class DefaultLayoutConstraints implements LayoutConstraints {
 		result.put(forOrientation(BOTTOM, ViewTypes.EXECUTION_SPECIFICATION), 5);
 		result.put(forOrientation(TOP, ViewTypes.MESSAGE), 20);// TODO this should be 5 + font size
 		result.put(forOrientation(BOTTOM, ViewTypes.MESSAGE), 5);
+
+		result.put(forOrientation(LEFT, ViewTypes.LIFELINE_HEADER), 5);
+		result.put(forOrientation(RIGHT, ViewTypes.LIFELINE_HEADER), 5);
 
 		return result;
 	}

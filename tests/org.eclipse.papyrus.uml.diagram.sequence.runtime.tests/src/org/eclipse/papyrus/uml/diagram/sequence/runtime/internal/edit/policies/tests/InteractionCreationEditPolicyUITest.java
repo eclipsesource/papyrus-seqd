@@ -49,4 +49,43 @@ public class InteractionCreationEditPolicyUITest extends AbstractGraphicalEditPo
 		// the Y position is not determined by the input
 		assertThat(lifelineEP, isAt(isNear(99), not(90)));
 	}
+
+	@Test
+	public void createLifelineOnTopOfOther() {
+		/* setup */
+		EditPart lifelineEP1 = createShape(SequenceElementTypes.Lifeline_Shape, at(99, 90), DEFAULT_SIZE);
+
+		/* act */
+		EditPart lifelineEP2 = createShape(SequenceElementTypes.Lifeline_Shape, at(115, 90), DEFAULT_SIZE);
+
+		// the Y position is not determined by the input
+		assertThat(lifelineEP1, isAt(isNear(99), not(90)));
+		assertThat(lifelineEP2, isAt(isNear(209), not(90)));
+	}
+
+	@Test
+	public void createLifelineToTheRight() {
+		/* setup */
+		EditPart lifelineEP1 = createShape(SequenceElementTypes.Lifeline_Shape, at(99, 90), DEFAULT_SIZE);
+
+		/* act */
+		EditPart lifelineEP2 = createShape(SequenceElementTypes.Lifeline_Shape, at(215, 90), DEFAULT_SIZE);
+
+		// the Y position is not determined by the input
+		assertThat(lifelineEP1, isAt(isNear(99), not(90)));
+		assertThat(lifelineEP2, isAt(isNear(215), not(90)));
+	}
+
+	@Test
+	public void createLifelineToTheLeft() {
+		/* setup */
+		EditPart lifelineEP1 = createShape(SequenceElementTypes.Lifeline_Shape, at(99, 90), DEFAULT_SIZE);
+
+		/* act */
+		EditPart lifelineEP2 = createShape(SequenceElementTypes.Lifeline_Shape, at(89, 90), DEFAULT_SIZE);
+
+		// the Y position is not determined by the input
+		assertThat(lifelineEP2, isAt(isNear(89), not(90)));
+		assertThat(lifelineEP1, isAt(isNear(209), not(90)));
+	}
 }
