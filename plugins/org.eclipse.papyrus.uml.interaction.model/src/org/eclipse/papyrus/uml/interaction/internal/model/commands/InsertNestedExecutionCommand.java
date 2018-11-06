@@ -39,9 +39,7 @@ import org.eclipse.uml2.uml.OccurrenceSpecification;
 import org.eclipse.uml2.uml.UMLPackage;
 
 /**
- * An execution specification creation operation.
- *
- * @author Christian W. Damus
+ * A nested execution specification creation operation.
  */
 public class InsertNestedExecutionCommand extends ModelCommand.Creation<MExecutionImpl, ExecutionSpecification> {
 

@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.Stack;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -494,23 +493,24 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 		// browse all executions on this lifeline and check the virtual owner
 		List<MOccurrence<?>> occurrences = getOccurrenceSpecifications();
 
-		Stack<MExecution> stack = new Stack<>();
+		int depth = 0;
 		for (MOccurrence<?> occurence : occurrences) {
-			// check if it starts a new occurrence. If yes, adds it on top of the stack
-			// if it finishes, removes the finished execution from the stack
-			occurence.getFinishedExecution().ifPresent(__ -> {
-				if (!stack.isEmpty()) {
-					stack.pop();
+			// check if it starts a new occurrence. If yes, depth increases;
+			// if it finishes, depth decreases
+			if (occurence.getFinishedExecution().isPresent()) {
+				if (depth > 0) {
+					depth--;
 				}
-			});
+			}
+
 			if (occurence.getStartedExecution().isPresent()) {
 				MExecution execution = occurence.getStartedExecution().get();
-				// if current owner is null, that mean that the direct owner is the lifeline, so it should be
+				// if depth is null, that means that the direct owner is the lifeline, so it should be
 				// added in the list
-				if (stack.empty()) {
+				if (depth <= 0) {
 					nestedExecutions.add(execution);
 				}
-				stack.push(execution);
+				depth++;
 			}
 		}
 		return nestedExecutions;
@@ -527,9 +527,11 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 		List<MOccurrence<?>> orderedCoveredBys = getInteraction().getElement().getFragments().stream()
 				.filter(frg -> frg.getCovereds().contains(getElement())) //
 				.filter(OccurrenceSpecification.class::isInstance) //
-				.map(el -> getInteraction().getElement(el)) //
-				.filter(e -> e.isPresent()) //
-				.map(e -> MOccurrence.class.cast(e.get())) //
+				.map(getInteraction()::getElement) //
+				.filter(Optional::isPresent)//
+				.map(Optional::get)//
+				.filter(MOccurrence.class::isInstance) //
+				.map(MOccurrence.class::cast) //
 				.collect(Collectors.toList());
 		return orderedCoveredBys;
 	}

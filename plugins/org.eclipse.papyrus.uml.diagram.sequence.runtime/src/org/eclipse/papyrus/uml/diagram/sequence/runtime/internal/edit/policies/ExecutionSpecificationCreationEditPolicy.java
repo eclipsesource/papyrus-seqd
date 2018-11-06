@@ -29,11 +29,10 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.SequenceTypeSwitch;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
-import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MObject;
+import org.eclipse.papyrus.uml.interaction.model.util.Optionals;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
 import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.ExecutionSpecification;
 
 /**
  * ExecutionSpecification creation edit policy based on the <em>Logical Model</em>.
@@ -44,16 +43,8 @@ public class ExecutionSpecificationCreationEditPolicy extends LogicalModelCreati
 	protected Optional<org.eclipse.emf.common.command.Command> getCreationCommand(MInteraction interaction,
 			Element parentElement, View parentView, Point location, Dimension size, IElementType type) {
 
-		Optional<MExecution> mExecution = Optional.empty();
-
-		ExecutionSpecification exec = (ExecutionSpecification)parentElement;
-		for (MLifeline lifeline : interaction.getLifelines()) {
-			Optional<MExecution> execution = lifeline.getExecution(exec);
-			if (execution.isPresent()) {
-				mExecution = execution;
-			}
-		}
-
+		Optional<MExecution> mExecution = Optionals.as(interaction.getElement(parentElement),
+				MExecution.class);
 		if (!mExecution.isPresent()) {
 			return Optional.empty();
 		}

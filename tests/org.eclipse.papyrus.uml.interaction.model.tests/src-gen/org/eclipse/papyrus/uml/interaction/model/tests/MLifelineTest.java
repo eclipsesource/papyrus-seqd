@@ -806,4 +806,20 @@ public class MLifelineTest extends MElementTest {
 		assertThat("Center line not moved", getFixture().getTop(), isPresent(expectedTop.getAsInt()));
 	}
 
+	public void testMakeCreatedAt__OptionalInt__empty() {
+		MLifeline right = interaction.getLifeline(interaction.getElement().getLifeline("RightLine")).get();
+
+		OptionalInt expectedTop = getFixture().getTop();
+		assumeThat("No Y location for CenterLine", expectedTop, isPresentInt());
+
+		Command setCreation = right.makeCreatedAt(OptionalInt.empty());
+		assertThat(setCreation, executable());
+		execute(setCreation);
+
+		// Refresh the Logical model after mutation
+		right = interaction.getLifeline(interaction.getElement().getLifeline("RightLine")).get();
+
+		assertThat("Right line not moved", right.getTop(), isPresent(expectedTop.getAsInt()));
+	}
+
 } // MLifelineTest
