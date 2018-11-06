@@ -146,7 +146,7 @@ public class LifelineHeaderResizeEditPolicy extends ResizableShapeEditPolicy {
 	private ChangeBoundsRequest correctMoveOrResizeDelta(ChangeBoundsRequest request) {
 		Optional<MoveDelta> maxMoveDelta = getMaxMoveDelta();
 		if (!maxMoveDelta.isPresent()) {
-			return null;
+			return request;
 		}
 
 		Optional<Integer> leftDelta = maxMoveDelta.get().leftDelta;
