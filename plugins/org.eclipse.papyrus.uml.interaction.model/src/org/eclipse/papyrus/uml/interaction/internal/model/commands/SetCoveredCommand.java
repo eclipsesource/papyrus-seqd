@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.IdentityCommand;
@@ -92,7 +93,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 	}
 
 	protected boolean isChangingPosition() {
-		return yPosition.isPresent() && !getTarget().getTop().equals(yPosition);
+		return yPosition.isPresent();
 	}
 
 	protected Optional<Shape> getLifelineBody() {
@@ -239,25 +240,30 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			// Replace the start/finish occurrence by this message end
 			replacement.map(occ -> occ.replaceBy(end)).ifPresent(commandSink);
 		} else {
-			// Are we connected to an execution that will be moving with us?
-			// If so, no reattachment will be necessary
-			Optional<MExecution> exec = (end.isFinish() || end.isStart()) //
-					? end.getExecution()
-					: Optional.empty();
-			Optional<Shape> executionShape = exec.flatMap(MExecution::getDiagramView);
-			if (!executionShape.isPresent()) {
-				// Are we connecting to an execution specification?
-				executionShape = executionShapeAt(lifelineBody, newYPosition);
-			}
-			Shape newAttachedShape = executionShape.orElse(lifelineBody);
+			// Ensure connection to an appropriate execution specification
+			Supplier<Shape> newAttachedShape = () -> {
+				// Are we connected to an execution that will be moving with us?
+				// If so, no reattachment will be necessary
+				Optional<MExecution> exec = (end.isFinish() || end.isStart()) //
+						? end.getExecution()
+						: Optional.empty();
+				Optional<Shape> executionShape = exec.flatMap(MExecution::getDiagramView);
+				if (!executionShape.isPresent()) {
+					// Are we connecting to an execution specification?
+					executionShape = executionShapeAt(lifelineBody, newYPosition);
+				}
+				return executionShape.orElse(lifelineBody);
+			};
 
 			if (end.isSend()) {
-				commandSink
-						.accept(diagramHelper().reconnectSource(connector, newAttachedShape, newYPosition));
+				commandSink.accept(defer(() -> {
+					return diagramHelper().reconnectSource(connector, newAttachedShape.get(), newYPosition);
+				}));
 				end.getOtherEnd().flatMap(this::handleSelfMessageChange).ifPresent(commandSink);
 			} else if (end.isReceive()) {
-				commandSink
-						.accept(diagramHelper().reconnectTarget(connector, newAttachedShape, newYPosition));
+				commandSink.accept(defer(() -> {
+					return diagramHelper().reconnectTarget(connector, newAttachedShape.get(), newYPosition);
+				}));
 				end.getOtherEnd().flatMap(this::handleSelfMessageChange).ifPresent(commandSink);
 			} // else don't know what to do with it
 		}

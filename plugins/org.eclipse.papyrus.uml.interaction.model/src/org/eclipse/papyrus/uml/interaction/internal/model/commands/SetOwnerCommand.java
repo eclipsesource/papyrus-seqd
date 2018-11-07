@@ -16,6 +16,7 @@ import static java.util.Collections.singletonList;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -31,6 +32,7 @@ import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.util.Lifelines;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
 import org.eclipse.uml2.uml.Element;
@@ -51,6 +53,9 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 	// The element on the lifeline before which we're inserting our element, if the new owner is a lifeline
 	private final Optional<MElement<? extends Element>> nextOnLifeline;
 
+	// If the element is an execution, store its spanned occurrences for later
+	private final List<MOccurrence<? extends Element>> spannedOccurrences;
+
 	/**
 	 * Initializes me.
 	 *
@@ -66,6 +71,8 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 
 		nextOnLifeline = as(Optional.of(newOwner), MLifeline.class).flatMap(lifeline -> Lifelines
 				.elementAfterAbsolute(lifeline, top.orElseGet(() -> element.getTop().orElse(0))));
+		spannedOccurrences = as(Optional.of(element), MExecution.class).map(MExecution::getOccurrences)
+				.orElse(Collections.emptyList());
 	}
 
 	protected boolean isChangingOwner() {
@@ -136,16 +143,25 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 		return result;
 	}
 
+	/**
+	 * Create a command to update dependencies of the {@code execution}.
+	 * 
+	 * @param execution
+	 *            the execution
+	 * @param lifeline
+	 *            the lifeline that is to be its owner (which could be its current owner)
+	 * @return the dependencies command
+	 */
 	protected Optional<Command> dependencies(MExecution execution, MLifeline lifeline) {
 		List<Command> result = new ArrayList<>();
 
 		// Occurrences spanned by the execution, including its start and finish. They move
 		// according to the execution, maintaining their relative position. Note that
 		// nested executions will be handled implicitly by either their start or finish
-		execution.getOccurrences().stream().map(occ -> occ.setCovered(lifeline, occ.getTop()))
-				// occ -> new SetCoveredCommand((MOccurrenceImpl<? extends Element>)occ, lifeline,
-				// occ.getTop()))
-				.filter(Objects::nonNull).forEach(result::add);
+		spannedOccurrences.stream().map(occ -> {
+			OptionalInt where = occ.getTop();
+			return defer(() -> occ.setCovered(lifeline, where));
+		}).filter(Objects::nonNull).forEach(result::add);
 
 		return result.stream().reduce(chaining());
 	}

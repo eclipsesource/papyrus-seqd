@@ -538,10 +538,12 @@ public class GraphComputer {
 			}
 
 			// Look for the least ancestor of each that is in the same container
-			out: for (container1 = frag1; !(container1 instanceof Interaction); container1 = (InteractionFragment)container1
-					.eContainer()) {
-				for (container2 = frag2; !(container2 instanceof Interaction); container2 = (InteractionFragment)container2
-						.eContainer()) {
+			out: for (container1 = frag1; (container1 != null)
+					&& !(container1 instanceof Interaction); container1 = (InteractionFragment)container1
+							.eContainer()) {
+				for (container2 = frag2; (container2 != null)
+						&& !(container2 instanceof Interaction); container2 = (InteractionFragment)container2
+								.eContainer()) {
 					if (container2.eContainer() == container1.eContainer()) {
 						// Found them
 						break out;
@@ -549,10 +551,17 @@ public class GraphComputer {
 				}
 			}
 
-			if (container1 instanceof Interaction) {
+			if (container1 == null) {
+				// Unattached objects canonically are last
+				return +1;
+			} else if (container2 == null) {
+				// Unattached objects canonically are last
+				return -1;
+			} else if (container1 instanceof Interaction) {
 				// It canonically is first
 				return -1;
 			} else if (container2 instanceof Interaction) {
+				// It canonically is first
 				return +1;
 			}
 
