@@ -20,24 +20,31 @@ import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapTo
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToObj;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.mapToInt;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.PrecisionRectangle;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
-import org.eclipse.gef.tools.DragEditPartsTracker;
 import org.eclipse.gef.tools.ResizeTracker;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.IBorderItemEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.figures.IBorderItemLocator;
 import org.eclipse.gmf.runtime.notation.Node;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.LifelineHeaderEditPart;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceDragTracker;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.LifelineBodyEditPart;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.locators.OnLineBorderItemLocator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceResizeTracker;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
@@ -159,24 +166,6 @@ public class ExecutionSpecificationDragEditPolicy extends ResizableBorderItemPol
 	}
 
 	@Override
-	protected DragEditPartsTracker getDragTracker() {
-		return new SequenceDragTracker(getHost());
-	}
-
-	@Override
-	protected Rectangle getInitialFeedbackBounds() {
-		Rectangle result = super.getInitialFeedbackBounds().getCopy();
-
-		// FIXME: Why is this correction necessary?
-		IFigure lifelineHead = ((LifelineHeaderEditPart)getHost().getParent().getParent())
-				.getLifelineHeaderFigure();
-		int headBottom = lifelineHead.getBounds().bottom();
-		result.translate(0, -headBottom);
-
-		return result;
-	}
-
-	@Override
 	protected Command getMoveCommand(ChangeBoundsRequest request, Node execShape, Rectangle newBounds) {
 		org.eclipse.emf.common.command.Command result = null;
 
@@ -253,6 +242,79 @@ public class ExecutionSpecificationDragEditPolicy extends ResizableBorderItemPol
 		result = chain(result, execution.setOwner(newOwner, OptionalInt.of(top), OptionalInt.of(bottom)));
 
 		return result;
+	}
+
+	@Override
+	protected void showChangeBoundsFeedback(ChangeBoundsRequest request) {
+		Dimension sizeDelta = request.getSizeDelta();
+		if ((sizeDelta != null) && ((sizeDelta.width != 0) || (sizeDelta.height != 0))) {
+			// If there's a resize involved, then don't support dropping on another lifeline
+			showMoveFeedback(request.getMoveDelta());
+			return;
+		}
+
+		LifelineBodyEditPart thisLifeline = null;
+		for (EditPart parent = getHost().getParent(); (thisLifeline == null)
+				&& (parent != null); parent = parent.getParent()) {
+			if (parent instanceof LifelineBodyEditPart) {
+				thisLifeline = (LifelineBodyEditPart)parent;
+			}
+		}
+		if (thisLifeline == null) {
+			showMoveFeedback(request.getMoveDelta());
+			return;
+		}
+
+		Point pointer = request.getLocation();
+		EditPart dropLifeline = ((GraphicalViewer)getHost().getViewer()).findObjectAtExcluding(pointer,
+				Collections.singleton(thisLifeline.getFigure()), LifelineBodyEditPart.class::isInstance);
+		if (!(dropLifeline instanceof LifelineBodyEditPart)) {
+			// Not dropping on some other lifeline
+			showMoveFeedback(request.getMoveDelta());
+			return;
+		}
+
+		// Create a border-item locator for the lifeline we're dropping on
+		IFigure dropLifelineFigure = ((LifelineBodyEditPart)dropLifeline).getFigure();
+		IBorderItemLocator borderItemLocator = new OnLineBorderItemLocator(dropLifelineFigure);
+
+		// Constrain the lifeline drop to the original Y location
+		Point moveDelta = request.getMoveDelta().getCopy();
+		moveDelta.setY(0);
+
+		showMoveFeedback(moveDelta, dropLifelineFigure, borderItemLocator);
+	}
+
+	protected void showMoveFeedback(Point moveDelta) {
+		IBorderItemEditPart borderItemEP = (IBorderItemEditPart)getHost();
+		IBorderItemLocator borderItemLocator = borderItemEP.getBorderItemLocator();
+
+		if (borderItemLocator != null) {
+			showMoveFeedback(moveDelta, ((GraphicalEditPart)getHost().getParent()).getFigure(),
+					borderItemLocator);
+		}
+	}
+
+	protected void showMoveFeedback(Point moveDelta, IFigure onLifeline, IBorderItemLocator locator) {
+		if (locator != null) {
+			IBorderItemEditPart borderItemEP = (IBorderItemEditPart)getHost();
+			IFigure feedback = getDragSourceFeedbackFigure();
+			PrecisionRectangle rect = new PrecisionRectangle(getInitialFeedbackBounds().getCopy());
+			getHostFigure().getParent().translateToAbsolute(rect);
+			rect.translate(moveDelta);
+
+			// And bring it into the lifeline's coördinate space
+			Rectangle lifelineBounds = onLifeline.getBounds().getCopy();
+			onLifeline.getParent().translateToAbsolute(lifelineBounds);
+			rect.translate(lifelineBounds.getLocation().getNegated());
+
+			IFigure borderItemfigure = borderItemEP.getFigure();
+			Rectangle realLocation = locator.getValidLocation(rect.getCopy(), borderItemfigure);
+			onLifeline.translateToAbsolute(realLocation);
+
+			feedback.translateToRelative(realLocation);
+			feedback.setBounds(realLocation);
+		}
 	}
 
 }

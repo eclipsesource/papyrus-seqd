@@ -150,11 +150,12 @@ public class ExecutionSpecificationEditPart extends BorderedBorderItemEditPart i
 	// The superclass does not delegate to edit-policies to get the drag tracker
 	@Override
 	public DragTracker getDragTracker(Request request) {
+		// We support dragging and dropping onto another lifeline
 		return new SequenceDragTracker(this) {
 
 			@Override
 			protected boolean isMove() {
-				return true;
+				return super.isMove();
 			}
 		};
 	}

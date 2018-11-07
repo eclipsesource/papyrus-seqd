@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.Request;
@@ -30,6 +31,12 @@ public final class PrivateRequestUtils {
 	private static final String ORIGINAL_TARGET_PARAMETER = "__orig_target__"; //$NON-NLS-1$
 
 	private static final String ALLOW_SEMANTIC_REORDERING_PARAMETER = "__allow_semantic_reordering__"; //$NON-NLS-1$
+
+	private static final String[] PARAMETERS = { //
+			FORCE_PARAMETER, //
+			ORIGINAL_MOUSE_PARAMETER, ORIGINAL_SOURCE_PARAMETER, ORIGINAL_TARGET_PARAMETER, //
+			ALLOW_SEMANTIC_REORDERING_PARAMETER, //
+	};
 
 	/**
 	 * Not instantiable by clients.
@@ -159,6 +166,11 @@ public final class PrivateRequestUtils {
 		return getParameter(request, parameterKey, Boolean.class, Boolean.FALSE).booleanValue();
 	}
 
+	static boolean hasParameter(Request request, Object parameterKey) {
+		Map<?, ?> parameters = request.getExtendedData();
+		return parameters.containsKey(parameterKey);
+	}
+
 	static <T> T getParameter(Request request, Object parameterKey, Class<? extends T> type, T defaultValue) {
 		Map<?, ?> parameters = request.getExtendedData();
 		Object value = parameters.get(parameterKey);
@@ -169,5 +181,21 @@ public final class PrivateRequestUtils {
 		@SuppressWarnings("unchecked")
 		Map<Object, Object> parameters = request.getExtendedData();
 		parameters.put(parameterKey, value);
+	}
+
+	/**
+	 * Forward request parameters from one request to another. Only private parameters managed by this utility
+	 * are forwarded that the "from" request actually bears, and then only those that are not already defined
+	 * in the "to" request.
+	 * 
+	 * @param fromRequest
+	 *            the request bearing parameters
+	 * @param toRequest
+	 *            a request to which to forward them
+	 */
+	public static void forwardParameters(Request fromRequest, Request toRequest) {
+		Stream.of(PARAMETERS).filter(p -> hasParameter(fromRequest, p))
+				.filter(p -> !hasParameter(toRequest, p))
+				.forEach(p -> setParameter(toRequest, p, getParameter(fromRequest, p, Object.class, null)));
 	}
 }
