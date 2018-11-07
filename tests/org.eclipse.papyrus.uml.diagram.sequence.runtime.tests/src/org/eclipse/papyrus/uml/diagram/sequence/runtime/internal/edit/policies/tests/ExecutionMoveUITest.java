@@ -13,7 +13,6 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.tests;
 
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.isBounded;
-import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.runs;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.at;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
@@ -46,10 +45,8 @@ public class ExecutionMoveUITest extends AbstractGraphicalEditPolicyUITest {
 	private static final int LIFELINE_2__BODY_X = 288;
 	private static final int LIFELINE_3__BODY_X = 426;
 
-	private static final int SYNC_Y = 148;
-	private static final int NESTED_EXEC_START_Y = SYNC_Y + 19;
+	private static final int NESTED_EXEC_OFFSET = 19;
 	private static final int NESTED_EXEC_HEIGHT = 40;
-	private static final int REPLY_Y = 232;
 
 	private static final int EXEC_WIDTH = 10;
 
@@ -57,27 +54,31 @@ public class ExecutionMoveUITest extends AbstractGraphicalEditPolicyUITest {
 	public void moveSyncMessageEnd() {
 		/* initial state - check message end position */
 		EditPart syncEP = requireMessage("nested-execution::interaction1::sync");
-		assumeThat(syncEP, runs(LIFELINE_2__BODY_X, SYNC_Y, LIFELINE_3__BODY_X - (EXEC_WIDTH / 2), SYNC_Y));
+		int sync_y = getTargetY(syncEP);
+
+		EditPart replyEP = requireMessage("nested-execution::interaction1::reply");
+		int reply_y = getSourceY(replyEP);
 
 		EditPart exec1EP = requireExecution("nested-execution::interaction1::exec1");
-		assumeThat(exec1EP, isBounded(LIFELINE_3__BODY_X - EXEC_WIDTH / 2, SYNC_Y, EXEC_WIDTH, REPLY_Y - SYNC_Y));
+		assumeThat(exec1EP, isBounded(LIFELINE_3__BODY_X - EXEC_WIDTH / 2, sync_y, EXEC_WIDTH, reply_y - sync_y));
 
 		EditPart nestedExecEP = requireExecution("nested-execution::interaction1::nestedExec");
 		assumeThat(nestedExecEP,
-				isBounded(LIFELINE_3__BODY_X, NESTED_EXEC_START_Y, EXEC_WIDTH, NESTED_EXEC_HEIGHT));
+				isBounded(LIFELINE_3__BODY_X, sync_y+NESTED_EXEC_OFFSET, EXEC_WIDTH, NESTED_EXEC_HEIGHT));
 
 		/* move message end on Lifeline1 */
 		editor.with(editor.allowSemanticReordering(), () -> editor
-				.moveSelection(at(LIFELINE_3__BODY_X - EXEC_WIDTH / 2, SYNC_Y), at(LIFELINE_1__BODY_X, SYNC_Y)));
+				.moveSelection(at(LIFELINE_3__BODY_X - EXEC_WIDTH / 2, sync_y), at(LIFELINE_1__BODY_X, sync_y)));
 
 		/*
 		 * check result - execution and nested execution have moved to the right place
 		 */
 		exec1EP = requireExecution("nested-execution::interaction1::exec1");
-		assertThat(exec1EP, isBounded(LIFELINE_1__BODY_X - EXEC_WIDTH / 2, SYNC_Y, EXEC_WIDTH, REPLY_Y - SYNC_Y));
+		assertThat(exec1EP, isBounded(LIFELINE_1__BODY_X - EXEC_WIDTH / 2, sync_y, EXEC_WIDTH, reply_y - sync_y));
 
 		nestedExecEP = requireExecution("nested-execution::interaction1::nestedExec");
-		assumeThat(nestedExecEP, isBounded(LIFELINE_1__BODY_X, NESTED_EXEC_START_Y, EXEC_WIDTH, NESTED_EXEC_HEIGHT));
+		assumeThat(nestedExecEP,
+				isBounded(LIFELINE_1__BODY_X, sync_y + NESTED_EXEC_OFFSET, EXEC_WIDTH, NESTED_EXEC_HEIGHT));
 
 	}
 
