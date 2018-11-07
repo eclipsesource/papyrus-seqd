@@ -137,15 +137,4 @@ public class LifelineBodyFigure extends NodeFigure {
 		this.defaultAnchorDistance = distance;
 	}
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public Rectangle getClientArea(Rectangle rect) {
-		rect.setBounds(getBounds());
-		rect.crop(getInsets());
-		if (useLocalCoordinates()) {
-			rect.setLocation(0, 0);
-		}
-		return rect;
-	}
-
 }
