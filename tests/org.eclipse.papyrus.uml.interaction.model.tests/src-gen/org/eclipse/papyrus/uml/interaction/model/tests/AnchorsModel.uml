@@ -37,11 +37,14 @@
     <message xmi:type="uml:Message" xmi:id="_iCIRxSe4Eei33oLfoI_NYA" name="lifelineToGate" messageSort="asynchCall" receiveEvent="_33dmUCe4Eei33oLfoI_NYA" sendEvent="_iCIRwie4Eei33oLfoI_NYA"/>
   </packagedElement>
   <packagedElement xmi:type="uml:Interaction" xmi:id="_MYBq8CIUEeiFUtGmEMBqqw" name="ExecutionSpecificationAnchors">
-    <lifeline xmi:type="uml:Lifeline" xmi:id="_MYBq8SIUEeiFUtGmEMBqqw" name="LeftLine" coveredBy="_bCuaMCe5Eei33oLfoI_NYA _bCuaMye5Eei33oLfoI_NYA"/>
-    <lifeline xmi:type="uml:Lifeline" xmi:id="_MYBq8iIUEeiFUtGmEMBqqw" name="RightLine" coveredBy="_bCuaMSe5Eei33oLfoI_NYA _bCuaMie5Eei33oLfoI_NYA _UmObcCIUEeiFUtGmEMBqqw"/>
+     <lifeline xmi:type="uml:Lifeline" xmi:id="_MYBq8SIUEeiFUtGmEMBqqw" name="LeftLine" coveredBy="_bCuaMCe5Eei33oLfoI_NYA _bCuaMye5Eei33oLfoI_NYA"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_MYBq8iIUEeiFUtGmEMBqqw" name="RightLine" coveredBy="_bCuaMSe5Eei33oLfoI_NYA _bCuaMie5Eei33oLfoI_NYA _UmObcCIUEeiFUtGmEMBqqw _89mywYUYEeiC1YkGTOAw5Q _89mywIUYEeiC1YkGTOAw5Q _89nZ0IUYEeiC1YkGTOAw5Q"/>
     <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_bCuaMCe5Eei33oLfoI_NYA" name="request-send" covered="_MYBq8SIUEeiFUtGmEMBqqw" message="_bCuaNCe5Eei33oLfoI_NYA"/>
     <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_bCuaMSe5Eei33oLfoI_NYA" name="request-recv" covered="_MYBq8iIUEeiFUtGmEMBqqw" message="_bCuaNCe5Eei33oLfoI_NYA"/>
     <fragment xmi:type="uml:ActionExecutionSpecification" xmi:id="_UmObcCIUEeiFUtGmEMBqqw" name="ActionExecutionSpecification1" covered="_MYBq8iIUEeiFUtGmEMBqqw" finish="_bCuaMie5Eei33oLfoI_NYA" start="_bCuaMSe5Eei33oLfoI_NYA"/>
+    <fragment xmi:type="uml:ExecutionOccurrenceSpecification" xmi:id="_89mywYUYEeiC1YkGTOAw5Q" name="Execution1-start" covered="_MYBq8iIUEeiFUtGmEMBqqw" execution="_89mywIUYEeiC1YkGTOAw5Q"/>
+    <fragment xmi:type="uml:ActionExecutionSpecification" xmi:id="_89mywIUYEeiC1YkGTOAw5Q" name="Execution1" covered="_MYBq8iIUEeiFUtGmEMBqqw" finish="_89nZ0IUYEeiC1YkGTOAw5Q" start="_89mywYUYEeiC1YkGTOAw5Q"/>
+    <fragment xmi:type="uml:ExecutionOccurrenceSpecification" xmi:id="_89nZ0IUYEeiC1YkGTOAw5Q" name="Execution1-finish" covered="_MYBq8iIUEeiFUtGmEMBqqw" execution="_89mywIUYEeiC1YkGTOAw5Q"/>
     <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_bCuaMie5Eei33oLfoI_NYA" name="reply-send" covered="_MYBq8iIUEeiFUtGmEMBqqw" message="_bCuaNSe5Eei33oLfoI_NYA"/>
     <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_bCuaMye5Eei33oLfoI_NYA" name="reply-recv" covered="_MYBq8SIUEeiFUtGmEMBqqw" message="_bCuaNSe5Eei33oLfoI_NYA"/>
     <message xmi:type="uml:Message" xmi:id="_bCuaNCe5Eei33oLfoI_NYA" name="request" messageSort="asynchCall" receiveEvent="_bCuaMSe5Eei33oLfoI_NYA" sendEvent="_bCuaMCe5Eei33oLfoI_NYA"/>

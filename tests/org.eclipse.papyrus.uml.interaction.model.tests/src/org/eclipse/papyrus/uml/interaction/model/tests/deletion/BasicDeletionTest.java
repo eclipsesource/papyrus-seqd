@@ -59,7 +59,7 @@ public class BasicDeletionTest {
 			Assert.fail("Command not executable"); //$NON-NLS-1$
 		}
 		/* make sure no duplicates */
-		Set<MElement<?>> exepcted = new LinkedHashSet<MElement<?>>(
+		Set<MElement<?>> exepcted = new LinkedHashSet<>(
 				Arrays.asList(expectedElementsToBeRemoved));
 		Collection<Element> elementsToRemove = remove.getElementsToRemove();
 		assertEquals(exepcted.size(), elementsToRemove.size());

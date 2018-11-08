@@ -15,10 +15,12 @@ package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 import static org.eclipse.papyrus.uml.interaction.graph.GraphPredicates.covers;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Notification;
@@ -58,6 +60,7 @@ import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageSort;
 import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.OccurrenceSpecification;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>MLifeline</b></em>'. <!--
@@ -485,6 +488,60 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 * @generated NOT
 	 */
 	@Override
+	public List<MExecution> getFirstLevelExecutions() {
+		List<MExecution> nestedExecutions = new ArrayList<>();
+		// browse all executions on this lifeline and check the virtual owner
+		List<MOccurrence<?>> occurrences = getOccurrenceSpecifications();
+
+		int depth = 0;
+		for (MOccurrence<?> occurence : occurrences) {
+			// check if it starts a new occurrence. If yes, depth increases;
+			// if it finishes, depth decreases
+			if (occurence.getFinishedExecution().isPresent()) {
+				if (depth > 0) {
+					depth--;
+				}
+			}
+
+			if (occurence.getStartedExecution().isPresent()) {
+				MExecution execution = occurence.getStartedExecution().get();
+				// if depth is null, that means that the direct owner is the lifeline, so it should be
+				// added in the list
+				if (depth <= 0) {
+					nestedExecutions.add(execution);
+				}
+				depth++;
+			}
+		}
+		return nestedExecutions;
+
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public List<MOccurrence<?>> getOccurrenceSpecifications() {
+		List<MOccurrence<?>> orderedCoveredBys = getInteraction().getElement().getFragments().stream()
+				.filter(frg -> frg.getCovereds().contains(getElement())) //
+				.filter(OccurrenceSpecification.class::isInstance) //
+				.map(getInteraction()::getElement) //
+				.filter(Optional::isPresent)//
+				.map(Optional::get)//
+				.filter(MOccurrence.class::isInstance) //
+				.map(MOccurrence.class::cast) //
+				.collect(Collectors.toList());
+		return orderedCoveredBys;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
 	public Command makeCreatedAt(OptionalInt yPosition) {
 		return new SetLifelineCreationCommand(this, yPosition);
 	}
@@ -584,9 +641,9 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case SequenceDiagramPackage.MLIFELINE__EXECUTION_OCCURRENCES:
-				return (executionOccurrences != null) && !executionOccurrences.isEmpty();
+				return executionOccurrences != null && !executionOccurrences.isEmpty();
 			case SequenceDiagramPackage.MLIFELINE__EXECUTIONS:
-				return (executions != null) && !executions.isEmpty();
+				return executions != null && !executions.isEmpty();
 			case SequenceDiagramPackage.MLIFELINE__OWNED_DESTRUCTION:
 				return ownedDestruction != null;
 			case SequenceDiagramPackage.MLIFELINE__DESTRUCTION:
@@ -653,6 +710,10 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 				return elementAt((Integer)arguments.get(0));
 			case SequenceDiagramPackage.MLIFELINE___NUDGE_HORIZONTALLY__INT:
 				return nudgeHorizontally((Integer)arguments.get(0));
+			case SequenceDiagramPackage.MLIFELINE___GET_FIRST_LEVEL_EXECUTIONS:
+				return getFirstLevelExecutions();
+			case SequenceDiagramPackage.MLIFELINE___GET_OCCURRENCE_SPECIFICATIONS:
+				return getOccurrenceSpecifications();
 			case SequenceDiagramPackage.MLIFELINE___MAKE_CREATED_AT__OPTIONALINT:
 				return makeCreatedAt((OptionalInt)arguments.get(0));
 		}

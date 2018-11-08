@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_ovzTMOEOEeiFUskorTyrmg" name="nested-execution">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_ozSsEOEOEeiFUskorTyrmg">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_qGdkIOEOEeiFUskorTyrmg" name="interaction1">
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_rdGm8OEOEeiFUskorTyrmg" name="Lifeline1"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_rmB5cOEOEeiFUskorTyrmg" name="Lifeline2" coveredBy="_vVtQMOEOEeiFUskorTyrmg _vVvsc-EOEeiFUskorTyrmg"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_s3ndIOEOEeiFUskorTyrmg" name="Lifeline3" coveredBy="_vVvscuEOEeiFUskorTyrmg _v41LYeEOEeiFUskorTyrmg _v40kUOEOEeiFUskorTyrmg _v41LYOEOEeiFUskorTyrmg _vVvFYOEOEeiFUskorTyrmg _vVt3QOEOEeiFUskorTyrmg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_vVtQMOEOEeiFUskorTyrmg" name="sync_snd" covered="_rmB5cOEOEeiFUskorTyrmg" message="_vVt3QeEOEeiFUskorTyrmg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_vVt3QOEOEeiFUskorTyrmg" name="sync_rcv" covered="_s3ndIOEOEeiFUskorTyrmg" message="_vVt3QeEOEeiFUskorTyrmg"/>
+    <fragment xmi:type="uml:ActionExecutionSpecification" xmi:id="_vVvFYOEOEeiFUskorTyrmg" name="exec1" covered="_s3ndIOEOEeiFUskorTyrmg" finish="_vVvscuEOEeiFUskorTyrmg" start="_vVt3QOEOEeiFUskorTyrmg"/>
+    <fragment xmi:type="uml:ExecutionOccurrenceSpecification" xmi:id="_v41LYOEOEeiFUskorTyrmg" name="nestedExec_stt" covered="_s3ndIOEOEeiFUskorTyrmg" execution="_v40kUOEOEeiFUskorTyrmg"/>
+    <fragment xmi:type="uml:ActionExecutionSpecification" xmi:id="_v40kUOEOEeiFUskorTyrmg" name="nestedExec" covered="_s3ndIOEOEeiFUskorTyrmg" finish="_v41LYeEOEeiFUskorTyrmg" start="_v41LYOEOEeiFUskorTyrmg"/>
+    <fragment xmi:type="uml:ExecutionOccurrenceSpecification" xmi:id="_v41LYeEOEeiFUskorTyrmg" name="nestedExec_fsh" covered="_s3ndIOEOEeiFUskorTyrmg" execution="_v40kUOEOEeiFUskorTyrmg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_vVvscuEOEeiFUskorTyrmg" name="reply_snd" covered="_s3ndIOEOEeiFUskorTyrmg" message="_vVvsdOEOEeiFUskorTyrmg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_vVvsc-EOEeiFUskorTyrmg" name="reply_rcv" covered="_rmB5cOEOEeiFUskorTyrmg" message="_vVvsdOEOEeiFUskorTyrmg"/>
+    <message xmi:type="uml:Message" xmi:id="_vVt3QeEOEeiFUskorTyrmg" name="sync" receiveEvent="_vVt3QOEOEeiFUskorTyrmg" sendEvent="_vVtQMOEOEeiFUskorTyrmg"/>
+    <message xmi:type="uml:Message" xmi:id="_vVvsdOEOEeiFUskorTyrmg" name="reply" messageSort="reply" receiveEvent="_vVvsc-EOEeiFUskorTyrmg" sendEvent="_vVvscuEOEeiFUskorTyrmg"/>
+  </packagedElement>
+</uml:Model>

@@ -148,6 +148,8 @@
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/nudgeHorizontally">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/nudgeHorizontally/deltaX"/>
       </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/getFirstLevelExecutions"/>
+      <genOperations ecoreOperation="seqd.ecore#//MLifeline/getOccurrenceSpecifications"/>
       <genOperations ecoreOperation="seqd.ecore#//MLifeline/makeCreatedAt">
         <genParameters ecoreParameter="seqd.ecore#//MLifeline/makeCreatedAt/yPosition"/>
       </genOperations>
@@ -158,6 +160,22 @@
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MExecution/occurrences"/>
       <genOperations ecoreOperation="seqd.ecore#//MExecution/getOwner"/>
       <genOperations ecoreOperation="seqd.ecore#//MExecution/getDiagramView"/>
+      <genOperations ecoreOperation="seqd.ecore#//MExecution/insertNestedExecutionAfter">
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/insertNestedExecutionAfter/before"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/insertNestedExecutionAfter/offset"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/insertNestedExecutionAfter/height"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/insertNestedExecutionAfter/specification"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MExecution/insertNestedExecutionAfter.1">
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/insertNestedExecutionAfter.1/before"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/insertNestedExecutionAfter.1/offset"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/insertNestedExecutionAfter.1/height"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/insertNestedExecutionAfter.1/metaclass"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MExecution/elementAt">
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/elementAt/offset"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MExecution/getNestedExecutions"/>
       <genOperations ecoreOperation="seqd.ecore#//MExecution/setOwner">
         <genParameters ecoreParameter="seqd.ecore#//MExecution/setOwner/newOwner"/>
         <genParameters ecoreParameter="seqd.ecore#//MExecution/setOwner/yPosition"/>

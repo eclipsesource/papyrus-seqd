@@ -72,7 +72,7 @@ public class MDestructionItemProvider extends MMessageEndItemProvider {
 	@Override
 	public String getText(Object object) {
 		String label = ((MDestruction) object).getName();
-		return (label == null) || (label.length() == 0) ? getString("_UI_MDestruction_type") : //$NON-NLS-1$
+		return label == null || label.length() == 0 ? getString("_UI_MDestruction_type") : //$NON-NLS-1$
 				getString("_UI_MDestruction_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 

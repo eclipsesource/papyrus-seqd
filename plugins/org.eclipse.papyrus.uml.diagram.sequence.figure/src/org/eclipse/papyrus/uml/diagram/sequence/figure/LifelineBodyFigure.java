@@ -16,7 +16,6 @@ import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.Polyline;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
@@ -95,11 +94,6 @@ public class LifelineBodyFigure extends NodeFigure {
 
 	protected ConnectionAnchor createBodyAnchor(int height) {
 		return new LifelineBodyAnchor(this, height);
-	}
-
-	@Override
-	public PointList getPolygonPoints() {
-		return super.getPolygonPoints();
 	}
 
 	@Override

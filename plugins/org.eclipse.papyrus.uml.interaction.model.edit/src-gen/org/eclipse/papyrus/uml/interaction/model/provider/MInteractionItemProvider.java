@@ -108,7 +108,7 @@ public class MInteractionItemProvider extends MElementItemProvider {
 	@Override
 	public String getText(Object object) {
 		String label = ((MInteraction) object).getName();
-		return (label == null) || (label.length() == 0) ? getString("_UI_MInteraction_type") : //$NON-NLS-1$
+		return label == null || label.length() == 0 ? getString("_UI_MInteraction_type") : //$NON-NLS-1$
 				getString("_UI_MInteraction_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -126,8 +126,7 @@ public class MInteractionItemProvider extends MElementItemProvider {
 		switch (notification.getFeatureID(MInteraction.class)) {
 		case SequenceDiagramPackage.MINTERACTION__LIFELINES:
 		case SequenceDiagramPackage.MINTERACTION__MESSAGES:
-			fireNotifyChanged(
-					new ViewerNotification(notification, notification.getNotifier(), true, false));
+			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
 			return;
 		}
 		super.notifyChanged(notification);

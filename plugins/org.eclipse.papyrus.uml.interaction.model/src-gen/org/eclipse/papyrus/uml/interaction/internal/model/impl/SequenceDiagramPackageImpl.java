@@ -702,8 +702,28 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
-	public EOperation getMLifeline__MakeCreatedAt__OptionalInt() {
+	public EOperation getMLifeline__GetFirstLevelExecutions() {
 		return mLifelineEClass.getEOperations().get(15);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMLifeline__GetOccurrenceSpecifications() {
+		return mLifelineEClass.getEOperations().get(16);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMLifeline__MakeCreatedAt__OptionalInt() {
+		return mLifelineEClass.getEOperations().get(17);
 	}
 
 	/**
@@ -772,8 +792,48 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
-	public EOperation getMExecution__SetOwner__MLifeline_OptionalInt() {
+	public EOperation getMExecution__InsertNestedExecutionAfter__MElement_int_int_Element() {
 		return mExecutionEClass.getEOperations().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMExecution__InsertNestedExecutionAfter__MElement_int_int_EClass() {
+		return mExecutionEClass.getEOperations().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMExecution__ElementAt__int() {
+		return mExecutionEClass.getEOperations().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMExecution__GetNestedExecutions() {
+		return mExecutionEClass.getEOperations().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMExecution__SetOwner__MLifeline_OptionalInt() {
+		return mExecutionEClass.getEOperations().get(6);
 	}
 
 	/**
@@ -1210,6 +1270,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 				MLIFELINE___INSERT_MESSAGE_AFTER__MELEMENT_INT_MLIFELINE_MESSAGESORT_NAMEDELEMENT_EXECUTIONCREATIONCOMMANDPARAMETER);
 		createEOperation(mLifelineEClass, MLIFELINE___ELEMENT_AT__INT);
 		createEOperation(mLifelineEClass, MLIFELINE___NUDGE_HORIZONTALLY__INT);
+		createEOperation(mLifelineEClass, MLIFELINE___GET_FIRST_LEVEL_EXECUTIONS);
+		createEOperation(mLifelineEClass, MLIFELINE___GET_OCCURRENCE_SPECIFICATIONS);
 		createEOperation(mLifelineEClass, MLIFELINE___MAKE_CREATED_AT__OPTIONALINT);
 
 		mExecutionEClass = createEClass(MEXECUTION);
@@ -1218,6 +1280,12 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEReference(mExecutionEClass, MEXECUTION__OCCURRENCES);
 		createEOperation(mExecutionEClass, MEXECUTION___GET_OWNER);
 		createEOperation(mExecutionEClass, MEXECUTION___GET_DIAGRAM_VIEW);
+		createEOperation(mExecutionEClass,
+				MEXECUTION___INSERT_NESTED_EXECUTION_AFTER__MELEMENT_INT_INT_ELEMENT);
+		createEOperation(mExecutionEClass,
+				MEXECUTION___INSERT_NESTED_EXECUTION_AFTER__MELEMENT_INT_INT_ECLASS);
+		createEOperation(mExecutionEClass, MEXECUTION___ELEMENT_AT__INT);
+		createEOperation(mExecutionEClass, MEXECUTION___GET_NESTED_EXECUTIONS);
 		createEOperation(mExecutionEClass, MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT);
 
 		mOccurrenceEClass = createEClass(MOCCURRENCE);
@@ -1711,6 +1779,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 				1, IS_UNIQUE, IS_ORDERED);
 		addEParameter(op, ecorePackage.getEInt(), "deltaX", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
+		initEOperation(getMLifeline__GetFirstLevelExecutions(), this.getMExecution(),
+				"getFirstLevelExecutions", 0, -1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		op = initEOperation(getMLifeline__GetOccurrenceSpecifications(), null, "getOccurrenceSpecifications", //$NON-NLS-1$
+				0, -1, IS_UNIQUE, IS_ORDERED);
+		g1 = createEGenericType(this.getMOccurrence());
+		g2 = createEGenericType();
+		g1.getETypeArguments().add(g2);
+		initEOperation(op, g1);
+
 		op = initEOperation(getMLifeline__MakeCreatedAt__OptionalInt(), this.getCommand(), "makeCreatedAt", 1, //$NON-NLS-1$
 				1, IS_UNIQUE, IS_ORDERED);
 		addEParameter(op, this.getOptionalInt(), "yPosition", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
@@ -1753,6 +1831,48 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		g2 = createEGenericType(theNotationPackage.getShape());
 		g1.getETypeArguments().add(g2);
 		initEOperation(op, g1);
+
+		op = initEOperation(getMExecution__InsertNestedExecutionAfter__MElement_int_int_Element(), null,
+				"insertNestedExecutionAfter", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getMElement());
+		g2 = createEGenericType();
+		g1.getETypeArguments().add(g2);
+		addEParameter(op, g1, "before", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, ecorePackage.getEInt(), "offset", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, ecorePackage.getEInt(), "height", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, theUMLPackage.getElement(), "specification", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getCreationCommand());
+		g2 = createEGenericType(theUMLPackage.getExecutionSpecification());
+		g1.getETypeArguments().add(g2);
+		initEOperation(op, g1);
+
+		op = initEOperation(getMExecution__InsertNestedExecutionAfter__MElement_int_int_EClass(), null,
+				"insertNestedExecutionAfter", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getMElement());
+		g2 = createEGenericType();
+		g1.getETypeArguments().add(g2);
+		addEParameter(op, g1, "before", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, ecorePackage.getEInt(), "offset", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, ecorePackage.getEInt(), "height", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, theEcorePackage.getEClass(), "metaclass", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getCreationCommand());
+		g2 = createEGenericType(theUMLPackage.getExecutionSpecification());
+		g1.getETypeArguments().add(g2);
+		initEOperation(op, g1);
+
+		op = initEOperation(getMExecution__ElementAt__int(), null, "elementAt", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, ecorePackage.getEInt(), "offset", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getOptional());
+		g2 = createEGenericType(this.getMElement());
+		g1.getETypeArguments().add(g2);
+		g3 = createEGenericType();
+		g2.getETypeArguments().add(g3);
+		g4 = createEGenericType(theUMLPackage.getElement());
+		g3.setEUpperBound(g4);
+		initEOperation(op, g1);
+
+		initEOperation(getMExecution__GetNestedExecutions(), this.getMExecution(), "getNestedExecutions", 0, //$NON-NLS-1$
+				-1, IS_UNIQUE, IS_ORDERED);
 
 		op = initEOperation(getMExecution__SetOwner__MLifeline_OptionalInt(), this.getCommand(), "setOwner", //$NON-NLS-1$
 				1, 1, IS_UNIQUE, IS_ORDERED);

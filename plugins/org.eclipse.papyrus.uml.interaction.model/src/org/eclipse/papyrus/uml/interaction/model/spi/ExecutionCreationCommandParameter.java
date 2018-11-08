@@ -27,7 +27,8 @@ public class ExecutionCreationCommandParameter {
 		super();
 	}
 
-	public ExecutionCreationCommandParameter(boolean createExecution, boolean createReply, EClass executionType) {
+	public ExecutionCreationCommandParameter(boolean createExecution, boolean createReply,
+			EClass executionType) {
 		super();
 		this.createExecution = createExecution;
 		this.createReply = createReply;

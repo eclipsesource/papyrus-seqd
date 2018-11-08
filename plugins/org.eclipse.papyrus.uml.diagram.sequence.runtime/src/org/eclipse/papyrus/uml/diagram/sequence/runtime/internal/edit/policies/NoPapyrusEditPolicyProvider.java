@@ -27,6 +27,7 @@ import org.eclipse.gmf.runtime.diagram.ui.services.editpolicy.IEditPolicyProvide
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.gmfdiag.common.helper.NotationHelper;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ExecutionSpecificationEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.InteractionCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.LifelineBodyEditPart;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
@@ -55,6 +56,8 @@ public class NoPapyrusEditPolicyProvider extends AbstractProvider implements IEd
 				LifelineCreationEditPolicy::new);
 		substitute(InteractionCompartmentEditPart.class, EditPolicyRoles.CREATION_ROLE,
 				InteractionCreationEditPolicy::new);
+		substitute(ExecutionSpecificationEditPart.class, EditPolicyRoles.CREATION_ROLE,
+				ExecutionSpecificationCreationEditPolicy::new);
 
 		// Diagram assistant edit policies
 		substitute(LifelineBodyEditPart.class, EditPolicyRoles.POPUPBAR_ROLE,

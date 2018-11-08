@@ -71,13 +71,13 @@ public class MLifelineItemProvider extends MElementItemProvider {
 	 * @generated
 	 */
 	protected void addDestructionPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
-				getString("_UI_MLifeline_destruction_feature"), //$NON-NLS-1$
-				getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_destruction_feature", //$NON-NLS-1$ //$NON-NLS-2$
-						"_UI_MLifeline_type"), //$NON-NLS-1$
-				SequenceDiagramPackage.Literals.MLIFELINE__DESTRUCTION, false, false, false,
-				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_MLifeline_destruction_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_destruction_feature", //$NON-NLS-1$ //$NON-NLS-2$
+								"_UI_MLifeline_type"), //$NON-NLS-1$
+						SequenceDiagramPackage.Literals.MLIFELINE__DESTRUCTION, false, false, false,
+						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -87,13 +87,13 @@ public class MLifelineItemProvider extends MElementItemProvider {
 	 * @generated
 	 */
 	protected void addLeftPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
-				getString("_UI_MLifeline_left_feature"), //$NON-NLS-1$
-				getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_left_feature", //$NON-NLS-1$ //$NON-NLS-2$
-						"_UI_MLifeline_type"), //$NON-NLS-1$
-				SequenceDiagramPackage.Literals.MLIFELINE__LEFT, false, false, false,
-				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_MLifeline_left_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_left_feature", //$NON-NLS-1$ //$NON-NLS-2$
+								"_UI_MLifeline_type"), //$NON-NLS-1$
+						SequenceDiagramPackage.Literals.MLIFELINE__LEFT, false, false, false,
+						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -103,13 +103,13 @@ public class MLifelineItemProvider extends MElementItemProvider {
 	 * @generated
 	 */
 	protected void addRightPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
-				getString("_UI_MLifeline_right_feature"), //$NON-NLS-1$
-				getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_right_feature", //$NON-NLS-1$ //$NON-NLS-2$
-						"_UI_MLifeline_type"), //$NON-NLS-1$
-				SequenceDiagramPackage.Literals.MLIFELINE__RIGHT, false, false, false,
-				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_MLifeline_right_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_right_feature", //$NON-NLS-1$ //$NON-NLS-2$
+								"_UI_MLifeline_type"), //$NON-NLS-1$
+						SequenceDiagramPackage.Literals.MLIFELINE__RIGHT, false, false, false,
+						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -124,8 +124,7 @@ public class MLifelineItemProvider extends MElementItemProvider {
 				getString("_UI_MLifeline_messageEnds_feature"), //$NON-NLS-1$
 				getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_messageEnds_feature", //$NON-NLS-1$ //$NON-NLS-2$
 						"_UI_MLifeline_type"), //$NON-NLS-1$
-				SequenceDiagramPackage.Literals.MLIFELINE__MESSAGE_ENDS, false, false, false, null, null,
-				null));
+				SequenceDiagramPackage.Literals.MLIFELINE__MESSAGE_ENDS, false, false, false, null, null, null));
 	}
 
 	/**
@@ -135,13 +134,12 @@ public class MLifelineItemProvider extends MElementItemProvider {
 	 * @generated
 	 */
 	protected void addOccurrencesPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
-				getString("_UI_MLifeline_occurrences_feature"), //$NON-NLS-1$
-				getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_occurrences_feature", //$NON-NLS-1$ //$NON-NLS-2$
-						"_UI_MLifeline_type"), //$NON-NLS-1$
-				SequenceDiagramPackage.Literals.MLIFELINE__OCCURRENCES, false, false, false, null, null,
-				null));
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_MLifeline_occurrences_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_occurrences_feature", //$NON-NLS-1$ //$NON-NLS-2$
+								"_UI_MLifeline_type"), //$NON-NLS-1$
+						SequenceDiagramPackage.Literals.MLIFELINE__OCCURRENCES, false, false, false, null, null, null));
 	}
 
 	/**
@@ -197,7 +195,7 @@ public class MLifelineItemProvider extends MElementItemProvider {
 	@Override
 	public String getText(Object object) {
 		String label = ((MLifeline) object).getName();
-		return (label == null) || (label.length() == 0) ? getString("_UI_MLifeline_type") : //$NON-NLS-1$
+		return label == null || label.length() == 0 ? getString("_UI_MLifeline_type") : //$NON-NLS-1$
 				getString("_UI_MLifeline_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -216,14 +214,12 @@ public class MLifelineItemProvider extends MElementItemProvider {
 		case SequenceDiagramPackage.MLIFELINE__DESTRUCTION:
 		case SequenceDiagramPackage.MLIFELINE__LEFT:
 		case SequenceDiagramPackage.MLIFELINE__RIGHT:
-			fireNotifyChanged(
-					new ViewerNotification(notification, notification.getNotifier(), false, true));
+			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;
 		case SequenceDiagramPackage.MLIFELINE__EXECUTION_OCCURRENCES:
 		case SequenceDiagramPackage.MLIFELINE__EXECUTIONS:
 		case SequenceDiagramPackage.MLIFELINE__OWNED_DESTRUCTION:
-			fireNotifyChanged(
-					new ViewerNotification(notification, notification.getNotifier(), true, false));
+			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
 			return;
 		}
 		super.notifyChanged(notification);
@@ -240,9 +236,8 @@ public class MLifelineItemProvider extends MElementItemProvider {
 	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
 
-		newChildDescriptors
-				.add(createChildParameter(SequenceDiagramPackage.Literals.MLIFELINE__OWNED_DESTRUCTION,
-						SequenceDiagramFactory.eINSTANCE.createMDestruction()));
+		newChildDescriptors.add(createChildParameter(SequenceDiagramPackage.Literals.MLIFELINE__OWNED_DESTRUCTION,
+				SequenceDiagramFactory.eINSTANCE.createMDestruction()));
 	}
 
 }
