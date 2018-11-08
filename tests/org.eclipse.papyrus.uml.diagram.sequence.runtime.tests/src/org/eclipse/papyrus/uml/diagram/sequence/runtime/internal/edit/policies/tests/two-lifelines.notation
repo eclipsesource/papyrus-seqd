@@ -1,37 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:style="http://www.eclipse.org/papyrus/infra/gmfdiag/style" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_SnR90EppEeiB_O7ig5LXPg" type="LightweightSequenceDiagram" name="seq1" measurementUnit="Pixel">
-  <children xmi:type="notation:Shape" xmi:id="_SnR90UppEeiB_O7ig5LXPg" type="Shape_Interaction">
-    <children xmi:type="notation:DecorationNode" xmi:id="_SnR90kppEeiB_O7ig5LXPg" type="Label_Interaction_Name">
-      <element xmi:type="uml:Interaction" href="two-lifelines.uml#_R_u1oEppEeiB_O7ig5LXPg"/>
-    </children>
-    <children xmi:type="notation:Compartment" xmi:id="_SnR900ppEeiB_O7ig5LXPg" type="Interaction_Contents">
-      <children xmi:type="notation:Shape" xmi:id="_FTODwGpHEeiIJqtZNCF3Dw" type="Shape_Lifeline_Header">
-        <children xmi:type="notation:Shape" xmi:id="_FTODwWpHEeiIJqtZNCF3Dw" type="Compartment_Lifeline_Header"/>
-        <children xmi:type="notation:Shape" xmi:id="_FTODwmpHEeiIJqtZNCF3Dw" type="Label_Lifeline_Name"/>
-        <children xmi:type="notation:Shape" xmi:id="_FTODw2pHEeiIJqtZNCF3Dw" type="Shape_Lifeline_Body">
-          <layoutConstraint xmi:type="notation:Size" xmi:id="_FTODxGpHEeiIJqtZNCF3Dw" width="2" height="150"/>
-        </children>
-        <element xmi:type="uml:Lifeline" href="two-lifelines.uml#_FMyroGpHEeiIJqtZNCF3Dw"/>
-        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FTODxWpHEeiIJqtZNCF3Dw" x="30" y="25" width="100" height="28"/>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:css="http://www.eclipse.org/papyrus/infra/gmfdiag/css" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:style="http://www.eclipse.org/papyrus/infra/gmfdiag/style" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <notation:Diagram xmi:id="_SnR90EppEeiB_O7ig5LXPg" type="LightweightSequenceDiagram" name="seq1" measurementUnit="Pixel">
+    <children xmi:type="notation:Shape" xmi:id="_SnR90UppEeiB_O7ig5LXPg" type="Shape_Interaction">
+      <children xmi:type="notation:DecorationNode" xmi:id="_SnR90kppEeiB_O7ig5LXPg" type="Label_Interaction_Name">
+        <element xmi:type="uml:Interaction" href="two-lifelines.uml#_R_u1oEppEeiB_O7ig5LXPg"/>
       </children>
-      <children xmi:type="notation:Shape" xmi:id="_F8jUoGpHEeiIJqtZNCF3Dw" type="Shape_Lifeline_Header">
-        <children xmi:type="notation:Shape" xmi:id="_F8jUoWpHEeiIJqtZNCF3Dw" type="Compartment_Lifeline_Header"/>
-        <children xmi:type="notation:Shape" xmi:id="_F8jUompHEeiIJqtZNCF3Dw" type="Label_Lifeline_Name"/>
-        <children xmi:type="notation:Shape" xmi:id="_F8jUo2pHEeiIJqtZNCF3Dw" type="Shape_Lifeline_Body">
-          <layoutConstraint xmi:type="notation:Size" xmi:id="_F8jUpGpHEeiIJqtZNCF3Dw" width="2" height="150"/>
+      <children xmi:type="notation:Compartment" xmi:id="_SnR900ppEeiB_O7ig5LXPg" type="Interaction_Contents">
+        <children xmi:type="notation:Shape" xmi:id="_FTODwGpHEeiIJqtZNCF3Dw" type="Shape_Lifeline_Header">
+          <children xmi:type="notation:Shape" xmi:id="_FTODwWpHEeiIJqtZNCF3Dw" type="Compartment_Lifeline_Header"/>
+          <children xmi:type="notation:Shape" xmi:id="_FTODwmpHEeiIJqtZNCF3Dw" type="Label_Lifeline_Name"/>
+          <children xmi:type="notation:Shape" xmi:id="_FTODw2pHEeiIJqtZNCF3Dw" type="Shape_Lifeline_Body">
+            <layoutConstraint xmi:type="notation:Size" xmi:id="_FTODxGpHEeiIJqtZNCF3Dw" width="2" height="150"/>
+          </children>
+          <element xmi:type="uml:Lifeline" href="two-lifelines.uml#_FMyroGpHEeiIJqtZNCF3Dw"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FTODxWpHEeiIJqtZNCF3Dw" x="30" y="25" width="100" height="28"/>
         </children>
-        <element xmi:type="uml:Lifeline" href="two-lifelines.uml#_F4rhQGpHEeiIJqtZNCF3Dw"/>
-        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_F8jUpWpHEeiIJqtZNCF3Dw" x="190" y="25" width="100" height="28"/>
+        <children xmi:type="notation:Shape" xmi:id="_F8jUoGpHEeiIJqtZNCF3Dw" type="Shape_Lifeline_Header">
+          <children xmi:type="notation:Shape" xmi:id="_F8jUoWpHEeiIJqtZNCF3Dw" type="Compartment_Lifeline_Header"/>
+          <children xmi:type="notation:Shape" xmi:id="_F8jUompHEeiIJqtZNCF3Dw" type="Label_Lifeline_Name"/>
+          <children xmi:type="notation:Shape" xmi:id="_F8jUo2pHEeiIJqtZNCF3Dw" type="Shape_Lifeline_Body">
+            <layoutConstraint xmi:type="notation:Size" xmi:id="_F8jUpGpHEeiIJqtZNCF3Dw" width="2" height="150"/>
+          </children>
+          <element xmi:type="uml:Lifeline" href="two-lifelines.uml#_F4rhQGpHEeiIJqtZNCF3Dw"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_F8jUpWpHEeiIJqtZNCF3Dw" x="190" y="25" width="100" height="28"/>
+        </children>
+        <element xmi:type="uml:Interaction" href="two-lifelines.uml#_R_u1oEppEeiB_O7ig5LXPg"/>
       </children>
       <element xmi:type="uml:Interaction" href="two-lifelines.uml#_R_u1oEppEeiB_O7ig5LXPg"/>
+      <layoutConstraint xmi:type="notation:Bounds" xmi:id="_SnR91EppEeiB_O7ig5LXPg" x="37" y="12" width="600" height="450"/>
     </children>
+    <styles xmi:type="notation:StringValueStyle" xmi:id="_SnR91UppEeiB_O7ig5LXPg" name="diagram_compatibility_version" stringValue="1.4.0"/>
+    <styles xmi:type="notation:DiagramStyle" xmi:id="_SnR91kppEeiB_O7ig5LXPg"/>
+    <styles xmi:type="style:PapyrusDiagramStyle" xmi:id="_SnR910ppEeiB_O7ig5LXPg" diagramKindId="org.eclipse.papyrus.uml.diagram.lightweightsequence">
+      <owner xmi:type="uml:Interaction" href="two-lifelines.uml#_R_u1oEppEeiB_O7ig5LXPg"/>
+    </styles>
+    <styles xmi:type="notation:EObjectListValueStyle" xmi:id="_0nsJ4NOqEeiXw90W5mocpA" name="css_stylesheets" eObjectListValue="_0ntYANOqEeiXw90W5mocpA"/>
     <element xmi:type="uml:Interaction" href="two-lifelines.uml#_R_u1oEppEeiB_O7ig5LXPg"/>
-    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_SnR91EppEeiB_O7ig5LXPg" x="37" y="12" width="600" height="450"/>
-  </children>
-  <styles xmi:type="notation:StringValueStyle" xmi:id="_SnR91UppEeiB_O7ig5LXPg" name="diagram_compatibility_version" stringValue="1.3.0"/>
-  <styles xmi:type="notation:DiagramStyle" xmi:id="_SnR91kppEeiB_O7ig5LXPg"/>
-  <styles xmi:type="style:PapyrusDiagramStyle" xmi:id="_SnR910ppEeiB_O7ig5LXPg" diagramKindId="org.eclipse.papyrus.uml.diagram.lightweightsequence">
-    <owner xmi:type="uml:Interaction" href="two-lifelines.uml#_R_u1oEppEeiB_O7ig5LXPg"/>
-  </styles>
-  <element xmi:type="uml:Interaction" href="two-lifelines.uml#_R_u1oEppEeiB_O7ig5LXPg"/>
-</notation:Diagram>
+    <EmbeddedStyleSheet xmi:id="_JzC0sNOoEeiJ4NXHU7Z5YQ" label="" content="[kind=&quot;Edge_Message_Name&quot;] {visible:false;}"/>
+  </notation:Diagram>
+  <css:EmbeddedStyleSheet xmi:id="_0ntYANOqEeiXw90W5mocpA" label="" content="[kind=&quot;Edge_Message_Name&quot;] {visible:false;}"/>
+</xmi:XMI>

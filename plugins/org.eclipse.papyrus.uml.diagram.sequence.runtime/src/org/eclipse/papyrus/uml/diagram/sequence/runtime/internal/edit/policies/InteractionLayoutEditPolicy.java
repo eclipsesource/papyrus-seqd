@@ -17,10 +17,13 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.Geo
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.GeometryUtil.asRectangle;
 import static org.eclipse.papyrus.uml.service.types.utils.ElementUtil.isTypeOf;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.FigureUtilities;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.Shape;
@@ -28,23 +31,31 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
+import org.eclipse.gmf.runtime.common.core.command.CommandResult;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
+import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
+import org.eclipse.gmf.runtime.diagram.ui.commands.SetBoundsCommand;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.LayoutEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.XYLayoutEditPolicy;
+import org.eclipse.gmf.runtime.diagram.ui.l10n.DiagramUIMessages;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateUnspecifiedTypeRequest;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewAndElementRequest;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewRequest;
+import org.eclipse.gmf.runtime.emf.commands.core.command.CompositeTransactionalCommand;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.Bounds;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.NotationFactory;
+import org.eclipse.gmf.runtime.notation.NotationPackage;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.InteractionUtil;
@@ -210,5 +221,88 @@ public class InteractionLayoutEditPolicy extends XYLayoutEditPolicy implements I
 		rect.setY(bounds.getY());
 		rect.setWidth(bounds.getWidth());
 		rect.setHeight(bounds.getHeight());
+	}
+
+	@Override
+	protected Command getCreateCommand(CreateRequest request) {
+		// Implemenation as superclass but different command
+		CreateViewRequest req = (CreateViewRequest)request;
+
+		TransactionalEditingDomain editingDomain = ((IGraphicalEditPart)getHost()).getEditingDomain();
+
+		CompositeTransactionalCommand cc = new CompositeTransactionalCommand(editingDomain,
+				DiagramUIMessages.AddCommand_Label);
+		@SuppressWarnings("rawtypes")
+		Iterator iter = req.getViewDescriptors().iterator();
+
+		final Rectangle BOUNDS = (Rectangle)getConstraintFor(request);
+
+		while (iter.hasNext()) {
+			CreateViewRequest.ViewDescriptor viewDescriptor = (CreateViewRequest.ViewDescriptor)iter.next();
+			Rectangle rect = getBoundsOffest(req, BOUNDS, viewDescriptor);
+			cc.compose(new InteractionSetBoundsCommand(editingDomain,
+					DiagramUIMessages.SetLocationCommand_Label_Resize, viewDescriptor, rect));
+		}
+
+		if (cc.reduce() == null) {
+			return null;
+		}
+
+		return chainGuideAttachmentCommands(request, new ICommandProxy(cc.reduce()));
+	}
+
+	private class InteractionSetBoundsCommand extends SetBoundsCommand {
+
+		private IAdaptable adapter;
+
+		private Point location;
+
+		private Dimension size;
+
+		/**
+		 * Creates a <code>InteractionSetBoundsCommand</code> for the given view adapter with a given bounds.
+		 * 
+		 * @param editingDomain
+		 *            the editing domain through which model changes are made
+		 * @param label
+		 *            The command label
+		 * @param adapter
+		 *            An adapter to the <code>View</code>
+		 * @param bounds
+		 *            The new bounds
+		 */
+		public InteractionSetBoundsCommand(TransactionalEditingDomain editingDomain, String label,
+				IAdaptable adapter, Rectangle bounds) {
+			super(editingDomain, label, adapter, bounds);
+			this.adapter = adapter;
+			this.location = bounds.getLocation();
+			this.size = bounds.getSize();
+		}
+
+		@Override
+		protected CommandResult doExecuteWithResult(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException {
+
+			if (adapter == null) {
+				return CommandResult
+						.newErrorCommandResult("SetBoundsCommand: viewAdapter does not adapt to IView.class"); //$NON-NLS-1$
+			}
+
+			View view = adapter.getAdapter(View.class);
+
+			if (location != null) {
+				// trust x location from create command and only set y
+				ViewUtil.setStructuralFeatureValue(view, NotationPackage.eINSTANCE.getLocation_Y(),
+						Integer.valueOf(location.y));
+			}
+			if (size != null) {
+				ViewUtil.setStructuralFeatureValue(view, NotationPackage.eINSTANCE.getSize_Width(),
+						Integer.valueOf(size.width));
+				ViewUtil.setStructuralFeatureValue(view, NotationPackage.eINSTANCE.getSize_Height(),
+						Integer.valueOf(size.height));
+			}
+			return CommandResult.newOKCommandResult();
+		}
+
 	}
 }

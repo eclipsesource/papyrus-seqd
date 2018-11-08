@@ -88,8 +88,8 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 		assumeThat(messageEP, runs(sendX, INITIAL_Y, recvX, slopeY));
 
 		int delta = moveDown ? 30 : -30;
-		int x = (sendX + recvX) / 2;
-		int grabY = (INITIAL_Y + slopeY) / 2;
+		int x = sendX + (recvX - sendX) / 4;
+		int grabY = INITIAL_Y + (slopeY - INITIAL_Y) / 4;
 		int y = grabY + delta;
 
 		editor.moveSelection(at(x, grabY), at(x, y));

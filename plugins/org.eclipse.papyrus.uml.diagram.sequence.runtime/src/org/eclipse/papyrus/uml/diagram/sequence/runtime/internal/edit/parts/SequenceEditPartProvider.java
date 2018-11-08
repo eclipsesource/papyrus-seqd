@@ -63,6 +63,8 @@ public class SequenceEditPartProvider extends AbstractEditPartProvider {
 				return StateInvariantEditPart.class;
 			case ViewTypes.DESTRUCTION_SPECIFICATION:
 				return DestructionSpecificationEditPart.class;
+			case ViewTypes.MESSAGE_NAME:
+				return MessageLabelEditPart.class;
 		}
 
 		return null;

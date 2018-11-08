@@ -25,12 +25,14 @@ import org.eclipse.gmf.runtime.emf.ui.services.parser.ParserHintAdapter;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.parsers.LifelineHeaderParser;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.parsers.MessageFormatParser;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.parsers.MessageParser;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.UMLPackage;
 
 public class SequenceParserProvider extends AbstractProvider implements IParserProvider {
-
 	private IParser interaction_NameLabel_Parser;
+
+	private IParser message_NameLabel_Parser;
 
 	private IParser lifeline_NameLabel_Parser;
 
@@ -39,11 +41,20 @@ public class SequenceParserProvider extends AbstractProvider implements IParserP
 			switch (visualID) {
 				case ViewTypes.INTERACTION_NAME:
 					return getInteraction_NameLabel_Parser();
+				case ViewTypes.MESSAGE_NAME:
+					return getMessage_NameLabel_Parser();
 				case ViewTypes.LIFELINE_NAME:
 					return getLifeline_NameLabel_Parser();
 			}
 		}
 		return null;
+	}
+
+	private IParser getMessage_NameLabel_Parser() {
+		if (message_NameLabel_Parser == null) {
+			message_NameLabel_Parser = new MessageParser();
+		}
+		return message_NameLabel_Parser;
 	}
 
 	private IParser getInteraction_NameLabel_Parser() {
