@@ -27,16 +27,15 @@ import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 
 /**
- * This is the item provider adapter for a
- * {@link org.eclipse.papyrus.uml.interaction.model.MLifeline} object. <!--
- * begin-user-doc --> <!-- end-user-doc -->
+ * This is the item provider adapter for a {@link org.eclipse.papyrus.uml.interaction.model.MLifeline} object.
+ * <!-- begin-user-doc --> <!-- end-user-doc -->
  * 
  * @generated
  */
 public class MLifelineItemProvider extends MElementItemProvider {
 	/**
-	 * This constructs an instance from a factory and a notifier. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This constructs an instance from a factory and a notifier. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 * 
 	 * @generated
 	 */
@@ -45,8 +44,8 @@ public class MLifelineItemProvider extends MElementItemProvider {
 	}
 
 	/**
-	 * This returns the property descriptors for the adapted class. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This returns the property descriptors for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 * 
 	 * @generated
 	 */
@@ -65,89 +64,88 @@ public class MLifelineItemProvider extends MElementItemProvider {
 	}
 
 	/**
-	 * This adds a property descriptor for the Destruction feature. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This adds a property descriptor for the Destruction feature. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 * 
 	 * @generated
 	 */
 	protected void addDestructionPropertyDescriptor(Object object) {
-		itemPropertyDescriptors
-				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
-						getResourceLocator(), getString("_UI_MLifeline_destruction_feature"), //$NON-NLS-1$
-						getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_destruction_feature", //$NON-NLS-1$ //$NON-NLS-2$
-								"_UI_MLifeline_type"), //$NON-NLS-1$
-						SequenceDiagramPackage.Literals.MLIFELINE__DESTRUCTION, false, false, false,
-						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MLifeline_destruction_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_destruction_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MLifeline_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MLIFELINE__DESTRUCTION, false, false, false,
+				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
-	 * This adds a property descriptor for the Left feature. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This adds a property descriptor for the Left feature. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	protected void addLeftPropertyDescriptor(Object object) {
-		itemPropertyDescriptors
-				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
-						getResourceLocator(), getString("_UI_MLifeline_left_feature"), //$NON-NLS-1$
-						getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_left_feature", //$NON-NLS-1$ //$NON-NLS-2$
-								"_UI_MLifeline_type"), //$NON-NLS-1$
-						SequenceDiagramPackage.Literals.MLIFELINE__LEFT, false, false, false,
-						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MLifeline_left_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_left_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MLifeline_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MLIFELINE__LEFT, false, false, false,
+				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
-	 * This adds a property descriptor for the Right feature. <!-- begin-user-doc
-	 * --> <!-- end-user-doc -->
+	 * This adds a property descriptor for the Right feature. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	protected void addRightPropertyDescriptor(Object object) {
-		itemPropertyDescriptors
-				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
-						getResourceLocator(), getString("_UI_MLifeline_right_feature"), //$NON-NLS-1$
-						getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_right_feature", //$NON-NLS-1$ //$NON-NLS-2$
-								"_UI_MLifeline_type"), //$NON-NLS-1$
-						SequenceDiagramPackage.Literals.MLIFELINE__RIGHT, false, false, false,
-						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MLifeline_right_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_right_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MLifeline_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MLIFELINE__RIGHT, false, false, false,
+				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
-	 * This adds a property descriptor for the Message Ends feature. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This adds a property descriptor for the Message Ends feature. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 * 
 	 * @generated
 	 */
 	protected void addMessageEndsPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
 				getString("_UI_MLifeline_messageEnds_feature"), //$NON-NLS-1$
 				getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_messageEnds_feature", //$NON-NLS-1$ //$NON-NLS-2$
 						"_UI_MLifeline_type"), //$NON-NLS-1$
-				SequenceDiagramPackage.Literals.MLIFELINE__MESSAGE_ENDS, false, false, false, null, null, null));
+				SequenceDiagramPackage.Literals.MLIFELINE__MESSAGE_ENDS, false, false, false, null, null,
+				null));
 	}
 
 	/**
-	 * This adds a property descriptor for the Occurrences feature. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This adds a property descriptor for the Occurrences feature. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 * 
 	 * @generated
 	 */
 	protected void addOccurrencesPropertyDescriptor(Object object) {
-		itemPropertyDescriptors
-				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
-						getResourceLocator(), getString("_UI_MLifeline_occurrences_feature"), //$NON-NLS-1$
-						getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_occurrences_feature", //$NON-NLS-1$ //$NON-NLS-2$
-								"_UI_MLifeline_type"), //$NON-NLS-1$
-						SequenceDiagramPackage.Literals.MLIFELINE__OCCURRENCES, false, false, false, null, null, null));
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MLifeline_occurrences_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MLifeline_occurrences_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MLifeline_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MLIFELINE__OCCURRENCES, false, false, false, null, null,
+				null));
 	}
 
 	/**
-	 * This specifies how to implement {@link #getChildren} and is used to deduce an
-	 * appropriate feature for an {@link org.eclipse.emf.edit.command.AddCommand},
-	 * {@link org.eclipse.emf.edit.command.RemoveCommand} or
-	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for
+	 * an {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand}
+	 * or {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}. <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
@@ -169,8 +167,7 @@ public class MLifelineItemProvider extends MElementItemProvider {
 	 */
 	@Override
 	protected EStructuralFeature getChildFeature(Object object, Object child) {
-		// Check the type of the specified child object and return the proper feature to
-		// use for
+		// Check the type of the specified child object and return the proper feature to use for
 		// adding (see {@link AddCommand}) it as a child.
 
 		return super.getChildFeature(object, child);
@@ -187,22 +184,21 @@ public class MLifelineItemProvider extends MElementItemProvider {
 	}
 
 	/**
-	 * This returns the label text for the adapted class. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This returns the label text for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	@Override
 	public String getText(Object object) {
-		String label = ((MLifeline) object).getName();
-		return label == null || label.length() == 0 ? getString("_UI_MLifeline_type") : //$NON-NLS-1$
+		String label = ((MLifeline)object).getName();
+		return (label == null) || (label.length() == 0) ? getString("_UI_MLifeline_type") : //$NON-NLS-1$
 				getString("_UI_MLifeline_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
-	 * This handles model notifications by calling {@link #updateChildren} to update
-	 * any cached children and by creating a viewer notification, which it passes to
-	 * {@link #fireNotifyChanged}. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * This handles model notifications by calling {@link #updateChildren} to update any cached children and
+	 * by creating a viewer notification, which it passes to {@link #fireNotifyChanged}. <!-- begin-user-doc
+	 * --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
@@ -211,24 +207,25 @@ public class MLifelineItemProvider extends MElementItemProvider {
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(MLifeline.class)) {
-		case SequenceDiagramPackage.MLIFELINE__DESTRUCTION:
-		case SequenceDiagramPackage.MLIFELINE__LEFT:
-		case SequenceDiagramPackage.MLIFELINE__RIGHT:
-			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
-			return;
-		case SequenceDiagramPackage.MLIFELINE__EXECUTION_OCCURRENCES:
-		case SequenceDiagramPackage.MLIFELINE__EXECUTIONS:
-		case SequenceDiagramPackage.MLIFELINE__OWNED_DESTRUCTION:
-			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
-			return;
+			case SequenceDiagramPackage.MLIFELINE__DESTRUCTION:
+			case SequenceDiagramPackage.MLIFELINE__LEFT:
+			case SequenceDiagramPackage.MLIFELINE__RIGHT:
+				fireNotifyChanged(
+						new ViewerNotification(notification, notification.getNotifier(), false, true));
+				return;
+			case SequenceDiagramPackage.MLIFELINE__EXECUTION_OCCURRENCES:
+			case SequenceDiagramPackage.MLIFELINE__EXECUTIONS:
+			case SequenceDiagramPackage.MLIFELINE__OWNED_DESTRUCTION:
+				fireNotifyChanged(
+						new ViewerNotification(notification, notification.getNotifier(), true, false));
+				return;
 		}
 		super.notifyChanged(notification);
 	}
 
 	/**
-	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing
-	 * the children that can be created under this object. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children that can be
+	 * created under this object. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
@@ -236,8 +233,9 @@ public class MLifelineItemProvider extends MElementItemProvider {
 	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
 
-		newChildDescriptors.add(createChildParameter(SequenceDiagramPackage.Literals.MLIFELINE__OWNED_DESTRUCTION,
-				SequenceDiagramFactory.eINSTANCE.createMDestruction()));
+		newChildDescriptors
+				.add(createChildParameter(SequenceDiagramPackage.Literals.MLIFELINE__OWNED_DESTRUCTION,
+						SequenceDiagramFactory.eINSTANCE.createMDestruction()));
 	}
 
 }
