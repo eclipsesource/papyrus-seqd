@@ -12,18 +12,13 @@
 package org.eclipse.papyrus.uml.diagram.sequence.assistants.provider;
 
 import org.eclipse.emf.common.EMFPlugin;
-
 import org.eclipse.emf.common.util.ResourceLocator;
-
 import org.eclipse.emf.ecore.provider.EcoreEditPlugin;
-
 import org.eclipse.papyrus.infra.filters.provider.FiltersEditPlugin;
-
 import org.eclipse.papyrus.infra.gmfdiag.assistant.provider.AssistantEditPlugin;
 
 /**
- * This is the central singleton for the Assistants edit plugin. <!--
- * begin-user-doc --> <!-- end-user-doc -->
+ * This is the central singleton for the Assistants edit plugin. <!-- begin-user-doc --> <!-- end-user-doc -->
  * 
  * @generated
  */
@@ -48,13 +43,12 @@ public final class AssistantsEditPlugin extends EMFPlugin {
 	 * @generated
 	 */
 	public AssistantsEditPlugin() {
-		super(new ResourceLocator[] { AssistantEditPlugin.INSTANCE, EcoreEditPlugin.INSTANCE,
+		super(new ResourceLocator[] {AssistantEditPlugin.INSTANCE, EcoreEditPlugin.INSTANCE,
 				FiltersEditPlugin.INSTANCE, });
 	}
 
 	/**
-	 * Returns the singleton instance of the Eclipse plugin. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Returns the singleton instance of the Eclipse plugin. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @return the singleton instance.
 	 * @generated
@@ -65,8 +59,7 @@ public final class AssistantsEditPlugin extends EMFPlugin {
 	}
 
 	/**
-	 * Returns the singleton instance of the Eclipse plugin. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Returns the singleton instance of the Eclipse plugin. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @return the singleton instance.
 	 * @generated
@@ -76,8 +69,7 @@ public final class AssistantsEditPlugin extends EMFPlugin {
 	}
 
 	/**
-	 * The actual implementation of the Eclipse <b>Plugin</b>. <!-- begin-user-doc
-	 * --> <!-- end-user-doc -->
+	 * The actual implementation of the Eclipse <b>Plugin</b>. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */

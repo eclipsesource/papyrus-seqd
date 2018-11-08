@@ -84,8 +84,7 @@ public class SequenceDiagramAssistantProviderOperations extends ModelingAssistan
 							result.remove(null); // In case of an unresolved element type
 
 							// Don't filter as the superclass does
-							return new BasicEList.UnmodifiableEList<IElementType>(result.size(),
-									result.toArray());
+							return new BasicEList.UnmodifiableEList<>(result.size(), result.toArray());
 						}
 					});
 		}
@@ -122,8 +121,7 @@ public class SequenceDiagramAssistantProviderOperations extends ModelingAssistan
 							result.remove(null); // In case of an unresolved element type
 
 							// Don't filter as the superclass does
-							return new BasicEList.UnmodifiableEList<IElementType>(result.size(),
-									result.toArray());
+							return new BasicEList.UnmodifiableEList<>(result.size(), result.toArray());
 						}
 					});
 		}
@@ -153,7 +151,7 @@ public class SequenceDiagramAssistantProviderOperations extends ModelingAssistan
 		result.remove(null); // In case of an unresolved element type
 
 		// Don't filter as the superclass does
-		return new BasicEList.UnmodifiableEList<IElementType>(result.size(), result.toArray());
+		return new BasicEList.UnmodifiableEList<>(result.size(), result.toArray());
 	}
 
 } // SequenceDiagramAssistantProviderOperations

@@ -14,18 +14,12 @@ package org.eclipse.papyrus.uml.diagram.sequence.assistants.impl;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IAdaptable;
-
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
-
 import org.eclipse.papyrus.infra.gmfdiag.assistant.impl.ModelingAssistantProviderImpl;
-
 import org.eclipse.papyrus.uml.diagram.sequence.assistants.DiagramAssistantsPackage;
 import org.eclipse.papyrus.uml.diagram.sequence.assistants.SequenceDiagramAssistantProvider;
-
 import org.eclipse.papyrus.uml.diagram.sequence.assistants.internal.operations.SequenceDiagramAssistantProviderOperations;
 
 /**

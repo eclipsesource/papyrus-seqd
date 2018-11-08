@@ -20,12 +20,11 @@ import org.eclipse.papyrus.infra.tools.util.PlatformHelper;
 /**
  * <!-- begin-user-doc --> A static utility class that provides operations related to '<em><b>View
  * Type</b></em>' model objects. <!-- end-user-doc -->
- *
  * <p>
  * The following operations are supported:
  * </p>
  * <ul>
- *   <li>{@link org.eclipse.papyrus.infra.filters.Filter#matches(java.lang.Object) <em>Matches</em>}</li>
+ * <li>{@link org.eclipse.papyrus.infra.filters.Filter#matches(java.lang.Object) <em>Matches</em>}</li>
  * </ul>
  *
  * @generated
@@ -33,6 +32,7 @@ import org.eclipse.papyrus.infra.tools.util.PlatformHelper;
 public class ViewTypeOperations {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected ViewTypeOperations() {

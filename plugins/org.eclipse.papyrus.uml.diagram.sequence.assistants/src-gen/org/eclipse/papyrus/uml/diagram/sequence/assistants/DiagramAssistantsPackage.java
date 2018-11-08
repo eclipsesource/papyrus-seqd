@@ -13,7 +13,6 @@ package org.eclipse.papyrus.uml.diagram.sequence.assistants;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.papyrus.infra.gmfdiag.assistant.AssistantPackage;
 
 /**

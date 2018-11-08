@@ -14,12 +14,11 @@ package org.eclipse.papyrus.uml.diagram.sequence.assistants.impl;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
-
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
-
-import org.eclipse.papyrus.uml.diagram.sequence.assistants.*;
+import org.eclipse.papyrus.uml.diagram.sequence.assistants.DiagramAssistantsFactory;
+import org.eclipse.papyrus.uml.diagram.sequence.assistants.DiagramAssistantsPackage;
+import org.eclipse.papyrus.uml.diagram.sequence.assistants.SequenceDiagramAssistantProvider;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
@@ -75,6 +74,7 @@ public class DiagramAssistantsFactoryImpl extends EFactoryImpl implements Diagra
 	 * 
 	 * @generated
 	 */
+	@Override
 	public SequenceDiagramAssistantProvider createSequenceDiagramAssistantProvider() {
 		SequenceDiagramAssistantProviderImpl sequenceDiagramAssistantProvider = new SequenceDiagramAssistantProviderImpl();
 		return sequenceDiagramAssistantProvider;
@@ -85,6 +85,7 @@ public class DiagramAssistantsFactoryImpl extends EFactoryImpl implements Diagra
 	 * 
 	 * @generated
 	 */
+	@Override
 	public DiagramAssistantsPackage getDiagramAssistantsPackage() {
 		return (DiagramAssistantsPackage)getEPackage();
 	}

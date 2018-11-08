@@ -217,7 +217,7 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 
 		int start = getStart().map(occ -> occurences.indexOf(occ)).orElse(-1);
 		int finish = getFinish().map(occ -> occurences.indexOf(occ)).orElse(-1);
-		if (start != -1 && finish != -1 && finish - start > 1) {
+		if ((start != -1) && (finish != -1) && ((finish - start) > 1)) {
 			List<MOccurrence<?>> executionOccurences = occurences.subList(start, finish);
 
 			Stack<MExecution> stack = new Stack<>();
@@ -232,7 +232,7 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 				if (occurence.getStartedExecution().isPresent()) {
 					MExecution execution = occurence.getStartedExecution().get();
 					// if current owner => this, then this execution should be added to the nested executions
-					if (!stack.empty() && stack.peek() == this) {
+					if (!stack.empty() && (stack.peek() == this)) {
 						nestedExecutions.add(execution);
 					}
 					stack.push(execution);

@@ -14,20 +14,14 @@ package org.eclipse.papyrus.infra.gmfdiag.filters;
 import org.eclipse.papyrus.infra.filters.Filter;
 
 /**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>View Type</b></em>'.
- * <!-- end-user-doc -->
- *
- * <!-- begin-model-doc -->
- * Filters the contextual notation view object by type.  What that
- * notation view is depends on the context in which the filter is used.
- * <!-- end-model-doc -->
- *
+ * <!-- begin-user-doc --> A representation of the model object '<em><b>View Type</b></em>'. <!-- end-user-doc
+ * --> <!-- begin-model-doc --> Filters the contextual notation view object by type. What that notation view
+ * is depends on the context in which the filter is used. <!-- end-model-doc -->
  * <p>
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.eclipse.papyrus.infra.gmfdiag.filters.ViewType#getType <em>Type</em>}</li>
+ * <li>{@link org.eclipse.papyrus.infra.gmfdiag.filters.ViewType#getType <em>Type</em>}</li>
  * </ul>
  *
  * @see org.eclipse.papyrus.infra.gmfdiag.filters.DiagramFiltersPackage#getViewType()
@@ -36,16 +30,13 @@ import org.eclipse.papyrus.infra.filters.Filter;
  */
 public interface ViewType extends Filter {
 	/**
-	 * Returns the value of the '<em><b>Type</b></em>' attribute.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Type</em>' attribute isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Type</em>' attribute isn't clear, there really should be more of a
+	 * description here...
 	 * </p>
-	 * <!-- end-user-doc -->
-	 * <!-- begin-model-doc -->
-	 * The notation view type to match.
-	 * <!-- end-model-doc -->
+	 * <!-- end-user-doc --> <!-- begin-model-doc --> The notation view type to match. <!-- end-model-doc -->
+	 * 
 	 * @return the value of the '<em>Type</em>' attribute.
 	 * @see #setType(String)
 	 * @see org.eclipse.papyrus.infra.gmfdiag.filters.DiagramFiltersPackage#getViewType_Type()
@@ -55,10 +46,11 @@ public interface ViewType extends Filter {
 	String getType();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.papyrus.infra.gmfdiag.filters.ViewType#getType <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Type</em>' attribute.
+	 * Sets the value of the '{@link org.eclipse.papyrus.infra.gmfdiag.filters.ViewType#getType
+	 * <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Type</em>' attribute.
 	 * @see #getType()
 	 * @generated
 	 */

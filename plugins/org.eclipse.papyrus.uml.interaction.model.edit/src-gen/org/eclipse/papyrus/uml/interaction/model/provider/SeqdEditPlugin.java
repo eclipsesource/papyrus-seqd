@@ -19,8 +19,7 @@ import org.eclipse.gmf.runtime.notation.NotationEditPlugin;
 import org.eclipse.uml2.uml.edit.UMLEditPlugin;
 
 /**
- * This is the central singleton for the Seqd edit plugin. <!-- begin-user-doc
- * --> <!-- end-user-doc -->
+ * This is the central singleton for the Seqd edit plugin. <!-- begin-user-doc --> <!-- end-user-doc -->
  * 
  * @generated
  */
@@ -45,12 +44,12 @@ public final class SeqdEditPlugin extends EMFPlugin {
 	 * @generated
 	 */
 	public SeqdEditPlugin() {
-		super(new ResourceLocator[] { EcoreEditPlugin.INSTANCE, UMLEditPlugin.INSTANCE, NotationEditPlugin.INSTANCE, });
+		super(new ResourceLocator[] {EcoreEditPlugin.INSTANCE, UMLEditPlugin.INSTANCE,
+				NotationEditPlugin.INSTANCE, });
 	}
 
 	/**
-	 * Returns the singleton instance of the Eclipse plugin. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Returns the singleton instance of the Eclipse plugin. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @return the singleton instance.
 	 * @generated
@@ -61,8 +60,7 @@ public final class SeqdEditPlugin extends EMFPlugin {
 	}
 
 	/**
-	 * Returns the singleton instance of the Eclipse plugin. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Returns the singleton instance of the Eclipse plugin. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @return the singleton instance.
 	 * @generated
@@ -72,8 +70,7 @@ public final class SeqdEditPlugin extends EMFPlugin {
 	}
 
 	/**
-	 * The actual implementation of the Eclipse <b>Plugin</b>. <!-- begin-user-doc
-	 * --> <!-- end-user-doc -->
+	 * The actual implementation of the Eclipse <b>Plugin</b>. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */

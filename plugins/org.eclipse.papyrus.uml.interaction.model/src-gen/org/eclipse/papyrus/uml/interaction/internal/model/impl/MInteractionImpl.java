@@ -259,9 +259,9 @@ public class MInteractionImpl extends MElementImpl<Interaction> implements MInte
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case SequenceDiagramPackage.MINTERACTION__LIFELINES:
-				return lifelines != null && !lifelines.isEmpty();
+				return (lifelines != null) && !lifelines.isEmpty();
 			case SequenceDiagramPackage.MINTERACTION__MESSAGES:
-				return messages != null && !messages.isEmpty();
+				return (messages != null) && !messages.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
