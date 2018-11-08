@@ -15,17 +15,32 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.Geo
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.GeometryUtil.asRectangle;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.GeometryUtil.getMoveDelta;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.GeometryUtil.getSizeDelta;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition.LEFT;
+import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition.RIGHT;
+import static org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes.LIFELINE_HEADER;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.emf.transaction.util.TransactionUtil;
+import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.ResizableShapeEditPolicy;
 import org.eclipse.gmf.runtime.notation.Bounds;
 import org.eclipse.gmf.runtime.notation.Node;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
+import org.eclipse.papyrus.uml.interaction.model.MInteraction;
+import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
+import org.eclipse.uml2.uml.Element;
 
 /**
  * <p>
@@ -36,6 +51,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
  * This policy also constrains the Drag/Move behavior to the horizontal dimension.
  * </p>
  */
+@SuppressWarnings("boxing")
 public class LifelineHeaderResizeEditPolicy extends ResizableShapeEditPolicy {
 
 	public LifelineHeaderResizeEditPolicy() {
@@ -64,6 +80,132 @@ public class LifelineHeaderResizeEditPolicy extends ResizableShapeEditPolicy {
 		ChangeBoundsRequest newRequest = new ChangeBoundsRequest(request.getType());
 		newRequest.setMoveDelta(getMoveDelta(current, rectangle));
 		newRequest.setSizeDelta(getSizeDelta(current, rectangle));
+		if (!PrivateRequestUtils.isAllowSemanticReordering(request)) {
+			// if semantic reorder not allowed show feedback with regard to our neighbours
+			getMaxMoveDelta().ifPresent(md -> {
+				if (newRequest.getMoveDelta().x() < 0) {
+					md.leftDelta.ifPresent(d -> {
+						if (d > newRequest.getMoveDelta().x()) {
+							newRequest.getMoveDelta().setX(d);
+						}
+					});
+				} else {
+					md.rightDelta.ifPresent(d -> {
+						if (d < newRequest.getMoveDelta().x()) {
+							newRequest.getMoveDelta().setX(d);
+						}
+					});
+				}
+			});
+		}
 		super.showChangeBoundsFeedback(newRequest);
+	}
+
+	@Override
+	protected Command getMoveCommand(ChangeBoundsRequest request) {
+		if (PrivateRequestUtils.isAllowSemanticReordering(request)) {
+			// Logic for issue #32 (Reorder lifeline) goes here. For now simply delegate to regular move
+			// command
+			return super.getMoveCommand(request);
+		} else {
+			return getMoveLifelineCommand(request);
+		}
+	}
+
+	private Command getMoveLifelineCommand(ChangeBoundsRequest request) {
+		Optional<MoveDelta> maxMoveDelta = getMaxMoveDelta();
+		if (!maxMoveDelta.isPresent()) {
+			return org.eclipse.gef.commands.UnexecutableCommand.INSTANCE;
+		}
+
+		Optional<Integer> leftDelta = maxMoveDelta.get().leftDelta;
+		Optional<Integer> rightDelta = maxMoveDelta.get().rightDelta;
+
+		int moveDelta = request.getMoveDelta().x();
+		if (moveDelta < 0 && leftDelta.isPresent()) {
+			/* left */
+			if (leftDelta.get() > moveDelta) {
+				return getAdjustedMoveLifelineCommand(request, leftDelta.get());
+			}
+		} else if (moveDelta > 0 && rightDelta.isPresent()) {
+			/* right */
+			if (rightDelta.get() < moveDelta) {
+				return getAdjustedMoveLifelineCommand(request, rightDelta.get());
+			}
+		}
+
+		return super.getMoveCommand(request);
+	}
+
+	private Command getAdjustedMoveLifelineCommand(ChangeBoundsRequest request, int x) {
+		ChangeBoundsRequest newRequest = new ChangeBoundsRequest(request.getType());
+		newRequest.setMoveDelta(request.getMoveDelta().getCopy());
+		newRequest.setSizeDelta(request.getSizeDelta().getCopy());
+		newRequest.getMoveDelta().setX(x);
+		return super.getMoveCommand(newRequest);
+	}
+
+	private Optional<MoveDelta> getMaxMoveDelta() {
+		List<MLifeline> leftToRight = getInteraction().getLifelines().stream()//
+				.sorted((ll1, ll2) -> {
+					int ll1Left = ll1.getDiagramView().map(layoutHelper()::getLeft).orElse(-1);
+					int ll2Left = ll2.getDiagramView().map(layoutHelper()::getLeft).orElse(-1);
+					if (ll1Left == ll2Left) {
+						return -1;
+					}
+					return ll1Left - ll2Left;
+				})//
+				.collect(Collectors.toList());
+
+		Optional<MLifeline> lifeline = getLifeline();
+		if (!lifeline.isPresent()) {
+			return Optional.empty();
+		}
+		int index = leftToRight.indexOf(lifeline.get());
+		if (index < 0) {
+			return Optional.empty();
+		}
+
+		Optional<MLifeline> leftLl = Optional.ofNullable(index > 0 ? leftToRight.get(index - 1) : null);
+		Optional<MLifeline> righttLl = Optional
+				.ofNullable(index + 1 != leftToRight.size() ? leftToRight.get(index + 1) : null);
+
+		int padding = layoutHelper().getConstraints().getPadding(LEFT, LIFELINE_HEADER)
+				+ layoutHelper().getConstraints().getPadding(RIGHT, LIFELINE_HEADER);
+
+		MoveDelta result = new MoveDelta();
+		result.leftDelta = leftLl
+				.map(left -> left.getRight().orElse(0) - lifeline.get().getLeft().orElse(0) + padding);
+		result.rightDelta = righttLl
+				.map(right -> right.getLeft().orElse(0) - lifeline.get().getRight().orElse(0) - padding);
+		return Optional.of(result);
+	}
+
+	LayoutHelper layoutHelper() {
+		return Activator.getDefault().getLayoutHelper(getEditingDomain());
+	}
+
+	TransactionalEditingDomain getEditingDomain() {
+		EObject view = getHost().getAdapter(View.class);
+		return (view == null) ? null : TransactionUtil.getEditingDomain(view);
+	}
+
+	IGraphicalEditPart getGraphicalHost() {
+		return (IGraphicalEditPart)getHost();
+	}
+
+	MInteraction getInteraction() {
+		return MInteraction.getInstance(getGraphicalHost().getNotationView().getDiagram());
+	}
+
+	Optional<MLifeline> getLifeline() {
+		EObject element = getGraphicalHost().resolveSemanticElement();
+		return as(getInteraction().getElement((Element)element), MLifeline.class);
+	}
+
+	private class MoveDelta {
+		Optional<Integer> leftDelta = Optional.empty();
+
+		Optional<Integer> rightDelta = Optional.empty();
 	}
 }

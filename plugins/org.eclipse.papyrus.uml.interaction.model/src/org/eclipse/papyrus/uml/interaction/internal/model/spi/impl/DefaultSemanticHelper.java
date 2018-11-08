@@ -404,10 +404,10 @@ public class DefaultSemanticHelper implements SemanticHelper {
 
 			result.setSendEvent(send);
 			result.setReceiveEvent(recv);
-
 			result.setMessageSort(sort);
 			result.setSignature(signature);
-
+			Interaction interaction = (Interaction)parameters.getContainer();
+			autoname(result, getNameBase(sort), interaction.getMessages());
 			return result;
 		};
 
@@ -420,6 +420,24 @@ public class DefaultSemanticHelper implements SemanticHelper {
 				UMLPackage.Literals.MESSAGE_END__MESSAGE, result);
 
 		return result.andThen(editingDomain, sendSetMessage).andThen(editingDomain, recvSetMessage);
+	}
+
+	private String getNameBase(MessageSort sort) {
+		switch (sort) {
+			case CREATE_MESSAGE_LITERAL:
+				return "CreateMessage"; //$NON-NLS-1$
+			case DELETE_MESSAGE_LITERAL:
+				return "DeleteMessage"; //$NON-NLS-1$
+			case ASYNCH_CALL_LITERAL:
+				return "AsyncMessage"; //$NON-NLS-1$
+			case SYNCH_CALL_LITERAL:
+				return "SyncMessage"; //$NON-NLS-1$
+			case REPLY_LITERAL:
+				return "ReplyMessage"; //$NON-NLS-1$
+			default:
+				return "Message"; //$NON-NLS-1$
+
+		}
 	}
 
 	@Override
@@ -459,7 +477,7 @@ public class DefaultSemanticHelper implements SemanticHelper {
 			/*
 			 * if this end is a start or finish is has to be replaced by an ExecutionOccurrenceSpecification
 			 */
-			List<Command> commandList = new ArrayList<Command>(executionSpecifications.size() + 1);
+			List<Command> commandList = new ArrayList<>(executionSpecifications.size() + 1);
 			commandList.add(delete(messageEnd));
 			executionSpecifications.forEach(es -> {
 				boolean isStart = es.getStart() == messageEnd;

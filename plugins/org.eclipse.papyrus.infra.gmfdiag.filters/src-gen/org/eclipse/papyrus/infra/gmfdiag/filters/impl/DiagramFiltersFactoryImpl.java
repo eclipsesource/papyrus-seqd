@@ -14,24 +14,22 @@ package org.eclipse.papyrus.infra.gmfdiag.filters.impl;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
-
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
-
-import org.eclipse.papyrus.infra.gmfdiag.filters.*;
+import org.eclipse.papyrus.infra.gmfdiag.filters.DiagramFiltersFactory;
+import org.eclipse.papyrus.infra.gmfdiag.filters.DiagramFiltersPackage;
+import org.eclipse.papyrus.infra.gmfdiag.filters.InDiagram;
+import org.eclipse.papyrus.infra.gmfdiag.filters.ViewType;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model <b>Factory</b>.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
+ * 
  * @generated
  */
 public class DiagramFiltersFactoryImpl extends EFactoryImpl implements DiagramFiltersFactory {
 	/**
-	 * Creates the default factory implementation.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Creates the default factory implementation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public static DiagramFiltersFactory init() {
@@ -48,9 +46,8 @@ public class DiagramFiltersFactoryImpl extends EFactoryImpl implements DiagramFi
 	}
 
 	/**
-	 * Creates an instance of the factory.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Creates an instance of the factory. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public DiagramFiltersFactoryImpl() {
@@ -58,8 +55,8 @@ public class DiagramFiltersFactoryImpl extends EFactoryImpl implements DiagramFi
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -76,8 +73,8 @@ public class DiagramFiltersFactoryImpl extends EFactoryImpl implements DiagramFi
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -87,8 +84,8 @@ public class DiagramFiltersFactoryImpl extends EFactoryImpl implements DiagramFi
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -98,8 +95,8 @@ public class DiagramFiltersFactoryImpl extends EFactoryImpl implements DiagramFi
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -108,8 +105,8 @@ public class DiagramFiltersFactoryImpl extends EFactoryImpl implements DiagramFi
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @deprecated
 	 * @generated
 	 */
@@ -118,4 +115,4 @@ public class DiagramFiltersFactoryImpl extends EFactoryImpl implements DiagramFi
 		return DiagramFiltersPackage.eINSTANCE;
 	}
 
-} //DiagramFiltersFactoryImpl
+} // DiagramFiltersFactoryImpl

@@ -44,7 +44,7 @@ public class GMFNotationPage extends GMFExplorerPage {
 	public GMFNotationPage(GraphicalEditor editor) {
 		super(editor);
 		TransactionalEditingDomain editingDomain = ((DiagramEditor)editor).getEditingDomain();
-		adapterFactory = ((AdapterFactoryEditingDomain) editingDomain).getAdapterFactory();;
+		adapterFactory = ((AdapterFactoryEditingDomain) editingDomain).getAdapterFactory();
 	}
 
 	@Override

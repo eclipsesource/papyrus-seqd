@@ -24,28 +24,28 @@ import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
 /**
- * <!-- begin-user-doc --> A test case for the model object '<em><b>View
- * Type</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A test case for the model object '<em><b>View Type</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following operations are tested:
  * <ul>
- *   <li>{@link org.eclipse.papyrus.infra.filters.Filter#matches(java.lang.Object) <em>Matches</em>}</li>
+ * <li>{@link org.eclipse.papyrus.infra.filters.Filter#matches(java.lang.Object) <em>Matches</em>}</li>
  * </ul>
  * </p>
+ * 
  * @generated
  */
 public class ViewTypeTest extends TestCase {
 
 	/**
-	 * The fixture for this View Type test case.
-	 * <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * The fixture for this View Type test case. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected ViewType fixture = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public static void main(String[] args) {
@@ -53,9 +53,8 @@ public class ViewTypeTest extends TestCase {
 	}
 
 	/**
-	 * Constructs a new View Type test case with the given name.
-	 * <!-- begin-user-doc
-	 * --> <!-- end-user-doc -->
+	 * Constructs a new View Type test case with the given name. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public ViewTypeTest(String name) {
@@ -63,9 +62,8 @@ public class ViewTypeTest extends TestCase {
 	}
 
 	/**
-	 * Sets the fixture for this View Type test case.
-	 * <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * Sets the fixture for this View Type test case. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected void setFixture(ViewType fixture) {
@@ -73,9 +71,8 @@ public class ViewTypeTest extends TestCase {
 	}
 
 	/**
-	 * Returns the fixture for this View Type test case.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Returns the fixture for this View Type test case. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected ViewType getFixture() {
@@ -97,6 +94,7 @@ public class ViewTypeTest extends TestCase {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see junit.framework.TestCase#tearDown()
 	 * @generated
 	 */
@@ -106,9 +104,8 @@ public class ViewTypeTest extends TestCase {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.infra.filters.Filter#matches(java.lang.Object)
-	 * <em>Matches</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.infra.filters.Filter#matches(java.lang.Object) <em>Matches</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.infra.filters.Filter#matches(java.lang.Object)
 	 * @generated NOT

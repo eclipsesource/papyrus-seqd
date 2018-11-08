@@ -84,6 +84,11 @@ public class RemoveExecutionCommand extends ModelCommand<MExecutionImpl> impleme
 		messagesToRemove.forEach(
 				m -> removalCommands.add(new RemoveMessageCommand((MMessageImpl)m, getTarget(), false)));
 
+		/* remove nested executions */
+		// List<RemovalCommand<Element>> removeNestedExecutions = new ArrayList<>();
+		execution.getNestedExecutions().forEach(
+				nested -> removalCommands.add(new RemoveExecutionCommand((MExecutionImpl)nested, false)));
+
 		/* semantics */
 		SemanticHelper semantics = semanticHelper();
 		removalCommands.add(semantics.deleteExecutionSpecification(execution.getElement()));

@@ -39,17 +39,15 @@ import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 
 /**
- * This is the item provider adapter for a
- * {@link org.eclipse.papyrus.uml.interaction.model.MElement} object. <!--
- * begin-user-doc --> <!-- end-user-doc -->
- *
+ * This is the item provider adapter for a {@link org.eclipse.papyrus.uml.interaction.model.MElement} object.
+ * <!-- begin-user-doc --> <!-- end-user-doc -->
+ * 
  * @generated
  */
-public class MElementItemProvider extends ItemProviderAdapter implements IEditingDomainItemProvider,
-		IStructuredItemContentProvider, ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource {
+public class MElementItemProvider extends ItemProviderAdapter implements IEditingDomainItemProvider, IStructuredItemContentProvider, ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource {
 	/**
-	 * This constructs an instance from a factory and a notifier. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This constructs an instance from a factory and a notifier. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 *
 	 * @generated
 	 */
@@ -58,8 +56,8 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	}
 
 	/**
-	 * This returns the property descriptors for the adapted class. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This returns the property descriptors for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 *
 	 * @generated
 	 */
@@ -78,14 +76,14 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	}
 
 	/**
-	 * This adds a property descriptor for the Interaction feature. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This adds a property descriptor for the Interaction feature. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 *
 	 * @generated
 	 */
 	protected void addInteractionPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
 				getString("_UI_MElement_interaction_feature"), //$NON-NLS-1$
 				getString("_UI_PropertyDescriptor_description", "_UI_MElement_interaction_feature", //$NON-NLS-1$ //$NON-NLS-2$
 						"_UI_MElement_type"), //$NON-NLS-1$
@@ -94,14 +92,13 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	}
 
 	/**
-	 * This adds a property descriptor for the Element feature. <!-- begin-user-doc
-	 * --> <!-- end-user-doc -->
+	 * This adds a property descriptor for the Element feature. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	protected void addElementPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
 				getString("_UI_MElement_element_feature"), //$NON-NLS-1$
 				getString("_UI_PropertyDescriptor_description", "_UI_MElement_element_feature", //$NON-NLS-1$ //$NON-NLS-2$
 						"_UI_MElement_type"), //$NON-NLS-1$
@@ -109,14 +106,13 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	}
 
 	/**
-	 * This adds a property descriptor for the Top feature. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This adds a property descriptor for the Top feature. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	protected void addTopPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
 				getString("_UI_MElement_top_feature"), //$NON-NLS-1$
 				getString("_UI_PropertyDescriptor_description", "_UI_MElement_top_feature", //$NON-NLS-1$ //$NON-NLS-2$
 						"_UI_MElement_type"), //$NON-NLS-1$
@@ -125,14 +121,13 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	}
 
 	/**
-	 * This adds a property descriptor for the Bottom feature. <!-- begin-user-doc
-	 * --> <!-- end-user-doc -->
+	 * This adds a property descriptor for the Bottom feature. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	protected void addBottomPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
 				getString("_UI_MElement_bottom_feature"), //$NON-NLS-1$
 				getString("_UI_PropertyDescriptor_description", "_UI_MElement_bottom_feature", //$NON-NLS-1$ //$NON-NLS-2$
 						"_UI_MElement_type"), //$NON-NLS-1$
@@ -141,14 +136,13 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	}
 
 	/**
-	 * This adds a property descriptor for the Name feature. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This adds a property descriptor for the Name feature. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	protected void addNamePropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
 				getString("_UI_MElement_name_feature"), //$NON-NLS-1$
 				getString("_UI_PropertyDescriptor_description", "_UI_MElement_name_feature", //$NON-NLS-1$ //$NON-NLS-2$
 						"_UI_MElement_type"), //$NON-NLS-1$
@@ -157,11 +151,10 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	}
 
 	/**
-	 * This specifies how to implement {@link #getChildren} and is used to deduce an
-	 * appropriate feature for an {@link org.eclipse.emf.edit.command.AddCommand},
-	 * {@link org.eclipse.emf.edit.command.RemoveCommand} or
-	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for
+	 * an {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand}
+	 * or {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}. <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
@@ -181,30 +174,28 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	 */
 	@Override
 	protected EStructuralFeature getChildFeature(Object object, Object child) {
-		// Check the type of the specified child object and return the proper feature to
-		// use for
+		// Check the type of the specified child object and return the proper feature to use for
 		// adding (see {@link AddCommand}) it as a child.
 
 		return super.getChildFeature(object, child);
 	}
 
 	/**
-	 * This returns the label text for the adapted class. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This returns the label text for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	@Override
 	public String getText(Object object) {
-		String label = ((MElement<?>) object).getName();
+		String label = ((MElement<?>)object).getName();
 		return (label == null) || (label.length() == 0) ? getString("_UI_MElement_type") : //$NON-NLS-1$
 				getString("_UI_MElement_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
-	 * This handles model notifications by calling {@link #updateChildren} to update
-	 * any cached children and by creating a viewer notification, which it passes to
-	 * {@link #fireNotifyChanged}. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * This handles model notifications by calling {@link #updateChildren} to update any cached children and
+	 * by creating a viewer notification, which it passes to {@link #fireNotifyChanged}. <!-- begin-user-doc
+	 * --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
@@ -213,20 +204,19 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(MElement.class)) {
-		case SequenceDiagramPackage.MELEMENT__TOP:
-		case SequenceDiagramPackage.MELEMENT__BOTTOM:
-		case SequenceDiagramPackage.MELEMENT__NAME:
-			fireNotifyChanged(
-					new ViewerNotification(notification, notification.getNotifier(), false, true));
-			return;
+			case SequenceDiagramPackage.MELEMENT__TOP:
+			case SequenceDiagramPackage.MELEMENT__BOTTOM:
+			case SequenceDiagramPackage.MELEMENT__NAME:
+				fireNotifyChanged(
+						new ViewerNotification(notification, notification.getNotifier(), false, true));
+				return;
 		}
 		super.notifyChanged(notification);
 	}
 
 	/**
-	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing
-	 * the children that can be created under this object. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children that can be
+	 * created under this object. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
@@ -238,10 +228,10 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	@Override
 	public Collection<?> getChildren(Object object) {
 		@SuppressWarnings("unchecked")
-		Collection<Object> result = (Collection<Object>) super.getChildren(object);
+		Collection<Object> result = (Collection<Object>)super.getChildren(object);
 
 		// Don't show the diagram, which will repeat the views of everything else
-		MElement<?> element = (MElement<?>) object;
+		MElement<?> element = (MElement<?>)object;
 		Predicate<EObject> isDiagram = Diagram.class::isInstance;
 		Optional<? extends EObject> view = element.getDiagramView().filter(isDiagram.negate());
 		view.ifPresent(result::add);
@@ -250,9 +240,9 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	}
 
 	/**
-	 * Return the resource locator for this item provider's resources. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * Return the resource locator for this item provider's resources. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -267,7 +257,7 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 			Object staticImage, String category, String[] filterFlags) {
 
 		if (feature instanceof EAttribute) {
-			Class<?> attrType = ((EAttribute) feature).getEAttributeType().getInstanceClass();
+			Class<?> attrType = ((EAttribute)feature).getEAttributeType().getInstanceClass();
 			if (attrType == Optional.class) {
 				return new OptionalPropertyDescriptor(adapterFactory, resourceLocator, displayName,
 						description, feature, isSettable, multiLine, sortChoices, staticImage, category,
@@ -306,7 +296,7 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 				return super.createPropertyValueWrapper(object, propertyValue);
 			}
 
-			Optional<?> optional = (Optional<?>) propertyValue;
+			Optional<?> optional = (Optional<?>)propertyValue;
 			return new PropertyValueWrapper(adapterFactory, object, propertyValue, null) {
 				@Override
 				public Object getEditableValue(Object thisObject) {
@@ -356,7 +346,7 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 				return super.createPropertyValueWrapper(object, propertyValue);
 			}
 
-			OptionalInt optional = (OptionalInt) propertyValue;
+			OptionalInt optional = (OptionalInt)propertyValue;
 			return new PropertyValueWrapper(adapterFactory, object, propertyValue, null) {
 				@Override
 				public Object getEditableValue(Object thisObject) {

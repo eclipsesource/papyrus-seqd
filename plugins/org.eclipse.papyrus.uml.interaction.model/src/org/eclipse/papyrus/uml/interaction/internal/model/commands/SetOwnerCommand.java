@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import static java.util.Collections.singletonList;
+import static org.eclipse.papyrus.uml.interaction.model.util.Executions.getLifelineView;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.notation.Shape;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
@@ -85,6 +87,17 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 				|| (bottom.isPresent() && !getTarget().getBottom().equals(bottom));
 	}
 
+	protected boolean needReparentView(MExecution execution) {
+		// browse the list of parent views until we get to the real lifeline view.
+		// once found, compare to the "new" lifeline owner.
+		// if similar, no need to reparent
+		// this avoids issues in reparenting executions with nested executions
+		Optional<View> parentLifelineView = getLifelineView(execution);
+		return parentLifelineView.isPresent()
+				&& !parentLifelineView.equals(as(newOwner.getDiagramView(), View.class));
+
+	}
+
 	@Override
 	protected Command doCreateCommand() {
 		return new SequenceDiagramSwitch<Command>() {
@@ -124,7 +137,7 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 			int newTop = top.orElseGet(() -> execution.getTop().getAsInt());
 			int newBottom = bottom.orElseGet(() -> execution.getBottom().getAsInt());
 
-			if (isChangingOwner()) {
+			if (isChangingOwner() && needReparentView(execution)) {
 				// Move the execution shape
 				result = chain(result, diagramHelper().reparentView(executionShape.get(), lifelineView));
 			}

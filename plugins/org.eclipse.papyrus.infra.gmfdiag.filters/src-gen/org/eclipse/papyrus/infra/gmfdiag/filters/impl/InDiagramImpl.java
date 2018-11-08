@@ -15,44 +15,37 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-
 import org.eclipse.emf.ecore.resource.Resource;
-
 import org.eclipse.papyrus.infra.filters.Filter;
-
 import org.eclipse.papyrus.infra.gmfdiag.filters.DiagramFiltersPackage;
 import org.eclipse.papyrus.infra.gmfdiag.filters.InDiagram;
-
 import org.eclipse.papyrus.infra.gmfdiag.filters.internal.operations.InDiagramOperations;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>In Diagram</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>In Diagram</b></em>'. <!--
+ * end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.eclipse.papyrus.infra.gmfdiag.filters.impl.InDiagramImpl#getName <em>Name</em>}</li>
- *   <li>{@link org.eclipse.papyrus.infra.gmfdiag.filters.impl.InDiagramImpl#getFilter <em>Filter</em>}</li>
- *   <li>{@link org.eclipse.papyrus.infra.gmfdiag.filters.impl.InDiagramImpl#getOwnedFilter <em>Owned Filter</em>}</li>
+ * <li>{@link org.eclipse.papyrus.infra.gmfdiag.filters.impl.InDiagramImpl#getName <em>Name</em>}</li>
+ * <li>{@link org.eclipse.papyrus.infra.gmfdiag.filters.impl.InDiagramImpl#getFilter <em>Filter</em>}</li>
+ * <li>{@link org.eclipse.papyrus.infra.gmfdiag.filters.impl.InDiagramImpl#getOwnedFilter <em>Owned
+ * Filter</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDiagram {
 	/**
-	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -60,9 +53,9 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	protected static final String NAME_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -70,9 +63,9 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	protected String name = NAME_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getFilter() <em>Filter</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getFilter() <em>Filter</em>}' reference. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
 	 * @see #getFilter()
 	 * @generated
 	 * @ordered
@@ -80,9 +73,9 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	protected Filter filter;
 
 	/**
-	 * The cached value of the '{@link #getOwnedFilter() <em>Owned Filter</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getOwnedFilter() <em>Owned Filter</em>}' containment reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getOwnedFilter()
 	 * @generated
 	 * @ordered
@@ -90,8 +83,8 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	protected Filter ownedFilter;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected InDiagramImpl() {
@@ -99,8 +92,8 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -109,8 +102,8 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -119,8 +112,8 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -128,33 +121,35 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 		newName = newName == null ? NAME_EDEFAULT : newName;
 		String oldName = name;
 		name = newName;
-		if (eNotificationRequired())
+		if (eNotificationRequired()) {
 			eNotify(new ENotificationImpl(this, Notification.SET, DiagramFiltersPackage.IN_DIAGRAM__NAME,
 					oldName, name));
+		}
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public Filter getFilter() {
-		if (filter != null && filter.eIsProxy()) {
+		if ((filter != null) && filter.eIsProxy()) {
 			InternalEObject oldFilter = (InternalEObject)filter;
 			filter = (Filter)eResolveProxy(oldFilter);
 			if (filter != oldFilter) {
-				if (eNotificationRequired())
+				if (eNotificationRequired()) {
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
 							DiagramFiltersPackage.IN_DIAGRAM__FILTER, oldFilter, filter));
+				}
 			}
 		}
 		return filter;
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public Filter basicGetFilter() {
@@ -162,28 +157,29 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public void setFilter(Filter newFilter) {
 		Filter oldFilter = filter;
 		filter = newFilter;
-		if (eNotificationRequired())
+		if (eNotificationRequired()) {
 			eNotify(new ENotificationImpl(this, Notification.SET, DiagramFiltersPackage.IN_DIAGRAM__FILTER,
 					oldFilter, filter));
+		}
 		Resource.Internal eInternalResource = eInternalResource();
-		if (eInternalResource == null || !eInternalResource.isLoading()) {
-			if (ownedFilter != null && ownedFilter != newFilter) {
+		if ((eInternalResource == null) || !eInternalResource.isLoading()) {
+			if ((ownedFilter != null) && (ownedFilter != newFilter)) {
 				setOwnedFilter(null);
 			}
 		}
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -192,8 +188,8 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public NotificationChain basicSetOwnedFilter(Filter newOwnedFilter, NotificationChain msgs) {
@@ -202,13 +198,14 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
 					DiagramFiltersPackage.IN_DIAGRAM__OWNED_FILTER, oldOwnedFilter, newOwnedFilter);
-			if (msgs == null)
+			if (msgs == null) {
 				msgs = notification;
-			else
+			} else {
 				msgs.add(notification);
+			}
 		}
 		Resource.Internal eInternalResource = eInternalResource();
-		if (eInternalResource == null || !eInternalResource.isLoading()) {
+		if ((eInternalResource == null) || !eInternalResource.isLoading()) {
 			if (newOwnedFilter != null) {
 				if (newOwnedFilter != filter) {
 					setFilter(newOwnedFilter);
@@ -219,31 +216,35 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public void setOwnedFilter(Filter newOwnedFilter) {
 		if (newOwnedFilter != ownedFilter) {
 			NotificationChain msgs = null;
-			if (ownedFilter != null)
+			if (ownedFilter != null) {
 				msgs = ((InternalEObject)ownedFilter).eInverseRemove(this,
 						EOPPOSITE_FEATURE_BASE - DiagramFiltersPackage.IN_DIAGRAM__OWNED_FILTER, null, msgs);
-			if (newOwnedFilter != null)
+			}
+			if (newOwnedFilter != null) {
 				msgs = ((InternalEObject)newOwnedFilter).eInverseAdd(this,
 						EOPPOSITE_FEATURE_BASE - DiagramFiltersPackage.IN_DIAGRAM__OWNED_FILTER, null, msgs);
+			}
 			msgs = basicSetOwnedFilter(newOwnedFilter, msgs);
-			if (msgs != null)
+			if (msgs != null) {
 				msgs.dispatch();
-		} else if (eNotificationRequired())
+			}
+		} else if (eNotificationRequired()) {
 			eNotify(new ENotificationImpl(this, Notification.SET,
 					DiagramFiltersPackage.IN_DIAGRAM__OWNED_FILTER, newOwnedFilter, newOwnedFilter));
+		}
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -252,8 +253,8 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -266,8 +267,8 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -276,8 +277,9 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 			case DiagramFiltersPackage.IN_DIAGRAM__NAME:
 				return getName();
 			case DiagramFiltersPackage.IN_DIAGRAM__FILTER:
-				if (resolve)
+				if (resolve) {
 					return getFilter();
+				}
 				return basicGetFilter();
 			case DiagramFiltersPackage.IN_DIAGRAM__OWNED_FILTER:
 				return getOwnedFilter();
@@ -286,8 +288,8 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -307,8 +309,8 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -328,8 +330,8 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -346,8 +348,8 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -360,20 +362,21 @@ public class InDiagramImpl extends MinimalEObjectImpl.Container implements InDia
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy())
+		if (eIsProxy()) {
 			return super.toString();
+		}
 
-		StringBuffer result = new StringBuffer(super.toString());
+		StringBuilder result = new StringBuilder(super.toString());
 		result.append(" (name: "); //$NON-NLS-1$
 		result.append(name);
 		result.append(')');
 		return result.toString();
 	}
 
-} //InDiagramImpl
+} // InDiagramImpl

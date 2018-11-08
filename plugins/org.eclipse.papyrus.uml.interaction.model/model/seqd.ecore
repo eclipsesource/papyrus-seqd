@@ -426,6 +426,19 @@
         </eAnnotations>
       </eParameters>
     </eOperations>
+    <eOperations name="getFirstLevelExecutions" upperBound="-1" eType="#//MExecution">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Query the list of owned {@link MExecution} that are directly on the lifeline, and not virtual children of another execution of this lifeline."/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="getOccurrenceSpecifications" upperBound="-1">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Query the {@link MOccurrence} in timeline order that are on this lifeline"/>
+      </eAnnotations>
+      <eGenericType eClassifier="#//MOccurrence">
+        <eTypeArguments/>
+      </eGenericType>
+    </eOperations>
     <eOperations name="makeCreatedAt" lowerBound="1" eType="#//Command">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="documentation" value="Obtain a command that makes the receiver created at some Y position in the diagram."/>
@@ -492,6 +505,50 @@
         <eTypeArguments eClassifier="ecore:EClass ../../org.eclipse.gmf.runtime.notation/model/notation.ecore#//Shape"/>
       </eGenericType>
     </eOperations>
+    <eOperations name="insertNestedExecutionAfter" lowerBound="1">
+      <eGenericType eClassifier="#//CreationCommand">
+        <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//ExecutionSpecification"/>
+      </eGenericType>
+      <eParameters name="before" lowerBound="1">
+        <eGenericType eClassifier="#//MElement">
+          <eTypeArguments/>
+        </eGenericType>
+      </eParameters>
+      <eParameters name="offset" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      <eParameters name="height" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      <eParameters name="specification" lowerBound="1" eType="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
+    </eOperations>
+    <eOperations name="insertNestedExecutionAfter" lowerBound="1">
+      <eGenericType eClassifier="#//CreationCommand">
+        <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//ExecutionSpecification"/>
+      </eGenericType>
+      <eParameters name="before" lowerBound="1">
+        <eGenericType eClassifier="#//MElement">
+          <eTypeArguments/>
+        </eGenericType>
+      </eParameters>
+      <eParameters name="offset" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      <eParameters name="height" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      <eParameters name="metaclass" lowerBound="1" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EClass"/>
+    </eOperations>
+    <eOperations name="elementAt" lowerBound="1">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Query the element covering this execution that is at, or the nearest element before, a given y-coordinate {@code offset}."/>
+      </eAnnotations>
+      <eGenericType eClassifier="#//Optional">
+        <eTypeArguments eClassifier="#//MElement">
+          <eTypeArguments>
+            <eUpperBound eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Element"/>
+          </eTypeArguments>
+        </eTypeArguments>
+      </eGenericType>
+      <eParameters name="offset" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="an offset in the y axis on the execution border. Should be non-negative"/>
+        </eAnnotations>
+      </eParameters>
+    </eOperations>
+    <eOperations name="getNestedExecutions" upperBound="-1" eType="#//MExecution"/>
     <eOperations name="setOwner" lowerBound="1" eType="#//Command">
       <eParameters name="newOwner" lowerBound="1" eType="#//MLifeline"/>
       <eParameters name="top" lowerBound="1" eType="#//OptionalInt">

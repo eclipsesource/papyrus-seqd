@@ -29,14 +29,15 @@ import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
 /**
- * <!-- begin-user-doc --> A test case for the model object '<em><b>In
- * Diagram</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A test case for the model object '<em><b>In Diagram</b></em>'. <!-- end-user-doc
+ * -->
  * <p>
  * The following operations are tested:
  * <ul>
- *   <li>{@link org.eclipse.papyrus.infra.filters.Filter#matches(java.lang.Object) <em>Matches</em>}</li>
+ * <li>{@link org.eclipse.papyrus.infra.filters.Filter#matches(java.lang.Object) <em>Matches</em>}</li>
  * </ul>
  * </p>
+ * 
  * @generated
  */
 public class InDiagramTest extends TestCase {
@@ -44,15 +45,15 @@ public class InDiagramTest extends TestCase {
 	private Filter mockFilter;
 
 	/**
-	 * The fixture for this In Diagram test case.
-	 * <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * The fixture for this In Diagram test case. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected InDiagram fixture = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public static void main(String[] args) {
@@ -60,8 +61,8 @@ public class InDiagramTest extends TestCase {
 	}
 
 	/**
-	 * Constructs a new In Diagram test case with the given name. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * Constructs a new In Diagram test case with the given name. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 * 
 	 * @generated
 	 */
@@ -70,9 +71,8 @@ public class InDiagramTest extends TestCase {
 	}
 
 	/**
-	 * Sets the fixture for this In Diagram test case.
-	 * <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * Sets the fixture for this In Diagram test case. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected void setFixture(InDiagram fixture) {
@@ -80,9 +80,8 @@ public class InDiagramTest extends TestCase {
 	}
 
 	/**
-	 * Returns the fixture for this In Diagram test case.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Returns the fixture for this In Diagram test case. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected InDiagram getFixture() {
@@ -105,6 +104,7 @@ public class InDiagramTest extends TestCase {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see junit.framework.TestCase#tearDown()
 	 * @generated
 	 */
@@ -114,16 +114,16 @@ public class InDiagramTest extends TestCase {
 	}
 
 	/**
-	 * Tests the
-	 * '{@link org.eclipse.papyrus.infra.filters.Filter#matches(java.lang.Object)
-	 * <em>Matches</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * Tests the '{@link org.eclipse.papyrus.infra.filters.Filter#matches(java.lang.Object) <em>Matches</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @see org.eclipse.papyrus.infra.filters.Filter#matches(java.lang.Object)
 	 * @generated NOT
 	 */
 	public void testMatches__Object() {
 		Diagram diagram = NotationFactory.eINSTANCE.createDiagram();
-		Node node = diagram.createChild(NotationPackage.Literals.NODE).createChild(NotationPackage.Literals.NODE);
+		Node node = diagram.createChild(NotationPackage.Literals.NODE)
+				.createChild(NotationPackage.Literals.NODE);
 		getFixture().matches(node);
 
 		verify(mockFilter).matches(diagram);
@@ -131,7 +131,8 @@ public class InDiagramTest extends TestCase {
 
 	public void testMatches__Object_adaptable() {
 		Diagram diagram = NotationFactory.eINSTANCE.createDiagram();
-		Node node = diagram.createChild(NotationPackage.Literals.NODE).createChild(NotationPackage.Literals.NODE);
+		Node node = diagram.createChild(NotationPackage.Literals.NODE)
+				.createChild(NotationPackage.Literals.NODE);
 
 		IAdaptable adaptable = new IAdaptable() {
 

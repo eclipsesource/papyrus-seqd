@@ -43,15 +43,13 @@ public class LogicalModelAdapterTest {
 
 	/**
 	 * Initializes me.
-	 *
 	 */
 	public LogicalModelAdapterTest() {
 		super();
 	}
 
 	/**
-	 * Test that the adapter notifies creation of an already existing logical model
-	 * when the handler is added.
+	 * Test that the adapter notifies creation of an already existing logical model when the handler is added.
 	 */
 	@Test
 	public void onLogicalModelCreated_immediate() {
@@ -64,8 +62,8 @@ public class LogicalModelAdapterTest {
 	}
 
 	/**
-	 * Test that the adapter notifies creation of a new logical model when it is
-	 * created when the handler is added.
+	 * Test that the adapter notifies creation of a new logical model when it is created when the handler is
+	 * added.
 	 */
 	@Test
 	public void onLogicalModelCreated_new() {

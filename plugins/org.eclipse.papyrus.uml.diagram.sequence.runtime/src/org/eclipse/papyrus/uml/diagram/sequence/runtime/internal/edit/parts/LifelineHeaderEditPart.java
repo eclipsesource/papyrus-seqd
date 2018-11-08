@@ -17,6 +17,7 @@ import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.ConnectionEditPart;
+import org.eclipse.gef.DragTracker;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
@@ -31,6 +32,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.figure.LifelineHeaderFigure;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.InteractionSemanticEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineHeaderGraphicalNodeEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineHeaderResizeEditPolicy;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.LifelineHeaderDragTracker;
 import org.eclipse.papyrus.uml.tools.utils.UMLUtil;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Lifeline;
@@ -140,6 +142,11 @@ public class LifelineHeaderEditPart extends AbstractBorderedShapeEditPart implem
 		} else {
 			borderItemContainer.add(borderItemEditPart.getFigure(), new BorderItemLocator(getMainFigure()));
 		}
+	}
+
+	@Override
+	public DragTracker getDragTracker(Request request) {
+		return new LifelineHeaderDragTracker(this);
 	}
 
 	public static class LifelineBodyBorderItemLocator extends BorderItemLocator {

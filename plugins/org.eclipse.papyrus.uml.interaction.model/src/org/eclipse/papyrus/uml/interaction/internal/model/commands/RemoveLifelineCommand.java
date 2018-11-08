@@ -61,14 +61,15 @@ public class RemoveLifelineCommand extends ModelCommand<MLifelineImpl> implement
 		List<RemovalCommand<Element>> removalCommands = new ArrayList<>(lifeline.getExecutions().size() + 1);
 
 		/* collect non execution related messages */
-		Set<MessageOccurrenceSpecification> messageEndsToDelete = new LinkedHashSet<MessageOccurrenceSpecification>(
+		Set<MessageOccurrenceSpecification> messageEndsToDelete = new LinkedHashSet<>(
 				lifeline.getElement().getCoveredBys().stream()//
 						.filter(MessageOccurrenceSpecification.class::isInstance)//
 						.map(MessageOccurrenceSpecification.class::cast)//
 						.collect(Collectors.toSet()));
 
-		/* remove executions */
-		lifeline.getExecutions().forEach(e -> {
+		/* remove executions (only first level, others will be removed by dependency */
+
+		lifeline.getFirstLevelExecutions().forEach(e -> {
 			e.getStart().ifPresent(o -> messageEndsToDelete.remove(o.getElement()));
 			e.getFinish().ifPresent(o -> messageEndsToDelete.remove(o.getElement()));
 			removalCommands.add(new RemoveExecutionCommand((MExecutionImpl)e, false));
@@ -114,5 +115,4 @@ public class RemoveLifelineCommand extends ModelCommand<MLifelineImpl> implement
 		}
 		return delegate.getElementsToRemove();
 	}
-
 }

@@ -298,8 +298,8 @@ public class InsertMessageCommand extends ModelCommand.Creation<MLifelineImpl, M
 				: beforeSend.getTop().orElse(llTopSend) - llTopSend + sendOffset;
 		Optional<MExecution> sendingExec = getTarget().elementAt(whereSend).flatMap(this::getExecution)
 				.filter(exec -> //
-				((exec.getBottom().orElse(-1) - llTopSend) >= whereSend) //
-						&& ((exec.getTop().orElse(MAX_VALUE) - llTopSend) <= whereSend));
+		((exec.getBottom().orElse(-1) - llTopSend) >= whereSend) //
+				&& ((exec.getTop().orElse(MAX_VALUE) - llTopSend) <= whereSend));
 		Vertex sender = sendingExec.map(this::vertex).orElseGet(this::vertex);
 		if (sender == null || sender.getDiagramView() == null) {
 			return UnexecutableCommand.INSTANCE;
@@ -461,7 +461,7 @@ public class InsertMessageCommand extends ModelCommand.Creation<MLifelineImpl, M
 		Optional<MElement<?>> nudgeToEnforcePadding = Optional.empty();
 		int distanceToEnforcePadding = 0;
 		if (additionalOffset > 0) {
-			Set<MElement<?>> elementToNudge = new LinkedHashSet<MElement<?>>();
+			Set<MElement<?>> elementToNudge = new LinkedHashSet<>();
 			validateOffsetChange(sendingExec, absoluteSendY, additionalOffset, elementToNudge);
 			validateOffsetChange(receivingExec, absoluteRecvY, additionalOffset, elementToNudge);
 			if (!elementToNudge.isEmpty()) {
@@ -553,13 +553,11 @@ public class InsertMessageCommand extends ModelCommand.Creation<MLifelineImpl, M
 			default:
 				// Now we have commands to add the message specification. But, first we must make
 				// room for it in the diagram. Nudge the element that will follow the new receive event
-				int spaceRequired = 2 * sendOffset;
 				// If inserting after the start occurrence of an execution specification,
 				// then actually insert after the execution, itself, so that it can span
 				// the new message end
-				Optional<Command> makeSpace = createNudgeCommandForFollowingElements(timeline, spaceRequired,
-						sendInsert, sendingExec, senderY.getAsInt(), recvInsert, receivingExec,
-						recvYPosition);
+				Optional<Command> makeSpace = createNudgeCommandForFollowingElements(timeline, sendInsert,
+						sendingExec, senderY.getAsInt(), recvInsert, receivingExec, recvYPosition);
 				if (makeSpace.isPresent()) {
 					result = makeSpace.get().chain(result);
 				}
@@ -742,7 +740,7 @@ public class InsertMessageCommand extends ModelCommand.Creation<MLifelineImpl, M
 	}
 
 	private Optional<Command> createNudgeCommandForFollowingElements(
-			List<MElement<? extends Element>> timeline, int spaceRequired,
+			List<MElement<? extends Element>> timeline, //
 			Optional<MElement<? extends Element>> sendInsert, //
 			Optional<MExecution> sendingExec, int sendYPosition, //
 			Optional<MElement<? extends Element>> recvInsert, //
@@ -773,7 +771,12 @@ public class InsertMessageCommand extends ModelCommand.Creation<MLifelineImpl, M
 					}
 					OptionalInt distance = toNudge.verticalDistance(latestElementBeforeY);
 					if (distance.isPresent()) {
-						return toNudge.nudge(Math.max(minNudge, spaceRequired - distance.getAsInt()));
+						int deltaToKeepDistance = (recvYPosition + distance.getAsInt())
+								- toNudge.getTop().getAsInt();
+						if (isSelfMessage() && (sendYPosition == recvYPosition)) {
+							deltaToKeepDistance += layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE);
+						}
+						return toNudge.nudge(Math.max(minNudge, deltaToKeepDistance));
 					} else {
 						return null;
 					}

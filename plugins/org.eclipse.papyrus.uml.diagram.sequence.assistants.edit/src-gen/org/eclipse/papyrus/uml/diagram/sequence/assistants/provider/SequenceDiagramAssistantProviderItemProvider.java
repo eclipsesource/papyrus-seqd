@@ -16,24 +16,21 @@ import java.util.List;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
-
 import org.eclipse.papyrus.infra.gmfdiag.assistant.provider.ModelingAssistantProviderItemProvider;
-
 import org.eclipse.papyrus.uml.diagram.sequence.assistants.SequenceDiagramAssistantProvider;
 
 /**
  * This is the item provider adapter for a
- * {@link org.eclipse.papyrus.uml.diagram.sequence.assistants.SequenceDiagramAssistantProvider}
- * object. <!-- begin-user-doc --> <!-- end-user-doc -->
+ * {@link org.eclipse.papyrus.uml.diagram.sequence.assistants.SequenceDiagramAssistantProvider} object. <!--
+ * begin-user-doc --> <!-- end-user-doc -->
  * 
  * @generated
  */
 public class SequenceDiagramAssistantProviderItemProvider extends ModelingAssistantProviderItemProvider {
 	/**
-	 * This constructs an instance from a factory and a notifier. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This constructs an instance from a factory and a notifier. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 * 
 	 * @generated
 	 */
@@ -42,8 +39,8 @@ public class SequenceDiagramAssistantProviderItemProvider extends ModelingAssist
 	}
 
 	/**
-	 * This returns the property descriptors for the adapted class. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This returns the property descriptors for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 * 
 	 * @generated
 	 */
@@ -57,14 +54,14 @@ public class SequenceDiagramAssistantProviderItemProvider extends ModelingAssist
 	}
 
 	/**
-	 * This returns SequenceDiagramAssistantProvider.gif. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This returns SequenceDiagramAssistantProvider.gif. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	@Override
 	public Object getImage(Object object) {
-		return overlayImage(object, getResourceLocator().getImage("full/obj16/SequenceDiagramAssistantProvider")); //$NON-NLS-1$
+		return overlayImage(object,
+				getResourceLocator().getImage("full/obj16/SequenceDiagramAssistantProvider")); //$NON-NLS-1$
 	}
 
 	/**
@@ -78,22 +75,22 @@ public class SequenceDiagramAssistantProviderItemProvider extends ModelingAssist
 	}
 
 	/**
-	 * This returns the label text for the adapted class. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This returns the label text for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	@Override
 	public String getText(Object object) {
-		String label = ((SequenceDiagramAssistantProvider) object).getName();
-		return label == null || label.length() == 0 ? getString("_UI_SequenceDiagramAssistantProvider_type") : //$NON-NLS-1$
-				getString("_UI_SequenceDiagramAssistantProvider_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
+		String label = ((SequenceDiagramAssistantProvider)object).getName();
+		return (label == null) || (label.length() == 0)
+				? getString("_UI_SequenceDiagramAssistantProvider_type") //$NON-NLS-1$
+				: getString("_UI_SequenceDiagramAssistantProvider_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
-	 * This handles model notifications by calling {@link #updateChildren} to update
-	 * any cached children and by creating a viewer notification, which it passes to
-	 * {@link #fireNotifyChanged}. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * This handles model notifications by calling {@link #updateChildren} to update any cached children and
+	 * by creating a viewer notification, which it passes to {@link #fireNotifyChanged}. <!-- begin-user-doc
+	 * --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
@@ -104,9 +101,8 @@ public class SequenceDiagramAssistantProviderItemProvider extends ModelingAssist
 	}
 
 	/**
-	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing
-	 * the children that can be created under this object. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children that can be
+	 * created under this object. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */

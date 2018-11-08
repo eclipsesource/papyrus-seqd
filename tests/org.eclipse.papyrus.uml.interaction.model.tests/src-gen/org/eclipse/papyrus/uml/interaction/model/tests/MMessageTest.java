@@ -253,12 +253,12 @@ public class MMessageTest extends MElementTest {
 		/* assert semantic preconditions */
 		assertEquals(2, umlInteraction.getMessages().size());
 		assertNotNull(umlInteraction.getMessage("request"));
-		assertEquals(5, umlInteraction.getFragments().size());
+		assertEquals(8, umlInteraction.getFragments().size());
 		assertNotNull(umlInteraction.getFragment("request-send"));
 		assertNotNull(umlInteraction.getFragment("request-recv"));
 		assertEquals(2, umlInteraction.getLifelines().size());
 		assertEquals(2, umlInteraction.getLifelines().get(0).getCoveredBys().size());
-		assertEquals(3, umlInteraction.getLifelines().get(1).getCoveredBys().size());
+		assertEquals(6, umlInteraction.getLifelines().get(1).getCoveredBys().size());
 
 		/* assert diagram preconditions */
 		assertEquals(2, sequenceDiagram.getEdges().size());

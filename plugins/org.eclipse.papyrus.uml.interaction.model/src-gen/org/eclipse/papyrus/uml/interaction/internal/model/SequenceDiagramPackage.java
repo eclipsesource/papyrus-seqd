@@ -714,13 +714,31 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MLIFELINE___NUDGE_HORIZONTALLY__INT = MELEMENT_OPERATION_COUNT + 14;
 
 	/**
+	 * The operation id for the '<em>Get First Level Executions</em>' operation. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___GET_FIRST_LEVEL_EXECUTIONS = MELEMENT_OPERATION_COUNT + 15;
+
+	/**
+	 * The operation id for the '<em>Get Occurrence Specifications</em>' operation. <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___GET_OCCURRENCE_SPECIFICATIONS = MELEMENT_OPERATION_COUNT + 16;
+
+	/**
 	 * The operation id for the '<em>Make Created At</em>' operation. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE___MAKE_CREATED_AT__OPTIONALINT = MELEMENT_OPERATION_COUNT + 15;
+	int MLIFELINE___MAKE_CREATED_AT__OPTIONALINT = MELEMENT_OPERATION_COUNT + 17;
 
 	/**
 	 * The number of operations of the '<em>MLifeline</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
@@ -729,7 +747,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 16;
+	int MLIFELINE_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 18;
 
 	/**
 	 * The meta object id for the
@@ -879,12 +897,47 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MEXECUTION___GET_DIAGRAM_VIEW = MELEMENT_OPERATION_COUNT + 1;
 
 	/**
+	 * The operation id for the '<em>Insert Nested Execution After</em>' operation. <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION___INSERT_NESTED_EXECUTION_AFTER__MELEMENT_INT_INT_ELEMENT = MELEMENT_OPERATION_COUNT + 2;
+
+	/**
+	 * The operation id for the '<em>Insert Nested Execution After</em>' operation. <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION___INSERT_NESTED_EXECUTION_AFTER__MELEMENT_INT_INT_ECLASS = MELEMENT_OPERATION_COUNT + 3;
+
+	/**
+	 * The operation id for the '<em>Element At</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION___ELEMENT_AT__INT = MELEMENT_OPERATION_COUNT + 4;
+
+	/**
+	 * The operation id for the '<em>Get Nested Executions</em>' operation. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION___GET_NESTED_EXECUTIONS = MELEMENT_OPERATION_COUNT + 5;
+
+	/**
 	 * The operation id for the '<em>Set Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT_OPTIONALINT = MELEMENT_OPERATION_COUNT + 2;
+	int MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT_OPTIONALINT = MELEMENT_OPERATION_COUNT + 6;
 
 	/**
 	 * The operation id for the '<em>Create Start</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
@@ -893,7 +946,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MEXECUTION___CREATE_START = MELEMENT_OPERATION_COUNT + 3;
+	int MEXECUTION___CREATE_START = MELEMENT_OPERATION_COUNT + 7;
 
 	/**
 	 * The operation id for the '<em>Create Finish</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
@@ -902,7 +955,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MEXECUTION___CREATE_FINISH = MELEMENT_OPERATION_COUNT + 4;
+	int MEXECUTION___CREATE_FINISH = MELEMENT_OPERATION_COUNT + 8;
 
 	/**
 	 * The number of operations of the '<em>MExecution</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
@@ -911,7 +964,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MEXECUTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 5;
+	int MEXECUTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 9;
 
 	/**
 	 * The meta object id for the
@@ -2547,6 +2600,28 @@ public interface SequenceDiagramPackage extends EPackage {
 
 	/**
 	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getFirstLevelExecutions() <em>Get First
+	 * Level Executions</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Get First Level Executions</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getFirstLevelExecutions()
+	 * @generated
+	 */
+	EOperation getMLifeline__GetFirstLevelExecutions();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrenceSpecifications() <em>Get
+	 * Occurrence Specifications</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Get Occurrence Specifications</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MLifeline#getOccurrenceSpecifications()
+	 * @generated
+	 */
+	EOperation getMLifeline__GetOccurrenceSpecifications();
+
+	/**
+	 * Returns the meta object for the
 	 * '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline#makeCreatedAt(java.util.OptionalInt)
 	 * <em>Make Created At</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2622,6 +2697,52 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EOperation getMExecution__GetDiagramView();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#insertNestedExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, int, org.eclipse.uml2.uml.Element)
+	 * <em>Insert Nested Execution After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Insert Nested Execution After</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#insertNestedExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement,
+	 *      int, int, org.eclipse.uml2.uml.Element)
+	 * @generated
+	 */
+	EOperation getMExecution__InsertNestedExecutionAfter__MElement_int_int_Element();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#insertNestedExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement, int, int, org.eclipse.emf.ecore.EClass)
+	 * <em>Insert Nested Execution After</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Insert Nested Execution After</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#insertNestedExecutionAfter(org.eclipse.papyrus.uml.interaction.model.MElement,
+	 *      int, int, org.eclipse.emf.ecore.EClass)
+	 * @generated
+	 */
+	EOperation getMExecution__InsertNestedExecutionAfter__MElement_int_int_EClass();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#elementAt(int) <em>Element At</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Element At</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#elementAt(int)
+	 * @generated
+	 */
+	EOperation getMExecution__ElementAt__int();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#getNestedExecutions() <em>Get Nested
+	 * Executions</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Get Nested Executions</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#getNestedExecutions()
+	 * @generated
+	 */
+	EOperation getMExecution__GetNestedExecutions();
 
 	/**
 	 * Returns the meta object for the
@@ -3495,6 +3616,23 @@ public interface SequenceDiagramPackage extends EPackage {
 		EOperation MLIFELINE___NUDGE_HORIZONTALLY__INT = eINSTANCE.getMLifeline__NudgeHorizontally__int();
 
 		/**
+		 * The meta object literal for the '<em><b>Get First Level Executions</b></em>' operation. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MLIFELINE___GET_FIRST_LEVEL_EXECUTIONS = eINSTANCE.getMLifeline__GetFirstLevelExecutions();
+
+		/**
+		 * The meta object literal for the '<em><b>Get Occurrence Specifications</b></em>' operation. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MLIFELINE___GET_OCCURRENCE_SPECIFICATIONS = eINSTANCE
+				.getMLifeline__GetOccurrenceSpecifications();
+
+		/**
 		 * The meta object literal for the '<em><b>Make Created At</b></em>' operation. <!-- begin-user-doc
 		 * --> <!-- end-user-doc -->
 		 * 
@@ -3553,6 +3691,40 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation MEXECUTION___GET_DIAGRAM_VIEW = eINSTANCE.getMExecution__GetDiagramView();
+
+		/**
+		 * The meta object literal for the '<em><b>Insert Nested Execution After</b></em>' operation. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MEXECUTION___INSERT_NESTED_EXECUTION_AFTER__MELEMENT_INT_INT_ELEMENT = eINSTANCE
+				.getMExecution__InsertNestedExecutionAfter__MElement_int_int_Element();
+
+		/**
+		 * The meta object literal for the '<em><b>Insert Nested Execution After</b></em>' operation. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MEXECUTION___INSERT_NESTED_EXECUTION_AFTER__MELEMENT_INT_INT_ECLASS = eINSTANCE
+				.getMExecution__InsertNestedExecutionAfter__MElement_int_int_EClass();
+
+		/**
+		 * The meta object literal for the '<em><b>Element At</b></em>' operation. <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MEXECUTION___ELEMENT_AT__INT = eINSTANCE.getMExecution__ElementAt__int();
+
+		/**
+		 * The meta object literal for the '<em><b>Get Nested Executions</b></em>' operation. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MEXECUTION___GET_NESTED_EXECUTIONS = eINSTANCE.getMExecution__GetNestedExecutions();
 
 		/**
 		 * The meta object literal for the '<em><b>Set Owner</b></em>' operation. <!-- begin-user-doc --> <!--

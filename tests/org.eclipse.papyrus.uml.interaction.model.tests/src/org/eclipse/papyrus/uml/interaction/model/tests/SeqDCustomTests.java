@@ -19,10 +19,12 @@ import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateDeleteMess
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateExecutionTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateMessageTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateMessageTestB;
+import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateSelfMessageNudgeTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.CreateSyncMessageTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.SemanticOrderAfterCreationOfElementOnTopTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.SemanticOrderAfterInsertingBetweenMsgStartAndFinishTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.padding.CreateExecutionPaddingTest;
+import org.eclipse.papyrus.uml.interaction.model.tests.creation.padding.CreateLifelinePaddingTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.creation.padding.CreateMessagePaddingTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.deletion.BasicDeletionTest;
 import org.eclipse.papyrus.uml.interaction.model.tests.deletion.CreationMessageDeletionTest;
@@ -42,7 +44,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ //
 		DefaultLayoutHelperTest.class, //
 		CreateMessageTest.class, CreateSyncMessageTest.class, CreateMessageTestB.class,
-		CreateDeleteMessageTest.class, //
+		CreateDeleteMessageTest.class, CreateSelfMessageNudgeTest.class, //
 		CreateExecutionTest.class, DeleteExecutionTest.class, //
 		CreationMessageDeletionTest.class, BasicDeletionTest.class, DeletionMessageDeletionTest.class, //
 		SetCoveredCommandTest.class, //
@@ -50,7 +52,7 @@ import org.junit.runners.Suite.SuiteClasses;
 		SemanticOrderAfterInsertingBetweenMsgStartAndFinishTest.class, //
 		LogicalModelAdapterTest.class, //
 		LogicalModelPredicatesTest.class, //
-		CreateExecutionPaddingTest.class, CreateMessagePaddingTest.class//
+		CreateExecutionPaddingTest.class, CreateMessagePaddingTest.class, CreateLifelinePaddingTest.class//
 })
 
 public class SeqDCustomTests {

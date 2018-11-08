@@ -25,16 +25,15 @@ import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 
 /**
- * This is the item provider adapter for a
- * {@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd} object. <!--
- * begin-user-doc --> <!-- end-user-doc -->
+ * This is the item provider adapter for a {@link org.eclipse.papyrus.uml.interaction.model.MMessageEnd}
+ * object. <!-- begin-user-doc --> <!-- end-user-doc -->
  * 
  * @generated
  */
 public class MMessageEndItemProvider extends MOccurrenceItemProvider {
 	/**
-	 * This constructs an instance from a factory and a notifier. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This constructs an instance from a factory and a notifier. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 * 
 	 * @generated
 	 */
@@ -43,8 +42,8 @@ public class MMessageEndItemProvider extends MOccurrenceItemProvider {
 	}
 
 	/**
-	 * This returns the property descriptors for the adapted class. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This returns the property descriptors for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 * 
 	 * @generated
 	 */
@@ -61,14 +60,13 @@ public class MMessageEndItemProvider extends MOccurrenceItemProvider {
 	}
 
 	/**
-	 * This adds a property descriptor for the Send feature. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This adds a property descriptor for the Send feature. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	protected void addSendPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
 				getString("_UI_MMessageEnd_send_feature"), //$NON-NLS-1$
 				getString("_UI_PropertyDescriptor_description", "_UI_MMessageEnd_send_feature", //$NON-NLS-1$ //$NON-NLS-2$
 						"_UI_MMessageEnd_type"), //$NON-NLS-1$
@@ -77,14 +75,13 @@ public class MMessageEndItemProvider extends MOccurrenceItemProvider {
 	}
 
 	/**
-	 * This adds a property descriptor for the Receive feature. <!-- begin-user-doc
-	 * --> <!-- end-user-doc -->
+	 * This adds a property descriptor for the Receive feature. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	protected void addReceivePropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
 				getString("_UI_MMessageEnd_receive_feature"), //$NON-NLS-1$
 				getString("_UI_PropertyDescriptor_description", "_UI_MMessageEnd_receive_feature", //$NON-NLS-1$ //$NON-NLS-2$
 						"_UI_MMessageEnd_type"), //$NON-NLS-1$
@@ -93,14 +90,14 @@ public class MMessageEndItemProvider extends MOccurrenceItemProvider {
 	}
 
 	/**
-	 * This adds a property descriptor for the Other End feature. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This adds a property descriptor for the Other End feature. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 * 
 	 * @generated
 	 */
 	protected void addOtherEndPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
 				getString("_UI_MMessageEnd_otherEnd_feature"), //$NON-NLS-1$
 				getString("_UI_PropertyDescriptor_description", "_UI_MMessageEnd_otherEnd_feature", //$NON-NLS-1$ //$NON-NLS-2$
 						"_UI_MMessageEnd_type"), //$NON-NLS-1$
@@ -119,22 +116,21 @@ public class MMessageEndItemProvider extends MOccurrenceItemProvider {
 	}
 
 	/**
-	 * This returns the label text for the adapted class. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This returns the label text for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	@Override
 	public String getText(Object object) {
-		String label = ((MMessageEnd) object).getName();
+		String label = ((MMessageEnd)object).getName();
 		return (label == null) || (label.length() == 0) ? getString("_UI_MMessageEnd_type") : //$NON-NLS-1$
 				getString("_UI_MMessageEnd_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
-	 * This handles model notifications by calling {@link #updateChildren} to update
-	 * any cached children and by creating a viewer notification, which it passes to
-	 * {@link #fireNotifyChanged}. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * This handles model notifications by calling {@link #updateChildren} to update any cached children and
+	 * by creating a viewer notification, which it passes to {@link #fireNotifyChanged}. <!-- begin-user-doc
+	 * --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
@@ -143,20 +139,19 @@ public class MMessageEndItemProvider extends MOccurrenceItemProvider {
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(MMessageEnd.class)) {
-		case SequenceDiagramPackage.MMESSAGE_END__SEND:
-		case SequenceDiagramPackage.MMESSAGE_END__RECEIVE:
-		case SequenceDiagramPackage.MMESSAGE_END__OTHER_END:
-			fireNotifyChanged(
-					new ViewerNotification(notification, notification.getNotifier(), false, true));
-			return;
+			case SequenceDiagramPackage.MMESSAGE_END__SEND:
+			case SequenceDiagramPackage.MMESSAGE_END__RECEIVE:
+			case SequenceDiagramPackage.MMESSAGE_END__OTHER_END:
+				fireNotifyChanged(
+						new ViewerNotification(notification, notification.getNotifier(), false, true));
+				return;
 		}
 		super.notifyChanged(notification);
 	}
 
 	/**
-	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing
-	 * the children that can be created under this object. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children that can be
+	 * created under this object. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */

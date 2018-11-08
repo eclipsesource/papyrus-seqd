@@ -25,16 +25,15 @@ import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 
 /**
- * This is the item provider adapter for a
- * {@link org.eclipse.papyrus.uml.interaction.model.MExecution} object. <!--
- * begin-user-doc --> <!-- end-user-doc -->
+ * This is the item provider adapter for a {@link org.eclipse.papyrus.uml.interaction.model.MExecution}
+ * object. <!-- begin-user-doc --> <!-- end-user-doc -->
  * 
  * @generated
  */
 public class MExecutionItemProvider extends MElementItemProvider {
 	/**
-	 * This constructs an instance from a factory and a notifier. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This constructs an instance from a factory and a notifier. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 * 
 	 * @generated
 	 */
@@ -43,8 +42,8 @@ public class MExecutionItemProvider extends MElementItemProvider {
 	}
 
 	/**
-	 * This returns the property descriptors for the adapted class. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This returns the property descriptors for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 * 
 	 * @generated
 	 */
@@ -61,14 +60,13 @@ public class MExecutionItemProvider extends MElementItemProvider {
 	}
 
 	/**
-	 * This adds a property descriptor for the Start feature. <!-- begin-user-doc
-	 * --> <!-- end-user-doc -->
+	 * This adds a property descriptor for the Start feature. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	protected void addStartPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
 				getString("_UI_MExecution_start_feature"), //$NON-NLS-1$
 				getString("_UI_PropertyDescriptor_description", "_UI_MExecution_start_feature", //$NON-NLS-1$ //$NON-NLS-2$
 						"_UI_MExecution_type"), //$NON-NLS-1$
@@ -77,14 +75,13 @@ public class MExecutionItemProvider extends MElementItemProvider {
 	}
 
 	/**
-	 * This adds a property descriptor for the Finish feature. <!-- begin-user-doc
-	 * --> <!-- end-user-doc -->
+	 * This adds a property descriptor for the Finish feature. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	protected void addFinishPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
 				getString("_UI_MExecution_finish_feature"), //$NON-NLS-1$
 				getString("_UI_PropertyDescriptor_description", "_UI_MExecution_finish_feature", //$NON-NLS-1$ //$NON-NLS-2$
 						"_UI_MExecution_type"), //$NON-NLS-1$
@@ -93,14 +90,14 @@ public class MExecutionItemProvider extends MElementItemProvider {
 	}
 
 	/**
-	 * This adds a property descriptor for the Occurrences feature. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This adds a property descriptor for the Occurrences feature. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
 	 * 
 	 * @generated
 	 */
 	protected void addOccurrencesPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
 				getString("_UI_MExecution_occurrences_feature"), //$NON-NLS-1$
 				getString("_UI_PropertyDescriptor_description", "_UI_MExecution_occurrences_feature", //$NON-NLS-1$ //$NON-NLS-2$
 						"_UI_MExecution_type"), //$NON-NLS-1$
@@ -119,22 +116,21 @@ public class MExecutionItemProvider extends MElementItemProvider {
 	}
 
 	/**
-	 * This returns the label text for the adapted class. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This returns the label text for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	@Override
 	public String getText(Object object) {
-		String label = ((MExecution) object).getName();
+		String label = ((MExecution)object).getName();
 		return (label == null) || (label.length() == 0) ? getString("_UI_MExecution_type") : //$NON-NLS-1$
 				getString("_UI_MExecution_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
-	 * This handles model notifications by calling {@link #updateChildren} to update
-	 * any cached children and by creating a viewer notification, which it passes to
-	 * {@link #fireNotifyChanged}. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * This handles model notifications by calling {@link #updateChildren} to update any cached children and
+	 * by creating a viewer notification, which it passes to {@link #fireNotifyChanged}. <!-- begin-user-doc
+	 * --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
@@ -143,20 +139,19 @@ public class MExecutionItemProvider extends MElementItemProvider {
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(MExecution.class)) {
-		case SequenceDiagramPackage.MEXECUTION__START:
-		case SequenceDiagramPackage.MEXECUTION__FINISH:
-		case SequenceDiagramPackage.MEXECUTION__OCCURRENCES:
-			fireNotifyChanged(
-					new ViewerNotification(notification, notification.getNotifier(), false, true));
-			return;
+			case SequenceDiagramPackage.MEXECUTION__START:
+			case SequenceDiagramPackage.MEXECUTION__FINISH:
+			case SequenceDiagramPackage.MEXECUTION__OCCURRENCES:
+				fireNotifyChanged(
+						new ViewerNotification(notification, notification.getNotifier(), false, true));
+				return;
 		}
 		super.notifyChanged(notification);
 	}
 
 	/**
-	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing
-	 * the children that can be created under this object. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children that can be
+	 * created under this object. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
