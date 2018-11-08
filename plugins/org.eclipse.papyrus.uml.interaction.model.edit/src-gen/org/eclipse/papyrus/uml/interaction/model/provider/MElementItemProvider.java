@@ -41,7 +41,7 @@ import org.eclipse.papyrus.uml.interaction.model.MElement;
 /**
  * This is the item provider adapter for a {@link org.eclipse.papyrus.uml.interaction.model.MElement} object.
  * <!-- begin-user-doc --> <!-- end-user-doc -->
- *
+ * 
  * @generated
  */
 public class MElementItemProvider extends ItemProviderAdapter implements IEditingDomainItemProvider, IStructuredItemContentProvider, ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource {
@@ -242,7 +242,7 @@ public class MElementItemProvider extends ItemProviderAdapter implements IEditin
 	/**
 	 * Return the resource locator for this item provider's resources. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	@Override
