@@ -12,54 +12,46 @@
 package org.eclipse.papyrus.infra.gmfdiag.filters.impl;
 
 import org.eclipse.emf.common.util.URI;
-
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-
 import org.eclipse.papyrus.infra.filters.FiltersPackage;
-
 import org.eclipse.papyrus.infra.gmfdiag.filters.DiagramFiltersFactory;
 import org.eclipse.papyrus.infra.gmfdiag.filters.DiagramFiltersPackage;
 import org.eclipse.papyrus.infra.gmfdiag.filters.InDiagram;
 import org.eclipse.papyrus.infra.gmfdiag.filters.ViewType;
-
 import org.eclipse.uml2.types.TypesPackage;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model <b>Package</b>.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
+ * 
  * @generated
  */
 public class DiagramFiltersPackageImpl extends EPackageImpl implements DiagramFiltersPackage {
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	private EClass inDiagramEClass = null;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	private EClass viewTypeEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
-	 * {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} by the package
-	 * package URI value.
-	 * <p>Note: the correct way to create the package is via the static
-	 * factory method {@link #init init()}, which also performs
-	 * initialization of the package, or returns the registered package,
-	 * if one already exists.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} by the package package URI value.
+	 * <p>
+	 * Note: the correct way to create the package is via the static factory method {@link #init init()},
+	 * which also performs initialization of the package, or returns the registered package, if one already
+	 * exists. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see org.eclipse.emf.ecore.EPackage.Registry
 	 * @see org.eclipse.papyrus.infra.gmfdiag.filters.DiagramFiltersPackage#eNS_URI
 	 * @see #init()
@@ -70,33 +62,36 @@ public class DiagramFiltersPackageImpl extends EPackageImpl implements DiagramFi
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	private static boolean isInited = false;
 
 	/**
-	 * Creates, registers, and initializes the <b>Package</b> for this model, and for any others upon which it depends.
+	 * Creates, registers, and initializes the <b>Package</b> for this model, and for any others upon which it
+	 * depends.
+	 * <p>
+	 * This method is used to initialize {@link DiagramFiltersPackage#eINSTANCE} when that field is accessed.
+	 * Clients should not invoke it directly. Instead, they should simply access that field to obtain the
+	 * package. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * <p>This method is used to initialize {@link DiagramFiltersPackage#eINSTANCE} when that field is accessed.
-	 * Clients should not invoke it directly. Instead, they should simply access that field to obtain the package.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @see #eNS_URI
 	 * @see #createPackageContents()
 	 * @see #initializePackageContents()
 	 * @generated
 	 */
 	public static DiagramFiltersPackage init() {
-		if (isInited)
+		if (isInited) {
 			return (DiagramFiltersPackage)EPackage.Registry.INSTANCE
 					.getEPackage(DiagramFiltersPackage.eNS_URI);
+		}
 
 		// Obtain or create and register package
-		DiagramFiltersPackageImpl theDiagramFiltersPackage = (DiagramFiltersPackageImpl)(EPackage.Registry.INSTANCE
-				.get(eNS_URI) instanceof DiagramFiltersPackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI)
-						: new DiagramFiltersPackageImpl());
+		Object registeredDiagramFiltersPackage = EPackage.Registry.INSTANCE.get(eNS_URI);
+		DiagramFiltersPackageImpl theDiagramFiltersPackage = registeredDiagramFiltersPackage instanceof DiagramFiltersPackageImpl
+				? (DiagramFiltersPackageImpl)registeredDiagramFiltersPackage
+				: new DiagramFiltersPackageImpl();
 
 		isInited = true;
 
@@ -119,8 +114,8 @@ public class DiagramFiltersPackageImpl extends EPackageImpl implements DiagramFi
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -129,8 +124,8 @@ public class DiagramFiltersPackageImpl extends EPackageImpl implements DiagramFi
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -139,8 +134,8 @@ public class DiagramFiltersPackageImpl extends EPackageImpl implements DiagramFi
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -149,8 +144,8 @@ public class DiagramFiltersPackageImpl extends EPackageImpl implements DiagramFi
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -159,8 +154,8 @@ public class DiagramFiltersPackageImpl extends EPackageImpl implements DiagramFi
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -169,8 +164,8 @@ public class DiagramFiltersPackageImpl extends EPackageImpl implements DiagramFi
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -179,22 +174,22 @@ public class DiagramFiltersPackageImpl extends EPackageImpl implements DiagramFi
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	private boolean isCreated = false;
 
 	/**
-	 * Creates the meta-model objects for the package.  This method is
-	 * guarded to have no affect on any invocation but its first.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Creates the meta-model objects for the package. This method is guarded to have no affect on any
+	 * invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public void createPackageContents() {
-		if (isCreated)
+		if (isCreated) {
 			return;
+		}
 		isCreated = true;
 
 		// Create classes and their features
@@ -207,22 +202,22 @@ public class DiagramFiltersPackageImpl extends EPackageImpl implements DiagramFi
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	private boolean isInitialized = false;
 
 	/**
-	 * Complete the initialization of the package and its meta-model.  This
-	 * method is guarded to have no affect on any invocation but its first.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Complete the initialization of the package and its meta-model. This method is guarded to have no affect
+	 * on any invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public void initializePackageContents() {
-		if (isInitialized)
+		if (isInitialized) {
 			return;
+		}
 		isInitialized = true;
 
 		// Initialize package
@@ -269,16 +264,15 @@ public class DiagramFiltersPackageImpl extends EPackageImpl implements DiagramFi
 	}
 
 	/**
-	 * Initializes the annotations for <b>subsets</b>.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Initializes the annotations for <b>subsets</b>. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected void createSubsetsAnnotations() {
-		String source = "subsets"; //$NON-NLS-1$	
+		String source = "subsets"; //$NON-NLS-1$
 		addAnnotation(getInDiagram_OwnedFilter(), source, new String[] {},
 				new URI[] {URI.createURI(eNS_URI).appendFragment("//InDiagram/filter") //$NON-NLS-1$
 				});
 	}
 
-} //DiagramFiltersPackageImpl
+} // DiagramFiltersPackageImpl

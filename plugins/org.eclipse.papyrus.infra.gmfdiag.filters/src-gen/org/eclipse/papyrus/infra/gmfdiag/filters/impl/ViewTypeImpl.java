@@ -14,38 +14,32 @@ package org.eclipse.papyrus.infra.gmfdiag.filters.impl;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-
 import org.eclipse.papyrus.infra.gmfdiag.filters.DiagramFiltersPackage;
 import org.eclipse.papyrus.infra.gmfdiag.filters.ViewType;
-
 import org.eclipse.papyrus.infra.gmfdiag.filters.internal.operations.ViewTypeOperations;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>View Type</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>View Type</b></em>'. <!--
+ * end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.eclipse.papyrus.infra.gmfdiag.filters.impl.ViewTypeImpl#getName <em>Name</em>}</li>
- *   <li>{@link org.eclipse.papyrus.infra.gmfdiag.filters.impl.ViewTypeImpl#getType <em>Type</em>}</li>
+ * <li>{@link org.eclipse.papyrus.infra.gmfdiag.filters.impl.ViewTypeImpl#getName <em>Name</em>}</li>
+ * <li>{@link org.eclipse.papyrus.infra.gmfdiag.filters.impl.ViewTypeImpl#getType <em>Type</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewType {
 	/**
-	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -53,9 +47,9 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 	protected static final String NAME_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -63,9 +57,9 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 	protected String name = NAME_EDEFAULT;
 
 	/**
-	 * The default value of the '{@link #getType() <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The default value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
 	 * @see #getType()
 	 * @generated
 	 * @ordered
@@ -73,9 +67,9 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 	protected static final String TYPE_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getType() <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
 	 * @see #getType()
 	 * @generated
 	 * @ordered
@@ -83,8 +77,8 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 	protected String type = TYPE_EDEFAULT;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected ViewTypeImpl() {
@@ -92,8 +86,8 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -102,8 +96,8 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -112,8 +106,8 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -121,14 +115,15 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 		newName = newName == null ? NAME_EDEFAULT : newName;
 		String oldName = name;
 		name = newName;
-		if (eNotificationRequired())
+		if (eNotificationRequired()) {
 			eNotify(new ENotificationImpl(this, Notification.SET, DiagramFiltersPackage.VIEW_TYPE__NAME,
 					oldName, name));
+		}
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -137,8 +132,8 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -146,14 +141,15 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 		newType = newType == null ? TYPE_EDEFAULT : newType;
 		String oldType = type;
 		type = newType;
-		if (eNotificationRequired())
+		if (eNotificationRequired()) {
 			eNotify(new ENotificationImpl(this, Notification.SET, DiagramFiltersPackage.VIEW_TYPE__TYPE,
 					oldType, type));
+		}
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -162,8 +158,8 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -178,8 +174,8 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -196,8 +192,8 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -214,8 +210,8 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -230,8 +226,8 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -244,16 +240,17 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy())
+		if (eIsProxy()) {
 			return super.toString();
+		}
 
-		StringBuffer result = new StringBuffer(super.toString());
+		StringBuilder result = new StringBuilder(super.toString());
 		result.append(" (name: "); //$NON-NLS-1$
 		result.append(name);
 		result.append(", type: "); //$NON-NLS-1$
@@ -262,4 +259,4 @@ public class ViewTypeImpl extends MinimalEObjectImpl.Container implements ViewTy
 		return result.toString();
 	}
 
-} //ViewTypeImpl
+} // ViewTypeImpl
