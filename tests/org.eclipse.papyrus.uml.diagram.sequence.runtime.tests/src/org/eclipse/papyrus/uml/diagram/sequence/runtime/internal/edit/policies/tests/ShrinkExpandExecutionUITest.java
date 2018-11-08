@@ -30,41 +30,63 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 
 /**
- * Integration test cases for shrinking execution specifications that have
- * various attachments of messages incoming and outgoing.
+ * Integration test cases for shrinking and expanding execution specifications that have various attachments
+ * of messages incoming and outgoing.
  *
  * @author Christian W. Damus
  */
 @ModelResource("65-moving.di")
 @Maximized
-public class ShrinkExecutionUITest extends AbstractGraphicalEditPolicyUITest {
+public class ShrinkExpandExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 
 	/** Reply messages don't end up exactly where the resize handle is. */
 	@ClassRule
 	public static final TestRule TOLERANCE = GEFMatchers.defaultTolerance(1);
 
 	private EditPart sync1;
+
 	private PointList sync1Geom;
+
 	private EditPart async1;
+
 	private PointList async1Geom;
+
 	private EditPart sync2;
+
 	private PointList sync2Geom;
+
 	private EditPart reply2;
+
 	private PointList reply2Geom;
+
 	private EditPart async2;
+
 	private PointList async2Geom;
+
 	private EditPart reply1;
+
 	private PointList reply1Geom;
 
+	private EditPart async3;
+
+	private PointList async3Geom;
+
+	private EditPart async4;
+
+	private PointList async4Geom;
+
 	private EditPart exec1;
+
 	private Rectangle exec1Geom;
+
 	private EditPart exec2;
+
 	private Rectangle exec2Geom;
 
 	/**
 	 * Initializes me.
 	 */
-	public ShrinkExecutionUITest() {
+	public ShrinkExpandExecutionUITest() {
 		super();
 	}
 
@@ -82,8 +104,8 @@ public class ShrinkExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 
 		PointList expectedSync2Geom = sync2Geom.getCopy();
 		expectedSync2Geom.translate(0, midWay - sync2Geom.getLastPoint().y);
-		assertThat("Misattached request message", sync2, runs(isPoint(expectedSync2Geom.getFirstPoint()),
-				isPoint(expectedSync2Geom.getLastPoint())));
+		assertThat("Misattached request message", sync2,
+				runs(isPoint(expectedSync2Geom.getFirstPoint()), isPoint(expectedSync2Geom.getLastPoint())));
 
 		// Verify expected non-changes
 
@@ -177,6 +199,52 @@ public class ShrinkExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 				runs(isPoint(sync1Geom.getFirstPoint()), isPoint(sync1Geom.getLastPoint())));
 	}
 
+	@Test
+	public void expandFromTop() {
+		editor.select(exec2Geom.getCenter());
+
+		Point grabExec = getResizeHandleGrabPoint(exec2, PositionConstants.NORTH);
+		int midWayBetweenAsync1Async3 = (async1Geom.getLastPoint().y + async3Geom.getLastPoint().y) / 2;
+		Point dropExec = new Point(grabExec.x, midWayBetweenAsync1Async3);
+
+		editor.moveSelection(grabExec, dropExec);
+
+		// Verify expected changes
+
+		Point expectedAsync3Recv = async3Geom.getLastPoint().getTranslated(-EXEC_WIDTH / 2, 0);
+		assertThat("Misattached encompassed message", async3,
+				runs(isPoint(async3Geom.getFirstPoint()), isPoint(expectedAsync3Recv)));
+
+		// Verify expected non-changes
+
+		assertThat("Reply message changed", reply2,
+				runs(isPoint(reply2Geom.getFirstPoint()), isPoint(reply2Geom.getLastPoint())));
+	}
+
+	@Test
+	public void expandFromBottom() {
+		editor.select(exec1Geom.getCenter());
+
+		Point grabExec = getResizeHandleGrabPoint(exec1, PositionConstants.SOUTH);
+		int belowAsync4 = async4Geom.getLastPoint().y + 20;
+		Point dropExec = new Point(grabExec.x, belowAsync4);
+
+		editor.moveSelection(grabExec, dropExec);
+
+		// Verify expected changes
+
+		Point expectedAsync4Send = async4Geom.getFirstPoint().getTranslated(-EXEC_WIDTH / 2, 0);
+		assertThat("Misattached encompassed message", async4,
+				runs(isPoint(expectedAsync4Send), isPoint(async4Geom.getLastPoint())));
+
+		// Verify expected non-changes
+
+		assertThat("Request message changed", sync2,
+				runs(isPoint(sync2Geom.getFirstPoint()), isPoint(sync2Geom.getLastPoint())));
+		assertThat("Incoming message changed", async2,
+				runs(isPoint(async2Geom.getFirstPoint()), isPoint(async2Geom.getLastPoint())));
+	}
+
 	//
 	// Test framework
 	//
@@ -195,6 +263,10 @@ public class ShrinkExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 		async2Geom = getPoints(async2);
 		reply1 = find("reply1", true);
 		reply1Geom = getPoints(reply1);
+		async3 = find("async3", true);
+		async3Geom = getPoints(async3);
+		async4 = find("async4", true);
+		async4Geom = getPoints(async4);
 
 		exec1 = find("exec1", false);
 		exec1Geom = getBounds(exec1);

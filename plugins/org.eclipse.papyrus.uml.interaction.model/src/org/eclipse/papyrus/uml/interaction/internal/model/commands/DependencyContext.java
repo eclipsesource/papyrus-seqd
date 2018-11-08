@@ -37,6 +37,8 @@ public class DependencyContext {
 
 	private static final Object NO_KEY = new Object();
 
+	private static final Object NO_SUBJECT = NO_KEY; // Don't create an unnecessary object
+
 	private static final Predicate<Object> TRUE = __ -> true;
 
 	/** A dependency context that tracks nothing and applies no guard at all. */
@@ -311,7 +313,12 @@ public class DependencyContext {
 	private static Object normalizeSubject(Object subject) {
 		Object result = subject;
 
-		if (subject instanceof MElement<?>) {
+		if (subject == null) {
+			result = NO_SUBJECT;
+		} else if (subject instanceof Optional<?>) {
+			// Unwrap optionals
+			result = normalizeSubject(((Optional<?>)subject).orElse(null));
+		} else if (subject instanceof MElement<?>) {
 			// The identity of a logical model element is the underlying UML element
 			result = ((MElement<?>)subject).getElement();
 		}

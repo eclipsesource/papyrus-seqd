@@ -13,13 +13,12 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import static java.util.Collections.singletonList;
+import static org.eclipse.papyrus.uml.interaction.internal.model.commands.PendingVerticalExtentData.affectedOccurrences;
 import static org.eclipse.papyrus.uml.interaction.model.util.Executions.getLifelineView;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
 
@@ -65,6 +64,7 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 	 */
 	public SetOwnerCommand(MElementImpl<? extends Element> element, MElement<? extends Element> newOwner,
 			OptionalInt top, OptionalInt bottom) {
+
 		super(element);
 
 		this.newOwner = newOwner;
@@ -75,6 +75,11 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 				.elementAfterAbsolute(lifeline, top.orElseGet(() -> element.getTop().orElse(0))));
 		spannedOccurrences = as(Optional.of(element), MExecution.class).map(MExecution::getOccurrences)
 				.orElse(Collections.emptyList());
+
+		// Publish this ownership change in the dependency context for other commands to find
+		PendingChildData.setPendingChild(newOwner, element);
+		// And vertical extent change
+		PendingVerticalExtentData.setPendingVerticalExtent(element, top, bottom);
 	}
 
 	protected boolean isChangingOwner() {
@@ -166,17 +171,16 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 	 * @return the dependencies command
 	 */
 	protected Optional<Command> dependencies(MExecution execution, MLifeline lifeline) {
-		List<Command> result = new ArrayList<>();
-
 		// Occurrences spanned by the execution, including its start and finish. They move
 		// according to the execution, maintaining their relative position. Note that
-		// nested executions will be handled implicitly by either their start or finish
-		spannedOccurrences.stream().map(occ -> {
+		// nested executions will be handled implicitly by either their start or finish.
+		// Compute not only currently spanned occurrences that will need updating, but
+		// also future spanned occurrences
+
+		return affectedOccurrences(execution).map(occ -> {
 			OptionalInt where = occ.getTop();
 			return defer(() -> occ.setCovered(lifeline, where));
-		}).filter(Objects::nonNull).forEach(result::add);
-
-		return result.stream().reduce(chaining());
+		}).reduce(chaining());
 	}
 
 	protected void ensurePadding() {

@@ -182,4 +182,44 @@ public class Optionals {
 		}
 		return Optional.empty();
 	}
+
+	/**
+	 * Get the minimum of two optional integers. If eith4r is {@link Optional#empty() empty}, then the minimum
+	 * is the other.
+	 * 
+	 * @param a
+	 *            an optional integer
+	 * @param b
+	 *            another optional integer
+	 * @return the minimum of the two
+	 */
+	public static OptionalInt min(OptionalInt a, OptionalInt b) {
+		return a.isPresent() ? b.isPresent() ? OptionalInt.of(Math.min(a.getAsInt(), b.getAsInt())) : a : b;
+	}
+
+	/**
+	 * Get the minimum of two optional integers. If eith4r is {@link Optional#empty() empty}, then the minimum
+	 * is the other.
+	 * 
+	 * @param a
+	 *            an optional integer
+	 * @param b
+	 *            another optional integer
+	 * @return the minimum of the two
+	 */
+	public static OptionalInt max(OptionalInt a, OptionalInt b) {
+		return a.isPresent() ? b.isPresent() ? OptionalInt.of(Math.max(a.getAsInt(), b.getAsInt())) : a : b;
+	}
+
+	/**
+	 * Unwrap some {@code optionals} into a stream of the non-{@link Optional#empty() empty} values.
+	 * 
+	 * @param optionals
+	 *            some optional values
+	 * @return a stream of the {@link Optional#isPresent() present} values
+	 */
+	@SafeVarargs
+	public static <T> Stream<T> stream(Optional<? extends T>... optionals) {
+		return Stream.of(optionals).filter(Optional::isPresent).map(Optional::get);
+	}
 }
