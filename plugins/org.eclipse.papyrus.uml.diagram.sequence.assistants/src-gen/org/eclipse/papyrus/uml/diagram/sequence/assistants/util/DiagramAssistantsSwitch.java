@@ -13,16 +13,12 @@ package org.eclipse.papyrus.uml.diagram.sequence.assistants.util;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.emf.ecore.util.Switch;
-
 import org.eclipse.gmf.runtime.common.core.service.IProvider;
-
 import org.eclipse.gmf.runtime.emf.ui.services.modelingassistant.IModelingAssistantProvider;
-
 import org.eclipse.papyrus.infra.gmfdiag.assistant.ModelingAssistantProvider;
-
-import org.eclipse.papyrus.uml.diagram.sequence.assistants.*;
+import org.eclipse.papyrus.uml.diagram.sequence.assistants.DiagramAssistantsPackage;
+import org.eclipse.papyrus.uml.diagram.sequence.assistants.SequenceDiagramAssistantProvider;
 
 /**
  * <!-- begin-user-doc --> The <b>Switch</b> for the model's inheritance hierarchy. It supports the call
@@ -78,14 +74,18 @@ public class DiagramAssistantsSwitch<T> extends Switch<T> {
 			case DiagramAssistantsPackage.SEQUENCE_DIAGRAM_ASSISTANT_PROVIDER: {
 				SequenceDiagramAssistantProvider sequenceDiagramAssistantProvider = (SequenceDiagramAssistantProvider)theEObject;
 				T result = caseSequenceDiagramAssistantProvider(sequenceDiagramAssistantProvider);
-				if (result == null)
+				if (result == null) {
 					result = caseModelingAssistantProvider(sequenceDiagramAssistantProvider);
-				if (result == null)
+				}
+				if (result == null) {
 					result = caseIModelingAssistantProvider(sequenceDiagramAssistantProvider);
-				if (result == null)
+				}
+				if (result == null) {
 					result = caseIProvider(sequenceDiagramAssistantProvider);
-				if (result == null)
+				}
+				if (result == null) {
 					result = defaultCase(theEObject);
+				}
 				return result;
 			}
 			default:

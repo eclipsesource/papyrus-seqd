@@ -13,12 +13,10 @@ package org.eclipse.papyrus.uml.diagram.sequence.assistants.tests;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import junit.textui.TestRunner;
 
 /**
- * <!-- begin-user-doc --> A test suite for the '<em><b>Assistants</b></em>'
- * model. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A test suite for the '<em><b>Assistants</b></em>' model. <!-- end-user-doc -->
  * 
  * @generated
  */

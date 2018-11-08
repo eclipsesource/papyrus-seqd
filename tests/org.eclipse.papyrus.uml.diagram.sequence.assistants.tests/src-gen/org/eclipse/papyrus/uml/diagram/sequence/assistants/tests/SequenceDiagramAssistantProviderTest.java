@@ -46,8 +46,8 @@ import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
 /**
- * <!-- begin-user-doc --> A test case for the model object '<em><b>Sequence
- * Diagram Assistant Provider</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A test case for the model object '<em><b>Sequence Diagram Assistant
+ * Provider</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following operations are tested:
  * <ul>
@@ -59,7 +59,7 @@ import junit.textui.TestRunner;
  * <em>Get Rel Types On Source And Target</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @generated
  */
 @SuppressWarnings("unchecked")
@@ -71,24 +71,26 @@ public class SequenceDiagramAssistantProviderTest extends TestCase {
 	static final String LIFELINE_TYPE = "org.eclipse.papyrus.uml.Lifeline";
 
 	/**
-	 * The fixture for this Sequence Diagram Assistant Provider test case. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * The fixture for this Sequence Diagram Assistant Provider test case. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
 	 *
 	 * @generated
 	 */
 	protected SequenceDiagramAssistantProvider fixture = null;
 
 	private Model model;
+
 	private Lifeline lifeline;
 
 	private Diagram diagram;
+
 	private Shape lifelineView;
 
 	private IAdaptable adaptable;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	public static void main(String[] args) {
@@ -96,9 +98,9 @@ public class SequenceDiagramAssistantProviderTest extends TestCase {
 	}
 
 	/**
-	 * Constructs a new Sequence Diagram Assistant Provider test case with the given
-	 * name. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * Constructs a new Sequence Diagram Assistant Provider test case with the given name. <!-- begin-user-doc
+	 * --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public SequenceDiagramAssistantProviderTest(String name) {
@@ -106,8 +108,8 @@ public class SequenceDiagramAssistantProviderTest extends TestCase {
 	}
 
 	/**
-	 * Sets the fixture for this Sequence Diagram Assistant Provider test case. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * Sets the fixture for this Sequence Diagram Assistant Provider test case. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
 	 *
 	 * @generated
 	 */
@@ -116,9 +118,9 @@ public class SequenceDiagramAssistantProviderTest extends TestCase {
 	}
 
 	/**
-	 * Returns the fixture for this Sequence Diagram Assistant Provider test case.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * Returns the fixture for this Sequence Diagram Assistant Provider test case. <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected SequenceDiagramAssistantProvider getFixture() {
@@ -126,9 +128,8 @@ public class SequenceDiagramAssistantProviderTest extends TestCase {
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <strong>Note</strong> that these tests must be run in
-	 * an Eclipse Run-time instance because they interact with the GMF <em>Element
-	 * Types Registry</em> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <strong>Note</strong> that these tests must be run in an Eclipse Run-time
+	 * instance because they interact with the GMF <em>Element Types Registry</em> <!-- end-user-doc -->
 	 *
 	 * @see junit.framework.TestCase#setUp()
 	 * @generated NOT
@@ -139,7 +140,7 @@ public class SequenceDiagramAssistantProviderTest extends TestCase {
 
 		getFixture().getElementTypeIDs().addAll(Arrays.asList(LIFELINE_TYPE, MESSAGE_TYPE));
 
-		ElementTypeFilter lifelineTypeFilter = (ElementTypeFilter) getFixture().createOwnedFilter(null,
+		ElementTypeFilter lifelineTypeFilter = (ElementTypeFilter)getFixture().createOwnedFilter(null,
 				AssistantPackage.Literals.ELEMENT_TYPE_FILTER);
 		lifelineTypeFilter.setElementTypeID(LIFELINE_TYPE);
 
@@ -149,14 +150,13 @@ public class SequenceDiagramAssistantProviderTest extends TestCase {
 		connection.setTargetFilter(lifelineTypeFilter);
 
 		model = UMLFactory.eINSTANCE.createModel();
-		Interaction interaction = (Interaction) model.createOwnedType("seq",
-				UMLPackage.Literals.INTERACTION);
+		Interaction interaction = (Interaction)model.createOwnedType("seq", UMLPackage.Literals.INTERACTION);
 		lifeline = interaction.createLifeline("a");
 
 		diagram = NotationFactory.eINSTANCE.createDiagram();
 		diagram.setType("LightweightSequenceDiagram");
 		diagram.setElement(interaction);
-		lifelineView = (Shape) diagram.createChild(NotationPackage.Literals.SHAPE);
+		lifelineView = (Shape)diagram.createChild(NotationPackage.Literals.SHAPE);
 		lifelineView.setType("Shape_Lifeline");
 		lifelineView.setElement(lifeline);
 
@@ -170,7 +170,7 @@ public class SequenceDiagramAssistantProviderTest extends TestCase {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @see junit.framework.TestCase#tearDown()
 	 * @generated
 	 */
@@ -191,8 +191,7 @@ public class SequenceDiagramAssistantProviderTest extends TestCase {
 	/**
 	 * Tests the
 	 * '{@link org.eclipse.papyrus.uml.diagram.sequence.assistants.SequenceDiagramAssistantProvider#getRelTypesOnSource(org.eclipse.core.runtime.IAdaptable)
-	 * <em>Get Rel Types On Source</em>}' operation. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * <em>Get Rel Types On Source</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.diagram.sequence.assistants.SequenceDiagramAssistantProvider#getRelTypesOnSource(org.eclipse.core.runtime.IAdaptable)
 	 * @generated NOT
@@ -205,8 +204,7 @@ public class SequenceDiagramAssistantProviderTest extends TestCase {
 	/**
 	 * Tests the
 	 * '{@link org.eclipse.papyrus.uml.diagram.sequence.assistants.SequenceDiagramAssistantProvider#getRelTypesOnTarget(org.eclipse.core.runtime.IAdaptable)
-	 * <em>Get Rel Types On Target</em>}' operation. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * <em>Get Rel Types On Target</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.diagram.sequence.assistants.SequenceDiagramAssistantProvider#getRelTypesOnTarget(org.eclipse.core.runtime.IAdaptable)
 	 * @generated NOT
@@ -219,8 +217,7 @@ public class SequenceDiagramAssistantProviderTest extends TestCase {
 	/**
 	 * Tests the
 	 * '{@link org.eclipse.papyrus.uml.diagram.sequence.assistants.SequenceDiagramAssistantProvider#getRelTypesOnSourceAndTarget(org.eclipse.core.runtime.IAdaptable, org.eclipse.core.runtime.IAdaptable)
-	 * <em>Get Rel Types On Source And Target</em>}' operation. <!-- begin-user-doc
-	 * --> <!-- end-user-doc -->
+	 * <em>Get Rel Types On Source And Target</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see org.eclipse.papyrus.uml.diagram.sequence.assistants.SequenceDiagramAssistantProvider#getRelTypesOnSourceAndTarget(org.eclipse.core.runtime.IAdaptable,
 	 *      org.eclipse.core.runtime.IAdaptable)

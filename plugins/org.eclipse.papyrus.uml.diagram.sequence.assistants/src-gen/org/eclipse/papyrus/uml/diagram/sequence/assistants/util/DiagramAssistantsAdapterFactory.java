@@ -13,18 +13,13 @@ package org.eclipse.papyrus.uml.diagram.sequence.assistants.util;
 
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
-
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
-
 import org.eclipse.emf.ecore.EObject;
-
 import org.eclipse.gmf.runtime.common.core.service.IProvider;
-
 import org.eclipse.gmf.runtime.emf.ui.services.modelingassistant.IModelingAssistantProvider;
-
 import org.eclipse.papyrus.infra.gmfdiag.assistant.ModelingAssistantProvider;
-
-import org.eclipse.papyrus.uml.diagram.sequence.assistants.*;
+import org.eclipse.papyrus.uml.diagram.sequence.assistants.DiagramAssistantsPackage;
+import org.eclipse.papyrus.uml.diagram.sequence.assistants.SequenceDiagramAssistantProvider;
 
 /**
  * <!-- begin-user-doc --> The <b>Adapter Factory</b> for the model. It provides an adapter

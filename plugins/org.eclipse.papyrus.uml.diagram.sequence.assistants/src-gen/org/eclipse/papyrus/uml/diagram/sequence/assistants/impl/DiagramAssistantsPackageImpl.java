@@ -14,17 +14,12 @@ package org.eclipse.papyrus.uml.diagram.sequence.assistants.impl;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcorePackage;
-
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-
 import org.eclipse.papyrus.infra.filters.FiltersPackage;
-
 import org.eclipse.papyrus.infra.gmfdiag.assistant.AssistantPackage;
-
 import org.eclipse.papyrus.uml.diagram.sequence.assistants.DiagramAssistantsFactory;
 import org.eclipse.papyrus.uml.diagram.sequence.assistants.DiagramAssistantsPackage;
 import org.eclipse.papyrus.uml.diagram.sequence.assistants.SequenceDiagramAssistantProvider;
-
 import org.eclipse.uml2.types.TypesPackage;
 
 /**
@@ -78,15 +73,16 @@ public class DiagramAssistantsPackageImpl extends EPackageImpl implements Diagra
 	 * @generated
 	 */
 	public static DiagramAssistantsPackage init() {
-		if (isInited)
+		if (isInited) {
 			return (DiagramAssistantsPackage)EPackage.Registry.INSTANCE
 					.getEPackage(DiagramAssistantsPackage.eNS_URI);
+		}
 
 		// Obtain or create and register package
-		DiagramAssistantsPackageImpl theDiagramAssistantsPackage = (DiagramAssistantsPackageImpl)(EPackage.Registry.INSTANCE
-				.get(eNS_URI) instanceof DiagramAssistantsPackageImpl
-						? EPackage.Registry.INSTANCE.get(eNS_URI)
-						: new DiagramAssistantsPackageImpl());
+		Object registeredDiagramAssistantsPackage = EPackage.Registry.INSTANCE.get(eNS_URI);
+		DiagramAssistantsPackageImpl theDiagramAssistantsPackage = registeredDiagramAssistantsPackage instanceof DiagramAssistantsPackageImpl
+				? (DiagramAssistantsPackageImpl)registeredDiagramAssistantsPackage
+				: new DiagramAssistantsPackageImpl();
 
 		isInited = true;
 
@@ -115,6 +111,7 @@ public class DiagramAssistantsPackageImpl extends EPackageImpl implements Diagra
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getSequenceDiagramAssistantProvider() {
 		return sequenceDiagramAssistantProviderEClass;
 	}
@@ -124,6 +121,7 @@ public class DiagramAssistantsPackageImpl extends EPackageImpl implements Diagra
 	 * 
 	 * @generated
 	 */
+	@Override
 	public DiagramAssistantsFactory getDiagramAssistantsFactory() {
 		return (DiagramAssistantsFactory)getEFactoryInstance();
 	}
@@ -142,8 +140,9 @@ public class DiagramAssistantsPackageImpl extends EPackageImpl implements Diagra
 	 * @generated
 	 */
 	public void createPackageContents() {
-		if (isCreated)
+		if (isCreated) {
 			return;
+		}
 		isCreated = true;
 
 		// Create classes and their features
@@ -164,8 +163,9 @@ public class DiagramAssistantsPackageImpl extends EPackageImpl implements Diagra
 	 * @generated
 	 */
 	public void initializePackageContents() {
-		if (isInitialized)
+		if (isInitialized) {
 			return;
+		}
 		isInitialized = true;
 
 		// Initialize package

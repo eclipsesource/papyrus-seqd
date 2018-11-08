@@ -12,15 +12,11 @@
 package org.eclipse.papyrus.uml.diagram.sequence.assistants.util;
 
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-
 import org.eclipse.papyrus.infra.gmfdiag.assistant.AssistantPackage;
-
 import org.eclipse.papyrus.uml.diagram.sequence.assistants.DiagramAssistantsPackage;
 import org.eclipse.papyrus.uml.diagram.sequence.assistants.SequenceDiagramAssistantProvider;
 
@@ -57,6 +53,7 @@ public class DiagramAssistantsDerivedUnionAdapter extends AdapterImpl {
 	 *            a description of the change.
 	 * @generated
 	 */
+	@Override
 	public void notifyChanged(Notification notification) {
 		Object notifier = notification.getNotifier();
 		if (notifier instanceof EObject) {
