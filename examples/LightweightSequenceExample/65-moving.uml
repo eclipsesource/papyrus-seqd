@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_Oy8JgEppEeiB_O7ig5LXPg" name="lightweight">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_O45nkEppEeiB_O7ig5LXPg">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_R_u1oEppEeiB_O7ig5LXPg" name="DoIt">
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_FMyroGpHEeiIJqtZNCF3Dw" name="Lifeline1" coveredBy="_Y_PZkOM0EeiMDaKTugkfaw _Y_QntOM0EeiMDaKTugkfaw"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_S6XWMOKpEeix5N_q7jP6rA" name="Lifeline3" coveredBy="_qvp1QOM2Eeic0KQPni2_MA _qvqcVeM2Eeic0KQPni2_MA _qvrDYuM2Eeic0KQPni2_MA"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_M7BZwOM0EeiMDaKTugkfaw" name="Lifeline2" coveredBy="_Y_Qns-M0EeiMDaKTugkfaw _Y_QnsOM0EeiMDaKTugkfaw _Y_PZkeM0EeiMDaKTugkfaw _qvpOMOM2Eeic0KQPni2_MA _qvrDY-M2Eeic0KQPni2_MA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_Y_PZkOM0EeiMDaKTugkfaw" covered="_FMyroGpHEeiIJqtZNCF3Dw" message="_Y_PZkuM0EeiMDaKTugkfaw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_Y_PZkeM0EeiMDaKTugkfaw" covered="_M7BZwOM0EeiMDaKTugkfaw" message="_Y_PZkuM0EeiMDaKTugkfaw"/>
+    <fragment xmi:type="uml:ActionExecutionSpecification" xmi:id="_Y_QnsOM0EeiMDaKTugkfaw" name="Execution1" covered="_M7BZwOM0EeiMDaKTugkfaw" finish="_Y_Qns-M0EeiMDaKTugkfaw" start="_Y_PZkeM0EeiMDaKTugkfaw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_qvpOMOM2Eeic0KQPni2_MA" covered="_M7BZwOM0EeiMDaKTugkfaw" message="_qvp1QeM2Eeic0KQPni2_MA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_qvp1QOM2Eeic0KQPni2_MA" covered="_S6XWMOKpEeix5N_q7jP6rA" message="_qvp1QeM2Eeic0KQPni2_MA"/>
+    <fragment xmi:type="uml:ActionExecutionSpecification" xmi:id="_qvqcVeM2Eeic0KQPni2_MA" name="Execution2" covered="_S6XWMOKpEeix5N_q7jP6rA" finish="_qvrDYuM2Eeic0KQPni2_MA" start="_qvp1QOM2Eeic0KQPni2_MA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_qvrDYuM2Eeic0KQPni2_MA" covered="_S6XWMOKpEeix5N_q7jP6rA" message="_qvrDZOM2Eeic0KQPni2_MA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_qvrDY-M2Eeic0KQPni2_MA" covered="_M7BZwOM0EeiMDaKTugkfaw" message="_qvrDZOM2Eeic0KQPni2_MA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_Y_Qns-M0EeiMDaKTugkfaw" covered="_M7BZwOM0EeiMDaKTugkfaw" message="_Y_QnteM0EeiMDaKTugkfaw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_Y_QntOM0EeiMDaKTugkfaw" covered="_FMyroGpHEeiIJqtZNCF3Dw" message="_Y_QnteM0EeiMDaKTugkfaw"/>
+    <message xmi:type="uml:Message" xmi:id="_Y_PZkuM0EeiMDaKTugkfaw" name="SyncMessage1" receiveEvent="_Y_PZkeM0EeiMDaKTugkfaw" sendEvent="_Y_PZkOM0EeiMDaKTugkfaw"/>
+    <message xmi:type="uml:Message" xmi:id="_Y_QnteM0EeiMDaKTugkfaw" name="ReplyMessage1" messageSort="reply" receiveEvent="_Y_QntOM0EeiMDaKTugkfaw" sendEvent="_Y_Qns-M0EeiMDaKTugkfaw"/>
+    <message xmi:type="uml:Message" xmi:id="_qvp1QeM2Eeic0KQPni2_MA" name="SyncMessage2" receiveEvent="_qvp1QOM2Eeic0KQPni2_MA" sendEvent="_qvpOMOM2Eeic0KQPni2_MA"/>
+    <message xmi:type="uml:Message" xmi:id="_qvrDZOM2Eeic0KQPni2_MA" name="ReplyMessage2" messageSort="reply" receiveEvent="_qvrDY-M2Eeic0KQPni2_MA" sendEvent="_qvrDYuM2Eeic0KQPni2_MA"/>
+  </packagedElement>
+</uml:Model>
