@@ -12,12 +12,16 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.mapPresent;
+
 import java.util.function.Consumer;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.uml.interaction.graph.Graph;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Interaction;
@@ -36,6 +40,8 @@ public class InteractionModelBuilder {
 
 	private final Graph graph;
 
+	private MInteractionImpl logicalModel;
+
 	/**
 	 * Initializes me.
 	 */
@@ -43,6 +49,19 @@ public class InteractionModelBuilder {
 		super();
 
 		this.graph = Graph.compute(interaction, sequenceDiagram);
+	}
+
+	/**
+	 * Initializes me as an incremental re-builder of the given logical model.
+	 *
+	 * @param logicalModel
+	 *            an existing logical model
+	 */
+	InteractionModelBuilder(MInteractionImpl logicalModel) {
+		super();
+
+		this.logicalModel = logicalModel;
+		this.graph = logicalModel.getGraph();
 	}
 
 	/**
@@ -70,6 +89,17 @@ public class InteractionModelBuilder {
 	}
 
 	/**
+	 * Obtain a builder that can add to an existing logical model.
+	 * 
+	 * @param interaction
+	 *            the existing logical model
+	 * @return the incremental logical model builder
+	 */
+	public static InteractionModelBuilder getInstance(MInteraction interaction) {
+		return new InteractionModelBuilder((MInteractionImpl)interaction);
+	}
+
+	/**
 	 * Build the logical model.
 	 * 
 	 * @return a new logical model
@@ -78,13 +108,40 @@ public class InteractionModelBuilder {
 		// The initial vertex is the interaction
 		Interaction interaction = (Interaction)graph.initial().getInteractionElement();
 
-		MInteractionImpl result = new MInteractionImpl().withGraph(graph);
-		build(result, interaction);
+		this.logicalModel = new MInteractionImpl().withGraph(graph);
+		build(logicalModel, interaction);
 
 		// Now make the association for LogicalModelAdapters to discover it
-		result.setElement(interaction);
+		logicalModel.setElement(interaction);
 
-		return result;
+		return this.logicalModel;
+	}
+
+	public MInteraction add(Element context, Element newElement) {
+		Consumer<Element> graphUpdater = graph.update(context);
+		graphUpdater.accept(newElement);
+
+		UMLSwitch<MInteraction> modelUpdater = new UMLSwitch<MInteraction>() {
+
+			@Override
+			public MInteraction caseInteractionFragment(InteractionFragment object) {
+				// A new interaction fragment covering some lifelines
+				mapPresent(object.getCovereds().stream().map(logicalModel::getLifeline))
+						.map(MLifelineImpl.class::cast) //
+						.map(InteractionModelBuilder.this::coveringBuilder) //
+						.forEach(b -> b.accept(object));
+
+				return super.caseInteractionFragment(object);
+			}
+
+			@Override
+			public MInteraction defaultCase(EObject object) {
+				return logicalModel;
+			}
+
+		};
+
+		return modelUpdater.doSwitch(newElement);
 	}
 
 	void build(MInteractionImpl interaction, Interaction uml) {

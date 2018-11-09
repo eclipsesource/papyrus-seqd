@@ -17,14 +17,16 @@ import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.
 import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.isNear;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -36,11 +38,14 @@ import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.editparts.LayerManager;
 import org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Description;
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 import org.hamcrest.SelfDescribing;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
+import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
 
 /**
  * Matchers for assertions on GEF.
@@ -49,11 +54,98 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
  */
 public class GEFMatchers {
 
+	private static int defaultTolerance = 0;
+
 	/**
 	 * Not instantiable by clients.
 	 */
 	private GEFMatchers() {
 		super();
+	}
+
+	/**
+	 * Matcher for primitive coördinate/dimension measurements, applying the
+	 * {@linkplain #setDefaultTolerance(int) default tolerance}.
+	 *
+	 * @param value
+	 *            the value to match
+	 * @return the (possibly fuzzy) matcher
+	 */
+	public static Matcher<Integer> is(int value) {
+		return (defaultTolerance == 0) ? CoreMatchers.is(value) : isNear(value, defaultTolerance);
+	}
+
+	/**
+	 * Set the default tolerance for geometry assertions. The default-default
+	 * tolerance is zero.
+	 *
+	 * @param newDefaultTolerance
+	 *            the new default tolerance
+	 *
+	 * @return the previous default tolerance (useful to restore it, later)
+	 *
+	 * @throws IllegalArgumentException
+	 *             if the tolerance is negative
+	 */
+	public static int setDefaultTolerance(int newDefaultTolerance) {
+		if (newDefaultTolerance < 0) {
+			throw new IllegalArgumentException("Negative default tolerance: " + newDefaultTolerance);
+		}
+
+		int result = defaultTolerance;
+
+		defaultTolerance = newDefaultTolerance;
+
+		return result;
+	}
+
+	/**
+	 * Set the {@linkplain #setDefaultTolerance(int) default tolerance} for the
+	 * duration of a test.
+	 *
+	 * @param tolerance
+	 *            the tolerance to apply to the test
+	 * @param platformFilters
+	 *            optional {@linkplain Platform#getOS() platform os/arch/ws}
+	 *            specifiers to match to enable the tolerance. If none of the
+	 *            specified filters matches, then the tolerance rule has no effect
+	 *            (whatever is otherwise the default tolerance will continue to be
+	 *            effective)
+	 *
+	 * @return the tolerance rule
+	 *
+	 * @see #setDefaultTolerance(int)
+	 */
+	public static TestRule defaultTolerance(int tolerance, String... platformFilters) {
+		// Can check platform filters up-front because running processes don't migrate
+		// to other computer systems
+		boolean apply = platformFilters.length == 0;
+		if (!apply) {
+			Set<String> currentPlatform = new HashSet<>(
+					Arrays.asList(Platform.getOS(), Platform.getOSArch(), Platform.getWS()));
+			int size = currentPlatform.size(); // e.g., |{win32, x86_64, win32}| = 2
+			currentPlatform.removeAll(Arrays.asList(platformFilters));
+			apply = currentPlatform.size() < size;
+		}
+
+		if (!apply) {
+			// The identity rule
+			return (stmt, description) -> stmt;
+		}
+
+		return new TestWatcher() {
+			private int oldTolerance;
+
+			@Override
+			protected void starting(org.junit.runner.Description description) {
+				oldTolerance = setDefaultTolerance(tolerance);
+			}
+
+			@Override
+			protected void finished(org.junit.runner.Description description) {
+				setDefaultTolerance(oldTolerance);
+			}
+		};
 	}
 
 	/**
@@ -157,6 +249,32 @@ public class GEFMatchers {
 	 */
 	public static Matcher<Point> isPoint(int x, int y) {
 		return isPoint(is(x), is(y));
+	}
+
+	/**
+	 * Matcher for a point.
+	 *
+	 * @param location
+	 *            the expected point location
+	 *
+	 * @return the point matcher
+	 */
+	public static Matcher<Point> isPoint(Point location) {
+		return isPoint(is(location.x), is(location.y));
+	}
+
+	/**
+	 * Fuzzy matcher for a point.
+	 *
+	 * @param location
+	 *            the expected point location
+	 * @param tolerance
+	 *            a tolerance to allow in the point's coördinates
+	 *
+	 * @return the point matcher
+	 */
+	public static Matcher<Point> isPoint(Point location, int tolerance) {
+		return isPoint(location.x, location.y, tolerance);
 	}
 
 	/**
@@ -477,6 +595,32 @@ public class GEFMatchers {
 	public static Matcher<Rectangle> isRect(int x, int y, int width, int height, int tolerance) {
 		return isRect(isNear(x, tolerance), isNear(y, tolerance), isNear(width, tolerance),
 				isNear(height, tolerance));
+	}
+
+	/**
+	 * Matcher for a rectangle.
+	 *
+	 * @param rect
+	 *            the expected rectangle geometry
+	 *
+	 * @return the rectangle matcher
+	 */
+	public static Matcher<Rectangle> isRect(Rectangle rect) {
+		return isRect(rect.x, rect.y, rect.width, rect.height);
+	}
+
+	/**
+	 * Fuzzy matcher for a rectangle.
+	 *
+	 * @param rect
+	 *            the expected rectangle geometry
+	 * @param tolerance
+	 *            a tolerance for errors in the rectangle coördinate values
+	 *
+	 * @return the rectangle matcher
+	 */
+	public static Matcher<Rectangle> isRect(Rectangle rect, int tolerance) {
+		return isRect(rect.x, rect.y, rect.width, rect.height, tolerance);
 	}
 
 	/**

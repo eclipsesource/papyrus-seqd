@@ -48,12 +48,12 @@ public class EdgeImpl extends TaggableImpl<EdgeImpl> implements Edge {
 	}
 
 	@Override
-	public Vertex from() {
+	public VertexImpl from() {
 		return from;
 	}
 
 	@Override
-	public Vertex to() {
+	public VertexImpl to() {
 		return to;
 	}
 

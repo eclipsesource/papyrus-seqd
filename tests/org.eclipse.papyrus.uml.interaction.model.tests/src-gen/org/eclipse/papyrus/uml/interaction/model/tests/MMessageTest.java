@@ -18,6 +18,7 @@ import static org.junit.Assert.assertThat;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.uml2.uml.MessageEnd;
+import org.eclipse.uml2.uml.MessageSort;
 
 import junit.textui.TestRunner;
 
@@ -30,6 +31,7 @@ import junit.textui.TestRunner;
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getReceive() <em>Receive</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getSender() <em>Sender</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getReceiver() <em>Receiver</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MMessage#isSynchronous() <em>Synchronous</em>}</li>
  * </ul>
  * </p>
  * <p>
@@ -182,6 +184,24 @@ public class MMessageTest extends MElementTest {
 	 */
 	public void testGetReceiver() {
 		assertThat(getFixture().getReceiver(), isPresent(wraps(umlInteraction.getLifeline("RightLine"))));
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#isSynchronous()
+	 * <em>Synchronous</em>}' feature getter. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MMessage#isSynchronous()
+	 * @generated NOT
+	 */
+	public void testIsSynchronous() {
+		getFixture().getElement().setMessageSort(MessageSort.SYNCH_CALL_LITERAL);
+		assertThat("Call not synchronous", getFixture().isSynchronous(), is(true));
+
+		getFixture().getElement().setMessageSort(MessageSort.ASYNCH_SIGNAL_LITERAL);
+		assertThat("Signal message not asynchronous", getFixture().isSynchronous(), is(false));
+
+		getFixture().getElement().setMessageSort(MessageSort.REPLY_LITERAL);
+		assertThat("Reply message not synchronous", getFixture().isSynchronous(), is(true));
 	}
 
 	/**

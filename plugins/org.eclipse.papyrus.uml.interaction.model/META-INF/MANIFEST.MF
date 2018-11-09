@@ -22,7 +22,8 @@ Bundle-Description: This plugin is in charge of the specific values that should 
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.papyrus.uml.interaction.internal.model;
   x-friends:="org.eclipse.papyrus.uml.interaction.model.edit",
- org.eclipse.papyrus.uml.interaction.internal.model.commands;x-internal:=true,
+ org.eclipse.papyrus.uml.interaction.internal.model.commands;
+  x-friends:="org.eclipse.papyrus.uml.diagram.sequence.runtime",
  org.eclipse.papyrus.uml.interaction.internal.model.impl;
   x-friends:="org.eclipse.papyrus.uml.diagram.sequence.runtime",
  org.eclipse.papyrus.uml.interaction.internal.model.spi.impl,

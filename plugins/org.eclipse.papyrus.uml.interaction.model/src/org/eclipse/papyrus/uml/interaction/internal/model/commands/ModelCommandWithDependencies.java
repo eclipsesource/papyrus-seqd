@@ -12,9 +12,12 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
+import java.util.Optional;
+
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
+import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.uml2.uml.Element;
 
 /**
@@ -40,10 +43,21 @@ public abstract class ModelCommandWithDependencies<T extends MElementImpl<?>> ex
 
 	@Override
 	protected final Command createCommand() {
-		return deps.withContext(() -> doCreateCommand());
+		return deps.withContext(ctx -> {
+			// Ensure that I'm in the context (in many cases, I already am)
+			ctx.put(getTarget(), getClass());
+
+			return doCreateCommand();
+		});
 	}
 
 	protected abstract Command doCreateCommand();
+
+	protected boolean hasDependency(MElement<?> subject, Class<?> type) {
+		@SuppressWarnings("rawtypes")
+		Optional<Class> key = deps.get(subject, Class.class, type::isAssignableFrom);
+		return key.isPresent();
+	}
 
 	//
 	// Nested types

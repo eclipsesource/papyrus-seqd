@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -153,6 +154,10 @@ public interface Graph {
 		List<Vertex> toVisit = vertices().filter(before(reference)).collect(Collectors.toList());
 		Collections.reverse(toVisit);
 		toVisit.forEach(v -> v.accept(visitor));
+	}
+
+	default Consumer<Element> update(Element context) {
+		return GraphImpl.update(this, context);
 	}
 
 	/**

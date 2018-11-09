@@ -20,6 +20,7 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 
 /**
@@ -157,15 +158,33 @@ public interface MExecution extends MElement<ExecutionSpecification> {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
 	 * 
-	 * @param yPosition
+	 * @param top
 	 *            the absolute Y position at which to place the top of the execution on the lifeline, or empty
 	 *            to maintain the current Y position. <!-- end-model-doc -->
 	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Command" required="true"
-	 *        newOwnerRequired="true"
-	 *        yPositionDataType="org.eclipse.papyrus.uml.interaction.model.OptionalInt"
-	 *        yPositionRequired="true"
+	 *        newOwnerRequired="true" topDataType="org.eclipse.papyrus.uml.interaction.model.OptionalInt"
+	 *        topRequired="true" bottomDataType="org.eclipse.papyrus.uml.interaction.model.OptionalInt"
+	 *        bottomRequired="true"
 	 * @generated
 	 */
-	Command setOwner(MLifeline newOwner, OptionalInt yPosition);
+	Command setOwner(MLifeline newOwner, OptionalInt top, OptionalInt bottom);
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.CreationCommand&lt;org.eclipse.uml2.uml.ExecutionOccurrenceSpecification&gt;"
+	 *        required="true"
+	 * @generated
+	 */
+	CreationCommand<ExecutionOccurrenceSpecification> createStart();
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.CreationCommand&lt;org.eclipse.uml2.uml.ExecutionOccurrenceSpecification&gt;"
+	 *        required="true"
+	 * @generated
+	 */
+	CreationCommand<ExecutionOccurrenceSpecification> createFinish();
 
 } // MExecution

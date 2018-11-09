@@ -13,9 +13,13 @@
 package org.eclipse.papyrus.uml.interaction.model.tests;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.gt;
+import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.lt;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
@@ -27,13 +31,19 @@ import java.util.OptionalInt;
 import java.util.function.Predicate;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.uml2.uml.ActionExecutionSpecification;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
+import org.eclipse.uml2.uml.InteractionFragment;
+import org.eclipse.uml2.uml.Lifeline;
+import org.eclipse.uml2.uml.MessageOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.UMLFactory;
@@ -341,21 +351,21 @@ public class MExecutionTest extends MElementTest {
 
 	/**
 	 * Tests the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline, java.util.OptionalInt)
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline, java.util.OptionalInt, java.util.OptionalInt)
 	 * <em>Set Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline,
-	 *      java.util.OptionalInt)
+	 *      java.util.OptionalInt, java.util.OptionalInt)
 	 * @generated NOT
 	 */
-	public void testSetOwner__MLifeline_OptionalInt() {
+	public void testSetOwner__MLifeline_OptionalInt_OptionalInt() {
 		// Get the other lifeline
 		MLifeline other = getFixture().getInteraction().getLifelines().stream()
 				.filter(((Predicate<MLifeline>)getFixture().getOwner()::equals).negate()).findFirst()
 				.orElseThrow(() -> new AssertionError("Only one lifeline"));
 		String name = other.getName();
 
-		Command setOwner = getFixture().setOwner(other, OptionalInt.empty());
+		Command setOwner = getFixture().setOwner(other, OptionalInt.empty(), OptionalInt.empty());
 		assertThat(setOwner, executable());
 		execute(setOwner);
 
@@ -366,6 +376,76 @@ public class MExecutionTest extends MElementTest {
 				isPresent(named(name)));
 		assertThat("Finish not moved", getFixture().getFinish().flatMap(MOccurrence::getCovered),
 				isPresent(named(name)));
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#createStart() <em>Create
+	 * Start</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#createStart()
+	 * @generated NOT
+	 */
+	public void testCreateStart() {
+		MMessageEnd mEnd = getFixture().getStart().map(MMessageEnd.class::cast).get();
+		Connector messageConnector = mEnd.getOwner().getDiagramView().get();
+		MessageOccurrenceSpecification end = (MessageOccurrenceSpecification)mEnd.getElement();
+		Lifeline covered = end.getCovered();
+
+		CreationCommand<ExecutionOccurrenceSpecification> cmd = getFixture().createStart();
+		assertThat(cmd, executable());
+		execute(cmd);
+
+		ExecutionOccurrenceSpecification start = cmd.getNewObject();
+		assertThat("No start occurrence created", start, notNullValue());
+
+		List<InteractionFragment> fragments = covered.getInteraction().getFragments();
+		assertThat(fragments, hasItems(start, end));
+		assertThat(covered.getCoveredBys(), hasItems(start, end));
+		assertThat(getFixture().getElement().getStart(), is(start));
+		assertThat(start.getExecution(), is(getFixture().getElement()));
+
+		assertThat(fragments.indexOf(end), lt(fragments.indexOf(start)));
+		assertThat(fragments.indexOf(start), lt(fragments.indexOf(fixture.getElement())));
+
+		// The message end is still incoming at the beginning of the execution, so it
+		// should be visually attached to it
+		assertThat("Message not attached to execution", messageConnector.getTarget().getElement(),
+				is(getFixture().getElement()));
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#createFinish() <em>Create
+	 * Finish</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#createFinish()
+	 * @generated NOT
+	 */
+	public void testCreateFinish() {
+		MMessageEnd mEnd = getFixture().getFinish().map(MMessageEnd.class::cast).get();
+		Connector messageConnector = mEnd.getOwner().getDiagramView().get();
+		MessageOccurrenceSpecification end = (MessageOccurrenceSpecification)mEnd.getElement();
+		Lifeline covered = end.getCovered();
+
+		CreationCommand<ExecutionOccurrenceSpecification> cmd = getFixture().createFinish();
+		assertThat(cmd, executable());
+		execute(cmd);
+
+		ExecutionOccurrenceSpecification finish = cmd.getNewObject();
+		assertThat("No finish occurrence created", finish, notNullValue());
+
+		List<InteractionFragment> fragments = covered.getInteraction().getFragments();
+		assertThat(fragments, hasItems(finish, end));
+		assertThat(covered.getCoveredBys(), hasItems(finish, end));
+		assertThat(getFixture().getElement().getFinish(), is(finish));
+		assertThat(finish.getExecution(), is(getFixture().getElement()));
+
+		assertThat(fragments.indexOf(end), gt(fragments.indexOf(finish)));
+		assertThat(fragments.indexOf(finish), gt(fragments.indexOf(fixture.getElement())));
+
+		// The message end is still incoming at the beginning of the execution, so it
+		// should be visually attached to it
+		assertThat("Message not attached to execution", messageConnector.getSource().getElement(),
+				is(getFixture().getElement()));
 	}
 
 	@Override

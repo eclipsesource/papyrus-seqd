@@ -24,7 +24,6 @@ import static org.junit.Assume.assumeThat;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
 import org.eclipse.papyrus.infra.gmfdiag.common.utils.DiagramEditPartsUtil;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.ExecutionSpecificationSemanticEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
@@ -35,12 +34,12 @@ import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Message;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * Integration test cases for the
- * {@link ExecutionSpecificationSemanticEditPolicy} class's start/finish
- * replacement behaviour when snapping to message ends.
+ * Integration test cases for the execution start/finish replacement behaviour
+ * when snapping to message ends.
  *
  * @author Christian W. Damus
  */
@@ -103,6 +102,7 @@ public class ExecutionSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	}
 
 	@Test
+	@Ignore("Exec start should only bind to request receive")
 	public void snapStartToSyncCallSend() {
 		int msgY = EXEC_START_Y - 30;
 		EditPart messageEP = editor.createConnection(SequenceElementTypes.Sync_Message_Edge,
@@ -126,6 +126,7 @@ public class ExecutionSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	}
 
 	@Test
+	@Ignore("Exec finish should only bind to reply send")
 	public void snapFinishToReplyReceive() {
 		int msgY = EXEC_FINISH_Y + 20;
 		EditPart messageEP = editor.createConnection(SequenceElementTypes.Reply_Message_Edge,

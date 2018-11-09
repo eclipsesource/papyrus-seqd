@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandWrapper;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.graph.Graph;
@@ -314,17 +315,16 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 		return c -> chain(initial, c);
 	}
 
+	protected <E extends EObject> Function<Command, CreationCommand<E>> chaining(CreationCommand<E> initial) {
+		return initial::chain;
+	}
+
 	protected BinaryOperator<Command> chaining() {
 		return (first, second) -> chain(first, second);
 	}
 
 	protected Command defer(Supplier<? extends Command> futureCommand) {
-		return new CommandWrapper() {
-			@Override
-			protected Command createCommand() {
-				return futureCommand.get();
-			}
-		};
+		return DependencyContext.defer(futureCommand);
 	}
 
 	protected static void findElementsBelow(int yPosition, List<MElement<? extends Element>> elementsBelow,

@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -98,6 +99,20 @@ public class GraphImpl implements Graph {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Create an incremental updater of the given {@code graph} that accepts new elements created in a
+	 * specific {@code context}.
+	 * 
+	 * @param graph
+	 *            an existing graph
+	 * @param context
+	 *            an element within the {@code graph} in which context some new element(s) have been created
+	 * @return the updater that accepts the new elements
+	 */
+	public static Consumer<Element> update(Graph graph, Element context) {
+		return new GraphComputer((GraphImpl)graph).createUpdater(context);
 	}
 
 	@Override

@@ -55,6 +55,7 @@ public class MMessageItemProvider extends MElementItemProvider {
 
 			addSenderPropertyDescriptor(object);
 			addReceiverPropertyDescriptor(object);
+			addSynchronousPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -87,6 +88,22 @@ public class MMessageItemProvider extends MElementItemProvider {
 						"_UI_MMessage_type"), //$NON-NLS-1$
 				SequenceDiagramPackage.Literals.MMESSAGE__RECEIVER, false, false, false,
 				ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Synchronous feature. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 */
+	protected void addSynchronousPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_MMessage_synchronous_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_MMessage_synchronous_feature", //$NON-NLS-1$ //$NON-NLS-2$
+						"_UI_MMessage_type"), //$NON-NLS-1$
+				SequenceDiagramPackage.Literals.MMESSAGE__SYNCHRONOUS, false, false, false,
+				ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -158,6 +175,7 @@ public class MMessageItemProvider extends MElementItemProvider {
 			case SequenceDiagramPackage.MMESSAGE__RECEIVE:
 			case SequenceDiagramPackage.MMESSAGE__SENDER:
 			case SequenceDiagramPackage.MMESSAGE__RECEIVER:
+			case SequenceDiagramPackage.MMESSAGE__SYNCHRONOUS:
 				fireNotifyChanged(
 						new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;

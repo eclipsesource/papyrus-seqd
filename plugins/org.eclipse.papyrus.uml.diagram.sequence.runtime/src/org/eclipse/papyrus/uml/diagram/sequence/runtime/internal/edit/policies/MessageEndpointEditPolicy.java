@@ -15,6 +15,8 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.getOriginalMouseLocation;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.getOriginalSourceLocation;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.getOriginalTargetLocation;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.isAllowSemanticReordering;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setAllowSemanticReordering;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setForce;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setOriginalMouseLocation;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setOriginalSourceLocation;
@@ -47,6 +49,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.M
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.handles.SequenceConnectionEndpointHandle;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.CommandCreatedEvent;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.DependencyContext;
 import org.eclipse.uml2.uml.Message;
 
 /**
@@ -80,17 +83,20 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 
 	@Override
 	public Command getCommand(Request request) {
-		Command result;
+		// Provide a dependency context for all command construction
+		return DependencyContext.getDynamic().withContext(() -> {
+			Command result;
 
-		if (REQ_CREATE_BENDPOINT.equals(request.getType())) {
-			result = getMoveConnectionCommand((BendpointRequest)request);
-		} else {
-			result = super.getCommand(request);
-		}
+			if (REQ_CREATE_BENDPOINT.equals(request.getType())) {
+				result = getMoveConnectionCommand((BendpointRequest)request);
+			} else {
+				result = super.getCommand(request);
+			}
 
-		bus.post(new CommandCreatedEvent(request, result));
+			bus.post(new CommandCreatedEvent(request, result));
 
-		return result;
+			return result;
+		});
 	}
 
 	/**
@@ -251,6 +257,7 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 			sourceReq.setConnectionEditPart(connection);
 			sourceReq.setLocation(sourceLocation);
 			setForce(sourceReq, true);
+			setAllowSemanticReordering(sourceReq, isAllowSemanticReordering(request));
 
 			// In case the result of the drag moves the source end to a different edit-part
 			// (for example, a different execution specification)
@@ -262,6 +269,7 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 			targetReq.setConnectionEditPart(connection);
 			targetReq.setLocation(targetLocation);
 			setForce(targetReq, true);
+			setAllowSemanticReordering(targetReq, isAllowSemanticReordering(request));
 
 			// In case the result of the drag moves the target end to a different edit-part
 			target = retargetRequest(target, targetReq);

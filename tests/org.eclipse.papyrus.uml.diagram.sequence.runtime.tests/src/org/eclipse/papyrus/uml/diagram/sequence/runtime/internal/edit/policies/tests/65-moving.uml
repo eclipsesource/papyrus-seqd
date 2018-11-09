@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_Oy8JgEppEeiB_O7ig5LXPg" name="lightweight">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_O45nkEppEeiB_O7ig5LXPg">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_R_u1oEppEeiB_O7ig5LXPg" name="DoIt">
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_FMyroGpHEeiIJqtZNCF3Dw" name="Lifeline1" coveredBy="_ATlBQOKpEeix5N_q7jP6rA _OPh-wOKpEeix5N_q7jP6rA _Ox1akOKpEeix5N_q7jP6rA _k48boeKpEeix5N_q7jP6rA _wDsw4ON6Eeix-PwTlDMrnw"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_F4rhQGpHEeiIJqtZNCF3Dw" name="Lifeline2" coveredBy="_Ox1akeKpEeix5N_q7jP6rA _OPh-weKpEeix5N_q7jP6rA _ATlBQeKpEeix5N_q7jP6rA _QWHdsIOnEeiaaZTinMWZHw _vx130OKpEeix5N_q7jP6rA _vx3F8-KpEeix5N_q7jP6rA _k48boOKpEeix5N_q7jP6rA _lN2BoON6Eeix-PwTlDMrnw _wDsJ0ON6Eeix-PwTlDMrnw"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_S6XWMOKpEeix5N_q7jP6rA" name="Lifeline3" coveredBy="_vx3F8uKpEeix5N_q7jP6rA _vx2e5uKpEeix5N_q7jP6rA _vx2e4OKpEeix5N_q7jP6rA _lN2osON6Eeix-PwTlDMrnw"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_uv22YOKpEeix5N_q7jP6rA" name="Lifeline4"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_ATlBQOKpEeix5N_q7jP6rA" name="sync1_snd" covered="_FMyroGpHEeiIJqtZNCF3Dw" message="_ATlBQuKpEeix5N_q7jP6rA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_ATlBQeKpEeix5N_q7jP6rA" name="sync1_rcv" covered="_F4rhQGpHEeiIJqtZNCF3Dw" message="_ATlBQuKpEeix5N_q7jP6rA"/>
+    <fragment xmi:type="uml:ActionExecutionSpecification" xmi:id="_QWHdsIOnEeiaaZTinMWZHw" name="exec1" covered="_F4rhQGpHEeiIJqtZNCF3Dw" finish="_k48boOKpEeix5N_q7jP6rA" start="_ATlBQeKpEeix5N_q7jP6rA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_OPh-wOKpEeix5N_q7jP6rA" name="async1_snd" covered="_FMyroGpHEeiIJqtZNCF3Dw" message="_OPil0OKpEeix5N_q7jP6rA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_OPh-weKpEeix5N_q7jP6rA" name="async1_rcv" covered="_F4rhQGpHEeiIJqtZNCF3Dw" message="_OPil0OKpEeix5N_q7jP6rA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_lN2BoON6Eeix-PwTlDMrnw" name="async3_snd" covered="_F4rhQGpHEeiIJqtZNCF3Dw" message="_lN2oseN6Eeix-PwTlDMrnw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_lN2osON6Eeix-PwTlDMrnw" name="async3_rcv" covered="_S6XWMOKpEeix5N_q7jP6rA" message="_lN2oseN6Eeix-PwTlDMrnw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_vx130OKpEeix5N_q7jP6rA" name="sync2_snd" covered="_F4rhQGpHEeiIJqtZNCF3Dw" message="_vx2e4eKpEeix5N_q7jP6rA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_vx2e4OKpEeix5N_q7jP6rA" name="sync2_rcv" covered="_S6XWMOKpEeix5N_q7jP6rA" message="_vx2e4eKpEeix5N_q7jP6rA"/>
+    <fragment xmi:type="uml:ActionExecutionSpecification" xmi:id="_vx2e5uKpEeix5N_q7jP6rA" name="exec2" covered="_S6XWMOKpEeix5N_q7jP6rA" finish="_vx3F8uKpEeix5N_q7jP6rA" start="_vx2e4OKpEeix5N_q7jP6rA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_vx3F8uKpEeix5N_q7jP6rA" name="reply2_snd" covered="_S6XWMOKpEeix5N_q7jP6rA" message="_vx3F9OKpEeix5N_q7jP6rA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_vx3F8-KpEeix5N_q7jP6rA" name="reply2_rcv" covered="_F4rhQGpHEeiIJqtZNCF3Dw" message="_vx3F9OKpEeix5N_q7jP6rA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_Ox1akOKpEeix5N_q7jP6rA" name="async2_snd" covered="_FMyroGpHEeiIJqtZNCF3Dw" message="_Ox1akuKpEeix5N_q7jP6rA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_Ox1akeKpEeix5N_q7jP6rA" name="async2_rcv" covered="_F4rhQGpHEeiIJqtZNCF3Dw" message="_Ox1akuKpEeix5N_q7jP6rA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_k48boOKpEeix5N_q7jP6rA" name="reply1_snd" covered="_F4rhQGpHEeiIJqtZNCF3Dw" message="_k49CsOKpEeix5N_q7jP6rA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_k48boeKpEeix5N_q7jP6rA" name="reply1_rcv" covered="_FMyroGpHEeiIJqtZNCF3Dw" message="_k49CsOKpEeix5N_q7jP6rA"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_wDsJ0ON6Eeix-PwTlDMrnw" name="async4_snd" covered="_F4rhQGpHEeiIJqtZNCF3Dw" message="_wDsw4eN6Eeix-PwTlDMrnw"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_wDsw4ON6Eeix-PwTlDMrnw" name="async4_rcv" covered="_FMyroGpHEeiIJqtZNCF3Dw" message="_wDsw4eN6Eeix-PwTlDMrnw"/>
+    <message xmi:type="uml:Message" xmi:id="_ATlBQuKpEeix5N_q7jP6rA" name="sync1" receiveEvent="_ATlBQeKpEeix5N_q7jP6rA" sendEvent="_ATlBQOKpEeix5N_q7jP6rA"/>
+    <message xmi:type="uml:Message" xmi:id="_OPil0OKpEeix5N_q7jP6rA" name="async1" messageSort="asynchCall" receiveEvent="_OPh-weKpEeix5N_q7jP6rA" sendEvent="_OPh-wOKpEeix5N_q7jP6rA"/>
+    <message xmi:type="uml:Message" xmi:id="_Ox1akuKpEeix5N_q7jP6rA" name="async2" messageSort="asynchCall" receiveEvent="_Ox1akeKpEeix5N_q7jP6rA" sendEvent="_Ox1akOKpEeix5N_q7jP6rA"/>
+    <message xmi:type="uml:Message" xmi:id="_k49CsOKpEeix5N_q7jP6rA" name="reply1" messageSort="reply" receiveEvent="_k48boeKpEeix5N_q7jP6rA" sendEvent="_k48boOKpEeix5N_q7jP6rA"/>
+    <message xmi:type="uml:Message" xmi:id="_vx2e4eKpEeix5N_q7jP6rA" name="sync2" receiveEvent="_vx2e4OKpEeix5N_q7jP6rA" sendEvent="_vx130OKpEeix5N_q7jP6rA"/>
+    <message xmi:type="uml:Message" xmi:id="_vx3F9OKpEeix5N_q7jP6rA" name="reply2" messageSort="reply" receiveEvent="_vx3F8-KpEeix5N_q7jP6rA" sendEvent="_vx3F8uKpEeix5N_q7jP6rA"/>
+    <message xmi:type="uml:Message" xmi:id="_lN2oseN6Eeix-PwTlDMrnw" name="async3" messageSort="asynchCall" receiveEvent="_lN2osON6Eeix-PwTlDMrnw" sendEvent="_lN2BoON6Eeix-PwTlDMrnw"/>
+    <message xmi:type="uml:Message" xmi:id="_wDsw4eN6Eeix-PwTlDMrnw" name="async4" messageSort="asynchCall" receiveEvent="_wDsw4ON6Eeix-PwTlDMrnw" sendEvent="_wDsJ0ON6Eeix-PwTlDMrnw"/>
+  </packagedElement>
+</uml:Model>

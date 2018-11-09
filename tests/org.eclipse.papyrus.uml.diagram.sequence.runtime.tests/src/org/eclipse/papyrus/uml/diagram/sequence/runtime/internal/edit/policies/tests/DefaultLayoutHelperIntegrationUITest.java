@@ -13,9 +13,9 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.tests;
 
 import static java.util.Collections.singletonList;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.is;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.isPoint;
 import static org.hamcrest.CoreMatchers.anything;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -52,6 +53,7 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.junit.runner.Runner;
@@ -69,6 +71,10 @@ import org.junit.runners.parameterized.TestWithParameters;
  */
 @RunWith(PerEditPartTests.class)
 public class DefaultLayoutHelperIntegrationUITest {
+
+	/** Some Linux environments are off by 1 in a lot of test scenarios. */
+	@ClassRule
+	public static final TestRule TOLERANCE = GEFMatchers.defaultTolerance(1, Platform.OS_LINUX);
 
 	@ClassRule
 	public static final EditorFixture EDITOR = new EditorFixture(DefaultLayoutHelperIntegrationUITest.class,

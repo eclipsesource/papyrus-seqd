@@ -462,6 +462,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EOperation getMInteraction__Sort() {
+		return mInteractionEClass.getEOperations().get(7);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EClass getMLifeline() {
 		return mLifelineEClass;
 	}
@@ -832,8 +842,28 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
-	public EOperation getMExecution__SetOwner__MLifeline_OptionalInt() {
+	public EOperation getMExecution__SetOwner__MLifeline_OptionalInt_OptionalInt() {
 		return mExecutionEClass.getEOperations().get(6);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMExecution__CreateStart() {
+		return mExecutionEClass.getEOperations().get(7);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMExecution__CreateFinish() {
+		return mExecutionEClass.getEOperations().get(8);
 	}
 
 	/**
@@ -1092,6 +1122,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EAttribute getMMessage_Synchronous() {
+		return (EAttribute)mMessageEClass.getEStructuralFeatures().get(6);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EOperation getMMessage__GetOwner() {
 		return mMessageEClass.getEOperations().get(0);
 	}
@@ -1240,6 +1280,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEOperation(mInteractionEClass, MINTERACTION___ADD_LIFELINE__INT_INT);
 		createEOperation(mInteractionEClass, MINTERACTION___GET_LIFELINE_AT__INT);
 		createEOperation(mInteractionEClass, MINTERACTION___GET_BOTTOMMOST_ELEMENT);
+		createEOperation(mInteractionEClass, MINTERACTION___SORT);
 
 		mLifelineEClass = createEClass(MLIFELINE);
 		createEReference(mLifelineEClass, MLIFELINE__EXECUTION_OCCURRENCES);
@@ -1286,7 +1327,9 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 				MEXECUTION___INSERT_NESTED_EXECUTION_AFTER__MELEMENT_INT_INT_ECLASS);
 		createEOperation(mExecutionEClass, MEXECUTION___ELEMENT_AT__INT);
 		createEOperation(mExecutionEClass, MEXECUTION___GET_NESTED_EXECUTIONS);
-		createEOperation(mExecutionEClass, MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT);
+		createEOperation(mExecutionEClass, MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT_OPTIONALINT);
+		createEOperation(mExecutionEClass, MEXECUTION___CREATE_START);
+		createEOperation(mExecutionEClass, MEXECUTION___CREATE_FINISH);
 
 		mOccurrenceEClass = createEClass(MOCCURRENCE);
 		createEAttribute(mOccurrenceEClass, MOCCURRENCE__COVERED);
@@ -1316,6 +1359,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEAttribute(mMessageEClass, MMESSAGE__RECEIVE);
 		createEAttribute(mMessageEClass, MMESSAGE__SENDER);
 		createEAttribute(mMessageEClass, MMESSAGE__RECEIVER);
+		createEAttribute(mMessageEClass, MMESSAGE__SYNCHRONOUS);
 		createEOperation(mMessageEClass, MMESSAGE___GET_OWNER);
 		createEOperation(mMessageEClass, MMESSAGE___GET_DIAGRAM_VIEW);
 		createEOperation(mMessageEClass, MMESSAGE___GET_END__MESSAGEEND);
@@ -1550,6 +1594,8 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		EGenericType g5 = createEGenericType(theUMLPackage.getElement());
 		g4.setEUpperBound(g5);
 		initEOperation(op, g1);
+
+		initEOperation(getMInteraction__Sort(), this.getCommand(), "sort", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(mLifelineEClass, MLifeline.class, "MLifeline", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);
@@ -1874,10 +1920,23 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		initEOperation(getMExecution__GetNestedExecutions(), this.getMExecution(), "getNestedExecutions", 0, //$NON-NLS-1$
 				-1, IS_UNIQUE, IS_ORDERED);
 
-		op = initEOperation(getMExecution__SetOwner__MLifeline_OptionalInt(), this.getCommand(), "setOwner", //$NON-NLS-1$
-				1, 1, IS_UNIQUE, IS_ORDERED);
+		op = initEOperation(getMExecution__SetOwner__MLifeline_OptionalInt_OptionalInt(), this.getCommand(),
+				"setOwner", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 		addEParameter(op, this.getMLifeline(), "newOwner", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
-		addEParameter(op, this.getOptionalInt(), "yPosition", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, this.getOptionalInt(), "top", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, this.getOptionalInt(), "bottom", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		op = initEOperation(getMExecution__CreateStart(), null, "createStart", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getCreationCommand());
+		g2 = createEGenericType(theUMLPackage.getExecutionOccurrenceSpecification());
+		g1.getETypeArguments().add(g2);
+		initEOperation(op, g1);
+
+		op = initEOperation(getMExecution__CreateFinish(), null, "createFinish", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		g1 = createEGenericType(this.getCreationCommand());
+		g2 = createEGenericType(theUMLPackage.getExecutionOccurrenceSpecification());
+		g1.getETypeArguments().add(g2);
+		initEOperation(op, g1);
 
 		initEClass(mOccurrenceEClass, MOccurrence.class, "MOccurrence", IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);
@@ -1985,6 +2044,9 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		g1.getETypeArguments().add(g2);
 		initEAttribute(getMMessage_Receiver(), g1, "receiver", null, 1, 1, MMessage.class, IS_TRANSIENT, //$NON-NLS-1$
 				IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
+		initEAttribute(getMMessage_Synchronous(), ecorePackage.getEBoolean(), "synchronous", null, 1, 1, //$NON-NLS-1$
+				MMessage.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				IS_DERIVED, IS_ORDERED);
 
 		initEOperation(getMMessage__GetOwner(), this.getMInteraction(), "getOwner", 0, 1, IS_UNIQUE, //$NON-NLS-1$
 				IS_ORDERED);

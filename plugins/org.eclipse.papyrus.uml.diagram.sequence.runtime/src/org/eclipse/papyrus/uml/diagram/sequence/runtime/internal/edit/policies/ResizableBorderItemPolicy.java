@@ -25,6 +25,7 @@ import org.eclipse.gmf.runtime.diagram.ui.commands.SetBoundsCommand;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.l10n.DiagramUIMessages;
 import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
+import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.NotationPackage;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.gmfdiag.common.helper.NotationHelper;
@@ -68,10 +69,25 @@ public class ResizableBorderItemPolicy extends BorderItemResizableEditPolicy {
 
 		Rectangle newBounds = bounds.translate(scaledMovedDelta).resize(scaledSizeDelta);
 
+		return getSetBoundsCommand(request, (Node)shapeView, newBounds);
+	}
+
+	/**
+	 * Get a command to change the bounds of the given execution specification shape.
+	 * 
+	 * @param request
+	 *            the change-bounds request
+	 * @param execShape
+	 *            the execution specification shape to change
+	 * @param newBounds
+	 *            the new bounds requested for the execution specification
+	 * @return the command
+	 */
+	protected Command getSetBoundsCommand(ChangeBoundsRequest request, Node execShape, Rectangle newBounds) {
 		TransactionalEditingDomain editingDomain = ((IGraphicalEditPart)getHost()).getEditingDomain();
-		ICommand boundsCommand = new SetBoundsCommand(editingDomain,
-				DiagramUIMessages.SetLocationCommand_Label_Resize, new EObjectAdapter(shapeView), newBounds);
-		return new ICommandProxy(boundsCommand);
+		ICommand result = new SetBoundsCommand(editingDomain,
+				DiagramUIMessages.SetLocationCommand_Label_Resize, new EObjectAdapter(execShape), newBounds);
+		return new ICommandProxy(result);
 	}
 
 }

@@ -15,11 +15,13 @@ package org.eclipse.papyrus.uml.interaction.tests.matchers;
 import static java.lang.Math.abs;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 /**
  * Matchers for numeric values.
@@ -153,4 +155,71 @@ public class NumberMatchers {
 	public static double setStandardTolerance(double tolerance) {
 		return standardTolerance.getAndSet(requireNonNegative(tolerance));
 	}
+
+	/**
+	 * Obtains a less-than matcher.
+	 *
+	 * @param expected
+	 *            a value less than which a value must be
+	 * @return the less-than matcher
+	 */
+	public static <N extends Number & Comparable<N>> Matcher<N> lt(N expected) {
+		return cmp("<", "≥", expected, cmp -> cmp < 0);
+	}
+
+	private static <N extends Number & Comparable<N>> Matcher<N> cmp(String op, String failOp, N expected,
+			IntPredicate cmp) {
+
+		return new TypeSafeDiagnosingMatcher<N>() {
+			@Override
+			public void describeTo(Description description) {
+				description.appendText(op).appendText(" ").appendValue(expected);
+			}
+
+			@Override
+			protected boolean matchesSafely(N item, Description mismatchDescription) {
+				boolean result = cmp.test(item.compareTo(expected));
+				if (!result) {
+					mismatchDescription.appendValue(item) //
+							.appendText(" ").appendText(failOp).appendText(" ") //
+							.appendValue(expected);
+				}
+				return result;
+			}
+		};
+	}
+
+	/**
+	 * Obtains a less-than-or-equal matcher.
+	 *
+	 * @param expected
+	 *            a value less than or equal to which a value must be
+	 * @return the less-than-or-equal matcher
+	 */
+	public static <N extends Number & Comparable<N>> Matcher<N> lte(N expected) {
+		return cmp("≤", ">", expected, cmp -> cmp <= 0);
+	}
+
+	/**
+	 * Obtains a greater-than-or-equal matcher.
+	 *
+	 * @param expected
+	 *            a value greater than or equial to which a value must be
+	 * @return the greater-than-or-equal matcher
+	 */
+	public static <N extends Number & Comparable<N>> Matcher<N> gte(N expected) {
+		return cmp("≥", "<", expected, cmp -> cmp >= 0);
+	}
+
+	/**
+	 * Obtains a greater-than matcher.
+	 *
+	 * @param expected
+	 *            a value greater than which a value must be
+	 * @return the greater-than matcher
+	 */
+	public static <N extends Number & Comparable<N>> Matcher<N> gt(N expected) {
+		return cmp(">", "≤", expected, cmp -> cmp > 0);
+	}
+
 }

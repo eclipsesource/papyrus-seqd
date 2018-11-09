@@ -69,6 +69,7 @@
         <genParameters ecoreParameter="seqd.ecore#//MInteraction/getLifelineAt/offset"/>
       </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MInteraction/getBottommostElement"/>
+      <genOperations ecoreOperation="seqd.ecore#//MInteraction/sort"/>
     </genClasses>
     <genClasses ecoreClass="seqd.ecore#//MLifeline">
       <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference seqd.ecore#//MLifeline/executionOccurrences"/>
@@ -178,8 +179,11 @@
       <genOperations ecoreOperation="seqd.ecore#//MExecution/getNestedExecutions"/>
       <genOperations ecoreOperation="seqd.ecore#//MExecution/setOwner">
         <genParameters ecoreParameter="seqd.ecore#//MExecution/setOwner/newOwner"/>
-        <genParameters ecoreParameter="seqd.ecore#//MExecution/setOwner/yPosition"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/setOwner/top"/>
+        <genParameters ecoreParameter="seqd.ecore#//MExecution/setOwner/bottom"/>
       </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MExecution/createStart"/>
+      <genOperations ecoreOperation="seqd.ecore#//MExecution/createFinish"/>
     </genClasses>
     <genClasses image="false" ecoreClass="seqd.ecore#//MOccurrence">
       <genTypeParameters ecoreTypeParameter="seqd.ecore#//MOccurrence/T"/>
@@ -215,6 +219,7 @@
       <genFeatures property="None" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/receive"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/sender"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/receiver"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute seqd.ecore#//MMessage/synchronous"/>
       <genOperations ecoreOperation="seqd.ecore#//MMessage/getOwner"/>
       <genOperations ecoreOperation="seqd.ecore#//MMessage/getDiagramView"/>
       <genOperations ecoreOperation="seqd.ecore#//MMessage/getEnd">

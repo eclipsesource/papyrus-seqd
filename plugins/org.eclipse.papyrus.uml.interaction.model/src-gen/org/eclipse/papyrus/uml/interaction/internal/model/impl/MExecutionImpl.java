@@ -31,6 +31,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.CreateExecutionOccurrenceCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.InsertNestedExecutionCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.RemoveExecutionCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.SetOwnerCommand;
@@ -40,6 +41,7 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 
 /**
@@ -248,9 +250,45 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	 * @generated NOT
 	 */
 	@Override
-	public Command setOwner(MLifeline newOwner, OptionalInt yPosition) {
+	public Command setOwner(MLifeline newOwner, OptionalInt top, OptionalInt bottom) {
+		// This can have an impact on the semantic ordering of interaction fragments
+		return withSemanticSorting(
+				// Avoid cycling through this execution again
+				withPadding(SetOwnerCommand.class, () -> new SetOwnerCommand(this, newOwner, top, bottom)));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public CreationCommand<ExecutionOccurrenceSpecification> createStart() {
 		// Avoid cycling through this execution again
-		return withPadding(SetOwnerCommand.class, () -> new SetOwnerCommand(this, newOwner, yPosition));
+		return wrap(withDependencies(CreateExecutionOccurrenceCommand.Start.class,
+				() -> new CreateExecutionOccurrenceCommand.Start(this)));
+	}
+
+	// Create the logical model for my new start/finish occurrence
+	private CreationCommand<ExecutionOccurrenceSpecification> wrap(
+			CreationCommand<ExecutionOccurrenceSpecification> create) {
+		return (create == null) ? null : create.andThen(this::create);
+	}
+
+	private void create(ExecutionOccurrenceSpecification occurrence) {
+		InteractionModelBuilder.getInstance(getInteraction()).add(getElement(), occurrence);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public CreationCommand<ExecutionOccurrenceSpecification> createFinish() {
+		// Avoid cycling through this execution again
+		return wrap(withDependencies(CreateExecutionOccurrenceCommand.Finish.class,
+				() -> new CreateExecutionOccurrenceCommand.Finish(this)));
 	}
 
 	/**
@@ -311,8 +349,13 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 				return elementAt((Integer)arguments.get(0));
 			case SequenceDiagramPackage.MEXECUTION___GET_NESTED_EXECUTIONS:
 				return getNestedExecutions();
-			case SequenceDiagramPackage.MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT:
-				return setOwner((MLifeline)arguments.get(0), (OptionalInt)arguments.get(1));
+			case SequenceDiagramPackage.MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT_OPTIONALINT:
+				return setOwner((MLifeline)arguments.get(0), (OptionalInt)arguments.get(1),
+						(OptionalInt)arguments.get(2));
+			case SequenceDiagramPackage.MEXECUTION___CREATE_START:
+				return createStart();
+			case SequenceDiagramPackage.MEXECUTION___CREATE_FINISH:
+				return createFinish();
 		}
 		return super.eInvoke(operationID, arguments);
 	}

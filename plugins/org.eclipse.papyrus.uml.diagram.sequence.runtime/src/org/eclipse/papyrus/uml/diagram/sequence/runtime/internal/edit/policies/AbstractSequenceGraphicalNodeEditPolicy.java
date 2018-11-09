@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
 import static java.lang.Math.abs;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.isAllowSemanticReordering;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.isForce;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.CommandUtil.injectViewInto;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil.getSort;
@@ -33,11 +34,9 @@ import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.draw2d.Connection;
-import org.eclipse.draw2d.ConnectionAnchor;
-import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.FeedbackHelper;
@@ -89,6 +88,12 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 	 */
 	public AbstractSequenceGraphicalNodeEditPolicy() {
 		super();
+	}
+
+	@Override
+	public Command getCommand(Request request) {
+		// Ensure padding, if required
+		return withPadding(() -> super.getCommand(request));
 	}
 
 	@Override
@@ -380,28 +385,16 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		// If the message didn't have a send end, we wouldn't be reconnecting it
 		MMessageEnd sourceEnd = message.getSend().get();
-		Command result = wrap(sourceEnd.setCovered(lifeline.get(), yPosition));
-
-		// Of course, we don't mess with the other end of an asynchronous message
-		if (!isForce(request) && MessageUtil.isSynchronous(message.getElement().getMessageSort())) {
-			// Need feedback constraints in addition to semantic constraints
-			Connection connection = (Connection)connectionEP.getFigure();
-			Point targetLocation = getLocation(connection.getTargetAnchor());
-
-			// Apply constraints implemented in the feedback
-			result = result.chain(wrap(message.getReceive().get().setCovered(message.getReceiver().get(),
-					OptionalInt.of(targetLocation.y()))));
+		org.eclipse.emf.common.command.Command createFinish = null;
+		if (sourceEnd.getFinishedExecution().isPresent() && isAllowSemanticReordering(request)
+				&& !isAttachingToOtherLifeline(sourceEnd)) {
+			// Disconnect the message end from the execution that it finishes
+			createFinish = sourceEnd.getFinishedExecution().get().createFinish();
 		}
+		org.eclipse.emf.common.command.Command setCovered = sourceEnd.setCovered(lifeline.get(), yPosition);
+		Command result = wrap(chain(createFinish, setCovered));
 
 		result = constrainReconnection(request, sourceEnd).orElse(result);
-
-		if (result.canExecute()) {
-			// Perhaps is a message send end now at an execution finish that isn't already a message end?
-			Optional<org.eclipse.emf.common.command.Command> replaceExecFinish = Optional.of(sourceEnd)
-					.flatMap(send -> getExecutionFinish(send, request))
-					.map(execFinish -> execFinish.replaceBy(sourceEnd));
-			result = replaceExecFinish.map(this::wrap).map(result::chain).orElse(result);
-		}
 
 		return result;
 	}
@@ -497,18 +490,15 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		// If the message didn't have a receive end, we wouldn't be reconnecting it
 		MMessageEnd targetEnd = message.getReceive().get();
-		Command result = wrap(targetEnd.setCovered(lifeline.get(), yPosition));
-
-		// Of course, we don't mess with the other end of an asynchronous message
-		if (!isForce(request) && MessageUtil.isSynchronous(message.getElement().getMessageSort())) {
-			// Need feedback constraints in addition to semantic constraints
-			Connection connection = (Connection)connectionEP.getFigure();
-			Point sourceLocation = getLocation(connection.getSourceAnchor());
-
-			// Apply constraints implemented in the feedback
-			result = result.chain(wrap(message.getSend().get().setCovered(message.getSender().get(),
-					OptionalInt.of(sourceLocation.y()))));
+		org.eclipse.emf.common.command.Command createStart = null;
+		if (targetEnd.getStartedExecution().isPresent() && isAllowSemanticReordering(request)
+				&& !isAttachingToOtherLifeline(targetEnd)) {
+			// Disconnect the message end from the execution that it starts
+			createStart = targetEnd.getStartedExecution().get().createStart();
 		}
+		// Then, set coverage
+		org.eclipse.emf.common.command.Command setCovered = targetEnd.setCovered(lifeline.get(), yPosition);
+		Command result = wrap(chain(createStart, setCovered));
 
 		result = constrainReconnection(request, targetEnd).orElse(result);
 
@@ -535,22 +525,9 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 						.configureSelfMessageConnector(message.getElement(), connector);
 				result = result.chain(wrap(bend));
 			}
-
-			// Perhaps is a message receive end now at an execution start that isn't already a message end?
-			Optional<org.eclipse.emf.common.command.Command> replaceExecStart = Optional.of(targetEnd)
-					.flatMap(recv -> getExecutionStart(recv, request))
-					.map(execStart -> execStart.replaceBy(targetEnd));
-			result = replaceExecStart.map(this::wrap).map(result::chain).orElse(result);
 		}
 
 		return result;
-	}
-
-	private Point getLocation(ConnectionAnchor anchor) {
-		IFigure owner = anchor.getOwner();
-		Point ownerOrigin = owner.getBounds().getLocation();
-		owner.getParent().translateToAbsolute(ownerOrigin);
-		return anchor.getLocation(ownerOrigin);
 	}
 
 	protected boolean shouldCreateExecution() {
@@ -561,18 +538,6 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		return Activator.getDefault().getPreferences().isAutoCreateReplyForSyncCall();
 	}
 
-	/**
-	 * Find an execution occurrence that starts an execution at the same place on the lifeline as a
-	 * {@code msgEnd} sits.
-	 * 
-	 * @param msgEnd
-	 *            a message end on some lifeline
-	 * @return an execution occurrence at the same place on the lifeline
-	 */
-	private Optional<MExecutionOccurrence> getExecutionStart(MMessageEnd msgEnd, ReconnectRequest request) {
-		return msgEnd.getCovered().flatMap(ll -> getExecutionStart(ll, request.getLocation()));
-	}
-
 	private Optional<MExecutionOccurrence> getExecutionStart(MLifeline lifeline, Point location) {
 		OptionalInt y = OptionalInt.of(location.y());
 		return as(Optional.of(lifeline)
@@ -580,27 +545,6 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 						.filter(exec -> exec.getDiagramView().isPresent() && exec.getTop().equals(y))
 						.findFirst())
 				.flatMap(MExecution::getStart), MExecutionOccurrence.class);
-	}
-
-	/**
-	 * Find an execution occurrence that finishes an execution at the same place on the lifeline as a
-	 * {@code msgEnd} sits.
-	 * 
-	 * @param msgEnd
-	 *            a message end on some lifeline
-	 * @return an execution occurrence at the same place on the lifeline
-	 */
-	private Optional<MExecutionOccurrence> getExecutionFinish(MMessageEnd msgEnd, ReconnectRequest request) {
-		return msgEnd.getCovered().flatMap(ll -> getExecutionFinish(ll, request.getLocation()));
-	}
-
-	private Optional<MExecutionOccurrence> getExecutionFinish(MLifeline lifeline, Point location) {
-		OptionalInt y = OptionalInt.of(location.y());
-		return as(Optional.of(lifeline)
-				.flatMap(ll -> ll.getExecutions().stream()
-						.filter(exec -> exec.getDiagramView().isPresent() && exec.getBottom().equals(y))
-						.findFirst())
-				.flatMap(MExecution::getFinish), MExecutionOccurrence.class);
 	}
 
 	//

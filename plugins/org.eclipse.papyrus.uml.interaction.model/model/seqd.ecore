@@ -135,6 +135,11 @@
         </eTypeArguments>
       </eGenericType>
     </eOperations>
+    <eOperations name="sort" lowerBound="1" eType="#//Command">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Obtain a command that sorts the interaction's fragments in time order."/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="lifelines" upperBound="-1"
         eType="#//MLifeline" changeable="false" containment="true" resolveProxies="false"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="messages" upperBound="-1"
@@ -546,11 +551,22 @@
     <eOperations name="getNestedExecutions" upperBound="-1" eType="#//MExecution"/>
     <eOperations name="setOwner" lowerBound="1" eType="#//Command">
       <eParameters name="newOwner" lowerBound="1" eType="#//MLifeline"/>
-      <eParameters name="yPosition" lowerBound="1" eType="#//OptionalInt">
+      <eParameters name="top" lowerBound="1" eType="#//OptionalInt">
         <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
           <details key="documentation" value="the absolute Y position at which to place the top of the execution on the lifeline, or empty to maintain the current Y position."/>
         </eAnnotations>
       </eParameters>
+      <eParameters name="bottom" lowerBound="1" eType="#//OptionalInt"/>
+    </eOperations>
+    <eOperations name="createStart" lowerBound="1">
+      <eGenericType eClassifier="#//CreationCommand">
+        <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//ExecutionOccurrenceSpecification"/>
+      </eGenericType>
+    </eOperations>
+    <eOperations name="createFinish" lowerBound="1">
+      <eGenericType eClassifier="#//CreationCommand">
+        <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//ExecutionOccurrenceSpecification"/>
+      </eGenericType>
     </eOperations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="start" lowerBound="1" changeable="false"
         volatile="true" transient="true" derived="true">
@@ -728,6 +744,13 @@
       <eGenericType eClassifier="#//Optional">
         <eTypeArguments eClassifier="#//MLifeline"/>
       </eGenericType>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="synchronous" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" changeable="false"
+        volatile="true" transient="true" derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Whether the message is of a synchronous sort, strictly horizontal, instantaneous in time."/>
+      </eAnnotations>
     </eStructuralFeatures>
     <eGenericSuperTypes eClassifier="#//MElement">
       <eTypeArguments eClassifier="ecore:EClass platform:/plugin/org.eclipse.uml2.uml/model/UML.ecore#//Message"/>

@@ -13,15 +13,14 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import static java.util.Collections.singletonList;
+import static org.eclipse.papyrus.uml.interaction.internal.model.commands.PendingVerticalExtentData.affectedOccurrences;
 import static org.eclipse.papyrus.uml.interaction.model.util.Executions.getLifelineView;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.function.Function;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.IdentityCommand;
@@ -36,7 +35,6 @@ import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.util.Lifelines;
-import org.eclipse.papyrus.uml.interaction.model.util.Optionals;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InteractionFragment;
@@ -49,10 +47,15 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 
 	private final MElement<? extends Element> newOwner;
 
-	private final OptionalInt yPosition;
+	private final OptionalInt top;
+
+	private final OptionalInt bottom;
 
 	// The element on the lifeline before which we're inserting our element, if the new owner is a lifeline
 	private final Optional<MElement<? extends Element>> nextOnLifeline;
+
+	// If the element is an execution, store its spanned occurrences for later
+	private final List<MOccurrence<? extends Element>> spannedOccurrences;
 
 	/**
 	 * Initializes me.
@@ -60,14 +63,23 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 	 * @param target
 	 */
 	public SetOwnerCommand(MElementImpl<? extends Element> element, MElement<? extends Element> newOwner,
-			OptionalInt yPosition) {
+			OptionalInt top, OptionalInt bottom) {
+
 		super(element);
 
 		this.newOwner = newOwner;
-		this.yPosition = yPosition;
+		this.top = top;
+		this.bottom = bottom;
 
 		nextOnLifeline = as(Optional.of(newOwner), MLifeline.class).flatMap(lifeline -> Lifelines
-				.elementAfterAbsolute(lifeline, yPosition.orElseGet(() -> element.getTop().orElse(0))));
+				.elementAfterAbsolute(lifeline, top.orElseGet(() -> element.getTop().orElse(0))));
+		spannedOccurrences = as(Optional.of(element), MExecution.class).map(MExecution::getOccurrences)
+				.orElse(Collections.emptyList());
+
+		// Publish this ownership change in the dependency context for other commands to find
+		PendingChildData.setPendingChild(newOwner, element);
+		// And vertical extent change
+		PendingVerticalExtentData.setPendingVerticalExtent(element, top, bottom);
 	}
 
 	protected boolean isChangingOwner() {
@@ -76,7 +88,8 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 	}
 
 	protected boolean isChangingPosition() {
-		return yPosition.isPresent() && !getTarget().getTop().equals(yPosition);
+		return (top.isPresent() && !getTarget().getTop().equals(top))
+				|| (bottom.isPresent() && !getTarget().getBottom().equals(bottom));
 	}
 
 	protected boolean needReparentView(MExecution execution) {
@@ -126,7 +139,8 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 		Optional<Shape> lifelineHead = lifeline.getDiagramView();
 		if (executionShape.isPresent() && lifelineHead.isPresent()) {
 			Shape lifelineView = diagramHelper().getLifelineBodyShape(lifelineHead.get());
-			int newYPosition = yPosition.orElseGet(() -> execution.getTop().getAsInt());
+			int newTop = top.orElseGet(() -> execution.getTop().getAsInt());
+			int newBottom = bottom.orElseGet(() -> execution.getBottom().getAsInt());
 
 			if (isChangingOwner() && needReparentView(execution)) {
 				// Move the execution shape
@@ -136,7 +150,8 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 			if (isChangingPosition() || isChangingOwner()) {
 				// Position it later, as the relative position of the execution may then be different
 				// according to the new lifeline's creation position
-				result = chain(result, layoutHelper().setTop(executionShape.get(), () -> newYPosition));
+				result = chain(result, layoutHelper().setTop(executionShape.get(), () -> newTop));
+				result = chain(result, layoutHelper().setBottom(executionShape.get(), () -> newBottom));
 			}
 		}
 
@@ -146,23 +161,26 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 		return result;
 	}
 
+	/**
+	 * Create a command to update dependencies of the {@code execution}.
+	 * 
+	 * @param execution
+	 *            the execution
+	 * @param lifeline
+	 *            the lifeline that is to be its owner (which could be its current owner)
+	 * @return the dependencies command
+	 */
 	protected Optional<Command> dependencies(MExecution execution, MLifeline lifeline) {
-		List<Command> result = new ArrayList<>();
-
 		// Occurrences spanned by the execution, including its start and finish. They move
 		// according to the execution, maintaining their relative position. Note that
-		// nested executions will be handled implicitly by either their start or finish
-		OptionalInt currentTop = execution.getTop();
-		OptionalInt deltaY = currentTop.isPresent() && yPosition.isPresent()
-				? OptionalInt.of(yPosition.getAsInt() - currentTop.getAsInt())
-				: OptionalInt.empty();
-		Function<MOccurrence<? extends Element>, OptionalInt> yMapping = deltaY.isPresent()
-				? occ -> Optionals.map(occ.getTop(), y -> y + deltaY.getAsInt())
-				: __ -> OptionalInt.empty();
-		execution.getOccurrences().stream().map(occ -> occ.setCovered(lifeline, yMapping.apply(occ)))
-				.filter(Objects::nonNull).forEach(result::add);
+		// nested executions will be handled implicitly by either their start or finish.
+		// Compute not only currently spanned occurrences that will need updating, but
+		// also future spanned occurrences
 
-		return result.stream().reduce(chaining());
+		return affectedOccurrences(execution).map(occ -> {
+			OptionalInt where = occ.getTop();
+			return defer(() -> occ.setCovered(lifeline, where));
+		}).reduce(chaining());
 	}
 
 	protected void ensurePadding() {

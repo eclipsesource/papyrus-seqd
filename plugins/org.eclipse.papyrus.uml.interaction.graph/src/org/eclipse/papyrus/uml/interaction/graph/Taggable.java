@@ -26,4 +26,14 @@ public interface Taggable {
 	 * @return whether it is applied to me
 	 */
 	boolean hasTag(Tag tag);
+
+	/**
+	 * Compose two taggables into a compound. It {@linkplain #hasTag(Tag) has a tag} if and only if all
+	 * composed taggables have that tag.
+	 * 
+	 * @param other
+	 *            another taggable object
+	 * @return the composed taggable
+	 */
+	Taggable and(Taggable other);
 }

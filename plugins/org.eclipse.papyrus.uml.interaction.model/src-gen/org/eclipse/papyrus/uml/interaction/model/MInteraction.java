@@ -15,6 +15,7 @@ package org.eclipse.papyrus.uml.interaction.model;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.InteractionModelBuilder;
@@ -194,5 +195,14 @@ public interface MInteraction extends MElement<Interaction> {
 	 * @generated
 	 */
 	Optional<? extends MElement<? extends Element>> getBottommostElement();
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> Obtain a command that sorts the
+	 * interaction's fragments in time order. <!-- end-model-doc -->
+	 * 
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Command" required="true"
+	 * @generated
+	 */
+	Command sort();
 
 } // MInteraction

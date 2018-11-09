@@ -49,6 +49,10 @@ public class LogicalModelPredicates {
 		return below(other.getBottom().orElse(Integer.MAX_VALUE));
 	}
 
+	public static Predicate<MElement<? extends Element>> verticallyBetween(int top, int bottom) {
+		return above(bottom).and(below(top));
+	}
+
 	public static Predicate<MElement<? extends Element>> where(EStructuralFeature feature, Object value) {
 		return elem -> Objects.equals(((EObject)elem).eGet(feature), value);
 	}

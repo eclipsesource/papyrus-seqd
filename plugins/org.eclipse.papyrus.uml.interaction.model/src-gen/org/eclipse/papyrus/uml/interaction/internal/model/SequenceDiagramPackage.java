@@ -388,13 +388,21 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MINTERACTION___GET_BOTTOMMOST_ELEMENT = MELEMENT_OPERATION_COUNT + 6;
 
 	/**
+	 * The operation id for the '<em>Sort</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MINTERACTION___SORT = MELEMENT_OPERATION_COUNT + 7;
+
+	/**
 	 * The number of operations of the '<em>MInteraction</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MINTERACTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 7;
+	int MINTERACTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 8;
 
 	/**
 	 * The meta object id for the
@@ -929,7 +937,25 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT = MELEMENT_OPERATION_COUNT + 6;
+	int MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT_OPTIONALINT = MELEMENT_OPERATION_COUNT + 6;
+
+	/**
+	 * The operation id for the '<em>Create Start</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION___CREATE_START = MELEMENT_OPERATION_COUNT + 7;
+
+	/**
+	 * The operation id for the '<em>Create Finish</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION___CREATE_FINISH = MELEMENT_OPERATION_COUNT + 8;
 
 	/**
 	 * The number of operations of the '<em>MExecution</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
@@ -938,7 +964,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MEXECUTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 7;
+	int MEXECUTION_OPERATION_COUNT = MELEMENT_OPERATION_COUNT + 9;
 
 	/**
 	 * The meta object id for the
@@ -1657,13 +1683,22 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MMESSAGE__RECEIVER = MELEMENT_FEATURE_COUNT + 5;
 
 	/**
+	 * The feature id for the '<em><b>Synchronous</b></em>' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE__SYNCHRONOUS = MELEMENT_FEATURE_COUNT + 6;
+
+	/**
 	 * The number of structural features of the '<em>MMessage</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MMESSAGE_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 6;
+	int MMESSAGE_FEATURE_COUNT = MELEMENT_FEATURE_COUNT + 7;
 
 	/**
 	 * The operation id for the '<em>Vertical Distance</em>' operation. <!-- begin-user-doc --> <!--
@@ -2270,6 +2305,16 @@ public interface SequenceDiagramPackage extends EPackage {
 	EOperation getMInteraction__GetBottommostElement();
 
 	/**
+	 * Returns the meta object for the '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction#sort()
+	 * <em>Sort</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Sort</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MInteraction#sort()
+	 * @generated
+	 */
+	EOperation getMInteraction__Sort();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MLifeline
 	 * <em>MLifeline</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2701,15 +2746,37 @@ public interface SequenceDiagramPackage extends EPackage {
 
 	/**
 	 * Returns the meta object for the
-	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline, java.util.OptionalInt)
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline, java.util.OptionalInt, java.util.OptionalInt)
 	 * <em>Set Owner</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @return the meta object for the '<em>Set Owner</em>' operation.
 	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#setOwner(org.eclipse.papyrus.uml.interaction.model.MLifeline,
-	 *      java.util.OptionalInt)
+	 *      java.util.OptionalInt, java.util.OptionalInt)
 	 * @generated
 	 */
-	EOperation getMExecution__SetOwner__MLifeline_OptionalInt();
+	EOperation getMExecution__SetOwner__MLifeline_OptionalInt_OptionalInt();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#createStart() <em>Create Start</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Create Start</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#createStart()
+	 * @generated
+	 */
+	EOperation getMExecution__CreateStart();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MExecution#createFinish() <em>Create Finish</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Create Finish</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MExecution#createFinish()
+	 * @generated
+	 */
+	EOperation getMExecution__CreateFinish();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MOccurrence
@@ -2998,6 +3065,18 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getMMessage_Receiver();
+
+	/**
+	 * Returns the meta object for the attribute
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#isSynchronous <em>Synchronous</em>}'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Synchronous</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MMessage#isSynchronous()
+	 * @see #getMMessage()
+	 * @generated
+	 */
+	EAttribute getMMessage_Synchronous();
 
 	/**
 	 * Returns the meta object for the '{@link org.eclipse.papyrus.uml.interaction.model.MMessage#getOwner()
@@ -3325,6 +3404,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		EOperation MINTERACTION___GET_BOTTOMMOST_ELEMENT = eINSTANCE.getMInteraction__GetBottommostElement();
 
 		/**
+		 * The meta object literal for the '<em><b>Sort</b></em>' operation. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MINTERACTION___SORT = eINSTANCE.getMInteraction__Sort();
+
+		/**
 		 * The meta object literal for the
 		 * '{@link org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl <em>MLifeline</em>}'
 		 * class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -3645,8 +3732,24 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EOperation MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT = eINSTANCE
-				.getMExecution__SetOwner__MLifeline_OptionalInt();
+		EOperation MEXECUTION___SET_OWNER__MLIFELINE_OPTIONALINT_OPTIONALINT = eINSTANCE
+				.getMExecution__SetOwner__MLifeline_OptionalInt_OptionalInt();
+
+		/**
+		 * The meta object literal for the '<em><b>Create Start</b></em>' operation. <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MEXECUTION___CREATE_START = eINSTANCE.getMExecution__CreateStart();
+
+		/**
+		 * The meta object literal for the '<em><b>Create Finish</b></em>' operation. <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MEXECUTION___CREATE_FINISH = eINSTANCE.getMExecution__CreateFinish();
 
 		/**
 		 * The meta object literal for the
@@ -3862,6 +3965,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute MMESSAGE__RECEIVER = eINSTANCE.getMMessage_Receiver();
+
+		/**
+		 * The meta object literal for the '<em><b>Synchronous</b></em>' attribute feature. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute MMESSAGE__SYNCHRONOUS = eINSTANCE.getMMessage_Synchronous();
 
 		/**
 		 * The meta object literal for the '<em><b>Get Owner</b></em>' operation. <!-- begin-user-doc --> <!--
