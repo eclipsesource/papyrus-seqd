@@ -1,0 +1,15 @@
+Interaction {
+	fillColor: white;
+}
+
+Lifeline {
+	fillColor:  white;
+}
+
+ActionExecutionSpecification {
+	fillColor: white;
+}
+
+BehaviorExecutionSpecification {
+	fillColor: white;
+}
