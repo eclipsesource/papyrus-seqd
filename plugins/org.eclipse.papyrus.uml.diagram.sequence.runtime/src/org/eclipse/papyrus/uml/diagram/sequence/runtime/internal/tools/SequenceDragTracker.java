@@ -15,8 +15,7 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.PrivateToolUtils.getAllowSemanticReorderingModifier;
 
 import org.eclipse.gef.EditPart;
-import org.eclipse.gef.requests.ChangeBoundsRequest;
-import org.eclipse.gmf.runtime.diagram.ui.requests.RequestConstants;
+import org.eclipse.gef.commands.Command;
 import org.eclipse.papyrus.infra.gmfdiag.common.snap.PapyrusDragEditPartsTrackerEx;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.LifelineBodyEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils;
@@ -40,25 +39,19 @@ public class SequenceDragTracker extends PapyrusDragEditPartsTrackerEx {
 	protected void updateTargetRequest() {
 		super.updateTargetRequest();
 
-		ChangeBoundsRequest request = (ChangeBoundsRequest)getTargetRequest();
-		if (!"".isEmpty() && !isTargetLocked()) {
-			EditPart editPart = null;
-			if (getCurrentViewer() != null) {
-				editPart = getCurrentViewer().findObjectAtExcluding(getLocation(), getExclusionSet());
-			}
-			if (editPart instanceof LifelineBodyEditPart) {
-				EditPart sourceLifeline = getLifelineBodyEditPart(getSourceEditPart());
-				if (sourceLifeline != null && sourceLifeline != editPart) {
-					// It's a drop
-					request.setType(RequestConstants.REQ_DROP);
-				}
-			}
-		}
-
 		// All requests of interest for re-ordering have location
 
 		PrivateRequestUtils.setAllowSemanticReordering(getTargetRequest(),
 				getCurrentInput().isModKeyDown(getAllowSemanticReorderingModifier()));
+	}
+
+	@Override
+	protected Command getCommand() {
+		if (getTargetEditPart() == null) {
+			return null;
+		}
+
+		return super.getCommand();
 	}
 
 	protected EditPart getLifelineBodyEditPart(EditPart editPart) {
@@ -72,4 +65,14 @@ public class SequenceDragTracker extends PapyrusDragEditPartsTrackerEx {
 
 		return result;
 	}
+
+	/**
+	 * We don't do clone in this diagram (and {@code Ctrl} is used for semantic re-ordering override on Linux
+	 * platform).
+	 */
+	@Override
+	protected void setCloneActive(boolean cloneActive) {
+		super.setCloneActive(false);
+	}
+
 }
