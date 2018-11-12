@@ -77,16 +77,22 @@ import org.junit.runners.model.Statement;
 public class ModelFixture implements TestRule {
 
 	private static final String SEQUENCE_DIAGRAM_TYPE = "LightweightSequenceDiagram"; //$NON-NLS-1$
+
 	private static final String PAPYRUS_SEQUENCE_DIAGRAM_TYPE = "PapyrusUMLSequenceDiagram"; //$NON-NLS-1$
+
 	private static final Set<String> SEQUENCE_DIAGRAM_TYPES = new HashSet<>(
 			Arrays.asList(SEQUENCE_DIAGRAM_TYPE, PAPYRUS_SEQUENCE_DIAGRAM_TYPE));
 
 	private final Class<?> testClass;
+
 	private final String path;
 
 	private ResourceSet rset;
+
 	private Package model;
+
 	private Interaction interaction;
+
 	private Optional<Diagram> sequenceDiagram;
 
 	private Graph graph;
@@ -95,12 +101,10 @@ public class ModelFixture implements TestRule {
 	 * Initializes me.
 	 *
 	 * @param testClass
-	 *            the test class in which context to load the resource. May be
-	 *            {@code null} for an ordinary {@code Rule} but required for a
-	 *            {@link ClassRule}
+	 *            the test class in which context to load the resource. May be {@code null} for an ordinary
+	 *            {@code Rule} but required for a {@link ClassRule}
 	 * @param path
-	 *            the path relative to the {@code testClass} of the UML resource to
-	 *            load
+	 *            the path relative to the {@code testClass} of the UML resource to load
 	 */
 	public ModelFixture(Class<?> testClass, String path) {
 		super();
@@ -157,10 +161,12 @@ public class ModelFixture implements TestRule {
 
 	protected void starting(Description description) {
 		final String[] paths = getPaths(description);
-		for (String path : paths) {
+		for (@SuppressWarnings("hiding")
+		String path : paths) {
 			URL resourceURL = getResourceURL(description, path);
 			if (resourceURL == null) {
 				fail("Resource not found: " + path);
+				return; // Unreachable
 			}
 
 			if (rset == null) {
@@ -177,26 +183,28 @@ public class ModelFixture implements TestRule {
 		String where = String.join(", ", paths);
 		assertThat("No UML package found in " + where, model, notNullValue());
 
-		interaction = (Interaction) UML2Util.findEObject(model.eAllContents(),
+		interaction = (Interaction)UML2Util.findEObject(model.eAllContents(),
 				UMLPackage.Literals.INTERACTION::isInstance);
 		assertThat("No UML interaction found in " + where, interaction, notNullValue());
 
 		// Look for a sequence diagram
-		sequenceDiagram = CacheAdapter.getCacheAdapter(interaction).getInverseReferences(interaction)
-				.stream()
-				.filter(setting -> setting
-						.getEStructuralFeature() == NotationPackage.Literals.VIEW__ELEMENT)
+		sequenceDiagram = CacheAdapter.getCacheAdapter(interaction).getInverseReferences(interaction).stream()
+				.filter(setting -> setting.getEStructuralFeature() == NotationPackage.Literals.VIEW__ELEMENT)
 				.map(EStructuralFeature.Setting::getEObject).filter(Diagram.class::isInstance)
-				.map(Diagram.class::cast)
-				.filter(diagram -> SEQUENCE_DIAGRAM_TYPES.contains(diagram.getType())).findAny();
+				.map(Diagram.class::cast).filter(this::isSequenceDiagram).findAny();
 	}
 
-	protected URL getResourceURL(Description description, String path) {
+	protected boolean isSequenceDiagram(Diagram diagram) {
+		return SEQUENCE_DIAGRAM_TYPES.contains(diagram.getType());
+	}
+
+	protected URL getResourceURL(Description description, @SuppressWarnings("hiding") String path) {
 		Class<?> context = testClass;
 		if (context == null) {
 			context = description.getTestClass();
 			if (context == null) {
 				fail("Explicit test class required for @ClassRule");
+				return null; // Unreachable
 			}
 		}
 
@@ -211,6 +219,12 @@ public class ModelFixture implements TestRule {
 		return result;
 	}
 
+	/**
+	 * Clean up the described test.
+	 * 
+	 * @param description
+	 *            a description of the test that finished
+	 */
 	protected void finished(Description description) {
 		interaction = null;
 		model = null;
@@ -225,7 +239,7 @@ public class ModelFixture implements TestRule {
 		String[] result;
 
 		if (path != null) {
-			result = new String[] { path };
+			result = new String[] {path };
 		} else {
 			result = requireAnnotation(description, ModelResource.class).value();
 		}
@@ -233,8 +247,7 @@ public class ModelFixture implements TestRule {
 		return result;
 	}
 
-	protected final <A extends Annotation> Optional<A> getAnnotation(Description description,
-			Class<A> type) {
+	protected final <A extends Annotation> Optional<A> getAnnotation(Description description, Class<A> type) {
 		A result = description.getAnnotation(type);
 		if ((result == null) && (description.getTestClass() != null)) {
 			result = description.getTestClass().getAnnotation(type);
@@ -252,8 +265,7 @@ public class ModelFixture implements TestRule {
 	}
 
 	/**
-	 * Compute the dependency graph of my default {@link #getInteraction()
-	 * interaction}.
+	 * Compute the dependency graph of my default {@link #getInteraction() interaction}.
 	 *
 	 * @return the dependency graph of my default interaction
 	 */
@@ -296,16 +308,14 @@ public class ModelFixture implements TestRule {
 	 *            the qualified name of an element to get
 	 * @param type
 	 *            the type of element to retrieve
-	 *
 	 * @return the element
-	 *
 	 * @param <T>
 	 *            the element type to retrieve
 	 */
 	public <T extends NamedElement> T getElement(String qualifiedName, Class<T> type) {
 
 		Collection<NamedElement> result = UMLUtil.findNamedElements(rset, qualifiedName, false,
-				(EClass) UMLPackage.eINSTANCE.getEClassifier(type.getSimpleName()));
+				(EClass)UMLPackage.eINSTANCE.getEClassifier(type.getSimpleName()));
 
 		assertThat("no such element: " + qualifiedName, result, hasItem(anything()));
 
@@ -313,8 +323,7 @@ public class ModelFixture implements TestRule {
 	}
 
 	/**
-	 * Get the vertex for a named element. Fails the test if the element is not
-	 * found.
+	 * Get the vertex for a named element. Fails the test if the element is not found.
 	 *
 	 * @param qualifiedName
 	 *            the qualified name of an element which vertex to get
@@ -409,8 +418,7 @@ public class ModelFixture implements TestRule {
 	//
 
 	/**
-	 * A specialized {@link ModelFixture} that provides an {@link EditingDomain}
-	 * context for the test model.
+	 * A specialized {@link ModelFixture} that provides an {@link EditingDomain} context for the test model.
 	 */
 	public static class Edit extends ModelFixture {
 		/**
@@ -434,12 +442,10 @@ public class ModelFixture implements TestRule {
 		 * Initializes me.
 		 *
 		 * @param testClass
-		 *            the test class in which context to load the resource. May be
-		 *            {@code null} for an ordinary {@code Rule} but required for a
-		 *            {@link ClassRule}
+		 *            the test class in which context to load the resource. May be {@code null} for an
+		 *            ordinary {@code Rule} but required for a {@link ClassRule}
 		 * @param path
-		 *            the path relative to the {@code testClass} of the UML resource to
-		 *            load
+		 *            the path relative to the {@code testClass} of the UML resource to load
 		 */
 		public Edit(Class<?> testClass, String path) {
 			super(testClass, path);

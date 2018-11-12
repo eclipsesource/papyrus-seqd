@@ -30,7 +30,7 @@ import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
 import org.eclipse.gmf.runtime.emf.ui.services.parser.ISemanticParser;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.parsers.MessageParser;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.ModelFixture;
-import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.ModelResource;
+import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.eclipse.uml2.uml.Message;
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
@@ -38,8 +38,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 /**
- * Tests for the {@link MessageParser} class. The parser needs a workspace for
- * Papyrus's i18n support.
+ * Tests for the {@link MessageParser} class. The parser needs a workspace for Papyrus's i18n support.
  *
  * @author Christian W. Damus
  */
@@ -81,8 +80,8 @@ public class MessageParserTest_PTest {
 	@Test
 	public void replyWithAssignedAndUnassignedOutputs() {
 		Message reply = model.getMessage("whatsIt", "thing");
-		assertThat(reply, rendersAs(
-				"thing::ok=getStuff(thing::content=text: \"Hello, world\", expiration: 60): true"));
+		assertThat(reply,
+				rendersAs("thing::ok=getStuff(thing::content=text: \"Hello, world\", expiration: 60): true"));
 	}
 
 	@Test
@@ -103,7 +102,7 @@ public class MessageParserTest_PTest {
 		Message reply = model.getMessage("whatsIt", "thing");
 
 		@SuppressWarnings("unchecked")
-		Set<Object> set = new HashSet<>(((ISemanticParser) parser).getSemanticElementsBeingParsed(reply));
+		Set<Object> set = new HashSet<>(((ISemanticParser)parser).getSemanticElementsBeingParsed(reply));
 
 		Iterator<?> iter = EcoreUtil.getAllContents(Collections.singleton(reply));
 		iter.forEachRemaining(next -> assertThat(set, hasItem(next)));
