@@ -75,6 +75,18 @@ public final class PendingVerticalExtentData {
 	}
 
 	/**
+	 * Queries whether an {@code element} is being moved.
+	 * 
+	 * @param element
+	 *            an element
+	 * @return {@code true} if it is being moved; {@code false}, otherwise, for example if it is being
+	 *         reshaped (only top or bottom being moved but not both) or not being changed at all
+	 */
+	public boolean isMoving() {
+		return top.isPresent() && bottom.isPresent();
+	}
+
+	/**
 	 * Query the pending top of an {@code element}.
 	 * 
 	 * @param element
@@ -117,6 +129,20 @@ public final class PendingVerticalExtentData {
 			data.top = pendingTop;
 			data.bottom = pendingBottom;
 		}
+	}
+
+	/**
+	 * Queries whether an {@code element} is {@linkplain #isMoving() being moved}.
+	 * 
+	 * @param element
+	 *            an element
+	 * @return {@code true} if it is being moved; {@code false}, otherwise, for example if it is being
+	 *         reshaped (only top or bottom being moved but not both) or not being changed at all
+	 * @see #isMoving()
+	 */
+	public static boolean isMoving(MElement<? extends Element> element) {
+		return DependencyContext.get().get(element, PendingVerticalExtentData.class)
+				.map(PendingVerticalExtentData::isMoving).orElse(Boolean.FALSE).booleanValue();
 	}
 
 	/**

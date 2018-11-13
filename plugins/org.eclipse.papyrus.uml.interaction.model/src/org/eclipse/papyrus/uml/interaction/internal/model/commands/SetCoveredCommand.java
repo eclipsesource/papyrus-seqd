@@ -20,6 +20,7 @@ import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredica
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToInt;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.lessThan;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.map;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +69,8 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 
 	private final OptionalInt yPosition;
 
+	private final OptionalInt yOriginal;
+
 	// The element on the lifeline before which we're inserting our occurrence
 	private final Optional<MElement<? extends Element>> nextOnLifeline;
 
@@ -83,6 +86,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 		this.lifeline = lifeline;
 		this.yPosition = yPosition;
 
+		this.yOriginal = occurrence.getTop();
 		nextOnLifeline = Lifelines.elementAfterAbsolute(lifeline,
 				yPosition.orElseGet(() -> occurrence.getTop().orElse(0)));
 	}
@@ -264,15 +268,40 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			} // else don't know what to do with it
 		}
 
-		// Handle the opposite end if the message is of a synchronous (strictly horizontal) sort
-		// or if it would slope backwards
-		MMessageEnd other = end.getOtherEnd().orElse(null);
-		if (yPosition.isPresent() && (other != null)
-				&& (message.isSynchronous() || (other.isReceive() && lessThan(other.getTop(), yPosition)))) {
+		// Handle the opposite end if
+		// - we're moving an execution that we're attached to
+		// - the message is of a synchronous (strictly horizontal) sort
+		// - it would slope backwards
+		Optional<MMessageEnd> other = end.getOtherEnd();
+		OptionalInt otherY = flatMapToInt(other, MElement::getTop);
+		if (yPosition.isPresent() && otherY.isPresent() && yOriginal.isPresent()) {
+			MMessageEnd otherEnd = other.get();
+			boolean isMovingExec = end.getExecution().filter(exec -> PendingVerticalExtentData.isMoving(exec))
+					.isPresent();
 
-			Optional<MLifeline> otherCovered = other.getCovered();
-			// Track this end
-			otherCovered.map(ll -> other.setCovered(ll, yPosition)).ifPresent(commandSink);
+			if (isMovingExec) {
+				// Does the other end start or finish execution? Move it
+				int deltaY = yPosition.getAsInt() - yOriginal.getAsInt();
+
+				Optional<MExecution> execToMove = (otherEnd.isStart() || otherEnd.isFinish())
+						? otherEnd.getExecution()
+						: Optional.empty();
+				if (execToMove.isPresent()) {
+					execToMove.map(exec -> exec.setOwner(exec.getOwner(), map(exec.getTop(), t -> t + deltaY),
+							map(exec.getBottom(), b -> b + deltaY))).ifPresent(commandSink);
+				} else {
+					Optional<MLifeline> otherCovered = other.flatMap(MMessageEnd::getCovered);
+					OptionalInt otherNewY = map(otherY, y -> y + deltaY);
+
+					// Track this end
+					otherCovered.map(ll -> otherEnd.setCovered(ll, otherNewY)).ifPresent(commandSink);
+				}
+			} else if (message.isSynchronous()
+					|| (otherEnd.isReceive() && lessThan(otherEnd.getTop(), yPosition))) {
+				Optional<MLifeline> otherCovered = otherEnd.getCovered();
+				// Track this end
+				otherCovered.map(ll -> otherEnd.setCovered(ll, yPosition)).ifPresent(commandSink);
+			}
 		}
 	}
 
