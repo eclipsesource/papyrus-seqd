@@ -298,8 +298,8 @@ public class InsertMessageCommand extends ModelCommand.Creation<MLifelineImpl, M
 				: beforeSend.getTop().orElse(llTopSend) - llTopSend + sendOffset;
 		Optional<MExecution> sendingExec = getTarget().elementAt(whereSend).flatMap(this::getExecution)
 				.filter(exec -> //
-		((exec.getBottom().orElse(-1) - llTopSend) >= whereSend) //
-				&& ((exec.getTop().orElse(MAX_VALUE) - llTopSend) <= whereSend));
+				((exec.getBottom().orElse(-1) - llTopSend) >= whereSend) //
+						&& ((exec.getTop().orElse(MAX_VALUE) - llTopSend) <= whereSend));
 		Vertex sender = sendingExec.map(this::vertex).orElseGet(this::vertex);
 		if (sender == null || sender.getDiagramView() == null) {
 			return UnexecutableCommand.INSTANCE;
@@ -350,12 +350,7 @@ public class InsertMessageCommand extends ModelCommand.Creation<MLifelineImpl, M
 				 */
 				int absoluteDeleteY = absoluteSendY;
 				List<MElement<? extends Element>> elementsBelow = new ArrayList<>();
-				findElementsBelow(absoluteDeleteY, elementsBelow,
-						getTarget().getInteraction().getMessages().stream(), false);
-				if (!elementsBelow.isEmpty()) {
-					return UnexecutableCommand.INSTANCE;
-				}
-				findElementsBelow(absoluteDeleteY, elementsBelow, this.receiver.getExecutions().stream(),
+				findElementsBelow(absoluteDeleteY, elementsBelow, this.receiver.getOccurrences().stream(),
 						false);
 				if (!elementsBelow.isEmpty()) {
 					return UnexecutableCommand.INSTANCE;
