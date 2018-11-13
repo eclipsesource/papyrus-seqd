@@ -246,10 +246,12 @@ public class ExecutionSpecificationDragEditPolicy extends ResizableBorderItemPol
 
 	@Override
 	protected void showChangeBoundsFeedback(ChangeBoundsRequest request) {
+		Point moveDelta = request.getMoveDelta();
 		Dimension sizeDelta = request.getSizeDelta();
+
 		if ((sizeDelta != null) && ((sizeDelta.width != 0) || (sizeDelta.height != 0))) {
 			// If there's a resize involved, then don't support dropping on another lifeline
-			showMoveFeedback(request.getMoveDelta());
+			showChangeBoundsFeedback(request.getMoveDelta(), sizeDelta);
 			return;
 		}
 
@@ -261,7 +263,7 @@ public class ExecutionSpecificationDragEditPolicy extends ResizableBorderItemPol
 			}
 		}
 		if (thisLifeline == null) {
-			showMoveFeedback(request.getMoveDelta());
+			showChangeBoundsFeedback(moveDelta, sizeDelta);
 			return;
 		}
 
@@ -270,7 +272,7 @@ public class ExecutionSpecificationDragEditPolicy extends ResizableBorderItemPol
 				Collections.singleton(thisLifeline.getFigure()), LifelineBodyEditPart.class::isInstance);
 		if (!(dropLifeline instanceof LifelineBodyEditPart)) {
 			// Not dropping on some other lifeline
-			showMoveFeedback(request.getMoveDelta());
+			showChangeBoundsFeedback(moveDelta, sizeDelta);
 			return;
 		}
 
@@ -279,29 +281,35 @@ public class ExecutionSpecificationDragEditPolicy extends ResizableBorderItemPol
 		IBorderItemLocator borderItemLocator = new OnLineBorderItemLocator(dropLifelineFigure);
 
 		// Constrain the lifeline drop to the original Y location
-		Point moveDelta = request.getMoveDelta().getCopy();
+		moveDelta = moveDelta.getCopy();
 		moveDelta.setY(0);
 
-		showMoveFeedback(moveDelta, dropLifelineFigure, borderItemLocator);
+		showChangeBoundsFeedback(moveDelta, null, dropLifelineFigure, borderItemLocator);
 	}
 
-	protected void showMoveFeedback(Point moveDelta) {
+	protected void showChangeBoundsFeedback(Point moveDelta, Dimension sizeDelta) {
 		IBorderItemEditPart borderItemEP = (IBorderItemEditPart)getHost();
 		IBorderItemLocator borderItemLocator = borderItemEP.getBorderItemLocator();
 
 		if (borderItemLocator != null) {
-			showMoveFeedback(moveDelta, ((GraphicalEditPart)getHost().getParent()).getFigure(),
-					borderItemLocator);
+			showChangeBoundsFeedback(moveDelta, sizeDelta,
+					((GraphicalEditPart)getHost().getParent()).getFigure(), borderItemLocator);
 		}
 	}
 
-	protected void showMoveFeedback(Point moveDelta, IFigure onLifeline, IBorderItemLocator locator) {
+	protected void showChangeBoundsFeedback(Point moveDelta, Dimension sizeDelta, IFigure onLifeline,
+			IBorderItemLocator locator) {
+
 		if (locator != null) {
 			IBorderItemEditPart borderItemEP = (IBorderItemEditPart)getHost();
 			IFigure feedback = getDragSourceFeedbackFigure();
 			PrecisionRectangle rect = new PrecisionRectangle(getInitialFeedbackBounds().getCopy());
 			getHostFigure().getParent().translateToAbsolute(rect);
+
 			rect.translate(moveDelta);
+			if (sizeDelta != null) {
+				rect.resize(sizeDelta);
+			}
 
 			// And bring it into the lifeline's coördinate space
 			Rectangle lifelineBounds = onLifeline.getBounds().getCopy();
