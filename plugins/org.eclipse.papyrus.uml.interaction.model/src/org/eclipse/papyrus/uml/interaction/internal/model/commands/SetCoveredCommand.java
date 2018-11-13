@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
@@ -527,7 +528,9 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 	 * @return whether the destruction should be allowed there
 	 */
 	protected boolean validateDestruction(int y) {
-		return !lifeline.getOccurrences().stream().anyMatch(below(y));
+		// Don't count an existing destruction, of course
+		Predicate<MOccurrence<?>> isDestruction = MDestruction.class::isInstance;
+		return !lifeline.getOccurrences().stream().filter(isDestruction.negate()).anyMatch(below(y));
 	}
 
 	/**

@@ -12,10 +12,13 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.tests;
 
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.isPoint;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.runs;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
@@ -97,6 +100,37 @@ public class DeleteMessageCreationUITest extends AbstractGraphicalEditPolicyUITe
 			// Expected
 		}
 		assertThat("Delete message was created", delete, nullValue());
+	}
+
+	/**
+	 * Verify that we can move a delete message up.
+	 */
+	@Test
+	public void moveDeleteMessageUp() {
+		moveDeleteMessage(-50);
+	}
+
+	private void moveDeleteMessage(int deltaY) {
+		EditPart delete = createMessage(MessageSort.DELETE_MESSAGE_LITERAL, lifeline2EP, lifeline3EP, 100);
+
+		PointList deleteGeom = getPoints(delete);
+		Point grabMessageAt = deleteGeom.getMidpoint();
+		Point dropMessageAt = grabMessageAt.getTranslated(0, deltaY);
+
+		editor.moveSelection(grabMessageAt, dropMessageAt);
+
+		deleteGeom.translate(0, deltaY);
+
+		assertThat("Delete message not moved", delete,
+				runs(isPoint(deleteGeom.getFirstPoint()), isPoint(deleteGeom.getLastPoint())));
+	}
+
+	/**
+	 * Verify that we can move a delete message down.
+	 */
+	@Test
+	public void moveDeleteMessageDown() {
+		moveDeleteMessage(+50);
 	}
 
 	//
