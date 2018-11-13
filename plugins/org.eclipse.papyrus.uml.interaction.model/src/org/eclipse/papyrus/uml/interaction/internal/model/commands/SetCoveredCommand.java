@@ -91,6 +91,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 
 		nextOnLifeline = Lifelines.elementAfterAbsolute(lifeline,
 				yPosition.orElseGet(() -> end.getTop().orElse(0)));
+
 		this.handleOppositeSendOrReply = handleOppositeSendOrReplyOfExecution;
 	}
 
@@ -310,11 +311,25 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			MOccurrenceImpl<?> occurrence = (MOccurrenceImpl<?>)endToMove.get();
 			if (occurrence.getCovered().filter(l -> l != lifeline).isPresent() && occurrence != getTarget()) {
 				OptionalInt y = targetY.orElse(occurrence.getBottom());
+				if (anyDestructionOccurrenceBefore(y)) {
+					return Optional.of(UnexecutableCommand.INSTANCE);
+				}
+
 				return Optional.of(new SetCoveredCommand(occurrence, lifeline, y, false));
 			}
 		}
 
 		return Optional.empty();
+	}
+
+	private boolean anyDestructionOccurrenceBefore(OptionalInt y) {
+		Optional<MElement<?>> elementBefore = lifeline.elementAt(y.orElse(Integer.MAX_VALUE));
+		List<MOccurrence<?>> occurrences = lifeline.getOccurrences();
+		int indexOfElementBefore = elementBefore.map(occurrences::indexOf)
+				.orElse(Integer.valueOf(occurrences.size())).intValue();
+		int endIndex = indexOfElementBefore >= 0 ? indexOfElementBefore : occurrences.size();
+		List<MOccurrence<?>> elementsFromYUp = occurrences.subList(0, endIndex);
+		return elementsFromYUp.stream().anyMatch(MDestruction.class::isInstance);
 	}
 
 	private Optional<MExecution> getExecution(MMessageEnd end) {
