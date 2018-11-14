@@ -16,6 +16,7 @@ import static java.util.Collections.singletonList;
 import static org.eclipse.papyrus.uml.interaction.internal.model.commands.PendingVerticalExtentData.affectedOccurrences;
 import static org.eclipse.papyrus.uml.interaction.model.util.Executions.getLifelineView;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.lessThan;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.map;
 
 import java.util.Optional;
@@ -51,8 +52,8 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 
 	private final OptionalInt bottom;
 
-	// The element on the lifeline before which we're inserting our element, if the new owner is a lifeline
-	private final Optional<MElement<? extends Element>> nextOnLifeline;
+	// The element on the lifeline that we may need to nudge, if the new owner is a lifeline
+	private final Optional<MElement<? extends Element>> nudgeElement;
 
 	/**
 	 * Initializes me.
@@ -68,8 +69,14 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 		this.top = top;
 		this.bottom = bottom;
 
-		nextOnLifeline = as(Optional.of(newOwner), MLifeline.class).flatMap(lifeline -> Lifelines
-				.elementAfterAbsolute(lifeline, top.orElseGet(() -> element.getTop().orElse(0))));
+		nudgeElement = as(Optional.of(newOwner), MLifeline.class)
+				.flatMap(lifeline -> lessThan(top, element.getTop())
+						// Moving up? Nudge the previous element on the lifeline
+						? Lifelines.elementBeforeAbsolute(lifeline,
+								top.orElseGet(() -> element.getTop().orElse(0)))
+						// Nudge the following element on the lifeline
+						: Lifelines.elementAfterAbsolute(lifeline,
+								bottom.orElseGet(() -> element.getBottom().orElse(0))));
 
 		// Publish this ownership change in the dependency context for other commands to find
 		PendingChildData.setPendingChild(newOwner, element);
@@ -202,7 +209,7 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 		MElement<? extends Element> padFrom = getTarget();
 
 		// Do we have an element that needs padding before it?
-		MElement<? extends Element> nudge = nextOnLifeline.orElse(null);
+		MElement<? extends Element> nudge = nudgeElement.orElse(null);
 
 		DeferredPaddingCommand.get(padFrom).pad(padFrom, nudge);
 	}

@@ -12,6 +12,7 @@
 
 package org.eclipse.papyrus.uml.interaction.model.util;
 
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.elseMaybe;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToObj;
@@ -69,6 +70,12 @@ public class Lifelines {
 		return elseMaybe(elementAtAbsolute(lifeline, y).flatMap(elem -> lifeline.following(elem)),
 				// Otherwise, the first element on the lifeline (if any and it's below this point)
 				() -> lifeline.following().filter(below(y)));
+	}
+
+	public static Optional<MElement<? extends Element>> elementBeforeAbsolute(MLifeline lifeline, int y) {
+		// Note that the "element at" is often actually above; that's what element-at means
+		return elementAtAbsolute(lifeline, y)
+				.flatMap(elem -> elseMaybe(Optional.of(elem).filter(above(y)), lifeline.preceding(elem)));
 	}
 
 }
