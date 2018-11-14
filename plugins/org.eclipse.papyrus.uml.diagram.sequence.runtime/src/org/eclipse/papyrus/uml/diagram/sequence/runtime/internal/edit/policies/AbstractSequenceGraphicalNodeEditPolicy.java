@@ -427,7 +427,8 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		if (successor.filter(MExecution.class::isInstance).isPresent()) {
 			successor = successor.map(MExecution.class::cast).flatMap(MExecution::getFinish);
 		}
-		if (successor.filter(above(request.getLocation().y())).isPresent()) {
+		if (!isAllowSemanticReordering(request)
+				&& successor.filter(above(request.getLocation().y())).isPresent()) {
 			return Optional.of(bomb());
 		} else {
 			// And above the previous on the lifeline (accounting for self-message)
@@ -436,7 +437,8 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 			if (predecessor.filter(MExecution.class::isInstance).isPresent()) {
 				predecessor = predecessor.map(MExecution.class::cast).flatMap(MExecution::getStart);
 			}
-			if (predecessor.filter(below(request.getLocation().y())).isPresent()) {
+			if (!isAllowSemanticReordering(request)
+					&& predecessor.filter(below(request.getLocation().y())).isPresent()) {
 				return Optional.of(bomb());
 			}
 		}

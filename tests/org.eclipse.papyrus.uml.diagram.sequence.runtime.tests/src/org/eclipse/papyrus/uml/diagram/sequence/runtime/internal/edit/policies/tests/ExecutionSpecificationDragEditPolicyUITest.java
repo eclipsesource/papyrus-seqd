@@ -332,4 +332,52 @@ public class ExecutionSpecificationDragEditPolicyUITest {
 
 	}
 
+	/**
+	 * Basic move/resize drag-and-drop use cases.
+	 */
+	@ModelResource("exec-around-delete.di")
+	@Maximized
+	public static class AroundDestruction extends AbstractGraphicalEditPolicyUITest {
+		@Rule
+		public final AutoFixtureRule autoFixtures = new AutoFixtureRule(this);
+
+		@AutoFixture
+		private ExecutionSpecification exec;
+
+		@AutoFixture
+		private EditPart execEP;
+
+		@AutoFixture("Lifeline1")
+		private Lifeline lifeline1;
+
+		@AutoFixture
+		private EditPart lifeline1EP;
+
+		/**
+		 * Initializes me.
+		 */
+		public AroundDestruction() {
+			super();
+		}
+
+		@Test
+		public void attemptToSurroundDestruction() {
+			Rectangle execGeom = getBounds(execEP);
+
+			// First, select the execution to activate selection handles
+			Point grabAt = new Point(execGeom.getCenter().x(), 150);
+			editor.select(grabAt);
+
+			Point dropAt = new Point(getBounds(lifeline1EP).getCenter().x(), grabAt.y());
+
+			// Try to do this with the allow-semantic-reordering override
+			editor.with(editor.allowSemanticReordering(), () -> editor.drag(grabAt, dropAt));
+
+			// But it still isn't allowed because the destruction constraint is absolute
+
+			assertThat("Execution was moved", execEP, isAt(isPoint(execGeom.getLocation())));
+		}
+
+	}
+
 }
