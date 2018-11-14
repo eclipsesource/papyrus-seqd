@@ -39,7 +39,7 @@ public class Executions {
 		return parentLifelineView(as(view.map(EObject::eContainer), View.class));
 	}
 
-	public static Optional<Shape> executionShapeAt(MLifeline lifeline, int absoluteY) {
+	public static Optional<MExecution> executionAt(MLifeline lifeline, int absoluteY) {
 		Predicate<MExecution> spanning = PendingVerticalExtentData.spans(absoluteY);
 
 		Optional<MExecution> movingToLifeline = as(PendingChildData.getPendingChild(lifeline),
@@ -47,11 +47,14 @@ public class Executions {
 
 		if (movingToLifeline.isPresent()) {
 			// Easy case
-			return movingToLifeline.flatMap(MExecution::getDiagramView);
+			return movingToLifeline;
 		}
 
-		return lifeline.getExecutions().stream().filter(spanning).max(LogicalModelOrdering.vertically())
-				.flatMap(MExecution::getDiagramView);
+		return lifeline.getExecutions().stream().filter(spanning).max(LogicalModelOrdering.vertically());
+	}
+
+	public static Optional<Shape> executionShapeAt(MLifeline lifeline, int absoluteY) {
+		return executionAt(lifeline, absoluteY).flatMap(MExecution::getDiagramView);
 	}
 
 }
