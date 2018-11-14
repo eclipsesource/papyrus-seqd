@@ -322,8 +322,16 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 		return Optional.empty();
 	}
 
-	private boolean anyDestructionOccurrenceBefore(OptionalInt y) {
-		Optional<MElement<?>> elementBefore = lifeline.elementAt(y.orElse(Integer.MAX_VALUE));
+	private boolean anyDestructionOccurrenceBefore(OptionalInt absoluteY) {
+		int llRelativeY = Integer.MAX_VALUE;
+		if (absoluteY.isPresent()) {
+			int lifelineOffset = layoutHelper().getBottom(lifeline.getDiagramView().get());
+			llRelativeY = absoluteY.getAsInt() - lifelineOffset;
+		}
+		Optional<MElement<?>> elementBefore = lifeline.elementAt(llRelativeY);
+		if (!elementBefore.isPresent()) {
+			return false;
+		}
 		List<MOccurrence<?>> occurrences = lifeline.getOccurrences();
 		int indexOfElementBefore = elementBefore.map(occurrences::indexOf)
 				.orElse(Integer.valueOf(occurrences.size())).intValue();
