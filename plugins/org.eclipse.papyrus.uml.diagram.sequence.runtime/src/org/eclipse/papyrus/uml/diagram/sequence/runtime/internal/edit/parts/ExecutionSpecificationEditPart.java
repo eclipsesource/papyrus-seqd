@@ -22,8 +22,10 @@ import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.gef.DragTracker;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.Request;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.BorderedBorderItemEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IBorderItemEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
@@ -37,6 +39,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.E
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.ExecutionSpecificationGraphicalNodeEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.InteractionSemanticEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.locators.ExecutionSpecificationBorderItemLocator;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceDragTracker;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 
@@ -144,4 +147,16 @@ public class ExecutionSpecificationEditPart extends BorderedBorderItemEditPart i
 		}
 	}
 
+	// The superclass does not delegate to edit-policies to get the drag tracker
+	@Override
+	public DragTracker getDragTracker(Request request) {
+		// We support dragging and dropping onto another lifeline
+		return new SequenceDragTracker(this) {
+
+			@Override
+			protected boolean isMove() {
+				return super.isMove();
+			}
+		};
+	}
 }

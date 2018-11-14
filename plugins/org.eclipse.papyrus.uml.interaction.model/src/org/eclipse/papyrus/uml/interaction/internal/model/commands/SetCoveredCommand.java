@@ -19,6 +19,8 @@ import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredica
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToInt;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.lessThan;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.map;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +69,8 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 
 	private final OptionalInt yPosition;
 
+	private final OptionalInt yOriginal;
+
 	// The element on the lifeline before which we're inserting our occurrence
 	private final Optional<MElement<? extends Element>> nextOnLifeline;
 
@@ -75,24 +79,24 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 	/**
 	 * Initializes me.
 	 *
-	 * @param target
+	 * @param occurrence
 	 */
-	public SetCoveredCommand(MOccurrenceImpl<? extends Element> end, MLifeline lifeline,
+	public SetCoveredCommand(MOccurrenceImpl<? extends Element> occurrence, MLifeline lifeline,
 			OptionalInt yPosition) {
-		this(end, lifeline, yPosition, true);
+		this(occurrence, lifeline, yPosition, true);
 	}
 
-	protected SetCoveredCommand(MOccurrenceImpl<? extends Element> end, MLifeline lifeline,
+	protected SetCoveredCommand(MOccurrenceImpl<? extends Element> occurrence, MLifeline lifeline,
 			OptionalInt yPosition, boolean handleOppositeSendOrReplyOfExecution) {
-		super(end);
+		super(occurrence);
 
 		this.lifeline = lifeline;
 		this.yPosition = yPosition;
 
-		nextOnLifeline = Lifelines.elementAfterAbsolute(lifeline,
-				yPosition.orElseGet(() -> end.getTop().orElse(0)));
-
+		this.yOriginal = occurrence.getTop();
 		this.handleOppositeSendOrReply = handleOppositeSendOrReplyOfExecution;
+		this.nextOnLifeline = Lifelines.elementAfterAbsolute(lifeline,
+				yPosition.orElseGet(() -> occurrence.getTop().orElse(0)));
 	}
 
 	protected boolean isChangingLifeline() {
@@ -168,9 +172,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			}
 		}
 
-		if (isChangingLifeline()) {
-			ensurePadding();
-		}
+		ensurePadding();
 
 		return result;
 	}
@@ -275,13 +277,40 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			} // else don't know what to do with it
 		}
 
-		// Handle the opposite end if the message is of a synchronous (strictly horizontal) sort
+		// Handle the opposite end if
+		// - we're moving an execution that we're attached to
+		// - the message is of a synchronous (strictly horizontal) sort
+		// - it would slope backwards
 		Optional<MMessageEnd> other = end.getOtherEnd();
-		if (yPosition.isPresent() && other.isPresent() && message.isSynchronous()) {
-			MMessageEnd opposite = other.get();
-			Optional<MLifeline> otherCovered = opposite.getCovered();
-			// Track this end
-			otherCovered.map(ll -> opposite.setCovered(ll, yPosition)).ifPresent(commandSink);
+		OptionalInt otherY = flatMapToInt(other, MElement::getTop);
+		if (yPosition.isPresent() && otherY.isPresent() && yOriginal.isPresent()) {
+			MMessageEnd otherEnd = other.get();
+			boolean isMovingExec = end.getExecution().filter(exec -> PendingVerticalExtentData.isMoving(exec))
+					.isPresent();
+
+			if (isMovingExec) {
+				// Does the other end start or finish execution? Move it
+				int deltaY = yPosition.getAsInt() - yOriginal.getAsInt();
+
+				Optional<MExecution> execToMove = (otherEnd.isStart() || otherEnd.isFinish())
+						? otherEnd.getExecution()
+						: Optional.empty();
+				if (execToMove.isPresent()) {
+					execToMove.map(exec -> exec.setOwner(exec.getOwner(), map(exec.getTop(), t -> t + deltaY),
+							map(exec.getBottom(), b -> b + deltaY))).ifPresent(commandSink);
+				} else {
+					Optional<MLifeline> otherCovered = other.flatMap(MMessageEnd::getCovered);
+					OptionalInt otherNewY = map(otherY, y -> y + deltaY);
+
+					// Track this end
+					otherCovered.map(ll -> otherEnd.setCovered(ll, otherNewY)).ifPresent(commandSink);
+				}
+			} else if (message.isSynchronous()
+					|| (otherEnd.isReceive() && lessThan(otherEnd.getTop(), yPosition))) {
+				Optional<MLifeline> otherCovered = otherEnd.getCovered();
+				// Track this end
+				otherCovered.map(ll -> otherEnd.setCovered(ll, yPosition)).ifPresent(commandSink);
+			}
 		}
 	}
 
@@ -526,16 +555,13 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 	}
 
 	protected void ensurePadding() {
-		MElement<? extends Element> element = getTarget();
 		// From which element do we need to ensure padding?
-		MElement<? extends Element> padFrom = element instanceof MMessageEnd
-				? ((MMessageEnd)element).getOwner()
-				: element;
+		MElement<? extends Element> padFrom = getTarget();
 
 		// Do we have an element that needs padding before it?
 		MElement<? extends Element> nudge = nextOnLifeline.orElse(null);
 
-		DeferredPaddingCommand.get(element).padFrom(padFrom).nudge(nudge);
+		DeferredPaddingCommand.get(padFrom).pad(padFrom, nudge);
 	}
 
 	/**

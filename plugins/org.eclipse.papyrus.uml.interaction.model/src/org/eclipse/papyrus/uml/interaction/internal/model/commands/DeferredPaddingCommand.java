@@ -12,9 +12,11 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.mapToInt;
 
+import java.util.Comparator;
 import java.util.OptionalInt;
 
 import org.eclipse.emf.common.command.Command;
@@ -31,6 +33,7 @@ import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
+import org.eclipse.papyrus.uml.interaction.model.util.LogicalModelOrdering;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
 import org.eclipse.uml2.uml.Element;
 
@@ -43,6 +46,8 @@ public class DeferredPaddingCommand extends CommandWrapper {
 	private MElement<? extends Element> referenceElement;
 
 	private MElement<? extends Element> nudgeElement;
+
+	private Comparator<MElement<?>> ordering = LogicalModelOrdering.semantically();
 
 	/**
 	 * Not instantiable by clients.
@@ -78,28 +83,36 @@ public class DeferredPaddingCommand extends CommandWrapper {
 				DeferredPaddingCommand::new);
 	}
 
-	public DeferredPaddingCommand padFrom(MElement<? extends Element> element) {
-		if (element == null) {
+	public DeferredPaddingCommand pad(MElement<? extends Element> from, MElement<? extends Element> to) {
+		if ((from == null) || (to == null)) {
 			// Have now determined that padding is not required
-			referenceElement = element;
-		} else if (referenceElement == null) {
-			referenceElement = element;
-		} else if ((referenceElement != element) && referenceElement.precedes(element)) {
-			referenceElement = element;
+			referenceElement = null;
+			nudgeElement = null;
+		} else if ((referenceElement == null) || before(referenceElement, from)) {
+			referenceElement = from;
+			nudgeElement = to;
+		} else if ((nudgeElement == null) || before(to, nudgeElement)) {
+			// Nudge the closer element
+			nudgeElement = to;
 		}
 		return this;
 	}
 
-	public DeferredPaddingCommand nudge(MElement<? extends Element> element) {
-		if (element == null) {
-			// Have now determined that padding is not required
-			nudgeElement = element;
-		} else if (nudgeElement == null) {
-			nudgeElement = element;
-		} else if ((nudgeElement != element) && element.precedes(nudgeElement)) {
-			nudgeElement = element;
+	private boolean before(MElement<? extends Element> a, MElement<? extends Element> b) {
+		return (a.getElement() != b.getElement()) && (a.precedes(b) || (ordering.compare(a, b) < 0));
+	}
+
+	@Override
+	protected boolean prepare() {
+		// Don't create the command, yet. We can always do something
+		return true;
+	}
+
+	@Override
+	public void execute() {
+		if (super.prepare()) {
+			super.execute();
 		}
-		return this;
 	}
 
 	@Override
@@ -126,7 +139,7 @@ public class DeferredPaddingCommand extends CommandWrapper {
 		MElement<? extends Element> padFrom = getPaddableElement(referenceElement);
 		MElement<? extends Element> padElement = getPaddableElement(nudgeElement);
 
-		if (padFrom.getElement() == padElement.getElement()) {
+		if (padFrom.getElement() == padElement.getElement() || above(padFrom).test(padElement)) {
 			// This would happen, for example, when re-targeting a message bringins along an
 			// execution specification that emits a message terminating on the re-targeted
 			// message's new receiving lifeline

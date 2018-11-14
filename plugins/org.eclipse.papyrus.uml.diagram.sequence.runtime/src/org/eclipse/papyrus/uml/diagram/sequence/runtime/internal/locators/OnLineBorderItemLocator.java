@@ -50,8 +50,8 @@ public class OnLineBorderItemLocator implements IBorderItemLocator {
 	@Override
 	public Rectangle getValidLocation(Rectangle proposedLocation, IFigure borderItem) {
 		Rectangle body = headerBodyFigure.getBounds().getCopy();
-		Point location = new Point(body.x - getConstraint().width / 2, body.y + getConstraint().y);
-		Rectangle newBounds = getConstraint().getCopy();
+		Point location = new Point(body.x - proposedLocation.width / 2, body.y + proposedLocation.y);
+		Rectangle newBounds = proposedLocation.getCopy();
 		newBounds.setLocation(location);
 		return newBounds;
 	}
