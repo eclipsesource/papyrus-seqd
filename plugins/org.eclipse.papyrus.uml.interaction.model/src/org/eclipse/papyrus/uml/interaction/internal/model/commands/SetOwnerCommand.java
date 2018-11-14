@@ -34,6 +34,7 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.util.Lifelines;
+import org.eclipse.papyrus.uml.interaction.model.util.Optionals;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InteractionFragment;
@@ -170,23 +171,30 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 		boolean movingExecution = !(start.isPresent() && hasDependency(start.get(), SetCoveredCommand.class))
 				&& !(finish.isPresent() && hasDependency(finish.get(), SetCoveredCommand.class));
 
+		Optional<Command> result = Optional.empty();
+
 		// Compute not only currently spanned occurrences that will need updating, but
 		// also future spanned occurrences
 		if (movingExecution) {
 			int deltaTop = map(this.top, t -> t - execution.getTop().getAsInt()).orElse(0);
 			UnaryOperator<OptionalInt> topMapping = deltaTop == 0 ? UnaryOperator.identity()
 					: top_ -> map(top_, t -> t + deltaTop);
-			return affectedOccurrences(execution)
+
+			// Those occurrences that are *currently* spanned move with the execution, but those
+			// that *will be* spanned do not; they only must be reattached per the step below
+			result = execution.getOccurrences().stream()
 					.map(occ -> occ.setCovered(lifeline, topMapping.apply(occ.getTop()))).reduce(chaining());
-		} else {
-			// Occurrences spanned by the execution, including its start and finish. They move
-			// according to the execution, maintaining their relative position. Note that
-			// nested executions will be handled implicitly by either their start or finish.
-			return affectedOccurrences(execution).map(occ -> {
-				OptionalInt where = occ.getTop();
-				return defer(() -> occ.setCovered(lifeline, where));
-			}).reduce(chaining());
 		}
+
+		// Note that nested executions will be handled implicitly by either their start or finish.
+		Optional<Command> reattach = affectedOccurrences(execution).map(occ -> {
+			OptionalInt where = occ.getTop();
+			return defer(() -> occ.setCovered(lifeline, where));
+		}).reduce(chaining());
+
+		result = Optionals.stream(result, reattach).reduce(chaining());
+
+		return result;
 	}
 
 	protected void ensurePadding() {
