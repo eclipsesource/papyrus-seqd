@@ -19,13 +19,16 @@ import java.util.function.Supplier;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gmf.runtime.common.core.service.AbstractProvider;
 import org.eclipse.gmf.runtime.common.core.service.IOperation;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
+import org.eclipse.gmf.runtime.diagram.ui.requests.DropObjectsRequest;
 import org.eclipse.gmf.runtime.diagram.ui.services.editpolicy.CreateEditPoliciesOperation;
 import org.eclipse.gmf.runtime.diagram.ui.services.editpolicy.IEditPolicyProvider;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.gmfdiag.common.helper.NotationHelper;
+import org.eclipse.papyrus.infra.gmfdiag.dnd.policy.CustomizableDropEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ExecutionSpecificationEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.InteractionCompartmentEditPart;
@@ -53,7 +56,7 @@ public class NoPapyrusEditPolicyProvider extends AbstractProvider implements IEd
 
 		// Creation edit policies
 		substitute(LifelineBodyEditPart.class, EditPolicyRoles.CREATION_ROLE,
-				LifelineCreationEditPolicy::new);
+				withDrop(LifelineCreationEditPolicy::new, LifelineBodyDropEditPolicy::new));
 		substitute(InteractionCompartmentEditPart.class, EditPolicyRoles.CREATION_ROLE,
 				InteractionCreationEditPolicy::new);
 		substitute(ExecutionSpecificationEditPart.class, EditPolicyRoles.CREATION_ROLE,
@@ -132,8 +135,45 @@ public class NoPapyrusEditPolicyProvider extends AbstractProvider implements IEd
 		return false;
 	}
 
-	//
-	// Nested types
-	//
+	/**
+	 * Compose {@code create} and {@code drop} edit-policies into a Papyrus-compliant customizable drop
+	 * edit-policy that is installed in the {@linkplain EditPolicyRoles#CREATION_ROLE creation role}.
+	 * 
+	 * @param create
+	 *            supplier of a create edit-policy
+	 * @param drop
+	 *            supplier of a drop edit-policy
+	 * @return the composed edit-policy
+	 */
+	static Supplier<? extends EditPolicy> withDrop(Supplier<? extends EditPolicy> create,
+			Supplier<? extends EditPolicy> drop) {
+		return () -> {
+			EditPolicy createPolicy = create.get();
+			EditPolicy dropPolicy = drop.get();
+
+			if (dropPolicy == null) {
+				return createPolicy;
+			}
+
+			return new CustomizableDropEditPolicy(dropPolicy, createPolicy) {
+				@Override
+				public void setHost(EditPart host) {
+					defaultCreationEditPolicy.setHost(host);
+					defaultDropEditPolicy.setHost(host);
+
+					super.setHost(host);
+				}
+
+				@Override
+				protected DropObjectsRequest castToDropObjectsRequest(ChangeBoundsRequest request) {
+					DropObjectsRequest result = super.castToDropObjectsRequest(request);
+
+					PrivateRequestUtils.forwardParameters(request, result);
+
+					return result;
+				}
+			};
+		};
+	}
 
 }

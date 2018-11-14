@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.IntPredicate;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
@@ -221,5 +222,32 @@ public class Optionals {
 	@SafeVarargs
 	public static <T> Stream<T> stream(Optional<? extends T>... optionals) {
 		return Stream.of(optionals).filter(Optional::isPresent).map(Optional::get);
+	}
+
+	/**
+	 * Is an optional integer less than another?
+	 * 
+	 * @param a
+	 *            an optional integer
+	 * @param b
+	 *            another optional integer
+	 * @return {@code true} if both values are present and {@code a} is less than {@code b}; {@code false}
+	 *         under any other circumstance
+	 */
+	public static boolean lessThan(OptionalInt a, OptionalInt b) {
+		return a.orElse(Integer.MAX_VALUE) < b.orElse(Integer.MIN_VALUE);
+	}
+
+	/**
+	 * Filter an optional integer {@code value}.
+	 * 
+	 * @param value
+	 *            an optional integer value
+	 * @param predicate
+	 *            an integer predicate
+	 * @return the {@code value} if it satisfies the {@code predicate}, otherwise empty
+	 */
+	public static OptionalInt filter(OptionalInt value, IntPredicate predicate) {
+		return (value.isPresent() && predicate.test(value.getAsInt())) ? value : OptionalInt.empty();
 	}
 }
