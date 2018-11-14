@@ -66,14 +66,14 @@
   <edges xmi:type="notation:Connector" xmi:id="_Hy6y48GHEeiBUataQqP5Qw" type="Edge_Message" source="_BRwzAMGHEeiBUataQqP5Qw" target="_qA2RQ8GGEeiBUataQqP5Qw">
     <element xmi:type="uml:Message" href="kitchen-sink.uml#_Hy6y4sGHEeiBUataQqP5Qw"/>
     <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_Hy6y5MGHEeiBUataQqP5Qw"/>
-    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Hy6y5cGHEeiBUataQqP5Qw" id="right;35"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Hy6y5cGHEeiBUataQqP5Qw" id="35"/>
     <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Hy6y5sGHEeiBUataQqP5Qw" id="204"/>
   </edges>
   <edges xmi:type="notation:Connector" xmi:id="_Uhk208GHEeiBUataQqP5Qw" type="Edge_Message" source="_qA2RQ8GGEeiBUataQqP5Qw" target="_NLtcgMGHEeiBUataQqP5Qw">
     <element xmi:type="uml:Message" href="kitchen-sink.uml#_Uhk20sGHEeiBUataQqP5Qw"/>
     <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_Uhk21MGHEeiBUataQqP5Qw"/>
     <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Uhk21cGHEeiBUataQqP5Qw" id="229"/>
-    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Uhk21sGHEeiBUataQqP5Qw" id="left;14"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Uhk21sGHEeiBUataQqP5Qw" id="14"/>
   </edges>
   <edges xmi:type="notation:Connector" xmi:id="_VulchcGHEeiBUataQqP5Qw" type="Edge_Message" source="_qA2RQ8GGEeiBUataQqP5Qw" target="_Vulcg8GHEeiBUataQqP5Qw">
     <element xmi:type="uml:Message" href="kitchen-sink.uml#_VulcgsGHEeiBUataQqP5Qw"/>

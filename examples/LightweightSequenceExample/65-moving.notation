@@ -69,7 +69,7 @@
     <children xmi:type="notation:DecorationNode" xmi:id="_qvqcUeM2Eeic0KQPni2_MA" type="Edge_Message_Name"/>
     <element xmi:type="uml:Message" href="65-moving.uml#_qvp1QeM2Eeic0KQPni2_MA"/>
     <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_qvqcUuM2Eeic0KQPni2_MA"/>
-    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_qvqcU-M2Eeic0KQPni2_MA" id="right;34"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_qvqcU-M2Eeic0KQPni2_MA" id="34"/>
     <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_qvqcVOM2Eeic0KQPni2_MA" id="start"/>
   </edges>
   <edges xmi:type="notation:Connector" xmi:id="_qvrqcOM2Eeic0KQPni2_MA" type="Edge_Message" source="_qvrDYOM2Eeic0KQPni2_MA" target="_Y_QnseM0EeiMDaKTugkfaw">
@@ -77,6 +77,6 @@
     <element xmi:type="uml:Message" href="65-moving.uml#_qvrDZOM2Eeic0KQPni2_MA"/>
     <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_qvrqcuM2Eeic0KQPni2_MA"/>
     <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_qvrqc-M2Eeic0KQPni2_MA" id="end"/>
-    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_qvrqdOM2Eeic0KQPni2_MA" id="right;150"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_qvrqdOM2Eeic0KQPni2_MA" id="150"/>
   </edges>
 </notation:Diagram>

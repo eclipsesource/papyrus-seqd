@@ -274,7 +274,7 @@
       <element xmi:type="uml:Message" href="AnchorsModel.uml#_UxpL0Cb3EeihQLPTjNT1Rg"/>
       <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_JkoO7iIXEeinxv2N8q8iQw"/>
       <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_JkoO7yIXEeinxv2N8q8iQw" id="45"/>
-      <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_JkoO8CIXEeinxv2N8q8iQw" id="left;20"/>
+      <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_JkoO8CIXEeinxv2N8q8iQw" id="20"/>
     </edges>
     <edges xmi:type="notation:Connector" xmi:id="_JkoO8SIXEeinxv2N8q8iQw" type="Edge_Message" source="_JkoO5iIXEeinxv2N8q8iQw" target="_8e1YmEFrEei1zqUjbAwdJw">
       <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_JkoO8iIXEeinxv2N8q8iQw" source="PapyrusCSSForceValue">
@@ -282,7 +282,7 @@
       </eAnnotations>
       <element xmi:type="uml:Message" href="AnchorsModel.uml#_WHrKoCb3EeihQLPTjNT1Rg"/>
       <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_JkoO9CIXEeinxv2N8q8iQw"/>
-      <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_JkoO9SIXEeinxv2N8q8iQw" id="left;60"/>
+      <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_JkoO9SIXEeinxv2N8q8iQw" id="60"/>
       <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_JkoO9iIXEeinxv2N8q8iQw" id="85"/>
     </edges>
   </notation:Diagram>
