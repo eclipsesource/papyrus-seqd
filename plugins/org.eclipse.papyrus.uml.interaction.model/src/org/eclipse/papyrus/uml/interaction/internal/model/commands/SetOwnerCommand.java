@@ -16,6 +16,7 @@ import static java.util.Collections.singletonList;
 import static org.eclipse.papyrus.uml.interaction.internal.model.commands.PendingVerticalExtentData.affectedOccurrences;
 import static org.eclipse.papyrus.uml.interaction.model.util.Executions.getLifelineView;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.lessThan;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.map;
 
 import java.util.Optional;
@@ -34,6 +35,7 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.util.Lifelines;
+import org.eclipse.papyrus.uml.interaction.model.util.Optionals;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InteractionFragment;
@@ -50,8 +52,8 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 
 	private final OptionalInt bottom;
 
-	// The element on the lifeline before which we're inserting our element, if the new owner is a lifeline
-	private final Optional<MElement<? extends Element>> nextOnLifeline;
+	// The element on the lifeline that we may need to nudge, if the new owner is a lifeline
+	private final Optional<MElement<? extends Element>> nudgeElement;
 
 	/**
 	 * Initializes me.
@@ -67,8 +69,14 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 		this.top = top;
 		this.bottom = bottom;
 
-		nextOnLifeline = as(Optional.of(newOwner), MLifeline.class).flatMap(lifeline -> Lifelines
-				.elementAfterAbsolute(lifeline, top.orElseGet(() -> element.getTop().orElse(0))));
+		nudgeElement = as(Optional.of(newOwner), MLifeline.class)
+				.flatMap(lifeline -> lessThan(top, element.getTop())
+						// Moving up? Nudge the previous element on the lifeline
+						? Lifelines.elementBeforeAbsolute(lifeline,
+								top.orElseGet(() -> element.getTop().orElse(0)))
+						// Nudge the following element on the lifeline
+						: Lifelines.elementAfterAbsolute(lifeline,
+								bottom.orElseGet(() -> element.getBottom().orElse(0))));
 
 		// Publish this ownership change in the dependency context for other commands to find
 		PendingChildData.setPendingChild(newOwner, element);
@@ -170,23 +178,30 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 		boolean movingExecution = !(start.isPresent() && hasDependency(start.get(), SetCoveredCommand.class))
 				&& !(finish.isPresent() && hasDependency(finish.get(), SetCoveredCommand.class));
 
+		Optional<Command> result = Optional.empty();
+
 		// Compute not only currently spanned occurrences that will need updating, but
 		// also future spanned occurrences
 		if (movingExecution) {
 			int deltaTop = map(this.top, t -> t - execution.getTop().getAsInt()).orElse(0);
 			UnaryOperator<OptionalInt> topMapping = deltaTop == 0 ? UnaryOperator.identity()
 					: top_ -> map(top_, t -> t + deltaTop);
-			return affectedOccurrences(execution)
+
+			// Those occurrences that are *currently* spanned move with the execution, but those
+			// that *will be* spanned do not; they only must be reattached per the step below
+			result = execution.getOccurrences().stream()
 					.map(occ -> occ.setCovered(lifeline, topMapping.apply(occ.getTop()))).reduce(chaining());
-		} else {
-			// Occurrences spanned by the execution, including its start and finish. They move
-			// according to the execution, maintaining their relative position. Note that
-			// nested executions will be handled implicitly by either their start or finish.
-			return affectedOccurrences(execution).map(occ -> {
-				OptionalInt where = occ.getTop();
-				return defer(() -> occ.setCovered(lifeline, where));
-			}).reduce(chaining());
 		}
+
+		// Note that nested executions will be handled implicitly by either their start or finish.
+		Optional<Command> reattach = affectedOccurrences(execution).map(occ -> {
+			OptionalInt where = occ.getTop();
+			return defer(() -> occ.setCovered(lifeline, where));
+		}).reduce(chaining());
+
+		result = Optionals.stream(result, reattach).reduce(chaining());
+
+		return result;
 	}
 
 	protected void ensurePadding() {
@@ -194,7 +209,7 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 		MElement<? extends Element> padFrom = getTarget();
 
 		// Do we have an element that needs padding before it?
-		MElement<? extends Element> nudge = nextOnLifeline.orElse(null);
+		MElement<? extends Element> nudge = nudgeElement.orElse(null);
 
 		DeferredPaddingCommand.get(padFrom).pad(padFrom, nudge);
 	}

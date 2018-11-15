@@ -71,8 +71,8 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 
 	private final OptionalInt yOriginal;
 
-	// The element on the lifeline before which we're inserting our occurrence
-	private final Optional<MElement<? extends Element>> nextOnLifeline;
+	// The element on the lifeline that we may need to nudge
+	private final Optional<MElement<? extends Element>> nudgeElement;
 
 	private final boolean handleOppositeSendOrReply;
 
@@ -95,8 +95,16 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 
 		this.yOriginal = occurrence.getTop();
 		this.handleOppositeSendOrReply = handleOppositeSendOrReplyOfExecution;
-		this.nextOnLifeline = Lifelines.elementAfterAbsolute(lifeline,
-				yPosition.orElseGet(() -> occurrence.getTop().orElse(0)));
+
+		if (lessThan(yPosition, yOriginal)) {
+			// Moving up? Nudge the previous element on the lifeline
+			nudgeElement = Lifelines.elementBeforeAbsolute(lifeline,
+					yPosition.orElseGet(() -> yOriginal.orElse(0)));
+		} else {
+			// Nudge the following element on the lifeline
+			nudgeElement = Lifelines.elementAfterAbsolute(lifeline,
+					yPosition.orElseGet(() -> yOriginal.orElse(0)));
+		}
 	}
 
 	protected boolean isChangingLifeline() {
@@ -558,8 +566,8 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 		// From which element do we need to ensure padding?
 		MElement<? extends Element> padFrom = getTarget();
 
-		// Do we have an element that needs padding before it?
-		MElement<? extends Element> nudge = nextOnLifeline.orElse(null);
+		// Do we have an element that needs padding?
+		MElement<? extends Element> nudge = nudgeElement.orElse(null);
 
 		DeferredPaddingCommand.get(padFrom).pad(padFrom, nudge);
 	}
