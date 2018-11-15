@@ -11,8 +11,10 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.diagram.sequence.figure;
 
+import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.DestructionSpecificationAnchor;
 
 public class DestructionSpecificationFigure extends NodeFigure {
 
@@ -29,6 +31,11 @@ public class DestructionSpecificationFigure extends NodeFigure {
 		graphics.drawLine(bounds.x, bounds.y, bounds.x + bounds.width, bounds.y + bounds.height);
 		graphics.drawLine(bounds.x, bounds.y + bounds.height, bounds.x + bounds.width, bounds.y);
 		graphics.popState();
+	}
+
+	@Override
+	public ConnectionAnchor getConnectionAnchor(String terminal) {
+		return new DestructionSpecificationAnchor(this);
 	}
 
 }
