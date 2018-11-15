@@ -143,14 +143,14 @@ public class DeferredPaddingCommand extends CommandWrapper {
 		Command result;
 		switch (direction) {
 			case DOWN:
-				result = nudgeElement.nudge(nudgeY);
+				result = getPaddableElement(nudgeElement).nudge(nudgeY);
 				break;
 			case UP:
 				// An "upward" nudge doesn't actually nudge anything up because the diagram can
 				// only expand downwards (lifeline heads are fixed). Rather, we ensure space
 				// by nudging down the element that was moved up, but also everything following
 				// it so that the layout is consistent
-				result = referenceElement.nudge(nudgeY);
+				result = getPaddableElement(referenceElement).nudge(nudgeY);
 				break;
 			default:
 				result = null;

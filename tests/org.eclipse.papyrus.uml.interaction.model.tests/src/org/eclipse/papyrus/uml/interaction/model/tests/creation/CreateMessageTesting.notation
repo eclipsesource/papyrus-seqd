@@ -51,11 +51,11 @@
     <owner xmi:type="uml:Interaction" href="CreateMessageTesting.uml#_oM9woGKCEeiIbNyTKulhvg"/>
   </styles>
   <element xmi:type="uml:Interaction" href="CreateMessageTesting.uml#_oM9woGKCEeiIbNyTKulhvg"/>
-  <edges xmi:type="notation:Connector" xmi:id="_JUg94GMTEei-baqYVSEfiQ" type="Edge_Message" source="_9sGg02KEEeiIbNyTKulhvg" target="_csgd02KFEeiIbNyTKulhvg">
+  <edges xmi:type="notation:Connector" xmi:id="_JUg94GMTEei-baqYVSEfiQ" type="Edge_Message" source="_9sGg02KEEeiIbNyTKulhvg" target="_F3xsUGKGEeiIbNyTKulhvg">
     <element xmi:type="uml:Message" href="CreateMessageTesting.uml#_JUgW0mMTEei-baqYVSEfiQ"/>
     <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_JUg94WMTEei-baqYVSEfiQ"/>
     <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_JUg94mMTEei-baqYVSEfiQ" id="50"/>
-    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_JUg942MTEei-baqYVSEfiQ" id="50"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_JUg942MTEei-baqYVSEfiQ" id="start"/>
   </edges>
   <edges xmi:type="notation:Connector" xmi:id="_M2nxsGMeEei-baqYVSEfiQ" type="Edge_Message" source="_9sGg02KEEeiIbNyTKulhvg" target="_csgd02KFEeiIbNyTKulhvg">
     <element xmi:type="uml:Message" href="CreateMessageTesting.uml#_M2nKomMeEei-baqYVSEfiQ"/>

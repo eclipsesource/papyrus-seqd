@@ -34,6 +34,7 @@ import org.eclipse.papyrus.uml.interaction.internal.model.commands.CompoundModel
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.DeferredPaddingCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.DependencyContext;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.NudgeCommand;
+import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.uml2.uml.Element;
@@ -294,6 +295,38 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 		if (result != null) {
 			compound.add(0, result); // Do this first, then padding
 			result = CompoundModelCommand.compose(getEditingDomain(), compound);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Similar to the {@link #withPadding(Class, Supplier)} API, create a new creation command, if necessary,
+	 * for some dependency that is being tracked in the current {@link DependencyContext}. Additionally,
+	 * ensure that such a command can add to the {@link DeferredPaddingCommand} for padding after the
+	 * completion of the root command of the dependency context.
+	 * 
+	 * @param key
+	 *            the kind of creation command to be created
+	 * @param commandFactory
+	 *            to create the command, if it is needed
+	 * @return the creation command, or {@code null} if this dependency already has created a command
+	 * @see #withPadding(Class, Supplier)
+	 * @see #withDependencies(Class, Supplier)
+	 */
+	protected <R extends EObject, C extends CreationCommand<R>> CreationCommand<R> createWithPadding(
+			Class<C> key, Supplier<? extends C> commandFactory) {
+		Command[] padding = {null };
+
+		Consumer<DependencyContext> getPadding = ctx -> padding[0] = DeferredPaddingCommand.get(ctx, this);
+
+		// Avoid cycling through this element again if it has already created this command
+		CreationCommand<R> result = DependencyContext.getDynamic(getPadding)
+				.apply(this, key, __ -> commandFactory.get()) //
+				.orElse(null);
+		if ((result != null) && (padding[0] != null)) {
+			// Do this first, then padding
+			result = result.chain(padding[0]);
 		}
 
 		return result;
