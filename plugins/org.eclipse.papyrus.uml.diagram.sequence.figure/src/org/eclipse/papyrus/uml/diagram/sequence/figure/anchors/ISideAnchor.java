@@ -13,13 +13,13 @@
 package org.eclipse.papyrus.uml.diagram.sequence.figure.anchors;
 
 /**
- * Protocol for connection anchors on execution specifications.
+ * Protocol for connection anchors that are placed on side of a node (execution, lifeline header, etc.).
  */
-public interface IExecutionAnchor extends ISequenceAnchor {
+public interface ISideAnchor extends ISequenceAnchor {
 	/**
-	 * Set the side of the execution on which the message connection is attached (whether incoming or
-	 * outgoing). This is a dynamic property of the layout; not a component of the
-	 * {@link ISequenceAnchor#getTerminal() terminal} specification.
+	 * Set the side of the node on which the message connection is attached (whether incoming or outgoing).
+	 * This is a dynamic property of the layout; not a component of the {@link ISequenceAnchor#getTerminal()
+	 * terminal} specification.
 	 * 
 	 * @param side
 	 *            the message attachment side

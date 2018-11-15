@@ -19,7 +19,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.AnchorParser.AnchorKind;
 
-public class ExecutionSpecificationStartAnchor extends AbstractConnectionAnchor implements IExecutionAnchor {
+public class ExecutionSpecificationStartAnchor extends AbstractConnectionAnchor implements ISideAnchor {
 
 	private int side = PositionConstants.CENTER;
 

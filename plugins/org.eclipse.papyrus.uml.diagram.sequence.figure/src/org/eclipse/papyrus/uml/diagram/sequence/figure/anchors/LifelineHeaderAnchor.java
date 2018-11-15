@@ -23,7 +23,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.AnchorParser.Anch
  * An Anchor on the Lifeline header. The anchor is configured with a Height position relative to the top of
  * the header, and a side (Left or Right).
  */
-public class LifelineHeaderAnchor extends AbstractConnectionAnchor implements ISequenceAnchor {
+public class LifelineHeaderAnchor extends AbstractConnectionAnchor implements ISideAnchor {
 
 	private int height;
 
@@ -31,21 +31,11 @@ public class LifelineHeaderAnchor extends AbstractConnectionAnchor implements IS
 
 	private int side;
 
-	/**
-	 * @param figure
-	 * @param height
-	 *            The y position of the anchor, relative to the top of the Lifeline Header
-	 * @param side
-	 *            The side of the anchor; either {@link PositionConstants#LEFT} or
-	 *            {@link PositionConstants#RIGHT}
-	 * @see PositionConstants
-	 */
-	public LifelineHeaderAnchor(LifelineHeaderFigure figure, int height, int side) {
+	public LifelineHeaderAnchor(LifelineHeaderFigure figure, int height) {
 		super(figure);
 		this.height = height;
 		this.lifelineHeaderFigure = figure;
-		Assert.isTrue(side == PositionConstants.LEFT || side == PositionConstants.RIGHT);
-		this.side = side;
+		this.side = PositionConstants.LEFT;
 	}
 
 	@Override
@@ -66,7 +56,7 @@ public class LifelineHeaderAnchor extends AbstractConnectionAnchor implements IS
 
 	@Override
 	public String getTerminal() {
-		return AnchorParser.getInstance().getTerminal(AnchorKind.SIDE, side, height);
+		return AnchorParser.getInstance().getTerminal(AnchorKind.DISTANCE, height);
 	}
 
 	@Override
@@ -74,4 +64,12 @@ public class LifelineHeaderAnchor extends AbstractConnectionAnchor implements IS
 		return String.format("LLHeadAnchor(%s)", getTerminal()); //$NON-NLS-1$
 	}
 
+	@Override
+	public void setConnectionSide(int side) {
+		Assert.isTrue((side & PositionConstants.LEFT_CENTER_RIGHT) != 0);
+		if (side != this.side) {
+			this.side = side;
+			fireAnchorMoved();
+		}
+	}
 }
