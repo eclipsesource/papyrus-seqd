@@ -54,10 +54,16 @@ public class LifelineHeaderFigure extends NodeFigure {
 		AnchorParser anchorParser = AnchorParser.getInstance();
 		try {
 			AnchorKind anchorKind = anchorParser.getAnchorKind(terminal);
-			if (anchorKind == AnchorKind.SIDE) {
-				int height = anchorParser.getDistanceFromReference(terminal);
-				int side = anchorParser.getSide(terminal);
-				return createHeaderAnchor(height, side);
+			switch (anchorKind) {
+				case SIDE:
+					int height = anchorParser.getDistanceFromReference(terminal);
+					return createHeaderAnchor(height);
+				case DISTANCE:
+				case FIXED:
+					height = anchorParser.getDistance(terminal);
+					return createHeaderAnchor(height);
+				default:
+					throw new IllegalArgumentException("terminal: " + terminal); //$NON-NLS-1$
 			}
 		} catch (IllegalArgumentException ex) {
 			ex.printStackTrace(); // TODO Log
@@ -66,8 +72,8 @@ public class LifelineHeaderFigure extends NodeFigure {
 		return super.getConnectionAnchor(terminal);
 	}
 
-	protected ConnectionAnchor createHeaderAnchor(int height, int side) {
-		return new LifelineHeaderAnchor(this, height, side);
+	protected ConnectionAnchor createHeaderAnchor(int height) {
+		return new LifelineHeaderAnchor(this, height);
 	}
 
 	@Override

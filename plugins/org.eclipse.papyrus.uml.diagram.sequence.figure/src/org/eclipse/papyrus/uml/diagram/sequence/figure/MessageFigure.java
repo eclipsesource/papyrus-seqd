@@ -17,7 +17,7 @@ import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
-import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.IExecutionAnchor;
+import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.ISideAnchor;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.MessageSourceAnchor;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.MessageTargetAnchor;
 
@@ -51,11 +51,11 @@ public class MessageFigure extends PolylineConnectionEx {
 		super.validate();
 
 		MessageDirection direction = computeDirection();
-		if (getSourceAnchor() instanceof IExecutionAnchor) {
-			((IExecutionAnchor)getSourceAnchor()).setConnectionSide(direction.getExecutionSide(true));
+		if (getSourceAnchor() instanceof ISideAnchor) {
+			((ISideAnchor)getSourceAnchor()).setConnectionSide(direction.getExecutionSide(true));
 		}
-		if (getTargetAnchor() instanceof IExecutionAnchor) {
-			((IExecutionAnchor)getTargetAnchor()).setConnectionSide(direction.getExecutionSide(false));
+		if (getTargetAnchor() instanceof ISideAnchor) {
+			((ISideAnchor)getTargetAnchor()).setConnectionSide(direction.getExecutionSide(false));
 		}
 	}
 

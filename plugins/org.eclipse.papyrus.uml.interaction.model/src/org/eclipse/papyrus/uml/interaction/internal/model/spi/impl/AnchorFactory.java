@@ -250,16 +250,7 @@ class AnchorFactory {
 
 		@Override
 		public String computeIdentity() {
-			String result;
-
-			// Which direction?
-			if (isLeftToRight() == isConnectionSource) {
-				result = RIGHT + distance;
-			} else {
-				result = LEFT + distance;
-			}
-
-			return result;
+			return Integer.toString(distance);
 		}
 	}
 
