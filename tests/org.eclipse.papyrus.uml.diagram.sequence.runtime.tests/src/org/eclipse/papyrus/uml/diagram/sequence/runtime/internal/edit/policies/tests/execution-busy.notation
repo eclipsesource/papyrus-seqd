@@ -67,19 +67,19 @@
   <edges xmi:type="notation:Connector" xmi:id="_cNxC0MvBEei-2PpXSl-dWw" type="Edge_Message" source="_FtukYMvBEei-2PpXSl-dWw" target="__vCYY8vAEei-2PpXSl-dWw">
     <element xmi:type="uml:Message" href="execution-busy.uml#_cNv0ssvBEei-2PpXSl-dWw"/>
     <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_cNxC0cvBEei-2PpXSl-dWw"/>
-    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_cNxC0svBEei-2PpXSl-dWw" id="right;28"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_cNxC0svBEei-2PpXSl-dWw" id="28"/>
     <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_cNxC08vBEei-2PpXSl-dWw" id="81"/>
   </edges>
   <edges xmi:type="notation:Connector" xmi:id="_ea4aoMvBEei-2PpXSl-dWw" type="Edge_Message" source="_FtukYMvBEei-2PpXSl-dWw" target="_DdgOM8vBEei-2PpXSl-dWw">
     <element xmi:type="uml:Message" href="execution-busy.uml#_ea3zkMvBEei-2PpXSl-dWw"/>
     <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_ea4aocvBEei-2PpXSl-dWw"/>
-    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_ea4aosvBEei-2PpXSl-dWw" id="right;53"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_ea4aosvBEei-2PpXSl-dWw" id="53"/>
     <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_ea4ao8vBEei-2PpXSl-dWw" id="106"/>
   </edges>
   <edges xmi:type="notation:Connector" xmi:id="_fUBCEsvBEei-2PpXSl-dWw" type="Edge_Message" source="_DdgOM8vBEei-2PpXSl-dWw" target="_FtukYMvBEei-2PpXSl-dWw">
     <element xmi:type="uml:Message" href="execution-busy.uml#_fUBCEcvBEei-2PpXSl-dWw"/>
     <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_fUBCE8vBEei-2PpXSl-dWw"/>
     <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_fUBCFMvBEei-2PpXSl-dWw" id="131"/>
-    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_fUBCFcvBEei-2PpXSl-dWw" id="right;78"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_fUBCFcvBEei-2PpXSl-dWw" id="78"/>
   </edges>
 </notation:Diagram>

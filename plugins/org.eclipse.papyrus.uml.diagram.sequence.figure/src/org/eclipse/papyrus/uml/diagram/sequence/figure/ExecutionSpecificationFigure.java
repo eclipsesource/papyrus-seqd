@@ -13,7 +13,6 @@ package org.eclipse.papyrus.uml.diagram.sequence.figure;
 
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
@@ -54,9 +53,13 @@ public class ExecutionSpecificationFigure extends NodeFigure {
 				//
 				// Message anchors
 				//
+				// the side case is deprecated, since issue #376, but still there for compatibility
 				case SIDE:
-					return new ExecutionSpecificationSideAnchor(this, anchorParser.getSide(terminal),
+					return new ExecutionSpecificationSideAnchor(this,
 							anchorParser.getDistanceFromReference(terminal));
+				case DISTANCE:
+				case FIXED:
+					return new ExecutionSpecificationSideAnchor(this, anchorParser.getDistance(terminal));
 				case START:
 					return new ExecutionSpecificationStartAnchor(this);
 				case END:
@@ -108,10 +111,10 @@ public class ExecutionSpecificationFigure extends NodeFigure {
 			return new ExecutionSpecificationEndAnchor(this);
 		}
 		if (p.x() <= (rect.width() / 2)) {
-			return new ExecutionSpecificationSideAnchor(this, PositionConstants.LEFT, p.y());
+			return new ExecutionSpecificationSideAnchor(this, p.y());
 		}
 		if (p.x() > (rect.width() / 2)) {
-			return new ExecutionSpecificationSideAnchor(this, PositionConstants.RIGHT, p.y());
+			return new ExecutionSpecificationSideAnchor(this, p.y());
 		}
 
 		return super.createAnchor(p);

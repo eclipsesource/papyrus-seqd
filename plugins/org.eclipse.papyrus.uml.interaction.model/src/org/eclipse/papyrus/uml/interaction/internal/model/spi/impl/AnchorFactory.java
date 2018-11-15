@@ -278,17 +278,7 @@ class AnchorFactory {
 			} else if (distance >= layout.getHeight(getAnchorView())) {
 				result = END;
 			} else {
-				String side;
-				boolean isSelfMessage = sourceLifeline == targetLifeline;
-				if (isSelfMessage) {
-					// Self message always received on same side as sent
-					side = isLeftToRight() ? RIGHT : LEFT;
-				} else {
-					// Which direction?
-					side = (isLeftToRight() == isConnectionSource) ? RIGHT : LEFT;
-				}
-
-				result = side + distance;
+				result = Integer.toString(distance);
 			}
 
 			return result;
