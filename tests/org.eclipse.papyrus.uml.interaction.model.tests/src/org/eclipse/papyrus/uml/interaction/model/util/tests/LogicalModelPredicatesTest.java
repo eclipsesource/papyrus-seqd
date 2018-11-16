@@ -14,7 +14,10 @@ package org.eclipse.papyrus.uml.interaction.model.util.tests;
 
 import static org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage.Literals.MELEMENT__NAME;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.alwaysFalse;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.alwaysTrue;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.equalTo;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.where;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -23,6 +26,7 @@ import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.tests.ModelEditFixture;
 import org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
+import org.eclipse.uml2.uml.Element;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -73,5 +77,26 @@ public class LogicalModelPredicatesTest {
 		MElement<?> replySend = model.getElement(QN, "reply-send");
 		assertThat(where(MELEMENT__NAME, "request-recv").test(requestRecv), is(true));
 		assertThat(where(MELEMENT__NAME, "request-recv").test(replySend), is(false));
+	}
+
+	@Test
+	public void alwaysTrue_() {
+		assertThat(alwaysTrue().test(model.getMInteraction()), is(true));
+		assertThat(alwaysTrue().test(null), is(true));
+	}
+
+	@Test
+	public void alwaysFalse_() {
+		assertThat(alwaysFalse().test(model.getMInteraction()), is(false));
+		assertThat(alwaysFalse().test(null), is(false));
+	}
+
+	@Test
+	public void equalTo_MElement() {
+		MElement<? extends Element> m = model.getMInteraction();
+		MElement<? extends Element> l = model.getMInteraction().getLifelines().get(0);
+
+		assertThat(equalTo(m).test(m), is(true));
+		assertThat(equalTo(m).test(l), is(false));
 	}
 }

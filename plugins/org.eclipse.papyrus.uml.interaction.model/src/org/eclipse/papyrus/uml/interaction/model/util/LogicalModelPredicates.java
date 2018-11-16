@@ -26,11 +26,25 @@ import org.eclipse.uml2.uml.Element;
  */
 public class LogicalModelPredicates {
 
+	private static final Predicate<Object> TRUE = __ -> true;
+
+	private static final Predicate<Object> FALSE = __ -> false;
+
 	/**
 	 * Not instantiable by clients.
 	 */
 	private LogicalModelPredicates() {
 		super();
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends MElement<? extends Element>> Predicate<T> alwaysTrue() {
+		return (Predicate<T>)TRUE;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends MElement<? extends Element>> Predicate<T> alwaysFalse() {
+		return (Predicate<T>)FALSE;
 	}
 
 	public static Predicate<MElement<? extends Element>> above(int y) {

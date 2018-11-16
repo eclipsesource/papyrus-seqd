@@ -14,6 +14,7 @@ package org.eclipse.papyrus.uml.interaction.model.util;
 
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
@@ -69,6 +70,19 @@ public class Optionals {
 	 */
 	public static OptionalInt map(OptionalInt optional, IntUnaryOperator operator) {
 		return optional.isPresent() ? OptionalInt.of(operator.applyAsInt(optional.getAsInt())) : optional;
+	}
+
+	/**
+	 * Map an {@code optional} int under an optional-integer-valued unary {@code function}.
+	 * 
+	 * @param optional
+	 *            an optional integer value
+	 * @param function
+	 *            a function to apply
+	 * @return the optional {@code function} result
+	 */
+	public static OptionalInt flatMap(OptionalInt optional, IntFunction<OptionalInt> function) {
+		return optional.isPresent() ? function.apply(optional.getAsInt()) : optional;
 	}
 
 	/**
@@ -249,5 +263,24 @@ public class Optionals {
 	 */
 	public static OptionalInt filter(OptionalInt value, IntPredicate predicate) {
 		return (value.isPresent() && predicate.test(value.getAsInt())) ? value : OptionalInt.empty();
+	}
+
+	/**
+	 * An analogue of the {@link Optional#ifPresent(Consumer)} API that includes an {@code else} clause.
+	 * 
+	 * @param optional
+	 *            the optional value to process
+	 * @param ifPresent
+	 *            the present ({@code then}) case
+	 * @param orElse
+	 *            the absent ({@code else}) case
+	 */
+	public static <T> void ifPresentElse(Optional<T> optional, Consumer<? super T> ifPresent,
+			Runnable orElse) {
+		if (optional.isPresent()) {
+			ifPresent.accept(optional.get());
+		} else {
+			orElse.run();
+		}
 	}
 }

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:style="http://www.eclipse.org/papyrus/infra/gmfdiag/style" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_SnR90EppEeiB_O7ig5LXPg" type="LightweightSequenceDiagram" name="seq1" measurementUnit="Pixel">
+  <children xmi:type="notation:Shape" xmi:id="_SnR90UppEeiB_O7ig5LXPg" type="Shape_Interaction">
+    <children xmi:type="notation:DecorationNode" xmi:id="_SnR90kppEeiB_O7ig5LXPg" type="Label_Interaction_Name">
+      <element xmi:type="uml:Interaction" href="nested-executions.uml#_R_u1oEppEeiB_O7ig5LXPg"/>
+    </children>
+    <children xmi:type="notation:Compartment" xmi:id="_SnR900ppEeiB_O7ig5LXPg" type="Interaction_Contents">
+      <children xmi:type="notation:Shape" xmi:id="_FTODwGpHEeiIJqtZNCF3Dw" type="Shape_Lifeline_Header">
+        <children xmi:type="notation:Shape" xmi:id="_FTODwWpHEeiIJqtZNCF3Dw" type="Compartment_Lifeline_Header"/>
+        <children xmi:type="notation:Shape" xmi:id="_FTODwmpHEeiIJqtZNCF3Dw" type="Label_Lifeline_Name"/>
+        <children xmi:type="notation:Shape" xmi:id="_FTODw2pHEeiIJqtZNCF3Dw" type="Shape_Lifeline_Body">
+          <layoutConstraint xmi:type="notation:Size" xmi:id="_FTODxGpHEeiIJqtZNCF3Dw" width="2" height="150"/>
+        </children>
+        <element xmi:type="uml:Lifeline" href="nested-executions.uml#_FMyroGpHEeiIJqtZNCF3Dw"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FTODxWpHEeiIJqtZNCF3Dw" x="30" y="25" width="100" height="28"/>
+      </children>
+      <children xmi:type="notation:Shape" xmi:id="_F8jUoGpHEeiIJqtZNCF3Dw" type="Shape_Lifeline_Header">
+        <children xmi:type="notation:Shape" xmi:id="_F8jUoWpHEeiIJqtZNCF3Dw" type="Compartment_Lifeline_Header"/>
+        <children xmi:type="notation:Shape" xmi:id="_F8jUompHEeiIJqtZNCF3Dw" type="Label_Lifeline_Name"/>
+        <children xmi:type="notation:Shape" xmi:id="_F8jUo2pHEeiIJqtZNCF3Dw" type="Shape_Lifeline_Body">
+          <children xmi:type="notation:Shape" xmi:id="_xm5G0emtEeiy0sMNphMqbA" type="Shape_Execution_Specification">
+            <children xmi:type="notation:Shape" xmi:id="_zaOFoOmtEeiy0sMNphMqbA" type="Shape_Execution_Specification">
+              <children xmi:type="notation:Shape" xmi:id="_7fim8OmtEeiy0sMNphMqbA" type="Shape_Execution_Specification">
+                <element xmi:type="uml:ActionExecutionSpecification" href="nested-executions.uml#_7edo4OmtEeiy0sMNphMqbA"/>
+                <layoutConstraint xmi:type="notation:Bounds" xmi:id="_7fim8emtEeiy0sMNphMqbA" y="13" width="10" height="101"/>
+              </children>
+              <element xmi:type="uml:ActionExecutionSpecification" href="nested-executions.uml#_zWRZwOmtEeiy0sMNphMqbA"/>
+              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_zaOFoemtEeiy0sMNphMqbA" y="26" width="10" height="148"/>
+            </children>
+            <element xmi:type="uml:BehaviorExecutionSpecification" href="nested-executions.uml#_xm5G0OmtEeiy0sMNphMqbA"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_xm5G0umtEeiy0sMNphMqbA" x="-4" y="37" width="10" height="210"/>
+          </children>
+          <children xmi:type="notation:Shape" xmi:id="_Id3pIOmvEeiy0sMNphMqbA" type="Shape_Execution_Specification">
+            <element xmi:type="uml:ActionExecutionSpecification" href="nested-executions.uml#_IU2QAOmvEeiy0sMNphMqbA"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Id3pIemvEeiy0sMNphMqbA" x="-4" y="276" width="10" height="40"/>
+          </children>
+          <layoutConstraint xmi:type="notation:Size" xmi:id="_F8jUpGpHEeiIJqtZNCF3Dw" width="2" height="150"/>
+        </children>
+        <element xmi:type="uml:Lifeline" href="nested-executions.uml#_F4rhQGpHEeiIJqtZNCF3Dw"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_F8jUpWpHEeiIJqtZNCF3Dw" x="190" y="25" width="100" height="28"/>
+      </children>
+      <children xmi:type="notation:Shape" xmi:id="_9hFagMr5EeiHN4fdcelXbQ" type="Shape_Lifeline_Header">
+        <children xmi:type="notation:Shape" xmi:id="_9hFagcr5EeiHN4fdcelXbQ" type="Compartment_Lifeline_Header"/>
+        <children xmi:type="notation:Shape" xmi:id="_9hFagsr5EeiHN4fdcelXbQ" type="Label_Lifeline_Name"/>
+        <children xmi:type="notation:Shape" xmi:id="_9hFag8r5EeiHN4fdcelXbQ" type="Shape_Lifeline_Body">
+          <layoutConstraint xmi:type="notation:Size" xmi:id="_9hFahMr5EeiHN4fdcelXbQ" width="2" height="150"/>
+        </children>
+        <element xmi:type="uml:Lifeline" href="nested-executions.uml#_9dbCgMr5EeiHN4fdcelXbQ"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_9hFahcr5EeiHN4fdcelXbQ" x="347" y="25" width="100" height="28"/>
+      </children>
+      <element xmi:type="uml:Interaction" href="nested-executions.uml#_R_u1oEppEeiB_O7ig5LXPg"/>
+    </children>
+    <element xmi:type="uml:Interaction" href="nested-executions.uml#_R_u1oEppEeiB_O7ig5LXPg"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_SnR91EppEeiB_O7ig5LXPg" x="37" y="12" width="600" height="450"/>
+  </children>
+  <styles xmi:type="notation:StringValueStyle" xmi:id="_SnR91UppEeiB_O7ig5LXPg" name="diagram_compatibility_version" stringValue="1.4.0"/>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_SnR91kppEeiB_O7ig5LXPg"/>
+  <styles xmi:type="style:PapyrusDiagramStyle" xmi:id="_SnR910ppEeiB_O7ig5LXPg" diagramKindId="org.eclipse.papyrus.uml.diagram.lightweightsequence">
+    <owner xmi:type="uml:Interaction" href="nested-executions.uml#_R_u1oEppEeiB_O7ig5LXPg"/>
+  </styles>
+  <element xmi:type="uml:Interaction" href="nested-executions.uml#_R_u1oEppEeiB_O7ig5LXPg"/>
+  <edges xmi:type="notation:Connector" xmi:id="_xm4fwOmtEeiy0sMNphMqbA" type="Edge_Message" source="_FTODw2pHEeiIJqtZNCF3Dw" target="_xm5G0emtEeiy0sMNphMqbA">
+    <children xmi:type="notation:DecorationNode" xmi:id="_xm4fwemtEeiy0sMNphMqbA" type="Edge_Message_Name"/>
+    <element xmi:type="uml:Message" href="nested-executions.uml#_xm34sOmtEeiy0sMNphMqbA"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_xm4fwumtEeiy0sMNphMqbA"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_xm4fw-mtEeiy0sMNphMqbA" id="37"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_xm4fxOmtEeiy0sMNphMqbA" id="start"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_xm68AOmtEeiy0sMNphMqbA" type="Edge_Message" source="_xm5G0emtEeiy0sMNphMqbA" target="_FTODw2pHEeiIJqtZNCF3Dw">
+    <children xmi:type="notation:DecorationNode" xmi:id="_xm68AemtEeiy0sMNphMqbA" type="Edge_Message_Name"/>
+    <element xmi:type="uml:Message" href="nested-executions.uml#_xm5t4emtEeiy0sMNphMqbA"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_xm68AumtEeiy0sMNphMqbA"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_xm68A-mtEeiy0sMNphMqbA" id="end"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_xm68BOmtEeiy0sMNphMqbA" id="247"/>
+  </edges>
+</notation:Diagram>

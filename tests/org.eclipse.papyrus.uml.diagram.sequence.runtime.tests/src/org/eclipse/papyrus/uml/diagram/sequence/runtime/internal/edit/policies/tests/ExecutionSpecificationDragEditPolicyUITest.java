@@ -19,6 +19,7 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GE
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.isAt;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.isBounded;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.runs;
+import static org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes.LIFELINE_BODY;
 import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.gt;
 import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.gte;
 import static org.hamcrest.CoreMatchers.anything;
@@ -30,6 +31,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.AutoFixture;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.AutoFixture.VisualID;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.AutoFixtureRule;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
@@ -100,12 +102,14 @@ public class ExecutionSpecificationDragEditPolicyUITest {
 		private Lifeline l1;
 
 		@AutoFixture
+		@VisualID(LIFELINE_BODY)
 		private EditPart l1EP;
 
 		@AutoFixture("L2")
 		private Lifeline l2;
 
 		@AutoFixture
+		@VisualID(LIFELINE_BODY)
 		private EditPart l2EP;
 
 		@AutoFixture

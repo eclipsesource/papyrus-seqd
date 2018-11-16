@@ -21,17 +21,25 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.draw2d.Connection;
+import org.eclipse.draw2d.geometry.Translatable;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
+import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.papyrus.infra.gmfdiag.common.utils.DiagramEditPartsUtil;
+import org.eclipse.papyrus.infra.gmfdiag.common.utils.EditPartUtils;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.AutoFixture.VisualID;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelFixture;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.AssociationClass;
@@ -51,7 +59,9 @@ import org.junit.runners.model.Statement;
  */
 public class AutoFixtureRule implements TestRule {
 
-	private static final Pattern EDIT_PART_FIXTURE = Pattern.compile(".*(?=EP|EditPart)");
+	private static final Pattern EDIT_PART_FIXTURE = Pattern.compile("^.*(?=EP|EditPart)");
+
+	private static final Pattern GEOMETRY_FIXTURE = Pattern.compile("^.*(?=Geom\\w*)");
 
 	private final Object test;
 
@@ -68,7 +78,8 @@ public class AutoFixtureRule implements TestRule {
 		List<BiFunction<ModelFixture, FieldAccess<?>, Object>> resolvers = Arrays.asList(
 				this::resolveQualifiedName, //
 				this::resolveSimpleName, //
-				this::resolveEditPart);
+				this::resolveEditPart, //
+				this::resolveGeometry);
 		resolver = (model, spec) -> resolvers.stream().map(r -> r.apply(model, spec)).filter(Objects::nonNull)
 				.findFirst().orElse(null);
 	}
@@ -92,6 +103,25 @@ public class AutoFixtureRule implements TestRule {
 				}
 			}
 		};
+	}
+
+	public void refresh() {
+		ModelFixture model = getField(ModelFixture.class).get();
+
+		getAutoFixtures().forEach(fixture -> {
+			Object resolved = null;
+			try {
+				resolved = resolver.apply(model, fixture);
+			} catch (AssertionError e) {
+				// Just set it null
+			}
+
+			if (resolved == null) {
+				fixture.clear();
+			} else {
+				fixture.set(resolved);
+			}
+		});
 	}
 
 	private Stream<Field> getFields() {
@@ -119,12 +149,13 @@ public class AutoFixtureRule implements TestRule {
 		return new FieldAccess<>(type, test);
 	}
 
-	private <T> FieldAccess<T> getField(String name, Class<T> type) {
-		return new FieldAccess<>(name, type, test);
+	private <T> FieldAccess<T> findField(Pattern regex, Class<T> type) {
+		return getFields().filter(f -> type.isAssignableFrom(f.getType()))
+				.filter(f -> regex.matcher(f.getName()).find()).map(f -> new FieldAccess<>(f, type, test))
+				.findFirst().orElse(null);
 	}
 
 	private Stream<FieldAccess<?>> getAutoFixtures() {
-		List<?> list = getFields().collect(Collectors.toList());
 		return getFields().filter(f -> f.isAnnotationPresent(AutoFixture.class))
 				.map(f -> new FieldAccess<>(f, Object.class, test));
 	}
@@ -134,9 +165,15 @@ public class AutoFixtureRule implements TestRule {
 	//
 
 	private Object resolveQualifiedName(ModelFixture model, FieldAccess<?> fixture) {
-		Object result = null;
+		return fixture.isAssignableTo(NamedElement.class) //
+				? getElementByQName(model, fixture.getFixtureName())
+				: null;
+	}
 
-		String[] parts = fixture.getFixtureName().split("::");
+	private NamedElement getElementByQName(ModelFixture model, String name) {
+		NamedElement result = null;
+
+		String[] parts = name.split("::");
 		if ((parts.length > 0) && parts[0].equals(model.getModel().getName())) {
 			NamedElement next = model.getModel();
 
@@ -151,23 +188,29 @@ public class AutoFixtureRule implements TestRule {
 			result = next;
 		}
 
-		return fixture.asAssignable(result);
+		return result;
 	}
 
 	private Object resolveSimpleName(ModelFixture model, FieldAccess<?> fixture) {
-		Object result = null;
+		return fixture.isAssignableTo(NamedElement.class)
+				? getElement(model, fixture.getFixtureName(), fixture::isAssignableFrom)
+				: null;
+	}
 
-		String name = fixture.getFixtureName();
-		if (!name.contains("::")) {
+	private NamedElement getElement(ModelFixture model, String name, Predicate<? super NamedElement> filter) {
+		NamedElement result = null;
+
+		if (name.contains("::")) {
+			result = Optional.ofNullable(getElementByQName(model, name)).filter(filter).orElse(null);
+		} else {
 			for (TreeIterator<EObject> iter = EcoreUtil
 					.getAllContents(singleton(model.getModel())); (result == null) && iter.hasNext();) {
 
 				EObject next = iter.next();
 				if (next instanceof NamedElement) {
-					if (name.equals(getValidJavaIdentifier(((NamedElement)next).getName()))
-							&& fixture.isAssignable(next)) {
-
-						result = next;
+					NamedElement element = (NamedElement)next;
+					if (name.equals(getValidJavaIdentifier(element.getName())) && filter.test(element)) {
+						result = element;
 					}
 				} else {
 					iter.prune();
@@ -181,15 +224,48 @@ public class AutoFixtureRule implements TestRule {
 	private Object resolveEditPart(ModelFixture model, FieldAccess<?> fixture) {
 		Object result = null;
 
-		if ((model instanceof EditorFixture) && fixture.isAssignable(EditPart.class)) {
+		if ((model instanceof EditorFixture) && fixture.isAssignableTo(EditPart.class)) {
 			EditorFixture editor = (EditorFixture)model;
 
-			FieldAccess<? extends EObject> element = getField(fixture.getFixtureName(EDIT_PART_FIXTURE),
+			String fixtureName = fixture.getFixtureName(EDIT_PART_FIXTURE);
+			Supplier<? extends EObject> element = findField(Pattern.compile("^" + Pattern.quote(fixtureName)),
 					EObject.class);
-			if (element != null) {
-				EObject fixtureElement = element.get();
-				result = DiagramEditPartsUtil.getChildByEObject(fixtureElement, editor.getDiagramEditPart(),
-						isEdge(fixtureElement));
+			if (element == null) {
+				element = () -> getElement(model, fixtureName, __ -> true);
+			}
+
+			EObject fixtureElement = element.get();
+			result = DiagramEditPartsUtil.getChildByEObject(fixtureElement, editor.getDiagramEditPart(),
+					isEdge(fixtureElement));
+
+			if ((result != null) && fixture.field.isAnnotationPresent(VisualID.class)) {
+				String visualID = fixture.field.getAnnotation(VisualID.class).value();
+				// Prefer the child
+				result = EditPartUtils.findFirstChildEditPartWithId((EditPart)result, visualID);
+			}
+		}
+
+		return result;
+	}
+
+	private Object resolveGeometry(ModelFixture model, FieldAccess<?> fixture) {
+		Object result = null;
+
+		if ((model instanceof EditorFixture) && fixture.isAssignableTo(Translatable.class)) {
+			Pattern editPartPattern = Pattern.compile(
+					"^" + Pattern.quote(fixture.getFixtureName(GEOMETRY_FIXTURE)) + "(?=EP|EditPart)?");
+			FieldAccess<? extends EditPart> editPart = findField(editPartPattern, EditPart.class);
+			if (editPart != null) {
+				EditPart ep = editPart.get();
+				Translatable translatable = (ep instanceof ConnectionEditPart)
+						? ((Connection)((ConnectionEditPart)ep).getFigure()).getPoints().getCopy()
+						: ((GraphicalEditPart)ep).getFigure().getBounds().getCopy();
+
+				if (translatable != null) {
+					((GraphicalEditPart)ep).getFigure().getParent().translateToAbsolute(translatable);
+				}
+
+				result = translatable;
 			}
 		}
 
@@ -235,7 +311,7 @@ public class AutoFixtureRule implements TestRule {
 	// Nested types
 	//
 
-	private static final class FieldAccess<T> {
+	private static final class FieldAccess<T> implements Supplier<T> {
 		private final Field field;
 
 		private final Object owner;
@@ -254,22 +330,6 @@ public class AutoFixtureRule implements TestRule {
 			} catch (Exception e) {
 				e.printStackTrace();
 				fail(String.format("Cannnot access fixture of type %s", type.getName()));
-				throw new Error(); // Unreachable
-			}
-		}
-
-		FieldAccess(String name, Class<T> type, Object owner) {
-			super();
-
-			try {
-				this.field = getFields(owner).filter(f -> name.equals(f.getName())).findFirst().get();
-				setAccessible();
-
-				this.owner = owner;
-				this.type = field.getType().asSubclass(type);
-			} catch (Exception e) {
-				e.printStackTrace();
-				fail(String.format("Cannnot access fixture %s", name));
 				throw new Error(); // Unreachable
 			}
 		}
@@ -320,7 +380,7 @@ public class AutoFixtureRule implements TestRule {
 			return field.getAnnotation(AutoFixture.class);
 		}
 
-		boolean isAssignable(Object object) {
+		boolean isAssignableFrom(Object object) {
 			Class<?> objectType;
 
 			if (object == null) {
@@ -334,11 +394,12 @@ public class AutoFixtureRule implements TestRule {
 			return field.getType().isAssignableFrom(objectType);
 		}
 
-		T asAssignable(Object object) {
-			return isAssignable(object) ? type.cast(object) : null;
+		boolean isAssignableTo(Class<?> objectType) {
+			return objectType.isAssignableFrom(field.getType());
 		}
 
-		T get() {
+		@Override
+		public T get() {
 			try {
 				return type.cast(field.get(owner));
 			} catch (Exception e) {

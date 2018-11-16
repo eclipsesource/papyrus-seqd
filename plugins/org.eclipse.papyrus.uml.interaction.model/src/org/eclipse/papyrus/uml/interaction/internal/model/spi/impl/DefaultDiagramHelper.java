@@ -526,12 +526,37 @@ public class DefaultDiagramHelper implements DiagramHelper {
 		return DeleteCommand.create(editingDomain, diagramView);
 	}
 
+	@SuppressWarnings("boxing")
 	@Override
 	public Command reparentView(View view, View newParent) {
+		if (view.eContainer() == newParent) {
+			// Nothing to do
+			return IdentityCommand.INSTANCE;
+		}
+
 		// First record the original containment by removing the view
 		Command result = RemoveCommand.create(editingDomain, view);
 		result = result.chain(AddCommand.create(editingDomain, newParent,
 				NotationPackage.Literals.VIEW__PERSISTED_CHILDREN, view));
+
+		if (ViewTypes.EXECUTION_SPECIFICATION.equals(view.getType()) && (view instanceof Node)
+				&& (newParent instanceof Node)) {
+			// Ensure the correct horizontal alignment
+			Bounds bounds = (Bounds)((Node)view).getLayoutConstraint();
+
+			if (ViewTypes.EXECUTION_SPECIFICATION.equals(newParent.getType())) {
+				// Center on the parent's right edge
+				Bounds parentBounds = (Bounds)((Node)newParent).getLayoutConstraint();
+				result = result
+						.chain(SetCommand.create(editingDomain, bounds, NotationPackage.Literals.LOCATION__X,
+								parentBounds.getWidth() - (bounds.getWidth() / 2)));
+			} else if (ViewTypes.LIFELINE_BODY.equals(newParent.getType())) {
+				// Center on the lifeline stem
+				result = result.chain(SetCommand.create(editingDomain, bounds,
+						NotationPackage.Literals.LOCATION__X, -bounds.getWidth() / 2));
+			}
+		}
+
 		return result;
 	}
 

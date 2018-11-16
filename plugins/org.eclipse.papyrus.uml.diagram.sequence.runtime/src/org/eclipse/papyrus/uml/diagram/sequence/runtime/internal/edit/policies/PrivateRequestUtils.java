@@ -17,6 +17,8 @@ import java.util.stream.Stream;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.Request;
+import org.eclipse.gef.requests.ChangeBoundsRequest;
+import org.eclipse.gmf.runtime.diagram.ui.requests.DropObjectsRequest;
 
 /**
  * Utilities for working with private {@link Request}s and/or private details of {@code Request}s.
@@ -32,10 +34,12 @@ public final class PrivateRequestUtils {
 
 	private static final String ALLOW_SEMANTIC_REORDERING_PARAMETER = "__allow_semantic_reordering__"; //$NON-NLS-1$
 
+	private static final String CHANGE_BOUNDS_REQUEST_PARAMETER = "__change_bounds_request__"; //$NON-NLS-1$
+
 	private static final String[] PARAMETERS = { //
 			FORCE_PARAMETER, //
 			ORIGINAL_MOUSE_PARAMETER, ORIGINAL_SOURCE_PARAMETER, ORIGINAL_TARGET_PARAMETER, //
-			ALLOW_SEMANTIC_REORDERING_PARAMETER, //
+			ALLOW_SEMANTIC_REORDERING_PARAMETER, CHANGE_BOUNDS_REQUEST_PARAMETER, //
 	};
 
 	/**
@@ -197,5 +201,28 @@ public final class PrivateRequestUtils {
 		Stream.of(PARAMETERS).filter(p -> hasParameter(fromRequest, p))
 				.filter(p -> !hasParameter(toRequest, p))
 				.forEach(p -> setParameter(toRequest, p, getParameter(fromRequest, p, Object.class, null)));
+	}
+
+	/**
+	 * Records the change-bounds request that triggers a {@code drop}.
+	 * 
+	 * @param drop
+	 *            a drop request
+	 * @param changeBounds
+	 *            the change-bounds request that triggered it
+	 */
+	public static void setChangeBoundsRequest(DropObjectsRequest drop, ChangeBoundsRequest changeBounds) {
+		setParameter(drop, CHANGE_BOUNDS_REQUEST_PARAMETER, changeBounds);
+	}
+
+	/**
+	 * Queries the change-bounds request that triggers a {@code drop}.
+	 * 
+	 * @param drop
+	 *            a drop request
+	 * @return the change-bounds request that triggered it
+	 */
+	public static ChangeBoundsRequest getChangeBoundsRequest(DropObjectsRequest drop) {
+		return getParameter(drop, CHANGE_BOUNDS_REQUEST_PARAMETER, ChangeBoundsRequest.class, null);
 	}
 }

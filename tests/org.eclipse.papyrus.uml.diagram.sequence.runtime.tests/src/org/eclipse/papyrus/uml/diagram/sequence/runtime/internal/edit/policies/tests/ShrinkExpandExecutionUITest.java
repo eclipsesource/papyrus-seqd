@@ -13,6 +13,8 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.tests;
 
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.isPoint;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.isRect;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.isBounded;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.runs;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -21,11 +23,14 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.AutoFixture;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.AutoFixtureRule;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
-import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 
@@ -40,47 +45,71 @@ import org.junit.rules.TestRule;
 public class ShrinkExpandExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 
 	/** Reply messages don't end up exactly where the resize handle is. */
+	@SuppressWarnings("hiding")
 	@ClassRule
 	public static final TestRule TOLERANCE = GEFMatchers.defaultTolerance(1);
 
+	@Rule
+	public final TestRule autoFixtures = new AutoFixtureRule(this);
+
+	@AutoFixture
 	private EditPart sync1;
 
+	@AutoFixture
 	private PointList sync1Geom;
 
+	@AutoFixture
 	private EditPart async1;
 
+	@AutoFixture
 	private PointList async1Geom;
 
+	@AutoFixture
 	private EditPart sync2;
 
+	@AutoFixture
 	private PointList sync2Geom;
 
+	@AutoFixture
 	private EditPart reply2;
 
+	@AutoFixture
 	private PointList reply2Geom;
 
+	@AutoFixture
 	private EditPart async2;
 
+	@AutoFixture
 	private PointList async2Geom;
 
+	@AutoFixture
 	private EditPart reply1;
 
+	@AutoFixture
 	private PointList reply1Geom;
 
+	@AutoFixture
 	private EditPart async3;
 
+	@AutoFixture
 	private PointList async3Geom;
 
+	@AutoFixture
 	private EditPart async4;
 
+	@AutoFixture
 	private PointList async4Geom;
 
+	@AutoFixture
 	private EditPart exec1;
 
+	@AutoFixture
 	private Rectangle exec1Geom;
 
+	@AutoFixture
 	private EditPart exec2;
 
+	@AutoFixture
 	private Rectangle exec2Geom;
 
 	/**
@@ -245,36 +274,35 @@ public class ShrinkExpandExecutionUITest extends AbstractGraphicalEditPolicyUITe
 				runs(isPoint(async2Geom.getFirstPoint()), isPoint(async2Geom.getLastPoint())));
 	}
 
-	//
-	// Test framework
-	//
+	@Test
+	public void attemptExpandToHalfCoverExec() {
+		Point where = exec2Geom.getBottom().getTranslated(0, 15);
+		EditPart newExec = createShape(SequenceElementTypes.Behavior_Execution_Shape, where, null);
 
-	@Before
-	public void findFixtures() {
-		sync1 = find("sync1", true);
-		sync1Geom = getPoints(sync1);
-		async1 = find("async1", true);
-		async1Geom = getPoints(async1);
-		sync2 = find("sync2", true);
-		sync2Geom = getPoints(sync2);
-		reply2 = find("reply2", true);
-		reply2Geom = getPoints(reply2);
-		async2 = find("async2", true);
-		async2Geom = getPoints(async2);
-		reply1 = find("reply1", true);
-		reply1Geom = getPoints(reply1);
-		async3 = find("async3", true);
-		async3Geom = getPoints(async3);
-		async4 = find("async4", true);
-		async4Geom = getPoints(async4);
+		editor.select(exec2Geom.getCenter());
+		Point grabAt = getResizeHandleGrabPoint(exec2, PositionConstants.SOUTH);
+		Point dropAt = getBounds(newExec).getCenter();
 
-		exec1 = find("exec1", false);
-		exec1Geom = getBounds(exec1);
-		exec2 = find("exec2", false);
-		exec2Geom = getBounds(exec2);
+		// Even allow-reordering isn't permitted
+		editor.with(editor.allowSemanticReordering(), () -> editor.drag(grabAt, dropAt));
+
+		assertThat("Execution was resized", exec2, isBounded(isRect(exec2Geom)));
 	}
 
-	protected EditPart find(String name, boolean isMessage) {
-		return findEditPart("lightweight::DoIt::" + name, isMessage);
+	@Test
+	public void attemptShrinkToHalfCoverExec() {
+		Point where = exec2Geom.getCenter().getTranslated(0, -10);
+		createShape(SequenceElementTypes.Behavior_Execution_Shape, where, null);
+
+		exec2Geom = getBounds(exec2); // Refresh geometry
+		editor.select(exec2Geom.getBottom().getTranslated(0, -5));
+		Point grabAt = getResizeHandleGrabPoint(exec2, PositionConstants.SOUTH);
+		Point dropAt = exec2Geom.getCenter().getTranslated(0, -10);
+
+		// Even allow-reordering isn't permitted
+		editor.with(editor.allowSemanticReordering(), () -> editor.drag(grabAt, dropAt));
+
+		assertThat("Execution was resized", exec2, isBounded(isRect(exec2Geom)));
 	}
+
 }

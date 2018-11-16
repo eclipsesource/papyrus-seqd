@@ -12,9 +12,11 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.papyrus.uml.interaction.model.MElement;
+import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.uml2.uml.Element;
 
 /**
@@ -22,34 +24,10 @@ import org.eclipse.uml2.uml.Element;
  * 
  * @see DependencyContext
  */
-public final class PendingChildData {
-	private final MElement<? extends Element> owner;
-
-	private final MElement<? extends Element> child;
+public final class PendingChildData extends PendingContainmentChangeData<MElement<? extends Element>, MElement<? extends Element>> {
 
 	private PendingChildData(MElement<? extends Element> owner, MElement<? extends Element> child) {
-		super();
-
-		this.owner = owner;
-		this.child = child;
-	}
-
-	/**
-	 * Queries the owner of the pending {@linkplain #getPendingChild() owned element}.
-	 * 
-	 * @return the owner element
-	 */
-	public MElement<? extends Element> getOwner() {
-		return owner;
-	}
-
-	/**
-	 * Queries the element that is being assigned a {@linkplain #getOwner() new owner}.
-	 * 
-	 * @return the owned element
-	 */
-	public MElement<? extends Element> getPendingChild() {
-		return child;
+		super(owner, child);
 	}
 
 	/**
@@ -60,8 +38,18 @@ public final class PendingChildData {
 	 * @return the pending child element
 	 */
 	public static Optional<MElement<? extends Element>> getPendingChild(MElement<? extends Element> owner) {
-		return DependencyContext.get().get(owner, PendingChildData.class)
-				.map(PendingChildData::getPendingChild);
+		return PendingContainmentChangeData.getPendingChild(PendingChildData.class, owner);
+	}
+
+	/**
+	 * Query the elements that are in process of having the given element set as their new {@code owner}.
+	 * 
+	 * @param owner
+	 *            an element that may or may not be getting a new owned child
+	 * @return the owned elements
+	 */
+	public static List<MElement<? extends Element>> getPendingChildren(MElement<? extends Element> owner) {
+		return PendingContainmentChangeData.getPendingChildren(PendingChildData.class, owner);
 	}
 
 	/**
@@ -72,8 +60,7 @@ public final class PendingChildData {
 	 * @return the pending owner element
 	 */
 	public static Optional<MElement<? extends Element>> getPendingOwner(MElement<? extends Element> child) {
-		return DependencyContext.get().get(child, PendingOwnerData.class)
-				.map(PendingOwnerData::getPendingOwner);
+		return PendingContainmentChangeData.getPendingParent(PendingChildData.class, child);
 	}
 
 	/**
@@ -86,28 +73,14 @@ public final class PendingChildData {
 	 */
 	static void setPendingChild(MElement<? extends Element> owner, MElement<? extends Element> pendingChild) {
 		if (owner.getElement() != pendingChild.getOwner().getElement()) {
-			DependencyContext ctx = DependencyContext.get();
-			PendingChildData childData = new PendingChildData(owner, pendingChild);
-			ctx.put(owner, childData);
-			ctx.put(pendingChild, new PendingOwnerData(childData));
-		}
-	}
+			PendingContainmentChangeData.setPendingChild(PendingChildData.class, owner, pendingChild,
+					PendingChildData::new);
 
-	//
-	// Nested types
-	//
-
-	private static final class PendingOwnerData {
-		private final PendingChildData childData;
-
-		PendingOwnerData(PendingChildData childData) {
-			super();
-
-			this.childData = childData;
-		}
-
-		MElement<? extends Element> getPendingOwner() {
-			return childData.getOwner();
+			if (pendingChild instanceof MExecution) {
+				// Its nested executions also get the new owner lifeline
+				((MExecution)pendingChild).getNestedExecutions()
+						.forEach(nested -> setPendingChild(owner, nested));
+			}
 		}
 	}
 

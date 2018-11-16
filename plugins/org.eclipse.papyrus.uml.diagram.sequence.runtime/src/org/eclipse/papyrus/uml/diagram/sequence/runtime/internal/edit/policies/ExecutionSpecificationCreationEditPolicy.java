@@ -30,6 +30,7 @@ import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MObject;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.model.util.Optionals;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
 import org.eclipse.uml2.uml.Element;
@@ -74,8 +75,12 @@ public class ExecutionSpecificationCreationEditPolicy extends LogicalModelCreati
 							}
 						}
 
-						return execution.insertNestedExecutionAfter(before.orElse(execution), offset,
-								size != null ? size.height : 40, eClass);
+						return execution
+								.insertNestedExecutionAfter(before.orElse(execution), offset,
+										size != null ? size.height
+												: getLayoutConstraints()
+														.getMinimumHeight(ViewTypes.EXECUTION_SPECIFICATION),
+										eClass);
 					}
 
 					@Override
