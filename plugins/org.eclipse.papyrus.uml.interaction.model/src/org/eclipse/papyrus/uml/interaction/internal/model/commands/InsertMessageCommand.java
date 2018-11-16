@@ -15,7 +15,6 @@ package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 import static java.lang.Integer.MAX_VALUE;
 import static org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil.invertSingle;
 import static org.eclipse.papyrus.uml.interaction.graph.util.Suppliers.compose;
-import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelOrdering.vertically;
 import static org.eclipse.uml2.uml.MessageSort.REPLY_LITERAL;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.EXECUTION_SPECIFICATION__FINISH;
@@ -26,7 +25,6 @@ import static org.eclipse.uml2.uml.UMLPackage.Literals.LIFELINE__COVERED_BY;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -82,7 +80,7 @@ import org.eclipse.uml2.uml.Signal;
  *
  * @author Christian W. Damus
  */
-public class InsertMessageCommand extends ModelCommand.Creation<MLifelineImpl, Message> {
+public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<MLifelineImpl, Message> {
 
 	private final MElement<?> beforeSend;
 
@@ -284,7 +282,7 @@ public class InsertMessageCommand extends ModelCommand.Creation<MLifelineImpl, M
 	}
 
 	@Override
-	protected Command createCommand() {
+	protected Command doCreateCommand() {
 		if (!absoluteSendYReference().isPresent() || !absoluteReceiveYReference().isPresent()) {
 			return UnexecutableCommand.INSTANCE;
 		}
@@ -298,8 +296,8 @@ public class InsertMessageCommand extends ModelCommand.Creation<MLifelineImpl, M
 				: beforeSend.getTop().orElse(llTopSend) - llTopSend + sendOffset;
 		Optional<MExecution> sendingExec = getTarget().elementAt(whereSend).flatMap(this::getExecution)
 				.filter(exec -> //
-		((exec.getBottom().orElse(-1) - llTopSend) >= whereSend) //
-				&& ((exec.getTop().orElse(MAX_VALUE) - llTopSend) <= whereSend));
+				((exec.getBottom().orElse(-1) - llTopSend) >= whereSend) //
+						&& ((exec.getTop().orElse(MAX_VALUE) - llTopSend) <= whereSend));
 		Vertex sender = sendingExec.map(this::vertex).orElseGet(this::vertex);
 		if (sender == null || sender.getDiagramView() == null) {
 			return UnexecutableCommand.INSTANCE;
@@ -489,45 +487,9 @@ public class InsertMessageCommand extends ModelCommand.Creation<MLifelineImpl, M
 
 		switch (sort) {
 			case CREATE_MESSAGE_LITERAL:
-				List<Command> commands = new ArrayList<>(3);
-
-				View receiverShape = this.receiver.getDiagramView().orElse(null);
-				Shape receivingLifelineBodyShape = diagramHelper().getLifelineBodyShape(receiverShape);
-				int receiverBodyTop = layoutHelper().getTop(receivingLifelineBodyShape);
-				int receiverLifelineTop = this.receiver.getTop().orElse(0);
-				/* first make room to move created lifeline down by nudging all required elements down */
-				List<MElement<? extends Element>> elementsToNudge = new ArrayList<>();
-
-				int movedReceiverlifelineTop = absoluteRecvY - ((receiverBodyTop - receiverLifelineTop) / 2);
-				int receiverDeltaY = movedReceiverlifelineTop - receiverLifelineTop + additionalOffsetRecv;
-				int receiverDeltaYFinal = receiverDeltaY;
-
-				/* collect elements below */
-				findElementsBelow(absoluteRecvY, elementsToNudge,
-						getTarget().getInteraction().getMessages().stream(), true);
-				findElementsBelow(absoluteRecvY, elementsToNudge,
-						getTarget().getInteraction().getLifelines().stream()//
-								.filter(m -> m.getTop().orElse(0) < absoluteRecvY)//
-								.flatMap(l -> l.getExecutions().stream()),
-						true);
-				Collections.sort(elementsToNudge, vertically().reversed());
-				List<Command> nudgeCommands = new ArrayList<>(elementsToNudge.size());
-				for (int i = 0; i < elementsToNudge.size(); i++) {
-					MElement<? extends Element> element = elementsToNudge.get(i);
-					nudgeCommands.add(Create.nudgeCommand(getGraph(), getEditingDomain(), receiverDeltaYFinal,
-							0, element));
-				}
-
-				if (!nudgeCommands.isEmpty()) {
-					commands.add(CompoundModelCommand.compose(getEditingDomain(), nudgeCommands));
-				}
-
-				/* finally move lifeline */
-				commands.add(Create.nudgeCommand(getGraph(), getEditingDomain(), receiverDeltaYFinal, 0,
-						this.receiver));
-
-				/* build final command */
-				result = CompoundModelCommand.compose(getEditingDomain(), commands).chain(result);
+				// Chain in the reverse order to ensure that the message connector finds the
+				// new lifeline head location
+				result = chain(this.receiver.makeCreatedAt(OptionalInt.of(recvYPosition)), result);
 				break;
 
 			case DELETE_MESSAGE_LITERAL:

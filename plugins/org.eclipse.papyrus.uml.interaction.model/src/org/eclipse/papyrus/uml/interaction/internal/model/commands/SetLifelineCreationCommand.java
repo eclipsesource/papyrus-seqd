@@ -13,35 +13,27 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelOrdering.vertically;
-import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
-import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToInt;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.map;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.gmf.runtime.notation.Shape;
-import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
-import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition;
-import org.eclipse.papyrus.uml.interaction.model.util.Optionals;
-import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.MessageSort;
 
 /**
  * A command that makes a lifeline be created at some Y coördinate in the sequence.
  */
-public class SetLifelineCreationCommand extends ModelCommand<MLifelineImpl> {
+public class SetLifelineCreationCommand extends ModelCommandWithDependencies<MLifelineImpl> {
 
 	private final OptionalInt yPosition;
 
@@ -52,7 +44,7 @@ public class SetLifelineCreationCommand extends ModelCommand<MLifelineImpl> {
 	}
 
 	@Override
-	protected Command createCommand() {
+	protected Command doCreateCommand() {
 		Shape lifelineHead = getTarget().getDiagramView().orElse(null);
 		Shape lifelineBody = diagramHelper().getLifelineBodyShape(lifelineHead);
 		int lifelineBodyTop = layoutHelper().getTop(lifelineBody);
@@ -73,13 +65,9 @@ public class SetLifelineCreationCommand extends ModelCommand<MLifelineImpl> {
 		// that we nudge
 		Stream<? extends MElement<? extends Element>> moveable = Stream.concat(//
 				getTarget().getExecutions().stream(), // TODO: Filter nested executions
-				getTarget().getMessageEnds().stream().filter(end -> !end.getExecution().isPresent()
-						// TODO: When start/finish message ends attach to the execution, then remove these
-						|| end.getStartedExecution().isPresent() || end.getFinishedExecution().isPresent()));
+				getTarget().getMessageEnds().stream().filter(end -> !end.getExecution().isPresent()));
 		Stream<? extends MElement<? extends Element>> toNudge = moveable.filter(isCreation().negate())
 				.sorted(vertically().reversed());
-		List<? extends MElement<? extends Element>> elements = toNudge.collect(Collectors.toList());
-		toNudge = elements.stream();
 		Optional<Command> nudges = toNudge //
 				.map(elem -> (Command)new NudgeCommand((MElementImpl<? extends Element>)elem, -deltaTop,
 						false))
@@ -89,8 +77,11 @@ public class SetLifelineCreationCommand extends ModelCommand<MLifelineImpl> {
 
 		// Finally, we may need to nudge elements to make space for the new position of the lifeline
 		// head or to remove space for a create message that was removed
-		Optional<Command> nudgeForPadding = getNudgeForPadding(lifelineHead, lifelineBodyTop + deltaTop);
-		result = nudgeForPadding.map(chaining(result)).orElse(result);
+		// Do we need to make room for the lifeline head?
+		Optional<MOccurrence<? extends Element>> firstOccurrence = getTarget().getOccurrences().stream()
+				.filter(isCreation().negate()) // But not the creation event (in case of re-orient)
+				.sorted(vertically()).findFirst();
+		firstOccurrence.ifPresent(pad -> DeferredPaddingCommand.get(pad).pad(getTarget(), pad));
 
 		return result;
 	}
@@ -106,50 +97,4 @@ public class SetLifelineCreationCommand extends ModelCommand<MLifelineImpl> {
 				layoutHelper().getConstraints().getYOffset(lifelineHead.getType()));
 	}
 
-	protected Optional<Command> getNudgeForPadding(View lifelineHead, int newLifelineHeadBottom) {
-		if (yPosition.isPresent()) {
-			// Do we need to make room for the lifeline head?
-			Optional<MOccurrence<? extends Element>> firstOccurrence = getTarget().getOccurrences().stream()
-					.filter(isCreation().negate()) // But not the creation event (in case of re-orient)
-					.sorted(vertically()).findFirst();
-			OptionalInt firstOccurrenceTop = flatMapToInt(firstOccurrence, MElement::getTop);
-
-			if (!firstOccurrenceTop.isPresent()) {
-				// Nothing to worry about
-				return Optional.empty();
-			}
-
-			int gap = firstOccurrenceTop.getAsInt() - newLifelineHeadBottom;
-
-			MElement<? extends Element> elementToPad = getElementToPad(firstOccurrence.get());
-			OptionalInt elementPadding = flatMapToInt(as(elementToPad.getDiagramView(), View.class),
-					view -> OptionalInt
-							.of(layoutHelper().getConstraints().getPadding(RelativePosition.TOP, view)));
-			int lifelinePadding = layoutHelper().getConstraints().getPadding(RelativePosition.BOTTOM,
-					lifelineHead);
-
-			int requiredPadding = Optionals.map(elementPadding, pad -> pad + lifelinePadding)
-					.orElse(lifelinePadding);
-
-			if (requiredPadding > gap) {
-				return Optional.ofNullable(elementToPad.nudge(requiredPadding - gap));
-			}
-		}
-
-		return Optional.empty();
-	}
-
-	protected MElement<? extends Element> getElementToPad(MElement<? extends Element> element) {
-		return new SequenceDiagramSwitch<MElement<? extends Element>>() {
-			@Override
-			public MElement<? extends Element> caseMMessageEnd(MMessageEnd object) {
-				return object.getOwner();
-			}
-
-			@Override
-			public <T extends Element> MElement<? extends Element> caseMElement(MElement<T> object) {
-				return object;
-			}
-		}.doSwitch(element);
-	}
 }

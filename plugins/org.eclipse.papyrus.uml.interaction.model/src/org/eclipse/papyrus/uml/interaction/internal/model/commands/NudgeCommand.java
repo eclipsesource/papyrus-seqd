@@ -14,7 +14,9 @@ package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.IdentityCommand;
@@ -116,6 +118,8 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 
 		private final int delta;
 
+		private Set<Shape> movingLifelineBodies = new HashSet<>();
+
 		MoveDownVisitor(int delta) {
 			super();
 
@@ -130,8 +134,10 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 			if (view instanceof Shape) {
 				// Move the shape down
 				Shape shape = (Shape)view;
-				int top = layoutHelper().getTop(shape);
-				chain(layoutHelper().setTop(shape, top + delta));
+				if (!isShapeOnMovingLifeline(shape)) {
+					int top = layoutHelper().getTop(shape);
+					chain(layoutHelper().setTop(shape, top + delta));
+				}
 			} else if (view instanceof Connector && element instanceof Message) {
 				// Move connector anchors down
 				Connector connector = (Connector)view;
@@ -155,11 +161,15 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 						// Move the lifeline down
 						Optional<Vertex> lifeline = targetVtx.group(GroupKind.LIFELINE)
 								.map(Vertex.class::cast);
+						// Record that we're moving this
+						lifeline.map(Vertex::getDiagramView).map(diagramHelper()::getLifelineBodyShape)
+								.ifPresent(movingLifelineBodies::add);
 						Optional<Shape> shape = lifeline.map(Vertex::getDiagramView).map(Shape.class::cast);
 						shape.ifPresent(s -> chain(
 								layoutHelper().setTop(shape.get(), layoutHelper().getTop(s) + delta)));
-					} else if (targetVtx.hasTag(Tag.LIFELINE_DESTRUCTION)) {
-						// Move Destruction Shape
+					} else if (targetVtx.hasTag(Tag.LIFELINE_DESTRUCTION)
+							&& !isShapeOnMovingLifeline(targetOn)) {
+						// Move Destruction Shape if it's not moved implicitly by the lifeline it's on
 						Optional<Shape> shape = Optional.ofNullable(targetVtx.getDiagramView())
 								.filter(Shape.class::isInstance).map(Shape.class::cast);
 						shape.ifPresent(s -> {
@@ -218,7 +228,13 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 		 * Only move message ends when anchored on lifeline.
 		 */
 		private boolean skipMove(Shape shape) {
-			return !ViewTypes.LIFELINE_BODY.equals(shape.getType());
+			return !ViewTypes.LIFELINE_BODY.equals(shape.getType()) //
+					|| movingLifelineBodies.contains(shape) //
+					|| isShapeOnMovingLifeline(shape);
+		}
+
+		private boolean isShapeOnMovingLifeline(Shape shape) {
+			return movingLifelineBodies.contains(shape.eContainer());
 		}
 	}
 
