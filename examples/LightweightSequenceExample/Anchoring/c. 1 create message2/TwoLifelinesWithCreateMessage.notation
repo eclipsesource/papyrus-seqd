@@ -59,12 +59,12 @@
     <element xmi:type="uml:Message" href="TwoLifelinesWithCreateMessage.uml#id_createMessage1"/>
     <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_zzyVYSHtEeiIiO6KSag_9g"/>
     <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="id_sourceAnchor1" id="10"/>
-    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="id_targetAnchor1" id="left;50"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="id_targetAnchor1" id="50"/>
   </edges>
   <edges xmi:type="notation:Connector" xmi:id="id_message2" type="Edge_Message" source="id_LifelineBody" target="shapeLifelineHeader3">
     <element xmi:type="uml:Message" href="TwoLifelinesWithCreateMessage.uml#id_createMessage2"/>
     <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_zzyVYSHtEeiIiO6KSag_9g"/>
     <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="id_sourceAnchor2" id="30"/>
-    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="id_targetAnchor2" id="right;10"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="id_targetAnchor2" id="10"/>
   </edges>
 </notation:Diagram>

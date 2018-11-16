@@ -102,10 +102,11 @@ public class CreateMessageTestB {
 		int nudgedLifeline2Top = interaction().getMessages().get(5).getTop().getAsInt()
 				- (lifeline2Header / 2);
 		assertEquals(nudgedLifeline2Top, interaction().getLifelines().get(1).getTop().getAsInt());
+		int nudgedLifeline2Bottom = interaction().getLifelines().get(1).getBottom().getAsInt();
 
-		int delta = nudgedLifeline2Top - lifeline2Top;
-		// Accounti for padding between the new create message and M1
-		int deltaPad = delta + 10;
+		// Message padding is 20 and lifeline head padding is 5
+		final int padding = 25;
+		final int delta = padding - (message1Top - nudgedLifeline2Bottom);
 		assertEquals(lifeline3Top + delta, interaction().getLifelines().get(2).getTop().getAsInt());
 		assertEquals(message1Top + delta, interaction().getMessages().get(0).getTop().getAsInt());
 		assertEquals(message2Top + delta, interaction().getMessages().get(4).getTop().getAsInt());
@@ -115,8 +116,8 @@ public class CreateMessageTestB {
 		assertEquals(message1Top + delta, interaction().getMessages().get(0).getBottom().getAsInt());
 		assertEquals(message2Top + delta, interaction().getMessages().get(4).getBottom().getAsInt());
 		assertEquals(message3Top + delta, interaction().getMessages().get(1).getBottom().getAsInt());
-		assertEquals(message4Top + deltaPad, interaction().getMessages().get(2).getBottom().getAsInt());
-		assertEquals(message5Top + deltaPad, interaction().getMessages().get(3).getBottom().getAsInt());
+		assertEquals(message4Top + delta, interaction().getMessages().get(2).getBottom().getAsInt());
+		assertEquals(message5Top + delta, interaction().getMessages().get(3).getBottom().getAsInt());
 	}
 
 	@Test
@@ -151,14 +152,13 @@ public class CreateMessageTestB {
 				- (lifeline4Header / 2);
 		assertEquals(nudgedLifeline4Top, interaction().getLifelines().get(3).getTop().getAsInt());
 
-		int delta = nudgedLifeline4Top - lifeline2Top;
-		assertEquals(lifeline4Top + delta, interaction().getLifelines().get(3).getTop().getAsInt());
-		assertEquals(message3Top + delta, interaction().getMessages().get(1).getTop().getAsInt());
-		assertEquals(message4Top + delta, interaction().getMessages().get(2).getTop().getAsInt());
-		assertEquals(message5Top + delta, interaction().getMessages().get(3).getTop().getAsInt());
-		assertEquals(message3Top + delta, interaction().getMessages().get(1).getBottom().getAsInt());
-		assertEquals(message4Top + delta, interaction().getMessages().get(2).getBottom().getAsInt());
-		assertEquals(message5Top + delta, interaction().getMessages().get(3).getBottom().getAsInt());
+		// Nothing needs to move because lifeline4 is not covered by anything
+		assertEquals(message3Top, interaction().getMessages().get(1).getTop().getAsInt());
+		assertEquals(message4Top, interaction().getMessages().get(2).getTop().getAsInt());
+		assertEquals(message5Top, interaction().getMessages().get(3).getTop().getAsInt());
+		assertEquals(message3Top, interaction().getMessages().get(1).getBottom().getAsInt());
+		assertEquals(message4Top, interaction().getMessages().get(2).getBottom().getAsInt());
+		assertEquals(message5Top, interaction().getMessages().get(3).getBottom().getAsInt());
 	}
 
 }

@@ -87,6 +87,9 @@ public class DefaultLayoutHelper implements LayoutHelper {
 
 	static final int DEFAULT_RIGHT = DEFAULT_LEFT + DEFAULT_WIDTH;
 
+	// Identity anchors don't have a default semantics in GMF as the x/y position of a shape has
+	static final int DEFAULT_ANCHOR_Y = Integer.MIN_VALUE;
+
 	public static final Pattern IDENTITY_ANCHOR_PATTERN = Pattern
 			.compile("(left;|right;|west;|east;)?(-?\\d+)"); //$NON-NLS-1$
 
@@ -153,7 +156,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 				// But anchor position is relative to the attached shape
 				int bottom = getYPosition(anchor, anchoredShape(anchor));
 
-				if (bottom == DEFAULT_BOTTOM) {
+				if (bottom == DEFAULT_ANCHOR_Y) {
 					result = OptionalInt.empty();
 				} else {
 					result = OptionalInt.of(bottom);
@@ -293,7 +296,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 
 			@Override
 			public Object caseIdentityAnchor(IdentityAnchor anchor) {
-				int result = DEFAULT_TOP;
+				int result = DEFAULT_ANCHOR_Y;
 				String id = anchor.getId();
 
 				if (id != null) {
@@ -310,7 +313,6 @@ public class DefaultLayoutHelper implements LayoutHelper {
 								// It's the finish anchor
 								LayoutConstraint layout = anchoredShape(anchor).getLayoutConstraint();
 								if (layout instanceof Size) {
-									// Yes, this too could be DEFAULT_BOTTOM!
 									result = ((Size)layout).getHeight();
 								}
 							}
@@ -372,7 +374,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 				// But anchor position is relative to the attached shape
 				int bottom = getYPosition(anchor, anchoredShape(anchor));
 
-				if (bottom == DEFAULT_BOTTOM) {
+				if (bottom == DEFAULT_ANCHOR_Y) {
 					result = OptionalInt.empty();
 				} else {
 					result = OptionalInt.of(bottom);
@@ -453,7 +455,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 			return DEFAULT_BOTTOM;
 		} else {
 			int result = getBottomFunction().applyAsInt(anchor);
-			if (result != DEFAULT_BOTTOM) {
+			if (result != DEFAULT_ANCHOR_Y) {
 				result = relativeTop + result;
 			}
 			return result;
@@ -575,7 +577,7 @@ public class DefaultLayoutHelper implements LayoutHelper {
 
 			@Override
 			public Object caseIdentityAnchor(IdentityAnchor anchor) {
-				int result = DEFAULT_BOTTOM;
+				int result = DEFAULT_ANCHOR_Y;
 				String id = anchor.getId();
 
 				if (id != null) {
@@ -592,7 +594,6 @@ public class DefaultLayoutHelper implements LayoutHelper {
 								// It's the finish anchor
 								LayoutConstraint layout = anchoredShape(anchor).getLayoutConstraint();
 								if (layout instanceof Size) {
-									// Yes, this too could be DEFAULT_BOTTOM!
 									result = ((Size)layout).getHeight();
 								}
 							}
@@ -722,7 +723,15 @@ public class DefaultLayoutHelper implements LayoutHelper {
 
 		View view = v.getDiagramView();
 		if (view instanceof Shape) {
-			result = setTop((Shape)view, yPosition);
+			int newTop = yPosition;
+
+			if (v.getInteractionElement() instanceof DestructionOccurrenceSpecification) {
+				// Special case: we actually want to locate the centre of the X shape
+				int height = getHeight((Shape)view);
+				newTop = newTop - (height / 2);
+			}
+
+			result = setTop((Shape)view, newTop);
 		} else if (view instanceof Edge) {
 			Edge edge = (Edge)view;
 			// All edges in a sequence diagram slope down if they are not horizontal
@@ -844,7 +853,15 @@ public class DefaultLayoutHelper implements LayoutHelper {
 
 		View view = v.getDiagramView();
 		if (view instanceof Shape) {
-			result = setBottom((Shape)view, yPosition);
+			int newBottom = yPosition;
+
+			if (v.getInteractionElement() instanceof DestructionOccurrenceSpecification) {
+				// Special case: we actually want to locate the centre of the X shape
+				int height = getHeight((Shape)view);
+				newBottom = newBottom + (height / 2);
+			}
+
+			result = setBottom((Shape)view, newBottom);
 		} else if (view instanceof Edge) {
 			Edge edge = (Edge)view;
 			// All edges in a sequence diagram slope down if they are not horizontal

@@ -108,8 +108,11 @@ public class CreateMessageTest {
 		int nudgedLifeline2Top = model.getLifelineBodyTop(interaction().getLifelines().get(0)) + 25 //
 				- (lifeline2Header / 2);
 		assertEquals(nudgedLifeline2Top, interaction().getLifelines().get(1).getTop().getAsInt());
+		int nudgedLifeline2Bottom = interaction().getLifelines().get(1).getBottom().getAsInt();
 
-		int delta = nudgedLifeline2Top - lifeline2Top;
+		// Message padding is 20 and lifeline head padding is 5
+		final int padding = 25;
+		final int delta = padding - (message1Top - nudgedLifeline2Bottom);
 		assertEquals(message1Top + delta, interaction().getMessages().get(0).getTop().getAsInt());
 		assertEquals(message2Top + delta, interaction().getMessages().get(1).getTop().getAsInt());
 		assertEquals(execution1Top + delta,
@@ -159,14 +162,22 @@ public class CreateMessageTest {
 		int nudgedLifeline3Top = interaction().getMessages().get(3).getTop().getAsInt()
 				- (lifeline3Header / 2);
 		assertEquals(nudgedLifeline3Top, interaction().getLifelines().get(2).getTop().getAsInt());
+		int nudgedLifeline2Bottom = interaction().getLifelines().get(1).getBottom().getAsInt();
+		int nudgedLifeline3Bottom = interaction().getLifelines().get(2).getBottom().getAsInt();
 
-		int delta = nudgedLifeline3Top - lifeline3Top;
+		// Message padding is 20 and lifeline head padding is 5
+		final int msgPadding = 25;
+		int delta = msgPadding - (message1Top - nudgedLifeline2Bottom);
 		assertEquals(message1Top + delta, interaction().getMessages().get(0).getTop().getAsInt());
 		assertEquals(message2Top + delta, interaction().getMessages().get(1).getTop().getAsInt());
 		assertEquals(execution1Top + delta,
 				interaction().getLifelines().get(0).getExecutionOccurrences().get(0).getTop().getAsInt());
 		assertEquals(execution2Top + delta,
 				interaction().getLifelines().get(1).getExecutionOccurrences().get(0).getTop().getAsInt());
+
+		// Execution padding is 5 and lifeline head padding is 5
+		final int execPadding = 10;
+		delta = execPadding - (execution3Top - nudgedLifeline3Bottom);
 		assertEquals(execution3Top + delta,
 				interaction().getLifelines().get(2).getExecutionOccurrences().get(0).getTop().getAsInt());
 	}

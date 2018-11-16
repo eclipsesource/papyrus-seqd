@@ -38,7 +38,7 @@ class AnchorFactory {
 
 	public static final String END = "end"; //$NON-NLS-1$
 
-	private static final String DESTRUCTION = "(0.9,0.5)"; //$NON-NLS-1$
+	private static final String DESTRUCTION = "center"; //$NON-NLS-1$
 
 	private NullAnchorBuilder nullAnchor;
 
@@ -250,16 +250,7 @@ class AnchorFactory {
 
 		@Override
 		public String computeIdentity() {
-			String result;
-
-			// Which direction?
-			if (isLeftToRight() == isConnectionSource) {
-				result = RIGHT + distance;
-			} else {
-				result = LEFT + distance;
-			}
-
-			return result;
+			return Integer.toString(distance);
 		}
 	}
 

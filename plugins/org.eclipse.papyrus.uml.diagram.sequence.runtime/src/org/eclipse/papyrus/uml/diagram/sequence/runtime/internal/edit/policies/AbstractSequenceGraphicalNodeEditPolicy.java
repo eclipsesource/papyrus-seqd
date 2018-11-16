@@ -93,7 +93,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 	@Override
 	public Command getCommand(Request request) {
 		// Ensure padding, if required
-		return withPadding(() -> super.getCommand(request));
+		return withPadding(request, () -> super.getCommand(request));
 	}
 
 	@Override
@@ -293,9 +293,6 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 												execType)))
 								.map(cmd -> injectViewInto(request.getConnectionViewDescriptor(), cmd))
 								.collect(Collectors.toList()));
-					} else {
-						result = injectViewInto(request.getConnectionViewDescriptor(), sender
-								.insertMessageAfter(startBefore, startOffset, receiver, start.sort, null));
 					}
 
 					result = injectViewInto(request.getConnectionViewDescriptor(),

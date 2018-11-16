@@ -71,8 +71,10 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 
 	private final OptionalInt yOriginal;
 
-	// The element on the lifeline before which we're inserting our occurrence
-	private final Optional<MElement<? extends Element>> nextOnLifeline;
+	// The element on the lifeline that we may need to nudge
+	private final Optional<MElement<? extends Element>> nudgeElement;
+
+	private final boolean handleOppositeSendOrReply;
 
 	/**
 	 * Initializes me.
@@ -81,14 +83,28 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 	 */
 	public SetCoveredCommand(MOccurrenceImpl<? extends Element> occurrence, MLifeline lifeline,
 			OptionalInt yPosition) {
+		this(occurrence, lifeline, yPosition, true);
+	}
+
+	protected SetCoveredCommand(MOccurrenceImpl<? extends Element> occurrence, MLifeline lifeline,
+			OptionalInt yPosition, boolean handleOppositeSendOrReplyOfExecution) {
 		super(occurrence);
 
 		this.lifeline = lifeline;
 		this.yPosition = yPosition;
 
 		this.yOriginal = occurrence.getTop();
-		nextOnLifeline = Lifelines.elementAfterAbsolute(lifeline,
-				yPosition.orElseGet(() -> occurrence.getTop().orElse(0)));
+		this.handleOppositeSendOrReply = handleOppositeSendOrReplyOfExecution;
+
+		if (lessThan(yPosition, yOriginal)) {
+			// Moving up? Nudge the previous element on the lifeline
+			nudgeElement = Lifelines.elementBeforeAbsolute(lifeline,
+					yPosition.orElseGet(() -> yOriginal.orElse(0)));
+		} else {
+			// Nudge the following element on the lifeline
+			nudgeElement = Lifelines.elementAfterAbsolute(lifeline,
+					yPosition.orElseGet(() -> yOriginal.orElse(0)));
+		}
 	}
 
 	protected boolean isChangingLifeline() {
@@ -246,10 +262,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			Supplier<Shape> newAttachedShape = () -> {
 				// Are we connected to an execution that will be moving with us?
 				// If so, no reattachment will be necessary
-				Optional<MExecution> exec = (end.isFinish() || end.isStart()) //
-						? end.getExecution()
-						: Optional.empty();
-				Optional<Shape> executionShape = exec.flatMap(MExecution::getDiagramView);
+				Optional<Shape> executionShape = getExecution(end).flatMap(MExecution::getDiagramView);
 				if (!executionShape.isPresent()) {
 					// Are we connecting to an execution specification?
 					executionShape = executionShapeAt(lifeline, newYPosition);
@@ -260,11 +273,15 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			if (end.isSend()) {
 				commandSink.accept(defer(
 						() -> reconnectSource(connector, newAttachedShape.get(), newYPosition).orElse(null)));
-				end.getOtherEnd().flatMap(this::handleSelfMessageChange).ifPresent(commandSink);
+				Optional<MMessageEnd> otherEnd = end.getOtherEnd();
+				otherEnd.flatMap(this::handleSelfMessageChange).ifPresent(commandSink);
+				otherEnd.flatMap(this::handleOppositeSendOrReplyMessage).ifPresent(commandSink);
 			} else if (end.isReceive()) {
 				commandSink.accept(defer(
 						() -> reconnectTarget(connector, newAttachedShape.get(), newYPosition).orElse(null)));
-				end.getOtherEnd().flatMap(this::handleSelfMessageChange).ifPresent(commandSink);
+				Optional<MMessageEnd> otherEnd = end.getOtherEnd();
+				otherEnd.flatMap(this::handleSelfMessageChange).ifPresent(commandSink);
+				otherEnd.flatMap(this::handleOppositeSendOrReplyMessage).ifPresent(commandSink);
 			} // else don't know what to do with it
 		}
 
@@ -303,6 +320,77 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 				otherCovered.map(ll -> otherEnd.setCovered(ll, yPosition)).ifPresent(commandSink);
 			}
 		}
+	}
+
+	private Optional<Command> handleOppositeSendOrReplyMessage(MMessageEnd otherEnd) {
+		if (!handleOppositeSendOrReply) {
+			return Optional.empty();
+		}
+
+		Optional<MExecution> execution = getExecution(otherEnd);
+		Optional<MMessage> startMessage = getStartMessage(execution);
+		Optional<MMessage> finishMessage = getFinishMessage(execution);
+		if (!execution.isPresent() || !startMessage.isPresent() || !finishMessage.isPresent()) {
+			return Optional.empty();
+		}
+
+		Optional<MMessageEnd> endToMove = Optional.empty();
+		Optional<OptionalInt> targetY = Optional.empty();
+		if (otherEnd.isStart()) {
+			endToMove = finishMessage.get().getReceive();
+			targetY = endToMove.map(MMessageEnd::getBottom);
+		} else if (otherEnd.isFinish()) {
+			endToMove = startMessage.get().getSend();
+			targetY = endToMove.map(MMessageEnd::getTop);
+		}
+
+		if (endToMove.isPresent() && endToMove.get() instanceof MOccurrenceImpl<?>) {
+			MOccurrenceImpl<?> occurrence = (MOccurrenceImpl<?>)endToMove.get();
+			if (occurrence.getCovered().filter(l -> l != lifeline).isPresent() && occurrence != getTarget()) {
+				OptionalInt y = targetY.orElse(occurrence.getBottom());
+				if (anyDestructionOccurrenceBefore(y)) {
+					return Optional.of(UnexecutableCommand.INSTANCE);
+				}
+
+				return Optional.of(new SetCoveredCommand(occurrence, lifeline, y, false));
+			}
+		}
+
+		return Optional.empty();
+	}
+
+	private boolean anyDestructionOccurrenceBefore(OptionalInt absoluteY) {
+		int llRelativeY = Integer.MAX_VALUE;
+		if (absoluteY.isPresent()) {
+			int lifelineOffset = layoutHelper().getBottom(lifeline.getDiagramView().get());
+			llRelativeY = absoluteY.getAsInt() - lifelineOffset;
+		}
+		Optional<MElement<?>> elementBefore = lifeline.elementAt(llRelativeY);
+		if (!elementBefore.isPresent()) {
+			return false;
+		}
+		List<MOccurrence<?>> occurrences = lifeline.getOccurrences();
+		int indexOfElementBefore = elementBefore.map(occurrences::indexOf)
+				.orElse(Integer.valueOf(occurrences.size())).intValue();
+		int endIndex = indexOfElementBefore >= 0 ? indexOfElementBefore : occurrences.size();
+		List<MOccurrence<?>> elementsFromYUp = occurrences.subList(0, endIndex);
+		return elementsFromYUp.stream().anyMatch(MDestruction.class::isInstance);
+	}
+
+	private Optional<MExecution> getExecution(MMessageEnd end) {
+		return (end.isFinish() || end.isStart()) //
+				? end.getExecution()
+				: Optional.empty();
+	}
+
+	private Optional<MMessage> getStartMessage(Optional<MExecution> execution) {
+		return execution.flatMap(MExecution::getStart).filter(MMessageEnd.class::isInstance)
+				.map(MMessageEnd.class::cast).map(MMessageEnd::getOwner);
+	}
+
+	private Optional<MMessage> getFinishMessage(Optional<MExecution> execution) {
+		return execution.flatMap(MExecution::getFinish).filter(MMessageEnd.class::isInstance)
+				.map(MMessageEnd.class::cast).map(MMessageEnd::getOwner);
 	}
 
 	Optional<Command> handleSelfMessageChange(MMessageEnd otherEnd) {
@@ -478,8 +566,8 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 		// From which element do we need to ensure padding?
 		MElement<? extends Element> padFrom = getTarget();
 
-		// Do we have an element that needs padding before it?
-		MElement<? extends Element> nudge = nextOnLifeline.orElse(null);
+		// Do we have an element that needs padding?
+		MElement<? extends Element> nudge = nudgeElement.orElse(null);
 
 		DeferredPaddingCommand.get(padFrom).pad(padFrom, nudge);
 	}

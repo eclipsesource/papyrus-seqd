@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.mapToInt;
 
@@ -43,11 +44,13 @@ import org.eclipse.uml2.uml.Element;
  */
 public class DeferredPaddingCommand extends CommandWrapper {
 
+	private static final Comparator<MElement<?>> ORDERING = LogicalModelOrdering.semantically();
+
 	private MElement<? extends Element> referenceElement;
 
 	private MElement<? extends Element> nudgeElement;
 
-	private Comparator<MElement<?>> ordering = LogicalModelOrdering.semantically();
+	private PaddingDirection direction = PaddingDirection.NONE;
 
 	/**
 	 * Not instantiable by clients.
@@ -88,18 +91,33 @@ public class DeferredPaddingCommand extends CommandWrapper {
 			// Have now determined that padding is not required
 			referenceElement = null;
 			nudgeElement = null;
-		} else if ((referenceElement == null) || before(referenceElement, from)) {
+			direction = PaddingDirection.NONE;
+		} else if (referenceElement == null) {
 			referenceElement = from;
 			nudgeElement = to;
-		} else if ((nudgeElement == null) || before(to, nudgeElement)) {
+
+			if (before(from, nudgeElement)) {
+				// Implies downward nudging
+				direction = PaddingDirection.DOWN;
+			} else {
+				direction = PaddingDirection.UP;
+			}
+		} else if (direction.updateReference(referenceElement, from)) {
+			referenceElement = from;
+			nudgeElement = to;
+		} else if (direction.updateNudge(nudgeElement, referenceElement, to)) {
 			// Nudge the closer element
 			nudgeElement = to;
 		}
 		return this;
 	}
 
-	private boolean before(MElement<? extends Element> a, MElement<? extends Element> b) {
-		return (a.getElement() != b.getElement()) && (a.precedes(b) || (ordering.compare(a, b) < 0));
+	private static boolean before(MElement<? extends Element> a, MElement<? extends Element> b) {
+		return (a.getElement() != b.getElement()) && (a.precedes(b) || (ORDERING.compare(a, b) < 0));
+	}
+
+	private static boolean after(MElement<? extends Element> a, MElement<? extends Element> b) {
+		return (a.getElement() != b.getElement()) && (b.precedes(a) || (ORDERING.compare(b, a) < 0));
 	}
 
 	@Override
@@ -122,7 +140,23 @@ public class DeferredPaddingCommand extends CommandWrapper {
 			return IdentityCommand.INSTANCE;
 		}
 
-		Command result = nudgeElement.nudge(nudgeY);
+		Command result;
+		switch (direction) {
+			case DOWN:
+				result = getPaddableElement(nudgeElement).nudge(nudgeY);
+				break;
+			case UP:
+				// An "upward" nudge doesn't actually nudge anything up because the diagram can
+				// only expand downwards (lifeline heads are fixed). Rather, we ensure space
+				// by nudging down the element that was moved up, but also everything following
+				// it so that the layout is consistent
+				result = getPaddableElement(referenceElement).nudge(nudgeY);
+				break;
+			default:
+				result = null;
+				break;
+		}
+
 		if (result == null) {
 			// Can't nudge this element
 			result = UnexecutableCommand.INSTANCE;
@@ -132,14 +166,16 @@ public class DeferredPaddingCommand extends CommandWrapper {
 	}
 
 	protected int computeNudgeAmount() {
-		if ((nudgeElement == null) || (referenceElement == null)) {
+		if ((direction == PaddingDirection.NONE) || (nudgeElement == null) || (referenceElement == null)) {
 			return 0;
 		}
 
 		MElement<? extends Element> padFrom = getPaddableElement(referenceElement);
 		MElement<? extends Element> padElement = getPaddableElement(nudgeElement);
 
-		if (padFrom.getElement() == padElement.getElement() || above(padFrom).test(padElement)) {
+		if ((padFrom.getElement() == padElement.getElement())
+				|| ((direction == PaddingDirection.DOWN) && above(padFrom).test(padElement))
+				|| ((direction == PaddingDirection.UP) && below(padFrom).test(padElement))) {
 			// This would happen, for example, when re-targeting a message bringins along an
 			// execution specification that emits a message terminating on the re-targeted
 			// message's new receiving lifeline
@@ -157,7 +193,18 @@ public class DeferredPaddingCommand extends CommandWrapper {
 				view -> constraints.getPadding(RelativePosition.TOP, view));
 
 		int requiredPadding = referencePadding.orElse(0) + nudgeePadding.orElse(0);
-		int gap = nudgeElement.verticalDistance(referenceElement).orElse(0);
+		int gap;
+
+		switch (direction) {
+			case DOWN:
+				gap = nudgeElement.verticalDistance(referenceElement).orElse(0);
+				break;
+			case UP:
+				gap = referenceElement.verticalDistance(nudgeElement).orElse(0);
+				break;
+			default:
+				throw new IllegalStateException("no nudge direction"); //$NON-NLS-1$
+		}
 
 		return Math.max(0, requiredPadding - gap);
 	}
@@ -179,5 +226,40 @@ public class DeferredPaddingCommand extends CommandWrapper {
 				return object;
 			}
 		}.doSwitch(element);
+	}
+
+	//
+	// Nested types
+	//
+
+	/**
+	 * Enumeration of direction in which padding may be applied.
+	 */
+	private static enum PaddingDirection {
+		NONE, DOWN, UP;
+
+		boolean updateReference(MElement<? extends Element> reference, MElement<? extends Element> from) {
+			switch (this) {
+				case DOWN:
+					return before(reference, from);
+				case UP:
+					return after(reference, from);
+				default:
+					return false;
+			}
+		}
+
+		boolean updateNudge(MElement<? extends Element> nudge, MElement<? extends Element> from,
+				MElement<? extends Element> to) {
+			switch (this) {
+				case DOWN:
+					return after(to, from) && before(to, nudge);
+				case UP:
+					return before(to, from) && after(to, nudge);
+				default:
+					return false;
+			}
+		}
+
 	}
 }

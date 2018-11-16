@@ -73,7 +73,7 @@ public class ExecutionSpecificationDragEditPolicy extends ResizableBorderItemPol
 	@Override
 	public Command getCommand(Request request) {
 		// Ensure padding, if required
-		return withPadding(() -> super.getCommand(request));
+		return withPadding(request, () -> super.getCommand(request));
 	}
 
 	protected MExecution getExecution() {

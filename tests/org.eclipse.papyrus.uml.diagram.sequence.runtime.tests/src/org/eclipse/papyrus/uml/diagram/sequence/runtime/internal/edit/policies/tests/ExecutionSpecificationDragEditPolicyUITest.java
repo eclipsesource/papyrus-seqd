@@ -292,6 +292,18 @@ public class ExecutionSpecificationDragEditPolicyUITest {
 		@AutoFixture
 		private EditPart exec2EP;
 
+		@AutoFixture
+		private Message sync2;
+
+		@AutoFixture
+		private EditPart sync2EP;
+
+		@AutoFixture
+		private Message reply2;
+
+		@AutoFixture
+		private EditPart reply2EP;
+
 		/**
 		 * Initializes me.
 		 */
@@ -326,8 +338,59 @@ public class ExecutionSpecificationDragEditPolicyUITest {
 					runs(isPoint(async2Geom.getFirstPoint()), isPoint(async2Geom.getLastPoint())));
 			assertThat("Async message 3 was changed", async3EP,
 					runs(isPoint(async3Geom.getFirstPoint()), isPoint(async3Geom.getLastPoint())));
-			assertThat("Execution started by sunc message 2 not moved", exec2EP,
+			assertThat("Execution started by sync message 2 not moved", exec2EP,
 					isAt(isPoint(exec2Geom.getLocation())));
+		}
+
+		@Test
+		public void moveExecutionToSpanMessage() {
+			int delta = -75;
+
+			PointList sync2Geom = getPoints(sync2EP);
+			PointList async3Geom = getPoints(async3EP);
+			PointList reply2Geom = getPoints(reply2EP);
+
+			// First, select the execution to activate selection handles
+			Point grabAt = getCenter(exec2EP);
+			editor.select(grabAt);
+
+			Point dropAt = new Point(grabAt.x(), grabAt.y() + delta);
+			editor.with(editor.allowSemanticReordering(), () -> editor.drag(grabAt, dropAt));
+
+			sync2Geom.translate(0, delta);
+			// async3 doesn't move up, but adjusts its receive end to attach to the execution
+			async3Geom.setPoint(async3Geom.getLastPoint().getTranslated(-EXEC_WIDTH / 2, 0), 1);
+			reply2Geom.translate(0, delta);
+
+			assertThat("Request message 2 was not moved", sync2EP,
+					runs(isPoint(sync2Geom.getFirstPoint()), isPoint(sync2Geom.getLastPoint())));
+			assertThat("Reply message 2 was not moved", reply2EP,
+					runs(isPoint(reply2Geom.getFirstPoint()), isPoint(reply2Geom.getLastPoint())));
+			assertThat("Async message 3 not properly attached to execution", async3EP,
+					runs(isPoint(async3Geom.getFirstPoint()), isPoint(async3Geom.getLastPoint())));
+		}
+
+		@Test
+		public void attemptExecutionToSpanMessage() {
+			int delta = -75;
+
+			PointList sync2Geom = getPoints(sync2EP);
+			PointList async3Geom = getPoints(async3EP);
+			PointList reply2Geom = getPoints(reply2EP);
+
+			// First, select the execution to activate selection handles
+			Point grabAt = getCenter(exec2EP);
+			editor.select(grabAt);
+
+			Point dropAt = new Point(grabAt.x(), grabAt.y() + delta);
+			editor.drag(grabAt, dropAt);
+
+			assertThat("Request message 2 was changed", sync2EP,
+					runs(isPoint(sync2Geom.getFirstPoint()), isPoint(sync2Geom.getLastPoint())));
+			assertThat("Reply message 2 was changed", reply2EP,
+					runs(isPoint(reply2Geom.getFirstPoint()), isPoint(reply2Geom.getLastPoint())));
+			assertThat("Async message 3 was changed", async3EP,
+					runs(isPoint(async3Geom.getFirstPoint()), isPoint(async3Geom.getLastPoint())));
 		}
 
 	}

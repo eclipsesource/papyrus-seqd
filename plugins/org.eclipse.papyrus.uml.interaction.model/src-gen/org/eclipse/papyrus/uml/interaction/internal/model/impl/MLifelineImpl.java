@@ -403,7 +403,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	public CreationCommand<Message> insertMessageAfter(MElement<?> before, int offset, MLifeline receiver,
 			MessageSort sort, NamedElement signature) {
 
-		return new InsertMessageCommand(this, before, offset, receiver, sort, signature);
+		return createWithPadding(InsertMessageCommand.class,
+				() -> new InsertMessageCommand(this, before, offset, receiver, sort, signature));
 	}
 
 	/**
@@ -543,7 +544,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 */
 	@Override
 	public Command makeCreatedAt(OptionalInt yPosition) {
-		return new SetLifelineCreationCommand(this, yPosition);
+		return withPadding(SetLifelineCreationCommand.class,
+				() -> new SetLifelineCreationCommand(this, yPosition));
 	}
 
 	/**

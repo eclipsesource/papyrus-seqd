@@ -53,6 +53,10 @@ public class ExecutionSpecificationFigure extends NodeFigure {
 				//
 				// Message anchors
 				//
+				// the side case is deprecated, since issue #376, but still there for compatibility
+				case SIDE:
+					return new ExecutionSpecificationSideAnchor(this,
+							anchorParser.getDistanceFromReference(terminal));
 				case DISTANCE:
 				case FIXED:
 					return new ExecutionSpecificationSideAnchor(this, anchorParser.getDistance(terminal));

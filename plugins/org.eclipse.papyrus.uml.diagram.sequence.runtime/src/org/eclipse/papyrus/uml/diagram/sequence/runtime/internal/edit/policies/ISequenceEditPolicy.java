@@ -29,10 +29,13 @@ import org.eclipse.emf.workspace.EMFCommandOperation;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateUnspecifiedTypeConnectionRequest;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateUnspecifiedTypeRequest;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.commands.wrappers.OperationToGEFCommandWrapper;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnetManager;
@@ -179,12 +182,21 @@ public interface ISequenceEditPolicy extends EditPolicy {
 	/**
 	 * Wrap a supplied command with padding.
 	 * 
+	 * @param request
+	 *            the request to be satisfied by the supplied command
 	 * @param commandSupplier
 	 *            the supplier of a command
 	 * @return a compound of the supplied command and a padding command calculated incrementally during
 	 *         construction of the supplied command, or {@code null} if the no command was supplied
 	 */
-	default Command withPadding(Supplier<? extends Command> commandSupplier) {
+	default Command withPadding(Request request, Supplier<? extends Command> commandSupplier) {
+		if ((request instanceof CreateUnspecifiedTypeRequest)
+				|| (request instanceof CreateUnspecifiedTypeConnectionRequest)) {
+			// We will come back to compute the entire command again once the specific type
+			// to create has been selected (the first round is to determine viable types)
+			return commandSupplier.get();
+		}
+
 		List<Command> result = new ArrayList<>(2);
 
 		// Get the current interaction instance (we would recompute a new one later, otherwise)
