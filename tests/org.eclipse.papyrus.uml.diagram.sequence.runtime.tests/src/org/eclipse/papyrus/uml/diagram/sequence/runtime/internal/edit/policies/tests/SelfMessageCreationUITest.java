@@ -39,7 +39,6 @@ import org.junit.runners.Parameterized.Parameters;
  *
  * @author Christian W. Damus
  */
-@SuppressWarnings("restriction")
 @ModelResource("one-exec.di")
 @Maximized
 @RunWith(Parameterized.class)
@@ -59,11 +58,15 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 	private static final int Y_POSITION = 195;
 
 	private static final int MINIMUM_SPAN = 20;
+
 	private static final int CUSTOM_SPAN = 55;
 
 	private final CreationMode mode;
+
 	private final MessageSort messageSort;
+
 	private final int messageX; // Where to draw the message
+
 	private final int messageY; // Where to complete the message
 
 	/**
@@ -100,29 +103,30 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 		}
 
 		switch (messageSort) {
-		case CREATE_MESSAGE_LITERAL:
-			assertThat("Self-creation was permitted", messageEP, nullValue());
-			break;
-		case DELETE_MESSAGE_LITERAL:
-			if (mode == CreationMode.AROUND_OCCURRENCE) {
-				// This isn't permitted
-				assertThat("Delete message created around an existing occurrence", messageEP, nullValue());
-			} else {
-				// These have a slightly different shape, owing to connection to
-				// the destruction occurrence specification
-				assertThat(messageEP, runs(LIFELINE_1_BODY_X, 195, //
-						// Account for the attachment to the side of the destruction occurrence
-						// specification and extra space made for the destruction
-						LIFELINE_1_BODY_X + 10, 225, //
-						2));
-			}
-			break;
-		default:
-			if (mode != CreationMode.WITH_EXECUTION) {
-				assertThat(messageEP, runs(x(), top(), x(), bottom(), 2));
-			} // TODO: Assert the self-message shape with execution when we draw it properly
+			case CREATE_MESSAGE_LITERAL:
+				assertThat("Self-creation was permitted", messageEP, nullValue());
+				break;
+			case DELETE_MESSAGE_LITERAL:
+				if (mode == CreationMode.AROUND_OCCURRENCE) {
+					// This isn't permitted
+					assertThat("Delete message created around an existing occurrence", messageEP,
+							nullValue());
+				} else {
+					// These have a slightly different shape, owing to connection to
+					// the destruction occurrence specification
+					assertThat(messageEP, runs(LIFELINE_1_BODY_X, 195, //
+							// Account for the attachment to the side of the destruction occurrence
+							// specification and extra space made for the destruction
+							LIFELINE_1_BODY_X + 5, 225, //
+							2));
+				}
+				break;
+			default:
+				if (mode != CreationMode.WITH_EXECUTION) {
+					assertThat(messageEP, runs(x(), top(), x(), bottom(), 2));
+				} // TODO: Assert the self-message shape with execution when we draw it properly
 
-			break;
+				break;
 		}
 	}
 
@@ -133,24 +137,23 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 	@Parameters(name = "{0}, {1}")
 	public static Iterable<Object[]> parameters() {
 		return Arrays.asList(new Object[][] { //
-				{ MessageSort.SYNCH_CALL_LITERAL, CreationMode.ON_LIFELINE }, //
-				{ MessageSort.SYNCH_CALL_LITERAL, CreationMode.ON_EXECUTION }, //
-				{ MessageSort.SYNCH_CALL_LITERAL, CreationMode.ON_LIFELINE_TALL }, //
-				{ MessageSort.SYNCH_CALL_LITERAL, CreationMode.WITH_EXECUTION }, //
-				{ MessageSort.ASYNCH_CALL_LITERAL, CreationMode.ON_LIFELINE }, //
-				{ MessageSort.ASYNCH_CALL_LITERAL, CreationMode.ON_EXECUTION }, //
-				{ MessageSort.ASYNCH_CALL_LITERAL, CreationMode.ON_LIFELINE_TALL }, //
-				{ MessageSort.REPLY_LITERAL, CreationMode.ON_LIFELINE }, //
-				{ MessageSort.REPLY_LITERAL, CreationMode.ON_EXECUTION }, //
-				{ MessageSort.CREATE_MESSAGE_LITERAL, CreationMode.ON_LIFELINE }, //
-				{ MessageSort.DELETE_MESSAGE_LITERAL, CreationMode.ON_LIFELINE }, //
-				{ MessageSort.DELETE_MESSAGE_LITERAL, CreationMode.AROUND_OCCURRENCE }, //
+				{MessageSort.SYNCH_CALL_LITERAL, CreationMode.ON_LIFELINE }, //
+				{MessageSort.SYNCH_CALL_LITERAL, CreationMode.ON_EXECUTION }, //
+				{MessageSort.SYNCH_CALL_LITERAL, CreationMode.ON_LIFELINE_TALL }, //
+				{MessageSort.SYNCH_CALL_LITERAL, CreationMode.WITH_EXECUTION }, //
+				{MessageSort.ASYNCH_CALL_LITERAL, CreationMode.ON_LIFELINE }, //
+				{MessageSort.ASYNCH_CALL_LITERAL, CreationMode.ON_EXECUTION }, //
+				{MessageSort.ASYNCH_CALL_LITERAL, CreationMode.ON_LIFELINE_TALL }, //
+				{MessageSort.REPLY_LITERAL, CreationMode.ON_LIFELINE }, //
+				{MessageSort.REPLY_LITERAL, CreationMode.ON_EXECUTION }, //
+				{MessageSort.CREATE_MESSAGE_LITERAL, CreationMode.ON_LIFELINE }, //
+				{MessageSort.DELETE_MESSAGE_LITERAL, CreationMode.ON_LIFELINE }, //
+				{MessageSort.DELETE_MESSAGE_LITERAL, CreationMode.AROUND_OCCURRENCE }, //
 		});
 	}
 
 	/**
-	 * If a test needs it, set up an existing occurrence around which to draw the
-	 * self-message.
+	 * If a test needs it, set up an existing occurrence around which to draw the self-message.
 	 */
 	@Before
 	public void createOccurrence() {
@@ -162,8 +165,8 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 	}
 
 	/**
-	 * Compute an adjusted {@code x} coördinate based whether the message is on an
-	 * execution specification or on the lifeline stem.
+	 * Compute an adjusted {@code x} coördinate based whether the message is on an execution specification or
+	 * on the lifeline stem.
 	 *
 	 * @return the adjusted X coördinate
 	 */
