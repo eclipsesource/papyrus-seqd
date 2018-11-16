@@ -32,7 +32,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.L
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 
-public class DestructionSpecificationEditPart extends AbstractBorderItemEditPart {
+public class DestructionSpecificationEditPart extends AbstractBorderItemEditPart implements ISequenceEditPart {
 
 	public DestructionSpecificationEditPart(View view) {
 		super(view);

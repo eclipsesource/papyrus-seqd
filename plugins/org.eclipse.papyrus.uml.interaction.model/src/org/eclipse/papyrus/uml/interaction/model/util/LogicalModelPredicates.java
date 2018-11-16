@@ -87,4 +87,17 @@ public class LogicalModelPredicates {
 		return above.and(below);
 	}
 
+	/**
+	 * Obtain a predicate matching elements that are equal to some {@code element}. Elements are equal if
+	 * their {@linkplain MElement#getElement() underlying UML elements} are identical.
+	 * 
+	 * @param element
+	 *            an element
+	 * @return an equal-to-{@code element} query
+	 */
+	public static Predicate<MElement<? extends Element>> equalTo(MElement<? extends Element> element) {
+		return (element == null) ? Objects::isNull
+				: elem -> (elem != null) && (elem.getElement() == element.getElement());
+	}
+
 }

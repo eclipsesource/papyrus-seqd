@@ -17,6 +17,7 @@ import static java.util.Collections.singletonList;
 import static org.eclipse.papyrus.uml.interaction.model.util.Executions.executionShapeAt;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.equalTo;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToInt;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.lessThan;
@@ -28,6 +29,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
@@ -131,14 +133,19 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 						singletonList(lifeline.getElement()))
 				: IdentityCommand.INSTANCE;
 
+		int newYPosition = yPosition.orElseGet(() -> getTarget().getTop().getAsInt());
+
+		// Can't put an interaction fragment on a lifeline that is already destroyed
+		if (!existsAt(lifeline, newYPosition)) {
+			return UnexecutableCommand.INSTANCE;
+		}
+
 		if ((getTarget() instanceof MDestruction) && lifeline.getDiagramView().isPresent()) {
 			MDestruction destruction = (MDestruction)getTarget();
 			Shape lifelineBody = diagramHelper().getLifelineBodyShape(lifeline.getDiagramView().get());
 			Shape destructionView = (Shape)vertex(destruction).getDiagramView();
 			Connector messageView = Optional.ofNullable(destruction.getOwner())
 					.flatMap(MMessage::getDiagramView).orElse(null);
-
-			int newYPosition = yPosition.orElseGet(() -> destruction.getTop().getAsInt());
 
 			// Can't destroy the lifeline if it has occurrences following the place where
 			// the destruction is to go
@@ -535,7 +542,9 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 	 * @return whether the destruction should be allowed there
 	 */
 	protected boolean validateDestruction(int y) {
-		return !lifeline.getOccurrences().stream().anyMatch(below(y));
+		// Don't count an existing destruction, of course
+		Predicate<MOccurrence<?>> isDestruction = MDestruction.class::isInstance;
+		return !lifeline.getOccurrences().stream().filter(isDestruction.negate()).anyMatch(below(y));
 	}
 
 	/**
@@ -560,6 +569,22 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 	 */
 	protected boolean validateCreation(int y) {
 		return !lifeline.getOccurrences().stream().anyMatch(above(y));
+	}
+
+	/**
+	 * Query whether a {@code lifeline} exists at the time of the given {@code y} position (that it has not
+	 * yet been destroyed).
+	 * 
+	 * @param lifeline
+	 *            a lifeline
+	 * @param y
+	 *            the Y position of a proposed interaction fragment on the {@code lifeline}, in absolute
+	 *            coördinates
+	 * @return whether the {@code lifeline} exists there
+	 */
+	protected boolean existsAt(@SuppressWarnings("hiding") MLifeline lifeline, int y) {
+		Optional<MDestruction> destruction = lifeline.getDestruction();
+		return !destruction.filter(equalTo(getTarget()).negate()).filter(above(y + 1)).isPresent();
 	}
 
 	protected void ensurePadding() {

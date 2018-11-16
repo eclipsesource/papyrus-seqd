@@ -290,12 +290,18 @@ public class DefaultDiagramHelper implements DiagramHelper {
 	public Command reconnectDestructionOccurrenceShape(Shape destructionView, Connector messageView,
 			Shape newLifeline, int yPosition) {
 
-		// Move the X shape. Note that the new lifeline may be at a different Y position
-		// due to creation message, so we need to set again the absolute Y position of
-		// the X shape
-		Command result = reparentView(destructionView, newLifeline);
-		result = result.chain(layoutHelper().setTop(destructionView,
-				yPosition - layoutHelper().getHeight(destructionView) / 2));
+		Command result = null;
+
+		if (newLifeline != destructionView.eContainer()) {
+			// Move the X shape. Note that the new lifeline may be at a different Y position
+			// due to creation message, so we need to set again the absolute Y position of
+			// the X shape
+			result = reparentView(destructionView, newLifeline);
+		}
+
+		Command placeDestruction = layoutHelper().setTop(destructionView,
+				yPosition - layoutHelper().getHeight(destructionView) / 2);
+		result = result == null ? placeDestruction : result.chain(placeDestruction);
 
 		// The message remains anchored to the X shape
 
@@ -366,7 +372,8 @@ public class DefaultDiagramHelper implements DiagramHelper {
 			}
 
 			// create a decoration node to be seen by CSS rules
-			DecorationNode nameLabel = (DecorationNode)result.createChild(NotationPackage.Literals.DECORATION_NODE);
+			DecorationNode nameLabel = (DecorationNode)result
+					.createChild(NotationPackage.Literals.DECORATION_NODE);
 			nameLabel.setType(ViewTypes.MESSAGE_NAME);
 			return result;
 		};

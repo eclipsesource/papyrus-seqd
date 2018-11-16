@@ -348,12 +348,7 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 				 */
 				int absoluteDeleteY = absoluteSendY;
 				List<MElement<? extends Element>> elementsBelow = new ArrayList<>();
-				findElementsBelow(absoluteDeleteY, elementsBelow,
-						getTarget().getInteraction().getMessages().stream(), false);
-				if (!elementsBelow.isEmpty()) {
-					return UnexecutableCommand.INSTANCE;
-				}
-				findElementsBelow(absoluteDeleteY, elementsBelow, this.receiver.getExecutions().stream(),
+				findElementsBelow(absoluteDeleteY, elementsBelow, this.receiver.getOccurrences().stream(),
 						false);
 				if (!elementsBelow.isEmpty()) {
 					return UnexecutableCommand.INSTANCE;
