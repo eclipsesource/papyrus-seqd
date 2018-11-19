@@ -11,12 +11,16 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.tests;
 
+import static org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnetManager.MODIFIER_NO_SNAPPING;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.isPoint;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.EditPart;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.MessageEditPart;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.AutoFixture;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.AutoFixtureRule;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
@@ -203,4 +207,32 @@ public class ExecutionAnchorsUITest extends AbstractGraphicalEditPolicyUITest {
 		assertThat(new_reply_target, equalTo(reply_target.getCopy().translate(lifeline1Offset, 0)));
 	}
 
+	@Test
+	public void checkAnchorOnNudge() {
+		final int OFFSET = 25; // ensure no padding (20 above, 5 below)
+		// message will be created below m4, in inverse direction (from exec1 to lifeline 4)
+		Point mouseStart = m4_target.getCopy().translate(-2, OFFSET);
+		Point mouseEnd = m4_source.getCopy().translate(0, OFFSET);
+
+		MessageEditPart newMessage = (MessageEditPart)editor.with(editor.modifierKey(MODIFIER_NO_SNAPPING),
+				() -> createConnection(SequenceElementTypes.Async_Message_Edge, mouseStart, mouseEnd));
+
+		assertThat(getSource(newMessage), isPoint(m4_target.getCopy().translate(0, OFFSET)));
+		assertThat(getTarget(newMessage), isPoint(mouseEnd));
+	}
+
+	@Test
+	public void checkAnchorOnNudgeWithPadding() {
+		final int OFFSET = 20; // ensure no padding (20 above, 5 below)
+		// message will be created below m4, in inverse direction (from exec1 to lifeline 4)
+		Point mouseStart = m4_target.getCopy().translate(-2, OFFSET);
+		Point mouseEnd = m4_source.getCopy().translate(0, OFFSET);
+
+		MessageEditPart newMessage = (MessageEditPart)editor.with(editor.modifierKey(MODIFIER_NO_SNAPPING),
+				() -> createConnection(SequenceElementTypes.Async_Message_Edge, mouseStart, mouseEnd));
+
+		// Element was adding a bit below due to padding
+		assertThat(getSource(newMessage), isPoint(m4_target.getCopy().translate(0, 25)));
+		assertThat(getTarget(newMessage), isPoint(mouseEnd.getCopy().translate(0, 5))); // offest from padding
+	}
 }

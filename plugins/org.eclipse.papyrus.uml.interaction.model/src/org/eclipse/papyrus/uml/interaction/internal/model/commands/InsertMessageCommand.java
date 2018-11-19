@@ -63,6 +63,7 @@ import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativeP
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
+import org.eclipse.papyrus.uml.interaction.model.util.Executions;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Interaction;
@@ -289,15 +290,7 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 		int absoluteSendY = absoluteSendYReference().getAsInt();
 		int absoluteRecvY = absoluteReceiveYReference().getAsInt();
 
-		// Send: Is there actually an execution occurrence here?
-		int llTopSend = layoutHelper().getBottom(getTarget().getDiagramView().get());
-		int whereSend = beforeSend == getTarget() ? sendOffset
-				// For executions also the top to allow for messages to anchor within it
-				: beforeSend.getTop().orElse(llTopSend) - llTopSend + sendOffset;
-		Optional<MExecution> sendingExec = getTarget().elementAt(whereSend).flatMap(this::getExecution)
-				.filter(exec -> //
-				((exec.getBottom().orElse(-1) - llTopSend) >= whereSend) //
-						&& ((exec.getTop().orElse(MAX_VALUE) - llTopSend) <= whereSend));
+		Optional<MExecution> sendingExec = Executions.executionAt(getTarget(), absoluteSendY);
 		Vertex sender = sendingExec.map(this::vertex).orElseGet(this::vertex);
 		if (sender == null || sender.getDiagramView() == null) {
 			return UnexecutableCommand.INSTANCE;
@@ -317,9 +310,7 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 				receivingExec = Optional.empty();
 				break;
 			default:
-				receivingExec = this.receiver.elementAt(whereRecv).flatMap(this::getExecution).filter(exec -> //
-				((exec.getBottom().orElse(-1) - llTopRecv) >= whereRecv) //
-						&& ((exec.getTop().orElse(MAX_VALUE) - llTopRecv) <= whereRecv));
+				receivingExec = Executions.executionAt(receiver, absoluteRecvY);
 				break;
 		}
 		@SuppressWarnings("hiding")
