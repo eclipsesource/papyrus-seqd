@@ -69,8 +69,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 /**
- * Integration test cases for use cases in which occurrences are moved from one
- * lifeline to another.
+ * Integration test cases for use cases in which occurrences are moved from one lifeline to another.
  *
  * @author Christian W. Damus
  */
@@ -175,8 +174,7 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 	public static class MessageNoReply extends MessageNoExecution {
 
 		@ClassRule
-		public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs()
-				.dontCreateRepliesForSyncCalls();
+		public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs().dontCreateRepliesForSyncCalls();
 
 		@Override
 		protected void switchLifeline(VerificationMode mode) {
@@ -291,7 +289,7 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 			super.switchLifeline(mode);
 
 			// Verify additional details of the new visuals
-			EditPart destructionEP = ((ConnectionEditPart) messageEP).getTarget();
+			EditPart destructionEP = ((ConnectionEditPart)messageEP).getTarget();
 			mode.verify(destructionEP, instanceOf(DestructionSpecificationEditPart.class));
 			EditPart newLifelineEP = verifying(mode, getBodyEditPart(getReceiver()),
 					"New lifeline edit-part not found");
@@ -303,7 +301,7 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 			super.undoSwitchLifeline(mode);
 
 			// Verify additional details of the old visuals
-			EditPart destructionEP = ((ConnectionEditPart) messageEP).getTarget();
+			EditPart destructionEP = ((ConnectionEditPart)messageEP).getTarget();
 			mode.verify(destructionEP, instanceOf(DestructionSpecificationEditPart.class));
 			EditPart oldLifelineEP = verifying(mode, getBodyEditPart(getOriginalReceiver()),
 					"Old lifeline edit-part not found");
@@ -311,8 +309,7 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		}
 
 		/**
-		 * Verify that a destruction cannot be moved to a lifeline that would have
-		 * occurrences following it
+		 * Verify that a destruction cannot be moved to a lifeline that would have occurrences following it
 		 */
 		@Test
 		public void existingOccurrences() {
@@ -331,13 +328,13 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 
 			// Verify that nothing changed
 			assertThat(messageEP, runs(sendX, mesgY, getGrabX(), mesgY));
-			EditPart destructionEP = ((ConnectionEditPart) messageEP).getTarget();
+			EditPart destructionEP = ((ConnectionEditPart)messageEP).getTarget();
 			assertThat(destructionEP, instanceOf(DestructionSpecificationEditPart.class));
 			EditPart oldLifelineEP = asserting(getBodyEditPart(getOriginalReceiver()),
 					"Old lifeline edit-part not found");
 			assertThat(destructionEP.getParent(), is(oldLifelineEP));
 			MDestruction destruction = asserting(
-					as(getInteraction().getElement((Element) destructionEP.getAdapter(EObject.class)),
+					as(getInteraction().getElement((Element)destructionEP.getAdapter(EObject.class)),
 							MDestruction.class),
 					"Not a logical destruction");
 			assertThat(asserting(destruction.getCovered(), "No coverage").getName(), is("Lifeline2"));
@@ -354,12 +351,16 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 
 		@Override
 		int getGrabX() {
-			return super.getGrabX() - (DESTRUCTION_WIDTH / 2);
+			// Note that the message arrow actually penetrates to 1/4 depth; it does not attach
+			// to the bounding box of the X shape
+			return super.getGrabX() - (DESTRUCTION_WIDTH / 4);
 		}
 
 		@Override
 		int getNewRecvX() {
-			return super.getNewRecvX() - (DESTRUCTION_WIDTH / 2);
+			// Note that the message arrow actually penetrates to 1/4 depth; it does not attach
+			// to the bounding box of the X shape
+			return super.getNewRecvX() - (DESTRUCTION_WIDTH / 4);
 		}
 	}
 
@@ -399,8 +400,7 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		}
 
 		/**
-		 * Verify that a creation cannot be moved to a lifeline that would have
-		 * occurrences preceding it
+		 * Verify that a creation cannot be moved to a lifeline that would have occurrences preceding it
 		 */
 		@Test
 		public void existingOccurrences() {
@@ -428,7 +428,7 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 			assertThat(lifeline2, isBounded(anything(), is(top2), anything(), anything()));
 			assertThat(lifeline3, isBounded(anything(), is(top3), anything(), anything()));
 			MMessage message = assuming(
-					as(getInteraction().getElement((Element) messageEP.getAdapter(EObject.class)),
+					as(getInteraction().getElement((Element)messageEP.getAdapter(EObject.class)),
 							MMessage.class),
 					"Not a logical message");
 			MMessageEnd creation = assuming(message.getReceive(), "No creation end");
@@ -436,8 +436,8 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		}
 
 		/**
-		 * Verify that a create message can be reoriented to a lifeline head with the
-		 * same outcome as the lifeline body.
+		 * Verify that a create message can be reoriented to a lifeline head with the same outcome as the
+		 * lifeline body.
 		 */
 		@Test
 		public void switchToLifelineHead() {
@@ -491,7 +491,9 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		private static final int LIFELINE_4_BODY_X = 596;
 
 		private final int m2Y = 173;
+
 		private final int m3Y = 198;
+
 		private final int m4Y = 223;
 
 		@Override
@@ -514,12 +516,12 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 			mode.verify(m4EP, runs(LIFELINE_4_BODY_X, m4Y, execRight, m4Y));
 
 			// And the semantics
-			mode.verify("Wrong coverage of m2 send",
-					asserting(m2.getSend(), "m2 lost its send").getCovered(), is(getReceiver()));
+			mode.verify("Wrong coverage of m2 send", asserting(m2.getSend(), "m2 lost its send").getCovered(),
+					is(getReceiver()));
 			mode.verify("Coverage of m2 receive broken",
 					asserting(m2.getReceive(), "m2 lost its recevive").getCovered(), is(getReceiver()));
-			mode.verify("Wrong coverage of m3 send",
-					asserting(m3.getSend(), "m3 lost its send").getCovered(), is(getReceiver()));
+			mode.verify("Wrong coverage of m3 send", asserting(m3.getSend(), "m3 lost its send").getCovered(),
+					is(getReceiver()));
 			mode.verify("Wrong coverage of m4 receive",
 					asserting(m4.getReceive(), "m4 lost its receive").getCovered(), is(getReceiver()));
 		}
@@ -542,12 +544,12 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 			mode.verify(m4EP, runs(LIFELINE_4_BODY_X, m4Y, execRight, m4Y));
 
 			// And the semantics
-			mode.verify("Wrong coverage of m2 send",
-					asserting(m2.getSend(), "m2 lost its send").getCovered(), is(getOriginalReceiver()));
+			mode.verify("Wrong coverage of m2 send", asserting(m2.getSend(), "m2 lost its send").getCovered(),
+					is(getOriginalReceiver()));
 			mode.verify("Coverage of m2 receive broken",
 					asserting(m2.getReceive(), "m2 lost its recevive").getCovered(), is(getReceiver()));
-			mode.verify("Wrong coverage of m3 send",
-					asserting(m3.getSend(), "m3 lost its send").getCovered(), is(getOriginalReceiver()));
+			mode.verify("Wrong coverage of m3 send", asserting(m3.getSend(), "m3 lost its send").getCovered(),
+					is(getOriginalReceiver()));
 			mode.verify("Wrong coverage of m4 receive",
 					asserting(m4.getReceive(), "m4 lost its receive").getCovered(),
 					is(getOriginalReceiver()));
@@ -665,8 +667,7 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 	EditPart requireEditPart(MElement<? extends Element> element) {
 		View notationView = assuming(as(element.getDiagramView(), View.class),
 				"No notation view for " + element);
-		EditPart result = DiagramEditPartsUtil.getEditPartFromView(notationView,
-				editor.getDiagramEditPart());
+		EditPart result = DiagramEditPartsUtil.getEditPartFromView(notationView, editor.getDiagramEditPart());
 		assumeThat("No edit-part for " + element, result, notNullValue());
 		return result;
 	}
@@ -688,10 +689,10 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 
 		editor.flushDisplayEvents();
 
-		View createdView = (View) create.getViewAndElementDescriptor().getAdapter(View.class);
+		View createdView = (View)create.getViewAndElementDescriptor().getAdapter(View.class);
 		assumeThat("No view created", createdView, notNullValue());
 
-		EditPart result = (EditPart) editor.getDiagramEditPart().getViewer().getEditPartRegistry()
+		EditPart result = (EditPart)editor.getDiagramEditPart().getViewer().getEditPartRegistry()
 				.get(createdView);
 		assumeThat("No edit-part registered for created view", result, notNullValue());
 		return result;
@@ -717,12 +718,12 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	static <T> T verifying(VerificationMode mode, Optional<T> value, String message) {
 		switch (mode) {
-		case ASSERT:
-			return asserting(value, message);
-		case ASSUME:
-			return assuming(value, message);
-		default:
-			return value.orElse(null);
+			case ASSERT:
+				return asserting(value, message);
+			case ASSUME:
+				return assuming(value, message);
+			default:
+				return value.orElse(null);
 		}
 	}
 }
