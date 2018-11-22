@@ -195,6 +195,8 @@ public class GraphComputer {
 	 * @return the updater that accepts the new elements
 	 */
 	Consumer<Element> createUpdater(Element context) {
+		EdgeFactory edgeFactory = new EdgeFactory();
+
 		return newElement -> {
 			UMLSwitch<Graph> graphUpdater = new UMLSwitch<Graph>() {
 				@Override
@@ -202,7 +204,6 @@ public class GraphComputer {
 					if (object.getStart() == newElement) {
 						// Un-tag existing edges
 						incoming(graph.vertex(object)).map(withFrom()).forEach(untag(Tag.EXECUTION_START));
-						// Create and tag new edge
 						edge(tag(newElement, Tag.EXECUTION_START), object).tag(Tag.EXECUTION_START);
 					} else if (object.getFinish() == newElement) {
 						// Un-tag existing edges
@@ -213,10 +214,78 @@ public class GraphComputer {
 
 					return graph;
 				}
+
+				@Override
+				public Graph caseOccurrenceSpecification(OccurrenceSpecification object) {
+					// Neigbors on the lifeline
+					List<InteractionFragment> coverage = covering(object.getCovered());
+					int index = coverage.indexOf(object);
+					if (index > 0) {
+						edge(coverage.get(index - 1), object);
+					}
+					if ((index + 1) < coverage.size()) {
+						edge(object, coverage.get(index + 1));
+					}
+
+					// Default edges
+					edgeFactory.doSwitch(object);
+
+					// Update dependent execution specifications
+					ExecutionSpecification started = startedExecutionSpecification(object);
+					if (started != null) {
+						// Update edges for the started execution
+						createUpdater(started).accept(object);
+					}
+					ExecutionSpecification finished = finishedExecutionSpecification(object);
+					if (finished != null) {
+						// Update edges for the started execution
+						createUpdater(finished).accept(object);
+					}
+
+					return graph;
+				}
+
+				@Override
+				public Graph caseInteraction(Interaction object) {
+					if (newElement instanceof Message) {
+						Message newMessage = (Message)newElement;
+						MessageEnd newSend = newMessage.getSendEvent();
+						MessageEnd newRecv = newMessage.getReceiveEvent();
+
+						this.doSwitch(newSend);
+						edgeFactory.doSwitch(newMessage);
+						this.doSwitch(newRecv);
+					}
+					return graph;
+				}
 			};
 
 			graphUpdater.doSwitch(context);
 		};
+	}
+
+	private ExecutionSpecification startedExecutionSpecification(Element element) {
+		return invertSingle(element, UMLPackage.Literals.EXECUTION_SPECIFICATION__START,
+				ExecutionSpecification.class).orElse(null);
+	}
+
+	private ExecutionSpecification finishedExecutionSpecification(Element element) {
+		return invertSingle(element, UMLPackage.Literals.EXECUTION_SPECIFICATION__FINISH,
+				ExecutionSpecification.class).orElse(null);
+	}
+
+	/**
+	 * Obtain the interaction fragments covering a lifeline, sorted in interaction order.
+	 * 
+	 * @param lifeline
+	 *            a lifeline
+	 * @return its covering fragments, sorted
+	 */
+	List<InteractionFragment> covering(Lifeline lifeline) {
+		// TODO Could cache this?
+		List<InteractionFragment> result = new ArrayList<>(lifeline.getCoveredBys());
+		result.sort(fragmentIndex);
+		return result;
 	}
 
 	//
@@ -258,7 +327,7 @@ public class GraphComputer {
 				}
 			} else if (message.getMessageSort() == MessageSort.DELETE_MESSAGE_LITERAL) {
 				if (message.getReceiveEvent() instanceof DestructionOccurrenceSpecification) {
-					edge.hasTag(Tag.LIFELINE_DESTRUCTION);
+					edge.tag(Tag.LIFELINE_DESTRUCTION);
 					DestructionOccurrenceSpecification receive = tag(
 							(DestructionOccurrenceSpecification)message.getReceiveEvent(),
 							Tag.LIFELINE_DESTRUCTION);
@@ -422,16 +491,6 @@ public class GraphComputer {
 			return null;
 		}
 
-		private ExecutionSpecification startedExecutionSpecification(Element element) {
-			return invertSingle(element, UMLPackage.Literals.EXECUTION_SPECIFICATION__START,
-					ExecutionSpecification.class).orElse(null);
-		}
-
-		private ExecutionSpecification finishedExecutionSpecification(Element element) {
-			return invertSingle(element, UMLPackage.Literals.EXECUTION_SPECIFICATION__FINISH,
-					ExecutionSpecification.class).orElse(null);
-		}
-
 		/**
 		 * Obtain the singular lifeline covered by a {@code fragment} that is semantically constrained to
 		 * cover exactly one lifeline. Such would be the case for, e.g., message ends and execution
@@ -444,20 +503,6 @@ public class GraphComputer {
 		Lifeline lifeline(InteractionFragment fragment) {
 			List<Lifeline> covered = fragment.getCovereds();
 			return covered.isEmpty() ? null : covered.get(0);
-		}
-
-		/**
-		 * Obtain the interaction fragments covering a lifeline, sorted in interaction order.
-		 * 
-		 * @param lifeline
-		 *            a lifeline
-		 * @return its covering fragments, sorted
-		 */
-		List<InteractionFragment> covering(Lifeline lifeline) {
-			// TODO Could cache this?
-			List<InteractionFragment> result = new ArrayList<>(lifeline.getCoveredBys());
-			result.sort(fragmentIndex);
-			return result;
 		}
 
 		boolean isGroupableInExecution(InteractionFragment fragment) {

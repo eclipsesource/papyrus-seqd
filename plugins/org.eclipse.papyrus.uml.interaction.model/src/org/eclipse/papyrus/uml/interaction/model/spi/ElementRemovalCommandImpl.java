@@ -70,8 +70,8 @@ public class ElementRemovalCommandImpl extends CommandWrapper implements Removal
 	}
 
 	@Override
-	public Command chain(Command next) {
-		return CompoundModelCommand.compose(domain, this, next);
+	public RemovalCommand<Element> chain(Command next) {
+		return andThen(domain, next);
 	}
 
 }

@@ -272,7 +272,8 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	// Create the logical model for my new start/finish occurrence
 	private CreationCommand<ExecutionOccurrenceSpecification> wrap(
 			CreationCommand<ExecutionOccurrenceSpecification> create) {
-		return (create == null) ? null : create.andThen(this::create);
+
+		return (create == null) ? null : create.andThen(getEditingDomain(), this::create);
 	}
 
 	private void create(ExecutionOccurrenceSpecification occurrence) {
@@ -365,7 +366,8 @@ public class MExecutionImpl extends MElementImpl<ExecutionSpecification> impleme
 	 */
 	@Override
 	public Command remove() {
-		return new RemoveExecutionCommand(this, true);
+		return this.removeLogicalElement(RemoveExecutionCommand.class,
+				() -> new RemoveExecutionCommand(this, true));
 	}
 
 } // MExecutionImpl

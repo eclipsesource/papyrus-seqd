@@ -447,7 +447,8 @@ public class MMessageImpl extends MElementImpl<Message> implements MMessage {
 	 */
 	@Override
 	public Command remove() {
-		return new RemoveMessageCommand(this, true);
+		return this.removeLogicalElement(RemoveMessageCommand.class,
+				() -> new RemoveMessageCommand(this, true));
 	}
 
 } // MMessageImpl

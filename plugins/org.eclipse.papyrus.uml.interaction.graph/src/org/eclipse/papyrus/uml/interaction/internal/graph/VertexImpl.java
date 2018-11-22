@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.interaction.internal.graph;
 
 import static java.util.Objects.requireNonNull;
+import static org.eclipse.emf.ecore.util.EcoreUtil.isAncestor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -126,6 +127,13 @@ public class VertexImpl extends TaggableImpl<VertexImpl> implements Vertex {
 	@Override
 	public Stream<Group<Vertex>> groups() {
 		return immediatePredecessors().filter(Group.class::isInstance).map(Group.class::cast);
+	}
+
+	@Override
+	public boolean exists() {
+		Element interaction = graph.initial().getInteractionElement();
+		Element element = getInteractionElement();
+		return (interaction != null) && (element != null) && isAncestor(interaction, element);
 	}
 
 	@Override

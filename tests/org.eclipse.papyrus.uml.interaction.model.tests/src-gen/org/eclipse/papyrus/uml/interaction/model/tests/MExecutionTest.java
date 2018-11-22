@@ -12,9 +12,10 @@
  */
 package org.eclipse.papyrus.uml.interaction.model.tests;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.eclipse.emf.ecore.util.EcoreUtil.isAncestor;
 import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.gt;
 import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.lt;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -31,20 +32,23 @@ import java.util.OptionalInt;
 import java.util.function.Predicate;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.command.DeleteCommand;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
+import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.uml2.uml.ActionExecutionSpecification;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
+import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.InteractionFragment;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.MessageOccurrenceSpecification;
-import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -290,7 +294,6 @@ public class MExecutionTest extends MElementTest {
 	 *      int, int, org.eclipse.emf.ecore.EClass)
 	 * @generated NOT
 	 */
-	@SuppressWarnings("boxing")
 	public void testInsertNestedExecutionAfter__MElement_int_int_EClass() {
 
 		assertThat(getFixture().getNestedExecutions().size(), equalTo(1));
@@ -476,4 +479,30 @@ public class MExecutionTest extends MElementTest {
 		assertFalse(findTypeInChildren(lifeLineView.get(), "Shape_Execution_Specification").isPresent());
 	}
 
+	@Override
+	public void testExists() {
+		MExecution execution = getFixture();
+
+		super.testExists();
+
+		Command remove = execution.remove();
+		assumeThat("Cannot remove to continue test", remove, executable());
+		execute(remove);
+
+		assertThat("Should not exist", execution.exists(), is(false));
+	}
+
+	public void testExists_umlOnly() {
+		MExecution execution = getFixture();
+		MInteraction logicalModel = execution.getInteraction();
+
+		// Only delete the underlying UML
+		Command delete = DeleteCommand.create(domain, execution.getElement());
+		assumeThat("Cannot delete to continue test", delete, executable());
+		execute(delete);
+
+		assumeThat("Logical model execution detached", isAncestor((EObject)logicalModel, (EObject)execution),
+				is(true));
+		assertThat("Should not exist", execution.exists(), is(false));
+	}
 } // MExecutionTest

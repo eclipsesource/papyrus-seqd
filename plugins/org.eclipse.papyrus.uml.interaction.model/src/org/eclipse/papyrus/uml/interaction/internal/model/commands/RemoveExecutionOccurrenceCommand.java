@@ -12,14 +12,19 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.edit.command.DeleteCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionOccurrenceImpl;
+import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
+import org.eclipse.uml2.uml.Element;
 
 /**
  * A command to remove an execution occurrence.
  */
-public class RemoveExecutionOccurrenceCommand extends ModelCommand<MExecutionOccurrenceImpl> {
+public class RemoveExecutionOccurrenceCommand extends ModelCommand<MExecutionOccurrenceImpl> implements RemovalCommand<Element> {
 
 	/**
 	 * Initializes me.
@@ -36,4 +41,15 @@ public class RemoveExecutionOccurrenceCommand extends ModelCommand<MExecutionOcc
 		// Execution occurrences don't have any notation to worry about
 		return DeleteCommand.create(getEditingDomain(), getTarget().getElement());
 	}
+
+	@Override
+	public Collection<Element> getElementsToRemove() {
+		return Collections.singleton(getTarget().getElement());
+	}
+
+	@Override
+	public RemovalCommand<Element> chain(Command next) {
+		return andThen(getTarget().getEditingDomain(), next);
+	}
+
 }

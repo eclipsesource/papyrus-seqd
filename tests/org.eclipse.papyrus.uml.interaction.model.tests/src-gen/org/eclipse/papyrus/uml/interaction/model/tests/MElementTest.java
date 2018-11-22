@@ -90,6 +90,7 @@ import junit.framework.TestCase;
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#remove() <em>Remove</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#precedes(org.eclipse.papyrus.uml.interaction.model.MElement)
  * <em>Precedes</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#exists() <em>Exists</em>}</li>
  * </ul>
  * </p>
  * 
@@ -558,6 +559,17 @@ public abstract class MElementTest extends TestCase {
 		assumeThat("no following element", getFixture().following(), isPresent());
 		assertThat("precedes() not consistent with following()",
 				getFixture().precedes(getFixture().following().get()), is(true));
+	}
+
+	/**
+	 * Tests the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#exists() <em>Exists</em>}'
+	 * operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#exists()
+	 * @generated NOT
+	 */
+	public void testExists() {
+		assertThat("Fixture does not exist", getFixture().exists(), is(true));
 	}
 
 } // MElementTest

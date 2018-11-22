@@ -61,8 +61,11 @@ public class CreateSelfMessageNudgeTest {
 		/* assert */
 		/* top not moved */
 		assertEquals(execTop, interaction().getLifelines().get(0).getExecutions().get(0).getTop().getAsInt());
-		/* exec bottom to message bottom should be 50 (height of exec) */
-		assertEquals(50, interaction().getLifelines().get(0).getExecutions().get(0).getBottom().getAsInt()
+		/*
+		 * message's padding above is an additional 10 from the top of and its padding below is 30, the
+		 * vertical span of the message
+		 */
+		assertEquals(40, interaction().getLifelines().get(0).getExecutions().get(0).getBottom().getAsInt()
 				- interaction().getMessages().get(0).getBottom().getAsInt());
 	}
 
@@ -93,8 +96,11 @@ public class CreateSelfMessageNudgeTest {
 		/* top not moved */
 		assertEquals(execTop, interaction().getLifelines().get(0).getExecutions().get(0).getTop().getAsInt());
 
-		/* exec bottom to message bottom should be 50 (height of exec) */
-		assertEquals(50, interaction().getLifelines().get(0).getExecutions().get(0).getBottom().getAsInt()
+		/*
+		 * message's padding above is an additional 10 from the top of and its padding below is 30, the
+		 * vertical span of the message
+		 */
+		assertEquals(40, interaction().getLifelines().get(0).getExecutions().get(0).getBottom().getAsInt()
 				- interaction().getMessages().get(0).getBottom().getAsInt());
 	}
 

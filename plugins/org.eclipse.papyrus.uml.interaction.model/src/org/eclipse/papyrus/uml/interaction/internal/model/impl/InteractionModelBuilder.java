@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.uml.interaction.graph.Graph;
+import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
 import org.eclipse.uml2.uml.Element;
@@ -135,6 +136,22 @@ public class InteractionModelBuilder {
 			}
 
 			@Override
+			public MInteraction caseExecutionSpecification(ExecutionSpecification object) {
+				doSwitch(object.getStart());
+				doSwitch(object.getFinish());
+
+				return super.caseExecutionSpecification(object);
+			}
+
+			@Override
+			public MInteraction caseMessage(Message object) {
+				// A new message
+				messageBuilder(logicalModel).accept(object);
+
+				return super.caseMessage(object);
+			}
+
+			@Override
 			public MInteraction defaultCase(EObject object) {
 				return logicalModel;
 			}
@@ -142,6 +159,10 @@ public class InteractionModelBuilder {
 		};
 
 		return modelUpdater.doSwitch(newElement);
+	}
+
+	public static MInteraction add(MElement<? extends Element> context, Element newElement) {
+		return getInstance(context.getInteraction()).add(context.getElement(), newElement);
 	}
 
 	void build(MInteractionImpl interaction, Interaction uml) {

@@ -75,9 +75,11 @@ public interface Graph {
 	 * @see #interactionOrdering()
 	 */
 	default Stream<Vertex> vertices() {
-		return Stream.concat(Stream.of(initial()),
+		Predicate<Vertex> filter = Vertex::exists;
+
+		return Stream.concat(Stream.of(initial()).filter(filter),
 				// Always the interaction first, and the rest sorted after
-				initial().successors().sorted(interactionOrdering()));
+				initial().successors().filter(filter).sorted(interactionOrdering()));
 	}
 
 	/**
@@ -90,6 +92,8 @@ public interface Graph {
 	 */
 	default Stream<Vertex> vertices(EClass type) {
 		Predicate<Vertex> typeFilter = v -> type.isInstance(v.getInteractionElement());
+		typeFilter = typeFilter.and(Vertex::exists);
+
 		return Stream.concat(Stream.of(initial()).filter(typeFilter),
 				// Always the interaction first, and the rest sorted after
 				initial().successors().filter(typeFilter).sorted(interactionOrdering()));

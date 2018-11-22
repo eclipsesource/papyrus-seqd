@@ -99,4 +99,13 @@ public interface Visitable<T extends Visitable<T>> {
 	default Optional<Group<T>> group(GroupKind kind) {
 		return groups().filter(kind.predicate()).findAny();
 	}
+
+	/**
+	 * Query whether this element still properly exists in the {@linkplain #graph() graph}. It may not exist
+	 * if, for example, the model element that it represents has since been deleted.
+	 * 
+	 * @return whether this element exists
+	 */
+	boolean exists();
+
 }

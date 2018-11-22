@@ -282,13 +282,11 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 						() -> reconnectSource(connector, newAttachedShape.get(), newYPosition).orElse(null)));
 				Optional<MMessageEnd> otherEnd = end.getOtherEnd();
 				otherEnd.flatMap(this::handleSelfMessageChange).ifPresent(commandSink);
-				otherEnd.flatMap(this::handleOppositeSendOrReplyMessage).ifPresent(commandSink);
 			} else if (end.isReceive()) {
 				commandSink.accept(defer(
 						() -> reconnectTarget(connector, newAttachedShape.get(), newYPosition).orElse(null)));
 				Optional<MMessageEnd> otherEnd = end.getOtherEnd();
 				otherEnd.flatMap(this::handleSelfMessageChange).ifPresent(commandSink);
-				otherEnd.flatMap(this::handleOppositeSendOrReplyMessage).ifPresent(commandSink);
 			} // else don't know what to do with it
 		}
 

@@ -93,7 +93,8 @@ public class MExecutionOccurrenceImpl extends MOccurrenceImpl<ExecutionOccurrenc
 
 	@Override
 	public Command remove() {
-		return new RemoveExecutionOccurrenceCommand(this);
+		return this.removeLogicalElement(RemoveExecutionOccurrenceCommand.class,
+				() -> new RemoveExecutionOccurrenceCommand(this));
 	}
 
 	/**

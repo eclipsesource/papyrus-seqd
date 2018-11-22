@@ -162,8 +162,8 @@ public class CreateMessagePaddingTest {
 		/* act */
 		execute(command);
 
-		/* assert */
-		assertEquals(execution1Top + 25, lifeline1().getExecutions().get(0).getTop().getAsInt());
+		/* assert: padding is 10 and we create the message at a distance of 5, so nudge by 5 */
+		assertEquals(execution1Top + 5, lifeline1().getExecutions().get(0).getTop().getAsInt());
 		assertEquals(lifelineBottom + 25, message1().getSend().get().getTop().getAsInt());
 		assertEquals(lifelineBottom + 25, message1().getReceive().get().getTop().getAsInt());
 	}
@@ -183,8 +183,8 @@ public class CreateMessagePaddingTest {
 		/* act */
 		execute(command);
 
-		/* assert */
-		assertEquals(execution1Top + 25, lifeline2().getExecutions().get(0).getTop().getAsInt());
+		/* assert: padding is 10 and we create the message at a distance of 5, so nudge by 5 */
+		assertEquals(execution1Top + 5, lifeline2().getExecutions().get(0).getTop().getAsInt());
 		assertEquals(lifelineBottom + 25, message1().getSend().get().getTop().getAsInt());
 		assertEquals(lifelineBottom + 25, message1().getReceive().get().getTop().getAsInt());
 	}
