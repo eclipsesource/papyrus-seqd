@@ -15,8 +15,12 @@ import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Mo
 
 import com.google.common.eventbus.EventBus;
 
+import java.beans.PropertyChangeEvent;
+
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
+import org.eclipse.draw2d.ConnectionLayer;
+import org.eclipse.draw2d.ConnectionRouter;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineDecoration;
@@ -24,27 +28,38 @@ import org.eclipse.draw2d.RotatableDecoration;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.gef.DragTracker;
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.Request;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
+import org.eclipse.gmf.runtime.draw2d.ui.internal.figures.ConnectionLayerEx;
 import org.eclipse.gmf.runtime.draw2d.ui.mapmode.IMapMode;
 import org.eclipse.gmf.runtime.notation.ArrowType;
+import org.eclipse.gmf.runtime.notation.NotationPackage;
+import org.eclipse.gmf.runtime.notation.Routing;
+import org.eclipse.gmf.runtime.notation.RoutingStyle;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.MessageFigure;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.ConnectionFigureMagnetHelper;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LogicalModelElementSemanticEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageBendpointsEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageEndpointEditPolicy;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.locators.SelfMessageRouter;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.MessageMoveTracker;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceConnectionSelectionTracker;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.UMLPackage;
 
+@SuppressWarnings("restriction")
 public class MessageEditPart extends ConnectionNodeEditPart implements ISequenceEditPart {
 
 	private final EventBus bus = new EventBus();
 
 	private ConnectionFigureMagnetHelper magnetHelper;
+
+	private SelfMessageRouter selfMessageRouter;
 
 	public MessageEditPart(View view) {
 		super(view);
@@ -79,6 +94,11 @@ public class MessageEditPart extends ConnectionNodeEditPart implements ISequence
 			updateArrowDecoration();
 			refreshLineType();
 		}
+	}
+
+	@Override
+	protected void refreshBendpoints() {
+		// nothing to refresh, as bendpoints are not used
 	}
 
 	protected void updateArrowDecoration() {
@@ -177,6 +197,43 @@ public class MessageEditPart extends ConnectionNodeEditPart implements ISequence
 	@Override
 	protected void refreshRouterChange() {
 		// No bendpoints in messages to refresh
+	}
+
+	@Override
+	protected void handlePropertyChangeEvent(PropertyChangeEvent event) {
+
+	}
+
+	@Override
+	protected void installRouter() {
+		ConnectionLayer cLayer = (ConnectionLayer)getLayer(LayerConstants.CONNECTION_LAYER);
+		RoutingStyle style = (RoutingStyle)((View)getModel())
+				.getStyle(NotationPackage.Literals.ROUTING_STYLE);
+
+		if (style != null && cLayer instanceof ConnectionLayerEx) {
+
+			ConnectionLayerEx cLayerEx = (ConnectionLayerEx)cLayer;
+			Routing routing = style.getRouting();
+			if (Routing.MANUAL_LITERAL == routing) {
+				getConnectionFigure().setConnectionRouter(cLayerEx.getObliqueRouter());
+			} else if (Routing.RECTILINEAR_LITERAL == routing) {
+				getConnectionFigure().setConnectionRouter(getSelfMessageRouter());
+			} else if (Routing.TREE_LITERAL == routing) {
+				getConnectionFigure().setConnectionRouter(cLayerEx.getTreeRouter());
+			}
+
+		}
+
+		refreshRouterChange();
+	}
+
+	private ConnectionRouter getSelfMessageRouter() {
+		if (selfMessageRouter == null) {
+			int minimumWidth = Activator.getDefault().getLayoutConstraints(getEditingDomain())
+					.getMinimumWidth(ViewTypes.MESSAGE);
+			selfMessageRouter = new SelfMessageRouter(minimumWidth);
+		}
+		return selfMessageRouter;
 	}
 
 	@Override
