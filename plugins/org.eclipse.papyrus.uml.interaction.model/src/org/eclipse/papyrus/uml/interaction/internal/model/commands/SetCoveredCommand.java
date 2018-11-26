@@ -282,11 +282,13 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 						() -> reconnectSource(connector, newAttachedShape.get(), newYPosition).orElse(null)));
 				Optional<MMessageEnd> otherEnd = end.getOtherEnd();
 				otherEnd.flatMap(this::handleSelfMessageChange).ifPresent(commandSink);
+				otherEnd.flatMap(this::handleOppositeSendOrReplyMessage).ifPresent(commandSink);
 			} else if (end.isReceive()) {
 				commandSink.accept(defer(
 						() -> reconnectTarget(connector, newAttachedShape.get(), newYPosition).orElse(null)));
 				Optional<MMessageEnd> otherEnd = end.getOtherEnd();
 				otherEnd.flatMap(this::handleSelfMessageChange).ifPresent(commandSink);
+				otherEnd.flatMap(this::handleOppositeSendOrReplyMessage).ifPresent(commandSink);
 			} // else don't know what to do with it
 		}
 
@@ -351,7 +353,8 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 
 		if (endToMove.isPresent() && endToMove.get() instanceof MOccurrenceImpl<?>) {
 			MOccurrenceImpl<?> occurrence = (MOccurrenceImpl<?>)endToMove.get();
-			if (occurrence.getCovered().filter(l -> l != lifeline).isPresent() && occurrence != getTarget()) {
+			if (occurrence.getCovered().filter(equalTo(lifeline).negate()).isPresent()
+					&& !equalTo(occurrence).test(getTarget())) {
 				OptionalInt y = targetY.orElse(occurrence.getBottom());
 				if (anyDestructionOccurrenceBefore(y)) {
 					return Optional.of(UnexecutableCommand.INSTANCE);

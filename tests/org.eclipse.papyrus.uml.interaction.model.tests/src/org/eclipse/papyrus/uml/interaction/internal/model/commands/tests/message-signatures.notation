@@ -188,16 +188,16 @@
       <owner xmi:type="uml:Interaction" href="message-signatures.uml#_m-OZIM2MEeibJKzk6Q8eKg"/>
     </styles>
     <element xmi:type="uml:Interaction" href="message-signatures.uml#_m-OZIM2MEeibJKzk6Q8eKg"/>
-    <edges xmi:type="notation:Connector" xmi:id="_-rtiIM2MEeibJKzk6Q8eKg" type="Edge_Message" source="_slnfc82MEeibJKzk6Q8eKg" target="_tQrOo82MEeibJKzk6Q8eKg">
+    <edges xmi:type="notation:Connector" xmi:id="_-rtiIM2MEeibJKzk6Q8eKg" type="Edge_Message" source="_slnfc82MEeibJKzk6Q8eKg" target="_-r1d8M2MEeibJKzk6Q8eKg">
       <element xmi:type="uml:Message" href="message-signatures.uml#_-ropoM2MEeibJKzk6Q8eKg"/>
       <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-rtiIc2MEeibJKzk6Q8eKg"/>
       <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_-rtiIs2MEeibJKzk6Q8eKg" id="57"/>
-      <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_-rtiI82MEeibJKzk6Q8eKg" id="57"/>
+      <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_-rtiI82MEeibJKzk6Q8eKg" id="start"/>
     </edges>
-    <edges xmi:type="notation:Connector" xmi:id="_-rxzkM2MEeibJKzk6Q8eKg" type="Edge_Message" source="_tQrOo82MEeibJKzk6Q8eKg" target="_slnfc82MEeibJKzk6Q8eKg">
+    <edges xmi:type="notation:Connector" xmi:id="_-rxzkM2MEeibJKzk6Q8eKg" type="Edge_Message" source="_-r1d8M2MEeibJKzk6Q8eKg" target="_slnfc82MEeibJKzk6Q8eKg">
       <element xmi:type="uml:Message" href="message-signatures.uml#_-rwlcM2MEeibJKzk6Q8eKg"/>
       <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-rxzkc2MEeibJKzk6Q8eKg"/>
-      <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_-rxzks2MEeibJKzk6Q8eKg" id="97"/>
+      <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_-rxzks2MEeibJKzk6Q8eKg" id="end"/>
       <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_-rxzk82MEeibJKzk6Q8eKg" id="97"/>
     </edges>
   </notation:Diagram>
