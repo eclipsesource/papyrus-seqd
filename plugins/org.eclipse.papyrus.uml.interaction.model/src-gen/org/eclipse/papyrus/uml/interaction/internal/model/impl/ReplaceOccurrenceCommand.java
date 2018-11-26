@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.ModelCommand;
@@ -59,13 +58,13 @@ public class ReplaceOccurrenceCommand extends ModelCommand<MExecutionOccurrenceI
 		// Likewise if the message end is not an occurrence (e.g., a gate)
 		if ((started.isPresent() == finished.isPresent())
 				|| !(end.getElement() instanceof OccurrenceSpecification)) {
-			return UnexecutableCommand.INSTANCE;
+			return bomb();
 		}
 
 		// Moreover, it does not make sense to replace an execution start by a message send
 		// nor an execution finish by a message receive
 		if ((getTarget().isStart() != end.isReceive()) || (getTarget().isFinish() != end.isSend())) {
-			return UnexecutableCommand.INSTANCE;
+			return bomb();
 		}
 
 		// First, delete me

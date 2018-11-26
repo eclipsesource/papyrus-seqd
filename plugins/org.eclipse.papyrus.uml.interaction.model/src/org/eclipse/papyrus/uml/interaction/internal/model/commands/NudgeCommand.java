@@ -20,7 +20,6 @@ import java.util.Set;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.IdentityCommand;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Diagram;
@@ -197,7 +196,7 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 				}
 			} else if (view instanceof Diagram) {
 				// Can't nudge the diagram, of course
-				chain(UnexecutableCommand.INSTANCE);
+				chain(bomb());
 			} else if (isMessageEndNudgeCommand(element)) {
 				/*
 				 * If this is an explicit nudge command for a message end, make sure that this end is nudged,

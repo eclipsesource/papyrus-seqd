@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandWrapper;
+import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gmf.runtime.notation.View;
@@ -325,6 +326,15 @@ public abstract class ModelCommand<T extends MElementImpl<?>> extends CommandWra
 
 	protected Command defer(Supplier<? extends Command> futureCommand) {
 		return DependencyContext.defer(futureCommand);
+	}
+
+	/**
+	 * Obtain an unexecutable command, a bomb to place in a compound command that will disable it.
+	 * 
+	 * @return an unexecutable command
+	 */
+	protected Command bomb() {
+		return UnexecutableCommand.INSTANCE;
 	}
 
 	protected static void findElementsBelow(int yPosition, List<MElement<? extends Element>> elementsBelow,

@@ -35,7 +35,6 @@ import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.IdentityCommand;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Shape;
@@ -138,7 +137,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 
 		// Can't put an interaction fragment on a lifeline that is already destroyed
 		if (!existsAt(lifeline, newYPosition)) {
-			return UnexecutableCommand.INSTANCE;
+			return bomb();
 		}
 
 		if ((getTarget() instanceof MDestruction) && lifeline.getDiagramView().isPresent()) {
@@ -151,7 +150,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			// Can't destroy the lifeline if it has occurrences following the place where
 			// the destruction is to go
 			if (!validateDestruction(newYPosition)) {
-				return UnexecutableCommand.INSTANCE;
+				return bomb();
 			}
 
 			// Move the X shape
@@ -164,7 +163,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			// Can't create the lifeline if it has occurrences preceding the place where the
 			// creation receive end is to go
 			if (!validateCreation(createPosition)) {
-				return UnexecutableCommand.INSTANCE;
+				return bomb();
 			}
 
 			Connector messageView = Optional.ofNullable(creation.getOwner()).flatMap(MMessage::getDiagramView)
@@ -181,7 +180,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 		} else if ((getTarget() instanceof MExecutionOccurrence)
 				&& getTarget().getExecution().filter(splitsExecution(lifeline)).isPresent()) {
 
-			result = UnexecutableCommand.INSTANCE;
+			result = bomb();
 		} else {
 			// Handle a dependent execution
 			result = dependencies(getTarget()).map(chaining(result)).orElse(result);
@@ -362,7 +361,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 					&& !equalTo(occurrence).test(getTarget())) {
 				OptionalInt y = targetY.orElse(occurrence.getBottom());
 				if (anyDestructionOccurrenceBefore(y)) {
-					return Optional.of(UnexecutableCommand.INSTANCE);
+					return Optional.of(bomb());
 				}
 
 				return Optional.of(new SetCoveredCommand(occurrence, lifeline, y, false));
