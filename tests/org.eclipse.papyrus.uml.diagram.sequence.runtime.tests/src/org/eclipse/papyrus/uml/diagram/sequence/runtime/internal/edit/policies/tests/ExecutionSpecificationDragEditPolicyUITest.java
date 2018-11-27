@@ -24,6 +24,7 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Edito
 import static org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes.LIFELINE_BODY;
 import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.gt;
 import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.gte;
+import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.lt;
 import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -174,13 +175,14 @@ public class ExecutionSpecificationDragEditPolicyUITest {
 		}
 
 		/**
-		 * Verify that a move that would require semantic re-ordering is blocked without the keyboard
-		 * modifier.
+		 * Per <a href="https://github.com/eclipsesource/papyrus-seqd/issues/26">Issue #26</a>, attempt to
+		 * cross over another execution and verify that it's just bumped out of the way.
 		 */
 		@Test
-		public void attemptMoveWithSemanticReordering() {
+		public void attemptMoveExecutionAcrossAnother() {
 			int delta = 60;
 			Rectangle execBounds = getBounds(execEP);
+			Rectangle exec2Bounds = getBounds(exec2EP);
 
 			// First, select the execution to activate selection handles
 			Point grabAt = getCenter(execEP);
@@ -188,8 +190,13 @@ public class ExecutionSpecificationDragEditPolicyUITest {
 
 			Point dropAt = new Point(grabAt.x(), grabAt.y() + delta);
 			editor.drag(grabAt, dropAt);
+			execBounds.translate(0, delta);
 
-			assertThat("Execution moved", execEP, isBounded(isRect(execBounds)));
+			assertThat("Execution not moved", execEP, isBounded(isRect(execBounds)));
+
+			assertThat("Other execution not bumped out of the way", exec2EP,
+					isAt(GEFMatchers.is(exec2Bounds.x()), gt(execBounds.bottom())));
+
 		}
 
 		/**
@@ -383,9 +390,8 @@ public class ExecutionSpecificationDragEditPolicyUITest {
 		public void attemptExecutionToSpanMessage() {
 			int delta = -75;
 
-			PointList sync2Geom = getPoints(sync2EP);
 			PointList async3Geom = getPoints(async3EP);
-			PointList reply2Geom = getPoints(reply2EP);
+			Rectangle exec2Geom = getBounds(exec2EP);
 
 			// First, select the execution to activate selection handles
 			Point grabAt = getCenter(exec2EP);
@@ -394,12 +400,16 @@ public class ExecutionSpecificationDragEditPolicyUITest {
 			Point dropAt = new Point(grabAt.x(), grabAt.y() + delta);
 			editor.drag(grabAt, dropAt);
 
-			assertThat("Request message 2 was changed", sync2EP,
-					runs(isPoint(sync2Geom.getFirstPoint()), isPoint(sync2Geom.getLastPoint())));
-			assertThat("Reply message 2 was changed", reply2EP,
-					runs(isPoint(reply2Geom.getFirstPoint()), isPoint(reply2Geom.getLastPoint())));
-			assertThat("Async message 3 was changed", async3EP,
-					runs(isPoint(async3Geom.getFirstPoint()), isPoint(async3Geom.getLastPoint())));
+			assertThat("Execution not moved up", exec2EP, isAt(is(exec2Geom.x()), lt(exec2Geom.y())));
+			exec2Geom = getBounds(exec2EP); // Refresh it
+
+			PointList newAsync3Geom = getPoints(async3EP);
+
+			assertThat("Async message not bumped out of the way", async3EP,
+					runs(isPoint(is(async3Geom.getFirstPoint().x()), lt(exec2Geom.y())),
+							isPoint(is(async3Geom.getLastPoint().x()), lt(exec2Geom.y()))));
+			assertThat("Async message 3 is misshapen", newAsync3Geom.getLastPoint().y(),
+					is(newAsync3Geom.getFirstPoint().y()));
 		}
 
 	}

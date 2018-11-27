@@ -13,14 +13,16 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
 import static java.lang.Math.abs;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.getUpdatedSourceLocation;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.getUpdatedTargetLocation;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.isAllowSemanticReordering;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.isForce;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.CommandUtil.injectViewInto;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil.getSort;
-import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
-import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
-import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
+import static org.eclipse.papyrus.uml.interaction.model.util.InteractionFragments.getObstacle;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToInt;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToObj;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.mapToInt;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.BEHAVIOR_EXECUTION_SPECIFICATION;
 
@@ -49,6 +51,7 @@ import org.eclipse.gmf.runtime.diagram.ui.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewRequest;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.Connector;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.emf.gmf.command.GMFtoEMFCommandWrapper;
 import org.eclipse.papyrus.infra.gmfdiag.common.commands.SelectAndExecuteCommand;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
@@ -68,6 +71,8 @@ import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
+import org.eclipse.papyrus.uml.interaction.model.util.Lifelines;
+import org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -386,32 +391,42 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		// This is known to exist because we're manipulating an existing message in the diagram
 		MMessage message = getInteraction().getMessage(_message.get()).get();
-		OptionalInt yPosition = OptionalInt.of(request.getLocation().y());
+		int y = request.getLocation().y();
+		OptionalInt yPosition = OptionalInt.of(y);
+
+		org.eclipse.emf.common.command.Command result = null;
+		// Check for semantic re-ordering if we're not connecting to an execution
+		if (!getExecutionFinish(lifeline.get(), request.getLocation()).isPresent()
+				// Or if we're moving both ends and the other is not connecting to an execution
+				&& !(isForce(request) && message.getReceiver()
+						.flatMap(rcvr -> getExecutionStart(rcvr, getUpdatedTargetLocation(request)))
+						.isPresent())) {
+			result = getNudgeObstacleCommand(request, message.getReceive().get(), y); // XXX Send?
+		}
 
 		// If the message didn't have a send end, we wouldn't be reconnecting it
 		MMessageEnd sourceEnd = message.getSend().get();
 		org.eclipse.emf.common.command.Command createFinish = null;
-		if (sourceEnd.getFinishedExecution().isPresent() && isAllowSemanticReordering(request)
+		if (sourceEnd.isFinish() && isAllowSemanticReordering(request)
 				&& !isAttachingToOtherLifeline(sourceEnd)) {
 			// Disconnect the message end from the execution that it finishes
 			createFinish = sourceEnd.getFinishedExecution().get().createFinish();
 		}
 		org.eclipse.emf.common.command.Command setCovered = sourceEnd.setCovered(lifeline.get(), yPosition);
-		Command result = wrap(chain(createFinish, setCovered));
+		result = chain(chain(result, createFinish), setCovered);
 
 		result = constrainReconnection(request, sourceEnd).orElse(result);
 
-		return result;
+		return wrap(result);
 	}
 
 	protected boolean isAttachingToOtherLifeline(MMessageEnd end) {
 		return getLifeline().isPresent() && !end.getCovered().equals(getLifeline());
 	}
 
-	protected Optional<Command> constrainReconnection(ReconnectRequest request, MMessageEnd end) {
-		// Disallow semantic reordering below the next element on the lifeline.
-		// But if this is a self-message, then don't worry about crossing over the
-		// other end, because it's also moving
+	protected Optional<org.eclipse.emf.common.command.Command> constrainReconnection(ReconnectRequest request,
+			MMessageEnd end) {
+
 		Optional<MLifeline> lifeline = getLifeline(); // The lifeline under the pointer
 		boolean selfMessage = end.getOtherEnd().flatMap(MMessageEnd::getCovered).equals(lifeline);
 		boolean wasSelfMessage = end.getOtherEnd().flatMap(MMessageEnd::getCovered).equals(end.getCovered());
@@ -421,31 +436,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				&& !PrivateRequestUtils.isAllowSemanticReordering(request) //
 				&& isAttachingToOtherLifeline(end)) {
 
-			return Optional.of(bomb());
-		}
-
-		Optional<? extends MElement<?>> successor = lifeline.flatMap(
-				ll -> ll.following(selfMessage && end.isSend() ? end.getOtherEnd().orElse(end) : end));
-		// To allow connection to an execution specification on another lifeline, we must
-		// compare Y positions to the start occurrence of the execution or the finish,
-		// never the execution itself
-		if (successor.filter(MExecution.class::isInstance).isPresent()) {
-			successor = successor.map(MExecution.class::cast).flatMap(MExecution::getFinish);
-		}
-		if (!isAllowSemanticReordering(request)
-				&& successor.filter(above(request.getLocation().y())).isPresent()) {
-			return Optional.of(bomb());
-		} else {
-			// And above the previous on the lifeline (accounting for self-message)
-			Optional<? extends MElement<?>> predecessor = lifeline.flatMap(
-					ll -> ll.preceding(selfMessage && end.isReceive() ? end.getOtherEnd().orElse(end) : end));
-			if (predecessor.filter(MExecution.class::isInstance).isPresent()) {
-				predecessor = predecessor.map(MExecution.class::cast).flatMap(MExecution::getStart);
-			}
-			if (!isAllowSemanticReordering(request)
-					&& predecessor.filter(below(request.getLocation().y())).isPresent()) {
-				return Optional.of(bomb());
-			}
+			return Optional.of(emfBomb());
 		}
 
 		// Also, if this is a self-message, then we have a minimal gap to maintain or if it's
@@ -453,13 +444,13 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		// the message (which is the force mode of the request)
 		if (selfMessage && wasSelfMessage && !isForce(request)) {
 			if (MessageUtil.isSynchronous(end.getOwner().getElement().getMessageSort())) {
-				return Optional.of(bomb());
+				return Optional.of(emfBomb());
 			} else {
 				OptionalInt otherY = end.getOtherEnd().map(MElement::getTop).orElse(OptionalInt.empty());
 				if (otherY.isPresent()
 						&& (abs(request.getLocation().y() - otherY.getAsInt()) < getLayoutConstraints()
 								.getMinimumHeight(ViewTypes.MESSAGE))) {
-					return Optional.of(bomb());
+					return Optional.of(emfBomb());
 				}
 			}
 		}
@@ -471,6 +462,10 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		return UnexecutableCommand.INSTANCE;
 	}
 
+	static org.eclipse.emf.common.command.Command emfBomb() {
+		return org.eclipse.emf.common.command.UnexecutableCommand.INSTANCE;
+	}
+
 	@Override
 	protected Command getReconnectTargetCommand(ReconnectRequest request) {
 		ConnectionEditPart connectionEP = (ConnectionEditPart)request.getConnectionEditPart();
@@ -480,7 +475,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		if (!_message.isPresent() || !lifeline.isPresent()) {
 			// Only know how to reconnect messages on lifelines (so far)
-			return UnexecutableCommand.INSTANCE;
+			return bomb();
 		}
 
 		// This is known to exist because we're manipulating an existing message in the diagram
@@ -495,17 +490,27 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		}
 		OptionalInt yPosition = OptionalInt.of(y);
 
+		org.eclipse.emf.common.command.Command result = null;
+		// Check for semantic re-ordering if we're not connecting to an execution
+		if (!getExecutionStart(lifeline.get(), request.getLocation()).isPresent()
+				// Or if we're moving both ends and the other is not connecting to an execution
+				&& !(isForce(request) && message.getSender()
+						.flatMap(sndr -> getExecutionFinish(sndr, getUpdatedSourceLocation(request)))
+						.isPresent())) {
+			result = getNudgeObstacleCommand(request, message.getReceive().get(), y);
+		}
+
 		// If the message didn't have a receive end, we wouldn't be reconnecting it
 		MMessageEnd targetEnd = message.getReceive().get();
 		org.eclipse.emf.common.command.Command createStart = null;
-		if (targetEnd.getStartedExecution().isPresent() && isAllowSemanticReordering(request)
+		if (targetEnd.isStart() && isAllowSemanticReordering(request)
 				&& !isAttachingToOtherLifeline(targetEnd)) {
 			// Disconnect the message end from the execution that it starts
 			createStart = targetEnd.getStartedExecution().get().createStart();
 		}
 		// Then, set coverage
 		org.eclipse.emf.common.command.Command setCovered = targetEnd.setCovered(lifeline.get(), yPosition);
-		Command result = wrap(chain(createStart, setCovered));
+		result = chain(chain(result, createStart), setCovered);
 
 		result = constrainReconnection(request, targetEnd).orElse(result);
 
@@ -524,17 +529,17 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				Connector connector = (Connector)connectionEP.getNotationView();
 				org.eclipse.emf.common.command.Command straighten = getDiagramHelper()
 						.configureStraightMessageConnector(message.getElement(), connector);
-				result = result.chain(wrap(straighten));
+				result = chain(result, straighten);
 			} else if (!wasSelfMessage && isNowSelfMessage) {
 				// Change the routing to rectilinear and add requisite bendpoints
 				Connector connector = (Connector)connectionEP.getNotationView();
 				org.eclipse.emf.common.command.Command bend = getDiagramHelper()
 						.configureSelfMessageConnector(message.getElement(), connector);
-				result = result.chain(wrap(bend));
+				result = chain(result, bend);
 			}
 		}
 
-		return result;
+		return wrap(result);
 	}
 
 	protected boolean shouldCreateExecution() {
@@ -546,12 +551,44 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 	}
 
 	private Optional<MExecutionOccurrence> getExecutionStart(MLifeline lifeline, Point location) {
-		OptionalInt y = OptionalInt.of(location.y());
-		return as(Optional.of(lifeline)
-				.flatMap(ll -> ll.getExecutions().stream()
-						.filter(exec -> exec.getDiagramView().isPresent() && exec.getTop().equals(y))
-						.findFirst())
-				.flatMap(MExecution::getStart), MExecutionOccurrence.class);
+		return flatMapToObj(mapToInt(Optional.ofNullable(location), Point::y),
+				y -> Lifelines.getExecutionStart(lifeline, y));
+	}
+
+	private Optional<MExecutionOccurrence> getExecutionFinish(MLifeline lifeline, Point location) {
+		return flatMapToObj(mapToInt(Optional.ofNullable(location), Point::y),
+				y -> Lifelines.getExecutionFinish(lifeline, y));
+	}
+
+	private org.eclipse.emf.common.command.Command getNudgeObstacleCommand(ReconnectRequest request,
+			MMessageEnd end, int newY) {
+
+		org.eclipse.emf.common.command.Command result = null;
+
+		// Check for semantic re-ordering
+		if (!isAllowSemanticReordering(request)) {
+			Optional<MElement<? extends Element>> obstacle = getObstacle(end, newY < end.getTop().getAsInt(),
+					newY);
+
+			// If there's an obstacle, bump it and everything following (preceding) out of the way
+			result = obstacle.map(obs -> {
+				// Both diagram views exist if we detected the obstacle
+				OptionalInt padding = getLayoutHelper().getPadding(end.getOwner().getDiagramView().get(),
+						(View)obs.getDiagramView().get());
+
+				if (!padding.isPresent()) {
+					return null;
+				} else if (LogicalModelPredicates.above(end).test(obs)) {
+					// Negative nudge to move it upwards
+					return obs.nudge(newY - obs.getBottom().getAsInt() - padding.getAsInt());
+				} else {
+					// Positive nudge to move it downwards
+					return obs.nudge(newY - obs.getTop().getAsInt() + padding.getAsInt());
+				}
+			}).orElse(null);
+		}
+
+		return result;
 	}
 
 	//

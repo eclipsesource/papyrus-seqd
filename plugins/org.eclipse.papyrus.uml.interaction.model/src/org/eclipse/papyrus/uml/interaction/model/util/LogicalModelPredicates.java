@@ -117,6 +117,21 @@ public class LogicalModelPredicates {
 	}
 
 	/**
+	 * Are two logical model elements equal? Elements are equal if their {@linkplain MElement#getElement()
+	 * underlying UML elements} are identical.
+	 * 
+	 * @param element
+	 *            an element
+	 * @param other
+	 *            another element
+	 * @return whether the elements represent the same UML elements
+	 */
+	public static boolean equal(MElement<? extends Element> element, MElement<? extends Element> other) {
+		return (element == null) ? (other == null)
+				: (other != null) && (other.getElement() == element.getElement());
+	}
+
+	/**
 	 * Obtain a predicate matching elements that are equal to some {@code element}. Elements are equal if
 	 * their {@linkplain MElement#getElement() underlying UML elements} are identical.
 	 * 

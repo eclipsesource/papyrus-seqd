@@ -32,6 +32,7 @@ import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition;
 
 /**
  * Protocol for a pluggable utility that provides access to and modification of the layout of a sequence
@@ -510,4 +511,98 @@ public interface LayoutHelper {
 		// Sort things that we don't know their top to, well, the bottom
 		return v -> getBottom(v).orElse(Integer.MAX_VALUE);
 	}
+
+	/**
+	 * Queries the padding required between two views.
+	 * 
+	 * @param view1
+	 *            a view
+	 * @param view2
+	 *            another view
+	 * @return the padding required between them
+	 */
+	default OptionalInt getPadding(View view1, View view2) {
+		LayoutConstraints constraints = getConstraints();
+
+		switch (getRelativePosition(view1, view2)) {
+			case ABOVE:
+				return OptionalInt.of(constraints.getPadding(RelativePosition.BOTTOM, view1)
+						+ constraints.getPadding(RelativePosition.TOP, view2));
+			case BELOW:
+				return OptionalInt.of(constraints.getPadding(RelativePosition.TOP, view1)
+						+ constraints.getPadding(RelativePosition.BOTTOM, view2));
+			case LEFT:
+				return OptionalInt.of(constraints.getPadding(RelativePosition.RIGHT, view1)
+						+ constraints.getPadding(RelativePosition.LEFT, view2));
+			case RIGHT:
+				return OptionalInt.of(constraints.getPadding(RelativePosition.LEFT, view1)
+						+ constraints.getPadding(RelativePosition.RIGHT, view2));
+			default:
+				return OptionalInt.empty();
+		}
+	}
+
+	/**
+	 * Query the position of {@code view1} relative to {@code view2}.
+	 * 
+	 * @param view1
+	 *            a view
+	 * @param view2
+	 *            another view
+	 * @return the positional relationship of {@code view1} relative to {@code view2} (never {@code null})
+	 */
+	default RelativeRelationship getRelativePosition(View view1, View view2) {
+		RelativeRelationship result = RelativeRelationship.OVERLAP;
+
+		OptionalInt top1 = getTop(view1);
+		OptionalInt bottom1 = getBottom(view1);
+		OptionalInt top2 = getTop(view2);
+		OptionalInt bottom2 = getBottom(view2);
+
+		if (bottom1.isPresent() && top2.isPresent() && (bottom1.getAsInt() <= top2.getAsInt())) {
+			result = RelativeRelationship.ABOVE;
+		} else if (top1.isPresent() && bottom2.isPresent() && (top1.getAsInt() >= bottom2.getAsInt())) {
+			result = RelativeRelationship.BELOW;
+		}
+
+		if (!(view1 instanceof Node) || !(view2 instanceof Node)) {
+			// Edges only have vertical padding
+			return result;
+		}
+
+		if (result != RelativeRelationship.OVERLAP) {
+			// Priority to vertical layout concerns
+			return result;
+		}
+
+		Node node1 = (Node)view1;
+		Node node2 = (Node)view2;
+
+		// Nodes can also be left or right of one another
+
+		int left1 = getLeft(node1);
+		int right1 = getRight(node1);
+		int left2 = getLeft(node2);
+		int right2 = getRight(node2);
+
+		if (right1 <= left2) {
+			result = RelativeRelationship.LEFT;
+		} else if (left1 >= right2) {
+			result = RelativeRelationship.RIGHT;
+		}
+
+		return result;
+	}
+
+	//
+	// Nested types
+	//
+
+	/**
+	 * The relative positioning relationship between two views in the diagram.
+	 */
+	enum RelativeRelationship {
+		ABOVE, BELOW, LEFT, RIGHT, OVERLAP;
+	}
+
 }

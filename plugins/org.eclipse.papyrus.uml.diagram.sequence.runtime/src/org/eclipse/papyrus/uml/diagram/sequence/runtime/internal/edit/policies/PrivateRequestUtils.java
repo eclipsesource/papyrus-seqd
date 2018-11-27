@@ -32,6 +32,10 @@ public final class PrivateRequestUtils {
 
 	private static final String ORIGINAL_TARGET_PARAMETER = "__orig_target__"; //$NON-NLS-1$
 
+	private static final String UPDATED_SOURCE_PARAMETER = "__new_source__"; //$NON-NLS-1$
+
+	private static final String UPDATED_TARGET_PARAMETER = "__new_target__"; //$NON-NLS-1$
+
 	private static final String ALLOW_SEMANTIC_REORDERING_PARAMETER = "__allow_semantic_reordering__"; //$NON-NLS-1$
 
 	private static final String CHANGE_BOUNDS_REQUEST_PARAMETER = "__change_bounds_request__"; //$NON-NLS-1$
@@ -39,6 +43,7 @@ public final class PrivateRequestUtils {
 	private static final String[] PARAMETERS = { //
 			FORCE_PARAMETER, //
 			ORIGINAL_MOUSE_PARAMETER, ORIGINAL_SOURCE_PARAMETER, ORIGINAL_TARGET_PARAMETER, //
+			UPDATED_SOURCE_PARAMETER, UPDATED_TARGET_PARAMETER, //
 			ALLOW_SEMANTIC_REORDERING_PARAMETER, CHANGE_BOUNDS_REQUEST_PARAMETER, //
 	};
 
@@ -121,6 +126,29 @@ public final class PrivateRequestUtils {
 	}
 
 	/**
+	 * Queries the updated source anchor location of a {@code request}.
+	 * 
+	 * @param request
+	 *            a request
+	 * @return the updated source anchor location
+	 */
+	static Point getUpdatedSourceLocation(Request request) {
+		return getParameter(request, UPDATED_SOURCE_PARAMETER, Point.class, null);
+	}
+
+	/**
+	 * Set the updated source anchor location of a {@code request}.
+	 * 
+	 * @param request
+	 *            a request
+	 * @param location
+	 *            the updated source anchor location
+	 */
+	static void setUpdatedSourceLocation(Request request, Point location) {
+		setParameter(request, UPDATED_SOURCE_PARAMETER, location);
+	}
+
+	/**
 	 * Queries the original target anchor location of a {@code request}.
 	 * 
 	 * @param request
@@ -141,6 +169,29 @@ public final class PrivateRequestUtils {
 	 */
 	static void setOriginalTargetLocation(Request request, Point location) {
 		setParameter(request, ORIGINAL_TARGET_PARAMETER, location);
+	}
+
+	/**
+	 * Queries the updated target anchor location of a {@code request}.
+	 * 
+	 * @param request
+	 *            a request
+	 * @return the updated target anchor location
+	 */
+	static Point getUpdatedTargetLocation(Request request) {
+		return getParameter(request, UPDATED_TARGET_PARAMETER, Point.class, null);
+	}
+
+	/**
+	 * Set the updated target anchor location of a {@code request}.
+	 * 
+	 * @param request
+	 *            a request
+	 * @param location
+	 *            the updated target anchor location
+	 */
+	static void setUpdatedTargetLocation(Request request, Point location) {
+		setParameter(request, UPDATED_TARGET_PARAMETER, location);
 	}
 
 	/**
@@ -192,12 +243,12 @@ public final class PrivateRequestUtils {
 	 * are forwarded that the "from" request actually bears, and then only those that are not already defined
 	 * in the "to" request.
 	 * 
-	 * @param fromRequest
-	 *            the request bearing parameters
 	 * @param toRequest
 	 *            a request to which to forward them
+	 * @param fromRequest
+	 *            the request bearing parameters
 	 */
-	public static void forwardParameters(Request fromRequest, Request toRequest) {
+	public static void forwardParameters(Request toRequest, Request fromRequest) {
 		Stream.of(PARAMETERS).filter(p -> hasParameter(fromRequest, p))
 				.filter(p -> !hasParameter(toRequest, p))
 				.forEach(p -> setParameter(toRequest, p, getParameter(fromRequest, p, Object.class, null)));

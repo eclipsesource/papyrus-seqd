@@ -34,7 +34,6 @@ import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
-import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
@@ -227,12 +226,11 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 		}
 
 		/**
-		 * Only move message ends when anchored on lifeline.
+		 * Only move message ends when anchored on a shape that isn't already moving, as the assumption is
+		 * that it just follows the shape it's anchored on in that case.
 		 */
 		private boolean skipMove(Shape shape) {
-			return !ViewTypes.LIFELINE_BODY.equals(shape.getType()) //
-					|| movingShapes.contains(shape) //
-					|| isShapeOnMovingShape(shape);
+			return movingShapes.contains(shape) || isShapeOnMovingShape(shape);
 		}
 
 		/**

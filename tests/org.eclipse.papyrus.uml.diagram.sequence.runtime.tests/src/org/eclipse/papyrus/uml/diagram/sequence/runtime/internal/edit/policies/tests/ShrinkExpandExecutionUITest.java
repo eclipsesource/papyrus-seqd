@@ -12,10 +12,13 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.tests;
 
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.is;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.isPoint;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.isRect;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.isBounded;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.runs;
+import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.gt;
+import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.lt;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.eclipse.draw2d.PositionConstants;
@@ -127,7 +130,7 @@ public class ShrinkExpandExecutionUITest extends AbstractGraphicalEditPolicyUITe
 		int midWay = exec2Geom.getCenter().y;
 		Point dropExec = new Point(grabExec.x, midWay);
 
-		editor.moveSelection(grabExec, dropExec);
+		editor.drag(grabExec, dropExec);
 
 		// Verify expected changes
 
@@ -150,7 +153,7 @@ public class ShrinkExpandExecutionUITest extends AbstractGraphicalEditPolicyUITe
 		int midWay = exec2Geom.getCenter().y;
 		Point dropExec = new Point(grabExec.x, midWay);
 
-		editor.moveSelection(grabExec, dropExec);
+		editor.drag(grabExec, dropExec);
 
 		// Verify expected changes
 
@@ -173,7 +176,7 @@ public class ShrinkExpandExecutionUITest extends AbstractGraphicalEditPolicyUITe
 		int midWayBetweenReply2Async2 = (reply2Geom.getLastPoint().y + async2Geom.getLastPoint().y) / 2;
 		Point dropExec = new Point(grabExec.x, midWayBetweenReply2Async2);
 
-		editor.with(editor.allowSemanticReordering(), () -> editor.moveSelection(grabExec, dropExec));
+		editor.with(editor.allowSemanticReordering(), () -> editor.drag(grabExec, dropExec));
 
 		// Verify expected changes
 
@@ -204,7 +207,7 @@ public class ShrinkExpandExecutionUITest extends AbstractGraphicalEditPolicyUITe
 		int midWayBetweenAsync1Sync2 = (async1Geom.getLastPoint().y + sync2Geom.getFirstPoint().y) / 2;
 		Point dropExec = new Point(grabExec.x, midWayBetweenAsync1Sync2);
 
-		editor.with(editor.allowSemanticReordering(), () -> editor.moveSelection(grabExec, dropExec));
+		editor.with(editor.allowSemanticReordering(), () -> editor.drag(grabExec, dropExec));
 
 		// Verify expected changes
 
@@ -229,14 +232,14 @@ public class ShrinkExpandExecutionUITest extends AbstractGraphicalEditPolicyUITe
 	}
 
 	@Test
-	public void expandFromTop() {
+	public void detachExpandFromTop() {
 		editor.select(exec2Geom.getCenter());
 
 		Point grabExec = getResizeHandleGrabPoint(exec2, PositionConstants.NORTH);
 		int midWayBetweenAsync1Async3 = (async1Geom.getLastPoint().y + async3Geom.getLastPoint().y) / 2;
 		Point dropExec = new Point(grabExec.x, midWayBetweenAsync1Async3);
 
-		editor.moveSelection(grabExec, dropExec);
+		editor.with(editor.allowSemanticReordering(), () -> editor.drag(grabExec, dropExec));
 
 		// Verify expected changes
 
@@ -246,8 +249,57 @@ public class ShrinkExpandExecutionUITest extends AbstractGraphicalEditPolicyUITe
 
 		// Verify expected non-changes
 
-		assertThat("Reply message changed", reply2,
-				runs(isPoint(reply2Geom.getFirstPoint()), isPoint(reply2Geom.getLastPoint())));
+		assertThat("Request message changed", sync2, // This was attached to the corner
+				runs(isPoint(sync2Geom.getFirstPoint()), isPoint(sync2Geom.getLastPoint())));
+	}
+
+	@Test
+	public void detachExpandFromBottom() {
+		editor.select(exec1Geom.getCenter());
+
+		Point grabExec = getResizeHandleGrabPoint(exec1, PositionConstants.SOUTH);
+		int belowAsync4 = async4Geom.getLastPoint().y + 20;
+		Point dropExec = new Point(grabExec.x, belowAsync4);
+
+		editor.with(editor.allowSemanticReordering(), () -> editor.drag(grabExec, dropExec));
+
+		// Verify expected changes
+
+		Point expectedAsync4Send = async4Geom.getFirstPoint().getTranslated(-EXEC_WIDTH / 2, 0);
+		assertThat("Misattached encompassed message", async4,
+				runs(isPoint(expectedAsync4Send), isPoint(async4Geom.getLastPoint())));
+
+		// Verify expected non-changes
+
+		assertThat("Reply message changed", reply1, // This was attached to the corner
+				runs(isPoint(reply1Geom.getFirstPoint()), isPoint(reply1Geom.getLastPoint())));
+	}
+
+	@Test
+	public void expandFromTop() {
+		editor.select(exec2Geom.getCenter());
+
+		Point grabExec = getResizeHandleGrabPoint(exec2, PositionConstants.NORTH);
+		int midWayBetweenAsync1Async3 = (async1Geom.getLastPoint().y + async3Geom.getLastPoint().y) / 2;
+		Point dropExec = new Point(grabExec.x, midWayBetweenAsync1Async3);
+
+		editor.drag(grabExec, dropExec);
+
+		// Verify expected changes
+
+		PointList newAsync3Geom = getPoints(async3);
+
+		assertThat("Preceding message not bumped out of the way", async3,
+				runs(isPoint(is(async3Geom.getFirstPoint().x()), lt(dropExec.y())),
+						isPoint(is(async3Geom.getLastPoint().x()), lt(dropExec.y()))));
+
+		assertThat("Misshapen bumped message", newAsync3Geom.getLastPoint().y(),
+				is(newAsync3Geom.getFirstPoint().y()));
+
+		// Verify expected non-changes
+
+		assertThat("Unrelated message changed", async1,
+				runs(isPoint(async1Geom.getFirstPoint()), isPoint(async1Geom.getLastPoint())));
 	}
 
 	@Test
@@ -258,13 +310,18 @@ public class ShrinkExpandExecutionUITest extends AbstractGraphicalEditPolicyUITe
 		int belowAsync4 = async4Geom.getLastPoint().y + 20;
 		Point dropExec = new Point(grabExec.x, belowAsync4);
 
-		editor.moveSelection(grabExec, dropExec);
+		editor.drag(grabExec, dropExec);
 
 		// Verify expected changes
 
-		Point expectedAsync4Send = async4Geom.getFirstPoint().getTranslated(-EXEC_WIDTH / 2, 0);
-		assertThat("Misattached encompassed message", async4,
-				runs(isPoint(expectedAsync4Send), isPoint(async4Geom.getLastPoint())));
+		PointList newAsync4Geom = getPoints(async4);
+
+		assertThat("Following message not bumped out of the way", async4,
+				runs(isPoint(is(async4Geom.getFirstPoint().x()), gt(dropExec.y())),
+						isPoint(is(async4Geom.getLastPoint().x()), gt(dropExec.y()))));
+
+		assertThat("Misshapen bumped message", newAsync4Geom.getLastPoint().y(),
+				is(newAsync4Geom.getFirstPoint().y()));
 
 		// Verify expected non-changes
 

@@ -12,13 +12,17 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.tests;
 
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.is;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.runs;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.at;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
 
 import java.util.Arrays;
+import java.util.function.IntPredicate;
 
+import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.gef.EditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageEndpointEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
@@ -32,19 +36,19 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- * Integration test cases for the {@link MessageEndpointEditPolicy} class's
- * message move behaviour by drag-and-drop.
+ * Integration test cases for the {@link MessageEndpointEditPolicy} class's message move behaviour by
+ * drag-and-drop.
  *
  * @author Christian W. Damus
  */
-@SuppressWarnings("restriction")
 @ModelResource("two-lifelines.di")
 @Maximized
 @RunWith(Parameterized.class)
 public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 
 	@ClassRule
-	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs().dontCreateExecutionsForSyncMessages();
+	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs()
+			.dontCreateExecutionsForSyncMessages();
 
 	// Horizontal position of the first lifeline's body
 	private static final int LIFELINE_1_BODY_X = 121;
@@ -62,6 +66,15 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 
 	/**
 	 * Initializes me.
+	 * 
+	 * @param rightToLeft
+	 *            whether to draw messages from right to left (otherwise, from left to right)
+	 * @param direction
+	 *            texual indication of the {@code rightToLeft} parameter
+	 * @param moveDown
+	 *            whether to move messages down (otherwise, up)
+	 * @param whichWay
+	 *            textual indication of the {@code moveDown}
 	 */
 	public MessageMoveUITest(boolean rightToLeft, String direction, boolean moveDown, String whichWay) {
 
@@ -113,15 +126,22 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 		assertThat(messageEP, runs(sendX, y, recvX, y));
 	}
 
+	/**
+	 * Per <a href="https://github.com/eclipsesource/papyrus-seqd/issues/26">Issue #26</a>, attempt to cross
+	 * over another message and verify that it's just bumped out of the way.
+	 */
 	@Test
 	public void attemptToMoveAsyncMessageAcrossAnother() {
 		final int slopeY = INITIAL_Y + 80;
 		final int otherY = moveDown ? INITIAL_Y + 80 + 30 : INITIAL_Y - 30;
 
+		EditPart otherEP = null;
+
 		// Be sure to create messages in top-down order to avoid nudging and
 		// far enough apart to avoid padding
 		if (!moveDown) {
-			createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, otherY), at(recvX, otherY));
+			otherEP = createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, otherY),
+					at(recvX, otherY));
 		}
 
 		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, INITIAL_Y),
@@ -131,7 +151,8 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 		// Be sure to create messages in top-down order to avoid nudging and
 		// far enough apart to avoid padding
 		if (moveDown) {
-			createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, otherY), at(recvX, otherY));
+			otherEP = createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, otherY),
+					at(recvX, otherY));
 		}
 
 		int delta = moveDown ? 60 : -60;
@@ -141,7 +162,19 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 
 		editor.moveSelection(at(x, grabY), at(x, y));
 
-		assertThat("Message should not have moved", messageEP, runs(sendX, INITIAL_Y, recvX, slopeY));
+		assertThat("Message should have moved", messageEP,
+				runs(sendX, INITIAL_Y + delta, recvX, slopeY + delta));
+
+		// Where do we expect the other message to have ended up?
+		IntPredicate relationship = moveDown //
+				? val -> val > slopeY + delta //
+				: val -> val < INITIAL_Y + delta;
+
+		PointList otherPoints = getPoints(otherEP);
+		assertThat("Other message no longer horizontal", otherPoints.getLastPoint().y(),
+				is(otherPoints.getFirstPoint().y()));
+		assertTrue("Other message not bumped out of the way",
+				relationship.test(otherPoints.getLastPoint().y()));
 	}
 
 	//
@@ -151,10 +184,10 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 	@Parameters(name = "{1} {3}")
 	public static Iterable<Object[]> parameters() {
 		return Arrays.asList(new Object[][] { //
-				{ false, "left-to-right", false, "up" }, //
-				{ false, "left-to-right", true, "down" }, //
-				{ true, "right-to-left", false, "up" }, //
-				{ true, "right-to-left", true, "down" }, //
+				{false, "left-to-right", false, "up" }, //
+				{false, "left-to-right", true, "down" }, //
+				{true, "right-to-left", false, "up" }, //
+				{true, "right-to-left", true, "down" }, //
 		});
 	}
 

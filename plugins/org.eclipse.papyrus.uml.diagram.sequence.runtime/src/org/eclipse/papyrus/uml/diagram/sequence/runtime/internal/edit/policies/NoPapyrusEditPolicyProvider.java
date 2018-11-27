@@ -164,12 +164,11 @@ public class NoPapyrusEditPolicyProvider extends AbstractProvider implements IEd
 					super.setHost(host);
 				}
 
-				@SuppressWarnings("unchecked")
 				@Override
 				protected DropObjectsRequest castToDropObjectsRequest(ChangeBoundsRequest request) {
 					DropObjectsRequest result = super.castToDropObjectsRequest(request);
 
-					PrivateRequestUtils.forwardParameters(request, result);
+					PrivateRequestUtils.forwardParameters(result, request);
 					PrivateRequestUtils.setChangeBoundsRequest(result, request);
 
 					return result;
