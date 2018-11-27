@@ -22,6 +22,7 @@ import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.common.util.AbstractTreeIterator;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewRequest.ViewDescriptor;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
@@ -41,6 +42,8 @@ public class CommandUtil {
 	/**
 	 * Wrap a creation command to inject the first view that it creates into the given descriptor.
 	 * 
+	 * @param editingDomain
+	 *            the contextual editing domain
 	 * @param viewDescriptor
 	 *            a view descriptor
 	 * @param creationCommand
@@ -48,10 +51,12 @@ public class CommandUtil {
 	 * @return the wrapper, which may just be the original creation command if the view creation cannot be
 	 *         found
 	 */
-	public static Command injectViewInto(ViewDescriptor viewDescriptor, Command creationCommand) {
+	public static Command injectViewInto(EditingDomain editingDomain, ViewDescriptor viewDescriptor,
+			Command creationCommand) {
+
 		if (creationCommand instanceof CreationCommand<?>) {
 			// Need to maintain the specific protocol
-			return injectViewInto(viewDescriptor, (CreationCommand<?>)creationCommand);
+			return injectViewInto(editingDomain, viewDescriptor, (CreationCommand<?>)creationCommand);
 		}
 
 		// Spelunk in the creation command for the view creation
@@ -98,6 +103,8 @@ public class CommandUtil {
 	/**
 	 * Wrap a creation command to inject the first view that it creates into the given descriptor.
 	 * 
+	 * @param editingDomain
+	 *            the contextual editing domain
 	 * @param viewDescriptor
 	 *            a view descriptor
 	 * @param creationCommand
@@ -105,8 +112,8 @@ public class CommandUtil {
 	 * @return the wrapper, which may just be the original creation command if the view creation cannot be
 	 *         found
 	 */
-	public static <T extends EObject> CreationCommand<T> injectViewInto(ViewDescriptor viewDescriptor,
-			CreationCommand<T> creationCommand) {
+	public static <T extends EObject> CreationCommand<T> injectViewInto(EditingDomain editingDomain,
+			ViewDescriptor viewDescriptor, CreationCommand<T> creationCommand) {
 
 		// Spelunk in the creation command for the view creation
 		CreationCommand<? extends View> viewCreation = getViewCreation(viewDescriptor, creationCommand);
@@ -114,7 +121,7 @@ public class CommandUtil {
 
 		if (viewCreation != null) {
 			Supplier<? extends View> viewSupplier = viewCreation;
-			result = creationCommand.andThen(__ -> viewDescriptor.setView(viewSupplier.get()));
+			result = creationCommand.andThen(editingDomain, __ -> viewDescriptor.setView(viewSupplier.get()));
 		}
 
 		return result;

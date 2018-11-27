@@ -362,6 +362,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EOperation getMElement__Exists() {
+		return mElementEClass.getEOperations().get(7);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EClass getMInteraction() {
 		return mInteractionEClass;
 	}
@@ -1269,6 +1279,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEOperation(mElementEClass, MELEMENT___NUDGE__INT);
 		createEOperation(mElementEClass, MELEMENT___REMOVE);
 		createEOperation(mElementEClass, MELEMENT___PRECEDES__MELEMENT);
+		createEOperation(mElementEClass, MELEMENT___EXISTS);
 
 		mInteractionEClass = createEClass(MINTERACTION);
 		createEReference(mInteractionEClass, MINTERACTION__LIFELINES);
@@ -1516,6 +1527,9 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		g2 = createEGenericType();
 		g1.getETypeArguments().add(g2);
 		addEParameter(op, g1, "other", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		initEOperation(getMElement__Exists(), ecorePackage.getEBoolean(), "exists", 1, 1, IS_UNIQUE, //$NON-NLS-1$
+				IS_ORDERED);
 
 		initEClass(mInteractionEClass, MInteraction.class, "MInteraction", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);

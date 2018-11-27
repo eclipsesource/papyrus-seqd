@@ -183,4 +183,15 @@ public interface MElement<T extends Element> extends MObject {
 	 */
 	boolean precedes(MElement<?> other);
 
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> Query whether I exist. A logical
+	 * model element exists if and only if it is itself contained within an {@link MInteraction} and its
+	 * underlying UML model {@link #getElement() element} is contained in that logical model's UML
+	 * interaction. <!-- end-model-doc -->
+	 * 
+	 * @model required="true"
+	 * @generated
+	 */
+	boolean exists();
+
 } // MElement

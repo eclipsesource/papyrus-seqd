@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
@@ -43,6 +44,7 @@ import org.eclipse.gef.editpolicies.FeedbackHelper;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewRequest;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
@@ -246,10 +248,11 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 										anchorDesc.offset, start.sort, null,
 										new ExecutionCreationCommandParameter(true, shouldCreateReply(),
 												execType)))
-								.map(cmd -> injectViewInto(request.getConnectionViewDescriptor(), cmd))
+								.map(cmd -> injectViewInto(getEditingDomain(),
+										request.getConnectionViewDescriptor(), cmd))
 								.collect(Collectors.toList()));
 					} else {
-						result = injectViewInto(request.getConnectionViewDescriptor(),
+						result = injectViewInto(getEditingDomain(), request.getConnectionViewDescriptor(),
 								sender.insertMessageAfter(startBefore, startOffset, receiver,
 										anchorDesc.elementBefore.orElse(receiver), anchorDesc.offset,
 										start.sort, null));
@@ -291,17 +294,22 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 										receiver, start.sort, null,
 										new ExecutionCreationCommandParameter(true, shouldCreateReply(),
 												execType)))
-								.map(cmd -> injectViewInto(request.getConnectionViewDescriptor(), cmd))
+								.map(cmd -> injectViewInto(getEditingDomain(),
+										request.getConnectionViewDescriptor(), cmd))
 								.collect(Collectors.toList()));
 					}
 
-					result = injectViewInto(request.getConnectionViewDescriptor(),
+					result = injectViewInto(getEditingDomain(), request.getConnectionViewDescriptor(),
 							sender.insertMessageAfter(startBefore, startOffset, receiver, start.sort, null));
 				}
 
 				return wrap(result);
 			}
 		}.doSwitch(request);
+	}
+
+	protected TransactionalEditingDomain getEditingDomain() {
+		return ((IGraphicalEditPart)getHost()).getEditingDomain();
 	}
 
 	protected Stream<EClass> getAvailableExecutionTypes() {

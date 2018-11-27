@@ -61,6 +61,7 @@ import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageSort;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OccurrenceSpecification;
+import org.eclipse.uml2.uml.util.UMLSwitch;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>MLifeline</b></em>'. <!--
@@ -380,7 +381,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	@Override
 	public CreationCommand<ExecutionSpecification> insertExecutionAfter(MElement<?> before, int offset,
 			int height, Element specification) {
-		return new InsertExecutionCommand(this, before, offset, height, specification);
+		return createWithPadding(InsertExecutionCommand.class,
+				() -> wrap(new InsertExecutionCommand(this, before, offset, height, specification)));
 	}
 
 	/**
@@ -391,7 +393,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	@Override
 	public CreationCommand<ExecutionSpecification> insertExecutionAfter(MElement<?> before, int offset,
 			int height, EClass metaclass) {
-		return new InsertExecutionCommand(this, before, offset, height, metaclass);
+		return createWithPadding(InsertExecutionCommand.class,
+				() -> wrap(new InsertExecutionCommand(this, before, offset, height, metaclass)));
 	}
 
 	/**
@@ -404,7 +407,7 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 			MessageSort sort, NamedElement signature) {
 
 		return createWithPadding(InsertMessageCommand.class,
-				() -> new InsertMessageCommand(this, before, offset, receiver, sort, signature));
+				() -> wrap(new InsertMessageCommand(this, before, offset, receiver, sort, signature)));
 	}
 
 	/**
@@ -417,8 +420,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 			MessageSort sort, NamedElement signature,
 			ExecutionCreationCommandParameter executionCreationConfig) {
 
-		return new InsertMessageCommand(this, before, offset, receiver, sort, signature,
-				executionCreationConfig);
+		return createWithPadding(InsertMessageCommand.class, () -> wrap(new InsertMessageCommand(this, before,
+				offset, receiver, sort, signature, executionCreationConfig)));
 	}
 
 	/**
@@ -445,8 +448,43 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 			MLifeline receiver, MElement<?> beforeRecv, int recvOffset, MessageSort sort,
 			NamedElement signature, ExecutionCreationCommandParameter executionCreationConfig) {
 
-		return new InsertMessageCommand(this, beforeSend, sendOffset, receiver, beforeRecv, recvOffset, sort,
-				signature, executionCreationConfig);
+		return createWithPadding(InsertMessageCommand.class,
+				() -> wrap(new InsertMessageCommand(this, beforeSend, sendOffset, receiver, beforeRecv,
+						recvOffset, sort, signature, executionCreationConfig)));
+	}
+
+	// Create the logical model for my new message
+	private <E extends Element> CreationCommand<E> wrap(CreationCommand<E> create) {
+		return (create == null) ? null
+				: create.andThen(getEditingDomain(), newElem -> create(newElem, create));
+	}
+
+	private <E extends Element> void create(E element, CreationCommand<E> create) {
+		new UMLSwitch<MElement<? extends Element>>() {
+			@Override
+			public MElement<? extends Element> caseMessage(Message message) {
+				InsertMessageCommand wrapped = (InsertMessageCommand)create;
+				ExecutionCreationCommandParameter parameter = wrapped.getExecutionCreationParameter();
+
+				// Create the message's logical model
+				MInteraction result = InteractionModelBuilder.add(getInteraction(), message);
+
+				// Create its execution's, if any. Normalize the receiver to our model
+				parameter.getExecution(message).ifPresent(exec -> InteractionModelBuilder
+						.add(result.getLifeline(wrapped.getReceiver().getElement()).get(), exec));
+
+				// And its reply's, too
+				parameter.getReply(message).ifPresent(reply -> InteractionModelBuilder.add(result, reply));
+
+				return result;
+			}
+
+			@Override
+			public MElement<? extends Element> caseExecutionSpecification(ExecutionSpecification execution) {
+				return InteractionModelBuilder.add(MLifelineImpl.this, execution);
+			}
+
+		}.doSwitch(element);
 	}
 
 	/**
@@ -555,7 +593,8 @@ public class MLifelineImpl extends MElementImpl<Lifeline> implements MLifeline {
 	 */
 	@Override
 	public Command remove() {
-		return new RemoveLifelineCommand(this, true);
+		return this.removeLogicalElement(RemoveLifelineCommand.class,
+				() -> new RemoveLifelineCommand(this, true));
 	}
 
 	/**

@@ -353,7 +353,8 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 
 		if (endToMove.isPresent() && endToMove.get() instanceof MOccurrenceImpl<?>) {
 			MOccurrenceImpl<?> occurrence = (MOccurrenceImpl<?>)endToMove.get();
-			if (occurrence.getCovered().filter(l -> l != lifeline).isPresent() && occurrence != getTarget()) {
+			if (occurrence.getCovered().filter(equalTo(lifeline).negate()).isPresent()
+					&& !equalTo(occurrence).test(getTarget())) {
 				OptionalInt y = targetY.orElse(occurrence.getBottom());
 				if (anyDestructionOccurrenceBefore(y)) {
 					return Optional.of(UnexecutableCommand.INSTANCE);

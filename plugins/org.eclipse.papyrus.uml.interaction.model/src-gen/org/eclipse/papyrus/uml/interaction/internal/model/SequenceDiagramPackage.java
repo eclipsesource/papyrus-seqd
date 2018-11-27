@@ -186,13 +186,21 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MELEMENT___PRECEDES__MELEMENT = 6;
 
 	/**
+	 * The operation id for the '<em>Exists</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MELEMENT___EXISTS = 7;
+
+	/**
 	 * The number of operations of the '<em>MElement</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MELEMENT_OPERATION_COUNT = 7;
+	int MELEMENT_OPERATION_COUNT = 8;
 
 	/**
 	 * The meta object id for the
@@ -323,6 +331,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MINTERACTION___PRECEDES__MELEMENT = MELEMENT___PRECEDES__MELEMENT;
+
+	/**
+	 * The operation id for the '<em>Exists</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MINTERACTION___EXISTS = MELEMENT___EXISTS;
 
 	/**
 	 * The operation id for the '<em>Get Diagram View</em>' operation. <!-- begin-user-doc --> <!--
@@ -577,6 +593,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MLIFELINE___PRECEDES__MELEMENT = MELEMENT___PRECEDES__MELEMENT;
+
+	/**
+	 * The operation id for the '<em>Exists</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___EXISTS = MELEMENT___EXISTS;
 
 	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -880,6 +904,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MEXECUTION___PRECEDES__MELEMENT = MELEMENT___PRECEDES__MELEMENT;
 
 	/**
+	 * The operation id for the '<em>Exists</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION___EXISTS = MELEMENT___EXISTS;
+
+	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -1141,6 +1173,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MOCCURRENCE___PRECEDES__MELEMENT = MELEMENT___PRECEDES__MELEMENT;
 
 	/**
+	 * The operation id for the '<em>Exists</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MOCCURRENCE___EXISTS = MELEMENT___EXISTS;
+
+	/**
 	 * The operation id for the '<em>Set Covered</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
@@ -1314,6 +1354,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MEXECUTION_OCCURRENCE___PRECEDES__MELEMENT = MOCCURRENCE___PRECEDES__MELEMENT;
+
+	/**
+	 * The operation id for the '<em>Exists</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION_OCCURRENCE___EXISTS = MOCCURRENCE___EXISTS;
 
 	/**
 	 * The operation id for the '<em>Set Covered</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
@@ -1542,6 +1590,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MMESSAGE_END___PRECEDES__MELEMENT = MOCCURRENCE___PRECEDES__MELEMENT;
 
 	/**
+	 * The operation id for the '<em>Exists</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE_END___EXISTS = MOCCURRENCE___EXISTS;
+
+	/**
 	 * The operation id for the '<em>Set Covered</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
@@ -1740,6 +1796,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MMESSAGE___PRECEDES__MELEMENT = MELEMENT___PRECEDES__MELEMENT;
+
+	/**
+	 * The operation id for the '<em>Exists</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE___EXISTS = MELEMENT___EXISTS;
 
 	/**
 	 * The operation id for the '<em>Get Owner</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1957,6 +2021,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MDESTRUCTION___PRECEDES__MELEMENT = MMESSAGE_END___PRECEDES__MELEMENT;
+
+	/**
+	 * The operation id for the '<em>Exists</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MDESTRUCTION___EXISTS = MMESSAGE_END___EXISTS;
 
 	/**
 	 * The operation id for the '<em>Set Covered</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc
@@ -2192,6 +2264,16 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EOperation getMElement__Precedes__MElement();
+
+	/**
+	 * Returns the meta object for the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#exists()
+	 * <em>Exists</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Exists</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#exists()
+	 * @generated
+	 */
+	EOperation getMElement__Exists();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MInteraction
@@ -3319,6 +3401,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation MELEMENT___PRECEDES__MELEMENT = eINSTANCE.getMElement__Precedes__MElement();
+
+		/**
+		 * The meta object literal for the '<em><b>Exists</b></em>' operation. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MELEMENT___EXISTS = eINSTANCE.getMElement__Exists();
 
 		/**
 		 * The meta object literal for the

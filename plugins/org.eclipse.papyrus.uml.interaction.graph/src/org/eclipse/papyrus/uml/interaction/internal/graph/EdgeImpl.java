@@ -97,6 +97,11 @@ public class EdgeImpl extends TaggableImpl<EdgeImpl> implements Edge {
 	}
 
 	@Override
+	public boolean exists() {
+		return from.exists() && to.exists();
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
