@@ -599,8 +599,7 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 		if (isSelfMessage()) {
 			actualReceiverY = () -> senderY.getAsInt()
 					+ layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE);
-			actualSenderY = () -> senderY.getAsInt()
-					+ layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE);
+			actualSenderY = () -> senderY.getAsInt();
 		} else {
 			actualReceiverY = receiverY;
 			actualSenderY = senderY;
@@ -629,7 +628,11 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 
 		if (executionCreationParameter.isCreateReply()) {
 			additionalCommands.addAll(createAutomaticReplyMessageCommands(sendEvent, execution,
-					executionShape, actualSenderY, actualReceiverY));
+					executionShape, () -> actualReceiverY.getAsInt() + execMinHeight,
+					isSelfMessage()
+							? () -> actualReceiverY.getAsInt() + execMinHeight
+									+ layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE)
+							: () -> actualReceiverY.getAsInt() + execMinHeight));
 		} else {
 			CreationCommand<OccurrenceSpecification> finish = semanticHelper().createFinish(execution,
 					CreationParameters.after(execution));
@@ -676,8 +679,7 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 		int execMinHeight = layoutConstraints().getMinimumHeight(ViewTypes.EXECUTION_SPECIFICATION);
 
 		Command replyMessageView = diagramHelper().createMessageConnector(replyMessage, executionShape,
-				() -> senderY.getAsInt() + execMinHeight, () -> receiverShape,
-				() -> receiverY.getAsInt() + execMinHeight, null);
+				() -> senderY.getAsInt(), () -> receiverShape, () -> receiverY.getAsInt(), null);
 		commands.add(replyMessageView);
 
 		return commands;

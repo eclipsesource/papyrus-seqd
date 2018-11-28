@@ -344,8 +344,16 @@ public class DefaultDiagramHelper implements DiagramHelper {
 							: targetView);
 			if (selfMessage) {
 				// A self message is fixed at the minimal gap if it is of a synchronous sort
-				int minTargetDistance = sourceDistance
-						+ layoutHelper().getConstraints().getMinimumHeight(result);
+				// warning, source distance and target distance may be in 2 different local dimensions
+				// so the computation has to be done in absolute coordinates then translated back to local
+				// dimensions
+
+				int minTargetDistance = sourceY.getAsInt()
+						+ layoutHelper().getConstraints().getMinimumHeight(result)
+						- layoutHelper()
+								.getTop(ViewTypes.DESTRUCTION_SPECIFICATION.equals(targetView.getType())
+										? (Shape)targetView.eContainer() // Calculate relative to the lifeline
+										: targetView);
 				targetDistance = syncMessage ? minTargetDistance
 						: Math.max(targetDistance, minTargetDistance);
 			}
