@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import static java.util.Collections.singletonList;
+import static org.eclipse.papyrus.uml.interaction.internal.model.commands.PendingNestedData.setPendingNested;
 import static org.eclipse.papyrus.uml.interaction.internal.model.commands.PendingVerticalExtentData.affectedOccurrences;
 import static org.eclipse.papyrus.uml.interaction.model.util.Executions.executionShapeAt;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.equalTo;
@@ -20,6 +21,7 @@ import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.lessThan;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.map;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.UnaryOperator;
@@ -185,6 +187,13 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 			// that *will be* spanned do not; they only must be reattached per the step below
 			result = execution.getOccurrences().stream()
 					.map(occ -> occ.setCovered(lifeline, topMapping.apply(occ.getTop()))).reduce(chaining());
+		} else if (isChangingPosition() && !isChangingOwner()) {
+			// We are reshaping it. Refresh nested executions, if necessary
+			result = execution.getNestedExecutions().stream()
+					.filter(PendingVerticalExtentData.spannedBy(execution).negate())
+					.peek(nested -> setPendingNested(PendingNestedData.NO_EXECUTION, nested))
+					.map(nested -> nested.setOwner(lifeline, nested.getTop(), nested.getBottom()))
+					.filter(Objects::nonNull).reduce(chaining());
 		}
 
 		// Note that nested executions will be handled implicitly by either their start or finish.

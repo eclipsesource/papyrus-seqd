@@ -12,6 +12,7 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
+import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,14 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
  * @see DependencyContext
  */
 public final class PendingNestedData extends PendingContainmentChangeData<MExecution, MExecution> {
+	/**
+	 * A token representing a lifeline as the top level of nested, the non-existent parent of a root
+	 * execution.
+	 */
+	public static final MExecution NO_EXECUTION = (MExecution)Proxy.newProxyInstance(
+			PendingNestedData.class.getClassLoader(), new Class<?>[] {MExecution.class },
+			(proxy, method, args) -> null);
+
 	private PendingNestedData(MExecution nesting, MExecution nested) {
 		super(nesting, nested);
 	}
@@ -72,7 +81,7 @@ public final class PendingNestedData extends PendingContainmentChangeData<MExecu
 	 *            an execution that is getting the new {@code nesting}
 	 */
 	static void setPendingNested(MExecution nesting, MExecution pendingNested) {
-		if (!nesting.getNestedExecutions().stream()
+		if ((nesting == NO_EXECUTION) || !nesting.getNestedExecutions().stream()
 				.anyMatch(n -> n.getElement() == pendingNested.getElement())) {
 
 			PendingContainmentChangeData.setPendingChild(PendingNestedData.class, nesting, pendingNested,

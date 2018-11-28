@@ -14,6 +14,7 @@ package org.eclipse.papyrus.uml.interaction.model.util;
 
 import java.util.Objects;
 import java.util.OptionalInt;
+import java.util.function.IntSupplier;
 import java.util.function.Predicate;
 
 import org.eclipse.emf.ecore.EObject;
@@ -51,6 +52,10 @@ public class LogicalModelPredicates {
 		return self -> self.getTop().orElse(Integer.MAX_VALUE) < y;
 	}
 
+	public static Predicate<MElement<? extends Element>> above(IntSupplier y) {
+		return self -> self.getTop().orElse(Integer.MAX_VALUE) < y.getAsInt();
+	}
+
 	public static Predicate<MElement<? extends Element>> above(MElement<?> other) {
 		return above(other.getTop().orElse(Integer.MIN_VALUE));
 	}
@@ -59,11 +64,21 @@ public class LogicalModelPredicates {
 		return self -> self.getBottom().orElse(Integer.MIN_VALUE) > y;
 	}
 
+	public static Predicate<MElement<? extends Element>> below(IntSupplier y) {
+		return self -> self.getBottom().orElse(Integer.MIN_VALUE) > y.getAsInt();
+	}
+
 	public static Predicate<MElement<? extends Element>> below(MElement<?> other) {
 		return below(other.getBottom().orElse(Integer.MAX_VALUE));
 	}
 
 	public static Predicate<MElement<? extends Element>> verticallyBetween(int top, int bottom) {
+		return above(bottom).and(below(top));
+	}
+
+	public static Predicate<MElement<? extends Element>> verticallyBetween(IntSupplier top,
+			IntSupplier bottom) {
+
 		return above(bottom).and(below(top));
 	}
 

@@ -19,16 +19,20 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GE
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.isAt;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.isBounded;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.runs;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.at;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.sized;
 import static org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes.LIFELINE_BODY;
 import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.gt;
 import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.gte;
 import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.AutoFixture;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.AutoFixture.VisualID;
@@ -38,6 +42,7 @@ import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -445,6 +450,97 @@ public class ExecutionSpecificationDragEditPolicyUITest {
 			assertThat("Execution was moved", execEP, isAt(isPoint(execGeom.getLocation())));
 		}
 
+	}
+
+	/**
+	 * Tests for drawing a nesting execution out from under its nested executions.
+	 */
+	@ModelResource("two-lifelines.di")
+	@Maximized
+	public static class ResizeNesting extends AbstractGraphicalEditPolicyUITest {
+		@Rule
+		public final AutoFixtureRule autoFixtures = new AutoFixtureRule(this);
+
+		@AutoFixture("Lifeline1")
+		private Lifeline lifeline1;
+
+		@AutoFixture
+		private EditPart lifeline1EP;
+
+		@AutoFixture
+		private Rectangle lifelineGeom;
+
+		@AutoFixture(value = "Execution1", optional = true)
+		private EditPart nestingEP;
+
+		@AutoFixture(optional = true)
+		private Rectangle nestingGeom;
+
+		@AutoFixture(value = "Execution2", optional = true)
+		private EditPart nestedEP;
+
+		@AutoFixture(optional = true)
+		private Rectangle nestedGeom;
+
+		/**
+		 * Initializes me.
+		 */
+		public ResizeNesting() {
+			super();
+		}
+
+		@Test
+		public void drawUpBottomToExposeNested() {
+			// First, select the nesting execution to activate selection handles
+			editor.select(nestingGeom.getBottom().getTranslated(0, -20));
+
+			Point grabAt = getResizeHandleGrabPoint(nestingEP, PositionConstants.SOUTH);
+			Point dropAt = nestedGeom.getTop().getTranslated(0, -25);
+
+			// Now, draw up the bottom from under the nested execution
+			editor.drag(grabAt, dropAt);
+			Rectangle expectedGeom = nestedGeom.getTranslated(-EXEC_WIDTH / 2, 0);
+
+			// The operation rebuilds edit-parts
+			autoFixtures.refresh();
+
+			assertThat("Formerly nested execution misaligned", nestedEP, isBounded(isRect(expectedGeom)));
+		}
+
+		@Test
+		public void drawDownTopToExposeNested() {
+			// First, select the nesting execution to activate selection handles
+			editor.select(nestingGeom.getTop().getTranslated(0, 20));
+
+			Point grabAt = getResizeHandleGrabPoint(nestingEP, PositionConstants.NORTH);
+			Point dropAt = nestedGeom.getBottom().getTranslated(0, 25);
+
+			// Now, draw down the top from under the nested execution
+			editor.drag(grabAt, dropAt);
+			Rectangle expectedGeom = nestedGeom.getTranslated(-EXEC_WIDTH / 2, 0);
+
+			// The operation rebuilds edit-parts
+			autoFixtures.refresh();
+
+			assertThat("Formerly nested execution misaligned", nestedEP, isBounded(isRect(expectedGeom)));
+		}
+
+		//
+		// Test fixtures
+		//
+
+		@Before
+		public void createExecutions() {
+			int x = lifelineGeom.getCenter().x();
+
+			nestingEP = editor.createShape(SequenceElementTypes.Behavior_Execution_Shape, at(x, 150),
+					sized(0, 200));
+			nestedEP = editor.createShape(SequenceElementTypes.Behavior_Execution_Shape, at(x, 300),
+					null /* default size */);
+
+			nestingGeom = getBounds(nestingEP);
+			nestedGeom = getBounds(nestedEP);
+		}
 	}
 
 }

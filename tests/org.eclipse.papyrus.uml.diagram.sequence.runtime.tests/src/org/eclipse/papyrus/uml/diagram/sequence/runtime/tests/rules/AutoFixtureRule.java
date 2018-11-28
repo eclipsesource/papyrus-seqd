@@ -151,13 +151,14 @@ public class AutoFixtureRule implements TestRule {
 
 	private <T> FieldAccess<T> findField(Pattern regex, Class<T> type) {
 		return getFields().filter(f -> type.isAssignableFrom(f.getType()))
-				.filter(f -> regex.matcher(f.getName()).find()).map(f -> new FieldAccess<>(f, type, test))
-				.findFirst().orElse(null);
+				.filter(f -> regex.matcher(f.getName()).find())
+				// FieldAccess found this way doesn't need to be set, so optionality is fine
+				.map(f -> new FieldAccess<>(f, type, test, true)).findFirst().orElse(null);
 	}
 
 	private Stream<FieldAccess<?>> getAutoFixtures() {
-		return getFields().filter(f -> f.isAnnotationPresent(AutoFixture.class))
-				.map(f -> new FieldAccess<>(f, Object.class, test));
+		return getFields().filter(f -> f.isAnnotationPresent(AutoFixture.class)).map(
+				f -> new FieldAccess<>(f, Object.class, test, f.getAnnotation(AutoFixture.class).optional()));
 	}
 
 	//
@@ -235,13 +236,15 @@ public class AutoFixtureRule implements TestRule {
 			}
 
 			EObject fixtureElement = element.get();
-			result = DiagramEditPartsUtil.getChildByEObject(fixtureElement, editor.getDiagramEditPart(),
-					isEdge(fixtureElement));
+			if (fixtureElement != null) { // It could be optional
+				result = DiagramEditPartsUtil.getChildByEObject(fixtureElement, editor.getDiagramEditPart(),
+						isEdge(fixtureElement));
 
-			if ((result != null) && fixture.field.isAnnotationPresent(VisualID.class)) {
-				String visualID = fixture.field.getAnnotation(VisualID.class).value();
-				// Prefer the child
-				result = EditPartUtils.findFirstChildEditPartWithId((EditPart)result, visualID);
+				if ((result != null) && fixture.field.isAnnotationPresent(VisualID.class)) {
+					String visualID = fixture.field.getAnnotation(VisualID.class).value();
+					// Prefer the child
+					result = EditPartUtils.findFirstChildEditPartWithId((EditPart)result, visualID);
+				}
 			}
 		}
 
@@ -257,15 +260,17 @@ public class AutoFixtureRule implements TestRule {
 			FieldAccess<? extends EditPart> editPart = findField(editPartPattern, EditPart.class);
 			if (editPart != null) {
 				EditPart ep = editPart.get();
-				Translatable translatable = (ep instanceof ConnectionEditPart)
-						? ((Connection)((ConnectionEditPart)ep).getFigure()).getPoints().getCopy()
-						: ((GraphicalEditPart)ep).getFigure().getBounds().getCopy();
+				if (ep != null) { // It could be optional
+					Translatable translatable = (ep instanceof ConnectionEditPart)
+							? ((Connection)((ConnectionEditPart)ep).getFigure()).getPoints().getCopy()
+							: ((GraphicalEditPart)ep).getFigure().getBounds().getCopy();
 
-				if (translatable != null) {
-					((GraphicalEditPart)ep).getFigure().getParent().translateToAbsolute(translatable);
+					if (translatable != null) {
+						((GraphicalEditPart)ep).getFigure().getParent().translateToAbsolute(translatable);
+					}
+
+					result = translatable;
 				}
-
-				result = translatable;
 			}
 		}
 
@@ -318,6 +323,8 @@ public class AutoFixtureRule implements TestRule {
 
 		private final Class<? extends T> type;
 
+		private final boolean optional;
+
 		FieldAccess(Class<T> type, Object owner) {
 			super();
 
@@ -327,14 +334,17 @@ public class AutoFixtureRule implements TestRule {
 
 				this.owner = owner;
 				this.type = field.getType().asSubclass(type);
+
+				// FieldAccess constructed this way is not used as a test fixture, so optionality is fine
+				this.optional = true;
 			} catch (Exception e) {
 				e.printStackTrace();
-				fail(String.format("Cannnot access fixture of type %s", type.getName()));
+				fail(String.format("Cannot access fixture of type %s", type.getName()));
 				throw new Error(); // Unreachable
 			}
 		}
 
-		FieldAccess(Field field, Class<T> type, Object owner) {
+		FieldAccess(Field field, Class<T> type, Object owner, boolean optional) {
 			super();
 
 			try {
@@ -343,9 +353,10 @@ public class AutoFixtureRule implements TestRule {
 
 				this.owner = owner;
 				this.type = field.getType().asSubclass(type);
+				this.optional = optional;
 			} catch (Exception e) {
 				e.printStackTrace();
-				fail(String.format("Cannnot access fixture %s", field.getName()));
+				fail(String.format("Cannot access fixture %s", field.getName()));
 				throw new Error(); // Unreachable
 			}
 		}
@@ -409,14 +420,18 @@ public class AutoFixtureRule implements TestRule {
 			}
 		}
 
+		public boolean isRequired() {
+			return !optional;
+		}
+
 		void set(Object resolved) {
-			if (resolved == null) {
+			if ((resolved == null) && isRequired()) {
 				fail(String.format("Could not resolve fixture %s of type %s", field.getName(),
 						type.getName()));
 				return; // Unreachable
 			}
 
-			if (type.isInstance(resolved)) {
+			if ((resolved == null) || type.isInstance(resolved)) {
 				try {
 					field.set(owner, resolved);
 				} catch (Exception e) {

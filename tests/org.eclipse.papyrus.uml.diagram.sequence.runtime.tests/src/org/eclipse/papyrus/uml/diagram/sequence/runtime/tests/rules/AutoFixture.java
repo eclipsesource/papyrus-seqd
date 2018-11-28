@@ -30,6 +30,9 @@ public @interface AutoFixture {
 	/** An optional element name to search for, which may be qualified or not. */
 	String value() default "";
 
+	/** Whether the fixture is allowed not to exist (to be resolvable) in the diagram. */
+	boolean optional() default false;
+
 	//
 	// Nested types
 	//

@@ -25,6 +25,7 @@ import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates;
 import org.eclipse.papyrus.uml.interaction.model.util.Optionals;
 import org.eclipse.uml2.uml.Element;
 
@@ -195,5 +196,19 @@ public final class PendingVerticalExtentData {
 				.filter(verticallyBetween(top.getAsInt(), bottom.getAsInt()));
 
 		return Stream.concat(Stream.concat(bracketing, spannedNow), futureSpanned).distinct();
+	}
+
+	/**
+	 * Obtain a predicate that queries whether an element is spanned by the given potentially {@code spanning}
+	 * element at the time of the query's evaluation, based on future knowledge of vertical extents.
+	 * 
+	 * @param spanning
+	 *            an element that may or may not span other elements
+	 * @return the is-spanned-by-baesd-on-future-vertical-extends predicate
+	 */
+	public static Predicate<MElement<? extends Element>> spannedBy(MElement<? extends Element> spanning) {
+		return LogicalModelPredicates.verticallyBetween( //
+				() -> getPendingTop(spanning).orElse(Integer.MAX_VALUE), //
+				() -> getPendingBottom(spanning).orElse(Integer.MIN_VALUE));
 	}
 }
