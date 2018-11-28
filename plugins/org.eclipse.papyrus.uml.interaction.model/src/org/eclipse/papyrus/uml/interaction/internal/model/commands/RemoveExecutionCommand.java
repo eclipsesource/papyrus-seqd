@@ -131,4 +131,9 @@ public class RemoveExecutionCommand extends ModelCommand<MExecutionImpl> impleme
 		return delegate.getElementsToRemove();
 	}
 
+	@Override
+	public RemovalCommand<Element> chain(Command next) {
+		return andThen(getTarget().getEditingDomain(), next);
+	}
+
 }

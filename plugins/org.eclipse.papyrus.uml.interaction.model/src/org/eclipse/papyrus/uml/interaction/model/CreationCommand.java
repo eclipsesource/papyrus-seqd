@@ -143,21 +143,38 @@ public interface CreationCommand<T extends EObject> extends Command, Supplier<T>
 	 *            some processor of the result to produce side-effects
 	 * @return myself, with side-effects
 	 */
-	default CreationCommand<T> andThen(Consumer<? super T> sideEffect) {
+	default CreationCommand<T> andThen(EditingDomain domain, Consumer<? super T> sideEffect) {
 		class AndThen extends Wrapper<T> {
-			AndThen() {
+			private Consumer<T> action;
+
+			AndThen(Consumer<T> action) {
 				super(CreationCommand.this, WRAP_TOKEN);
+
+				this.action = action;
 			}
 
 			@Override
 			public void execute() {
 				super.execute();
-				sideEffect.accept(getNewObject());
+
+				action.accept(getNewObject());
 			}
 
+			@Override
+			public CreationCommand<T> andThen(EditingDomain domain_, Consumer<? super T> newAction) {
+				action = action.andThen(newAction);
+				return this;
+			}
+
+			@Override
+			public CreationCommand<T> chain(Command nextCommand) {
+				return andThen(domain, nextCommand);
+			}
 		}
 
-		return new AndThen();
+		@SuppressWarnings("unchecked") // Doesn't matter, because ? super T is a wider type
+		Consumer<T> action = (Consumer<T>)sideEffect;
+		return new AndThen(action);
 	}
 
 	@Override

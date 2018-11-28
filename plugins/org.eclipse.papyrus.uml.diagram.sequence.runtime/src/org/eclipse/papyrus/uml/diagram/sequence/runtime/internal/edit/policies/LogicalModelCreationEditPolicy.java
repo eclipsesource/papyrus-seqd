@@ -19,9 +19,11 @@ import java.util.Optional;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.CreationEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewAndElementRequest;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewRequest;
@@ -60,8 +62,13 @@ public abstract class LogicalModelCreationEditPolicy extends CreationEditPolicy 
 				(IElementType)request.getViewAndElementDescriptor().getCreateElementRequestAdapter()
 						.getAdapter(IElementType.class));
 
-		return result.map(cmd -> injectViewInto(request.getViewAndElementDescriptor(), cmd)).map(this::wrap) //
-				.orElse(UnexecutableCommand.INSTANCE);
+		return result
+				.map(cmd -> injectViewInto(getEditingDomain(), request.getViewAndElementDescriptor(), cmd))
+				.map(this::wrap).orElse(UnexecutableCommand.INSTANCE);
+	}
+
+	protected TransactionalEditingDomain getEditingDomain() {
+		return ((IGraphicalEditPart)getHost()).getEditingDomain();
 	}
 
 	protected abstract Optional<org.eclipse.emf.common.command.Command> getCreationCommand(

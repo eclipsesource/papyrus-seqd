@@ -45,6 +45,11 @@
         </eGenericType>
       </eParameters>
     </eOperations>
+    <eOperations name="exists" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Query whether I exist.  A logical model element exists if and only if it is itself contained within an {@link MInteraction} and its underlying UML model {@link #getElement() element} is contained in that logical model's UML interaction."/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="interaction" lowerBound="1"
         eType="#//MInteraction" changeable="false" volatile="true" transient="true"
         derived="true" resolveProxies="false"/>

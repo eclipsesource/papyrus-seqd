@@ -63,7 +63,7 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 	 *            the elements which will be removed
 	 */
 	public NudgeOnRemovalCommand(EditingDomain editingDomain, MInteractionImpl interaction,
-			Collection<Element> elementsToRemove) {
+			Collection<? extends Element> elementsToRemove) {
 		super(interaction);
 
 		this.interaction = interaction;
@@ -90,7 +90,9 @@ public class NudgeOnRemovalCommand extends ModelCommand<MInteractionImpl> {
 	 * @param elementsToRemove
 	 *            the removed {@link Element elements}
 	 */
-	private Set<MElement<? extends Element>> getRemovedMElements(Collection<Element> elementsToRemove) {
+	private Set<MElement<? extends Element>> getRemovedMElements(
+			Collection<? extends Element> elementsToRemove) {
+
 		return elementsToRemove.stream()//
 				.map(interaction::getElement)//
 				.filter(Optional::isPresent)//

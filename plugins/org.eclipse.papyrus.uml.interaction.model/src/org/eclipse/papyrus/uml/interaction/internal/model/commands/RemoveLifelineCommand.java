@@ -115,4 +115,10 @@ public class RemoveLifelineCommand extends ModelCommand<MLifelineImpl> implement
 		}
 		return delegate.getElementsToRemove();
 	}
+
+	@Override
+	public RemovalCommand<Element> chain(Command next) {
+		return andThen(getTarget().getEditingDomain(), next);
+	}
+
 }

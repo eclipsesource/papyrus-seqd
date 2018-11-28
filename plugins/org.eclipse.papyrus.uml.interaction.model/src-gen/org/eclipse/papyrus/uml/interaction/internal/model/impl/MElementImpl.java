@@ -12,6 +12,8 @@
  */
 package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 
+import static java.util.Collections.singleton;
+import static org.eclipse.emf.ecore.util.EcoreUtil.isAncestor;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 
 import java.lang.reflect.InvocationTargetException;
@@ -28,6 +30,10 @@ import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.emf.edit.command.DeleteCommand;
+import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.CompoundModelCommand;
@@ -37,6 +43,7 @@ import org.eclipse.papyrus.uml.interaction.internal.model.commands.NudgeCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
+import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.NamedElement;
 
@@ -234,6 +241,43 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 	}
 
 	/**
+	 * Obtain a command to remove my logical model self from the logical model.
+	 * 
+	 * @return my logical removal command
+	 */
+	protected <E extends Element, C extends RemovalCommand<E>> Command removeLogicalElement(Class<C> key,
+			Supplier<? extends C> removalFactory) {
+
+		return DependencyContext.getDynamic().apply(this, key, //
+				__ -> removalFactory.get().chain(new DeleteCommand(getEditingDomain(), singleton(this)) {
+					@Override
+					protected void prepareCommand() {
+						CompoundCommand removeCommand = new CompoundCommand(
+								CompoundCommand.MERGE_COMMAND_ALL);
+						for (Object next : getCollection()) {
+							if (next instanceof EObject) {
+								EObject object = (EObject)next;
+								EObject owner = object.eContainer();
+								EReference containment = object.eContainmentFeature();
+								if (!FeatureMapUtil.isMany(owner, containment)) {
+									removeCommand
+											.append(new RemoveCommand(domain, owner, containment, object));
+								} else {
+									EList<?> list = (EList<?>)owner.eGet(containment);
+									if (list instanceof MContainmentList<?>) {
+										// Cannot use the public API to remove stuff
+										list = ((MContainmentList<?>)list).mutableList();
+									}
+									removeCommand.append(new RemoveCommand(domain, list, object));
+								}
+							}
+						}
+						append(removeCommand.unwrap());
+					}
+				})).orElse(null);
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated NOT
@@ -251,6 +295,21 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 		}
 
 		return result;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public boolean exists() {
+		MInteraction interaction = getInteraction();
+
+		// I am is still attached to the logical model
+		return (interaction != null)
+				// and my underlying UML element is still in that interaction
+				&& isAncestor(interaction.getElement(), getElement());
 	}
 
 	/**
@@ -314,8 +373,9 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 	 * @see #withPadding(Class, Supplier)
 	 * @see #withDependencies(Class, Supplier)
 	 */
-	protected <R extends EObject, C extends CreationCommand<R>> CreationCommand<R> createWithPadding(
-			Class<C> key, Supplier<? extends C> commandFactory) {
+	protected <R extends EObject> CreationCommand<R> createWithPadding(
+			Class<? extends CreationCommand<R>> key, Supplier<? extends CreationCommand<R>> commandFactory) {
+
 		Command[] padding = {null };
 
 		Consumer<DependencyContext> getPadding = ctx -> padding[0] = DeferredPaddingCommand.get(ctx, this);
@@ -429,6 +489,8 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 				return remove();
 			case SequenceDiagramPackage.MELEMENT___PRECEDES__MELEMENT:
 				return precedes((MElement<?>)arguments.get(0));
+			case SequenceDiagramPackage.MELEMENT___EXISTS:
+				return exists();
 		}
 		return super.eInvoke(operationID, arguments);
 	}

@@ -134,4 +134,9 @@ public class RemoveMessageCommand extends ModelCommand<MMessageImpl> implements 
 		return delegate.getElementsToRemove();
 	}
 
+	@Override
+	public RemovalCommand<Element> chain(Command next) {
+		return andThen(getTarget().getEditingDomain(), next);
+	}
+
 }

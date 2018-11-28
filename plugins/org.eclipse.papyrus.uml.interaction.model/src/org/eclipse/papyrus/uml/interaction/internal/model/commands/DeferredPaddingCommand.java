@@ -12,13 +12,20 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
+import static com.google.common.collect.Iterables.consumingIterable;
+import static java.lang.Math.max;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.mapToInt;
 
+import com.google.common.collect.Queues;
+
 import java.util.Comparator;
 import java.util.OptionalInt;
+import java.util.Queue;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandWrapper;
@@ -46,11 +53,7 @@ public class DeferredPaddingCommand extends CommandWrapper {
 
 	private static final Comparator<MElement<?>> ORDERING = LogicalModelOrdering.semantically();
 
-	private MElement<? extends Element> referenceElement;
-
-	private MElement<? extends Element> nudgeElement;
-
-	private PaddingDirection direction = PaddingDirection.NONE;
+	private final Queue<PadEntry> requests = Queues.newArrayDeque();
 
 	/**
 	 * Not instantiable by clients.
@@ -86,30 +89,39 @@ public class DeferredPaddingCommand extends CommandWrapper {
 				DeferredPaddingCommand::new);
 	}
 
-	public DeferredPaddingCommand pad(MElement<? extends Element> from, MElement<? extends Element> to) {
-		if ((from == null) || (to == null)) {
-			// Have now determined that padding is not required
-			referenceElement = null;
-			nudgeElement = null;
-			direction = PaddingDirection.NONE;
-		} else if (referenceElement == null) {
-			referenceElement = from;
-			nudgeElement = to;
+	public DeferredPaddingCommand pad(MElement<? extends Element> from, MElement<? extends Element> to,
+			int hint, PaddingDirection direction) {
 
-			if (before(from, nudgeElement)) {
-				// Implies downward nudging
-				direction = PaddingDirection.DOWN;
-			} else {
-				direction = PaddingDirection.UP;
-			}
-		} else if (direction.updateReference(referenceElement, from)) {
-			referenceElement = from;
-			nudgeElement = to;
-		} else if (direction.updateNudge(nudgeElement, referenceElement, to)) {
-			// Nudge the closer element
-			nudgeElement = to;
+		if (hint < 0) {
+			throw new IllegalArgumentException("negative padding hint"); //$NON-NLS-1$
 		}
+
+		return pad(new ImmediatePadEntry(from, to, hint, direction));
+	}
+
+	protected DeferredPaddingCommand pad(PadEntry padSpec) {
+		requests.add(padSpec);
 		return this;
+	}
+
+	public DeferredPaddingCommand pad(MElement<? extends Element> from, MElement<? extends Element> to) {
+		return pad(from, to, 0, PaddingDirection.DEFAULT);
+	}
+
+	public DeferredPaddingCommand pad(Supplier<? extends MElement<? extends Element>> from,
+			Supplier<? extends MElement<? extends Element>> to, int hint, PaddingDirection direction) {
+
+		if (hint < 0) {
+			throw new IllegalArgumentException("negative padding hint"); //$NON-NLS-1$
+		}
+
+		return pad(new FuturePadEntry(from, to, hint, direction));
+	}
+
+	public DeferredPaddingCommand pad(Supplier<? extends MElement<? extends Element>> from,
+			Supplier<? extends MElement<? extends Element>> to) {
+
+		return pad(from, to, 0, PaddingDirection.DEFAULT);
 	}
 
 	private static boolean before(MElement<? extends Element> a, MElement<? extends Element> b) {
@@ -135,22 +147,26 @@ public class DeferredPaddingCommand extends CommandWrapper {
 
 	@Override
 	protected Command createCommand() {
-		int nudgeY = computeNudgeAmount();
+		PaddingReducer padSpec = new PaddingReducer();
+
+		consumingIterable(requests).forEach(padSpec);
+
+		int nudgeY = computeNudgeAmount(padSpec);
 		if (nudgeY == 0) {
 			return IdentityCommand.INSTANCE;
 		}
 
 		Command result;
-		switch (direction) {
+		switch (padSpec.direction()) {
 			case DOWN:
-				result = getPaddableElement(nudgeElement).nudge(nudgeY);
+				result = getPaddableElement(padSpec.to()).nudge(nudgeY);
 				break;
 			case UP:
 				// An "upward" nudge doesn't actually nudge anything up because the diagram can
 				// only expand downwards (lifeline heads are fixed). Rather, we ensure space
 				// by nudging down the element that was moved up, but also everything following
 				// it so that the layout is consistent
-				result = getPaddableElement(referenceElement).nudge(nudgeY);
+				result = getPaddableElement(padSpec.from()).nudge(nudgeY);
 				break;
 			default:
 				result = null;
@@ -165,15 +181,20 @@ public class DeferredPaddingCommand extends CommandWrapper {
 		return result;
 	}
 
-	protected int computeNudgeAmount() {
-		if ((direction == PaddingDirection.NONE) || (nudgeElement == null) || (referenceElement == null)) {
+	protected int computeNudgeAmount(PadEntry padSpec) {
+		MElement<? extends Element> referenceElement = padSpec.from();
+		MElement<? extends Element> nudgeElement = padSpec.to();
+		int hint = padSpec.hint();
+		PaddingDirection direction = padSpec.direction();
+
+		if ((direction == PaddingDirection.DEFAULT) || (nudgeElement == null) || (referenceElement == null)) {
 			return 0;
 		}
 
 		MElement<? extends Element> padFrom = getPaddableElement(referenceElement);
 		MElement<? extends Element> padElement = getPaddableElement(nudgeElement);
 
-		if ((padFrom.getElement() == padElement.getElement())
+		if ((padFrom.getElement() == padElement.getElement()) //
 				|| ((direction == PaddingDirection.DOWN) && above(padFrom).test(padElement))
 				|| ((direction == PaddingDirection.UP) && below(padFrom).test(padElement))) {
 			// This would happen, for example, when re-targeting a message bringins along an
@@ -206,7 +227,7 @@ public class DeferredPaddingCommand extends CommandWrapper {
 				throw new IllegalStateException("no nudge direction"); //$NON-NLS-1$
 		}
 
-		return Math.max(0, requiredPadding - gap);
+		return max(max(0, hint), requiredPadding - gap);
 	}
 
 	MElement<? extends Element> getPaddableElement(MElement<? extends Element> element) {
@@ -218,7 +239,7 @@ public class DeferredPaddingCommand extends CommandWrapper {
 
 			@Override
 			public MElement<? extends Element> caseMExecutionOccurrence(MExecutionOccurrence object) {
-				return object.getExecution().get();
+				return object.getStartedExecution().orElse(null);
 			}
 
 			@Override
@@ -235,8 +256,16 @@ public class DeferredPaddingCommand extends CommandWrapper {
 	/**
 	 * Enumeration of direction in which padding may be applied.
 	 */
-	private static enum PaddingDirection {
-		NONE, DOWN, UP;
+	public static enum PaddingDirection {
+		/**
+		 * Determine the direction according to the relative positions of the reference element and the
+		 * element to be nudged.
+		 */
+		DEFAULT,
+		/** Nudge down to ensure padding. */
+		DOWN,
+		/** Nudge up to ensure padding. */
+		UP;
 
 		boolean updateReference(MElement<? extends Element> reference, MElement<? extends Element> from) {
 			switch (this) {
@@ -259,6 +288,164 @@ public class DeferredPaddingCommand extends CommandWrapper {
 				default:
 					return false;
 			}
+		}
+
+	}
+
+	protected static interface PadEntry {
+		MElement<? extends Element> from();
+
+		MElement<? extends Element> to();
+
+		int hint();
+
+		PaddingDirection direction();
+	}
+
+	private static abstract class PadEntryImpl implements PadEntry {
+
+		private final int hint;
+
+		private final PaddingDirection direction;
+
+		PadEntryImpl(int hint, PaddingDirection direction) {
+			super();
+
+			this.hint = hint;
+			this.direction = (direction == null) ? PaddingDirection.DEFAULT : direction;
+		}
+
+		@Override
+		public int hint() {
+			return hint;
+		}
+
+		@Override
+		public PaddingDirection direction() {
+			return direction;
+		}
+
+	}
+
+	private static final class FuturePadEntry extends PadEntryImpl {
+		private final Supplier<? extends MElement<? extends Element>> from;
+
+		private final Supplier<? extends MElement<? extends Element>> to;
+
+		FuturePadEntry(Supplier<? extends MElement<? extends Element>> from,
+				Supplier<? extends MElement<? extends Element>> to, int hint, PaddingDirection direction) {
+
+			super(hint, direction);
+
+			this.from = from;
+			this.to = to;
+		}
+
+		@Override
+		public MElement<? extends Element> from() {
+			return from.get();
+		}
+
+		@Override
+		public MElement<? extends Element> to() {
+			return to.get();
+		}
+
+	}
+
+	private static final class ImmediatePadEntry extends PadEntryImpl {
+		private final MElement<? extends Element> from;
+
+		private final MElement<? extends Element> to;
+
+		ImmediatePadEntry(MElement<? extends Element> from, MElement<? extends Element> to, int hint,
+				PaddingDirection direction) {
+			super(hint, direction);
+
+			this.from = from;
+			this.to = to;
+		}
+
+		@Override
+		public MElement<? extends Element> from() {
+			return from;
+		}
+
+		@Override
+		public MElement<? extends Element> to() {
+			return to;
+		}
+
+	}
+
+	private static final class PaddingReducer implements Consumer<PadEntry>, PadEntry {
+		private MElement<? extends Element> referenceElement;
+
+		private MElement<? extends Element> nudgeElement;
+
+		private int hint;
+
+		private PaddingDirection direction = PaddingDirection.DEFAULT;
+
+		PaddingReducer() {
+			super();
+		}
+
+		@Override
+		public void accept(PadEntry entry) {
+			MElement<? extends Element> from = entry.from();
+			MElement<? extends Element> to = entry.to();
+
+			if ((from == null) || (to == null) || !from.exists() || !to.exists()) {
+				// Have now determined that padding is not required
+				referenceElement = null;
+				nudgeElement = null;
+				hint = 0;
+				direction = PaddingDirection.DEFAULT;
+			} else if (referenceElement == null) {
+				referenceElement = from;
+				nudgeElement = to;
+				hint = entry.hint();
+
+				direction = entry.direction();
+				if (direction == PaddingDirection.DEFAULT) {
+					// Compute the direction
+					if (before(from, nudgeElement)) {
+						// Implies downward nudging
+						direction = PaddingDirection.DOWN;
+					} else {
+						direction = PaddingDirection.UP;
+					}
+				}
+			} else if (direction.updateReference(referenceElement, from)) {
+				referenceElement = from;
+				nudgeElement = to;
+				hint = entry.hint();
+			} else if (direction.updateNudge(nudgeElement, referenceElement, to)) {
+				// Nudge the closer element
+				nudgeElement = to;
+				hint = entry.hint();
+			}
+		}
+
+		@Override
+		public MElement<? extends Element> from() {
+			return referenceElement;
+		}
+
+		@Override
+		public MElement<? extends Element> to() {
+			return nudgeElement;
+		}
+
+		@Override
+		public int hint() {
+			return hint;
+		}
+
+		@Override
+		public PaddingDirection direction() {
+			return direction;
 		}
 
 	}

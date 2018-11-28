@@ -14,6 +14,7 @@ package org.eclipse.papyrus.uml.interaction.internal.model.commands.tests;
 
 import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -63,6 +64,54 @@ public class SetCoveredCommandTest {
 
 		assertThat("Message has incompatible signature", message.getSignature(), nullValue());
 		assertThat("Message has incompatible arguments", message.getArguments(), not(hasItem(anything())));
+	}
+
+	/**
+	 * Regression test for the automatic re-orientation of reply messages to match their requests.
+	 */
+	@Test
+	public void replyFollowsRequest() {
+		MMessage request = model.getElement(QN, "request");
+		MMessage reply = model.getElement(QN, "reply");
+		MLifeline c = model.getElement(QN, "c");
+
+		MMessageEnd send = request.getSend().get();
+		assumeThat("Unexpected message end coverage", send.getCovered(), not(Optional.of(c)));
+
+		Command setCovered = send.setCovered(c, OptionalInt.empty());
+		model.execute(setCovered);
+
+		// Refresh fixtures
+		request = model.getElement(QN, "request");
+		reply = model.getElement(QN, "reply");
+		c = model.getElement(QN, "c");
+
+		assumeThat("Request not re-oriented", request.getSender(), is(Optional.of(c)));
+		assertThat("Reply not re-oriented", reply.getReceiver(), is(Optional.of(c)));
+	}
+
+	/**
+	 * Regression test for the automatic re-orientation of request messages to match their replies.
+	 */
+	@Test
+	public void requestFollowsReply() {
+		MMessage request = model.getElement(QN, "request");
+		MMessage reply = model.getElement(QN, "reply");
+		MLifeline c = model.getElement(QN, "c");
+
+		MMessageEnd receive = reply.getReceive().get();
+		assumeThat("Unexpected message end coverage", receive.getCovered(), not(Optional.of(c)));
+
+		Command setCovered = receive.setCovered(c, OptionalInt.empty());
+		model.execute(setCovered);
+
+		// Refresh fixtures
+		request = model.getElement(QN, "request");
+		reply = model.getElement(QN, "reply");
+		c = model.getElement(QN, "c");
+
+		assumeThat("Reply not re-oriented", reply.getReceiver(), is(Optional.of(c)));
+		assertThat("Request not re-oriented", request.getSender(), is(Optional.of(c)));
 	}
 
 }

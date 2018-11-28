@@ -12,9 +12,12 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
-import static java.lang.Integer.MAX_VALUE;
+import static java.lang.Math.abs;
 import static org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil.invertSingle;
 import static org.eclipse.papyrus.uml.interaction.graph.util.Suppliers.compose;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.equalTo;
 import static org.eclipse.uml2.uml.MessageSort.REPLY_LITERAL;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.ACTION_EXECUTION_SPECIFICATION;
 import static org.eclipse.uml2.uml.UMLPackage.Literals.EXECUTION_SPECIFICATION__FINISH;
@@ -44,6 +47,7 @@ import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.DeferredPaddingCommand.PaddingDirection;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MObjectImpl;
@@ -64,6 +68,7 @@ import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.SemanticHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.model.util.Executions;
+import org.eclipse.papyrus.uml.interaction.model.util.Optionals;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Interaction;
@@ -254,6 +259,24 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 	}
 
 	/**
+	 * Obtain my execution creation parameter.
+	 * 
+	 * @return my execution creation parameter
+	 */
+	public ExecutionCreationCommandParameter getExecutionCreationParameter() {
+		return executionCreationParameter;
+	}
+
+	/**
+	 * Obtain the receiver of the message that I create.
+	 * 
+	 * @return my receiver
+	 */
+	public MLifeline getReceiver() {
+		return receiver;
+	}
+
+	/**
 	 * Compute the offset on the receiver of horizontal message based on the sending {@code offset} from its
 	 * reference point.
 	 * 
@@ -299,10 +322,6 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 		// Receive: Is there actually an execution occurrence here?
 		// In case of create or destruction messages, this should not connect to execution occurrences,
 		// because they connect to lifeline-header/new destruction occurrence
-		int llTopRecv = layoutHelper().getBottom(receiver.getDiagramView().get());
-		int whereRecv = beforeRecv == receiver ? recvOffset
-				// For executions also the top to allow for messages to anchor within it
-				: beforeRecv.getTop().orElse(llTopRecv) - llTopRecv + recvOffset;
 		Optional<MExecution> receivingExec;
 		switch (sort) {
 			case CREATE_MESSAGE_LITERAL:
@@ -469,7 +488,14 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 				senderView, senderY, receiverView, receiverY, this::replace);
 		result = result.chain(messageConnector);
 
+		int sendYPosition = absoluteSendY + additionalOffsetSend;
 		int recvYPosition = absoluteRecvY + additionalOffsetRecv;
+
+		if (isSelfMessage()) {
+			/* Make additional room for the self message */
+			recvYPosition = Math.max(recvYPosition,
+					sendYPosition + layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE));
+		}
 
 		switch (sort) {
 			case CREATE_MESSAGE_LITERAL:
@@ -489,26 +515,21 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 					/* Fall through to create nudge command, but extend nudge height by execMinHeight */
 					recvYPosition += layoutConstraints().getMinimumHeight(ViewTypes.EXECUTION_SPECIFICATION);
 
-					if (isSelfMessage()) {
-						/* Make additional room for the one or even two self messages */
+					if (isSelfMessage() && executionCreationParameter.isCreateReply()) {
+						/* Make additional room for the reply, too */
 						recvYPosition += layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE);
-						if (executionCreationParameter.isCreateReply()) {
-							recvYPosition += layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE);
-						}
 					}
 				}
 
 			default:
 				// Now we have commands to add the message specification. But, first we must make
 				// room for it in the diagram. Nudge the element that will follow the new receive event
+				// or send event, whichever needs the more padding.
 				// If inserting after the start occurrence of an execution specification,
 				// then actually insert after the execution, itself, so that it can span
-				// the new message end
-				Optional<Command> makeSpace = createNudgeCommandForFollowingElements(timeline, sendInsert,
-						sendingExec, senderY.getAsInt(), recvInsert, receivingExec, recvYPosition);
-				if (makeSpace.isPresent()) {
-					result = makeSpace.get().chain(result);
-				}
+				// the new message end.
+				ensurePadding(timeline, sendYPosition, absoluteSendY, recvYPosition, absoluteRecvY,
+						additionalOffsetRecv);
 				break;
 		}
 
@@ -687,59 +708,44 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 		}
 	}
 
-	private Optional<Command> createNudgeCommandForFollowingElements(
-			List<MElement<? extends Element>> timeline, //
-			Optional<MElement<? extends Element>> sendInsert, //
-			Optional<MExecution> sendingExec, int sendYPosition, //
-			Optional<MElement<? extends Element>> recvInsert, //
-			Optional<MExecution> receivingExec, int recvYPosition) {
+	private void ensurePadding(List<MElement<? extends Element>> timeline, //
+			int sendYPosition, int absoluteSendY, //
+			int recvYPosition, int absoluteRecvY, //
+			int additionalOffset) {
 
-		if (sendingExec.isPresent() || receivingExec.isPresent()) {
-			return Optional.empty();
-		}
+		Predicate<MOccurrence<?>> isExecStart = MOccurrence::isStart;
+		Predicate<MOccurrence<?>> isExecFinish = MOccurrence::isFinish;
+		Optional<? extends MElement<? extends Element>> recvNudge = getFollowingElement(timeline,
+				getLatestElementBeforeY(beforeRecv, absoluteRecvY, timeline), absoluteRecvY);
+		@SuppressWarnings("unchecked")
+		Optional<MExecution> nudgedStarted = Optionals.as(recvNudge, MOccurrence.class)
+				.flatMap(MOccurrence::getExecution);
+		Optional<? extends MElement<? extends Element>> sendNudge = getFollowingElement(timeline,
+				getLatestElementBeforeY(beforeSend, absoluteSendY, timeline), absoluteSendY);
+		@SuppressWarnings("unchecked")
+		Optional<MExecution> nudgedFinished = Optionals.as(sendNudge, MOccurrence.class)
+				.flatMap(MOccurrence::getExecution);
 
-		/* check if we are too close to following elements on send and/or receive side */
-		int additionalSendNudge = missingPadding(sendInsert, sendYPosition);
-		int additionalRecvNudge = missingPadding(recvInsert, recvYPosition);
-		int minNudge = Math.max(0, Math.max(additionalSendNudge, additionalRecvNudge));
+		// The vertical extent of the message
+		int messageHeight = abs(recvYPosition - sendYPosition) + additionalOffset;
 
-		int absoluteY = absoluteSendYReference().getAsInt();
-		MElement<?> latestElementBeforeY = getLatestElementBeforeY(beforeSend, absoluteY, timeline);
-		Optional<Command> makeSpace = getFollowingElement(timeline, latestElementBeforeY, absoluteY)
-				.map(el -> {
-					MElement<? extends Element> toNudge = el;
-					if (el instanceof MExecution) {
-						// We are inserting within the vertical span of an execution
-						// specification. Don't nudge the top of the execution, but
-						// rather the bottom (the finish occurrence), to make space
-						MExecution exec = (MExecution)el;
-						if (exec.getFinish().isPresent()) {
-							toNudge = exec.getFinish().get();
-						}
-					}
-					OptionalInt distance = toNudge.verticalDistance(latestElementBeforeY);
-					if (distance.isPresent()) {
-						int deltaToKeepDistance = (recvYPosition + distance.getAsInt())
-								- toNudge.getTop().getAsInt();
-						if (isSelfMessage() && (sendYPosition == recvYPosition)) {
-							deltaToKeepDistance += layoutConstraints().getMinimumHeight(ViewTypes.MESSAGE);
-						}
-						return toNudge.nudge(Math.max(minNudge, deltaToKeepDistance));
-					} else {
-						return null;
-					}
-				});
+		Predicate<MOccurrence<?>> startsNudged = isExecStart.and(
+				occ -> occ.getStartedExecution().filter(equalTo(nudgedStarted.orElse(null))).isPresent());
+		Predicate<MOccurrence<?>> finishesNudged = isExecFinish.and(
+				occ -> occ.getFinishedExecution().filter(equalTo(nudgedFinished.orElse(null))).isPresent());
 
-		/*
-		 * check if we did create a nudge command based on measured distance and the required space. if not,
-		 * but we need to enforce padding, create it based on insertion point
-		 */
-		if (!makeSpace.isPresent() && minNudge > 0) {
-			MElement<? extends Element> toNudge = additionalSendNudge > additionalRecvNudge ? sendInsert.get()
-					: recvInsert.get();
-			return Optional.of(toNudge.nudge(minNudge));
-		}
-		return makeSpace;
+		// But, don't attempt any padding of an execution start/finish that we are connecting to
+		Supplier<MMessageEnd> recvEnd = () -> getTarget().getInteraction().getMessage(this.get())
+				.flatMap(MMessage::getReceive).filter(startsNudged.negate()).orElse(null);
+		Supplier<MMessageEnd> sendEnd = () -> getTarget().getInteraction().getMessage(this.get())
+				.flatMap(MMessage::getSend).filter(finishesNudged.negate()).orElse(null);
+
+		// Only one of these will actually be effective (or neither, if something else overrides)
+		// but we don't yet know which, so post both
+		sendNudge.ifPresent(toNudge -> DeferredPaddingCommand.get(getTarget()).pad(sendEnd, () -> toNudge,
+				messageHeight, PaddingDirection.DOWN));
+		recvNudge.ifPresent(toNudge -> DeferredPaddingCommand.get(getTarget()).pad(recvEnd, () -> toNudge,
+				messageHeight, PaddingDirection.DOWN));
 	}
 
 	/**
@@ -769,24 +775,34 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 		return (e1, e2) -> timeline.indexOf(e1) > timeline.indexOf(e1) ? e1 : e2;
 	}
 
-	private Optional<MElement<? extends Element>> getFollowingElement(
+	private Optional<? extends MElement<? extends Element>> getFollowingElement(
 			List<MElement<? extends Element>> fragments, MElement<?> distanceFrom, int yPosition) {
+
+		Optional<? extends MElement<? extends Element>> result;
+
 		int index = fragments.indexOf(distanceFrom);
 		if (index == -1) {
 			if (distanceFrom instanceof MLifeline) {
 				// get the first element which comes after
-				return fragments.stream()//
+				result = fragments.stream()//
 						.filter(e -> {
 							return e.getTop().orElse(yPosition) >= yPosition;
 						})//
 						.findFirst();
+			} else {
+				result = getTarget().following(distanceFrom);
 			}
-			return getTarget().following(distanceFrom);
+		} else if (index + 1 < fragments.size()) {
+			result = Optional.of(fragments.get(index + 1));
+		} else {
+			result = getTarget().following(distanceFrom);
 		}
-		if (index + 1 < fragments.size()) {
-			return Optional.of(fragments.get(index + 1));
-		}
-		return getTarget().following(distanceFrom);
+
+		Optional<MOccurrence<? extends Element>> execFinish = Optionals.as(result, MExecution.class)
+				.filter(above(yPosition).and(below(yPosition))).flatMap(MExecution::getFinish);
+		result = Optionals.elseMaybe(execFinish, result);
+
+		return result;
 	}
 
 	private int getAdditionalOffSet(List<MElement<? extends Element>> timeline, //
@@ -808,35 +824,6 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 		int curPadding = absoluteY - elementBeforeMe.getBottom().orElse(0);
 		int reqPadding = layoutConstraints().getPadding(RelativePosition.BOTTOM, diagramView.get())
 				+ layoutConstraints().getPadding(RelativePosition.TOP, ViewTypes.MESSAGE);
-		if (curPadding < reqPadding) {
-			return reqPadding - curPadding;
-		} else {
-			return 0;
-		}
-	}
-
-	/**
-	 * Returns for how many pixels the {@link MElement element after me} has to be nudged in order to fulfill
-	 * padding requirements.
-	 * 
-	 * @param elementAfterMe
-	 *            the element following me
-	 * @param myYPosition
-	 *            my insertion position
-	 * @return distance required to fulfil
-	 */
-	private int missingPadding(Optional<MElement<? extends Element>> elementAfterMe, int myYPosition) {
-		if (!elementAfterMe.isPresent()) {
-			return 0;
-		}
-		MElement<? extends Element> insertionPoint = elementAfterMe.get();
-		Optional<View> diagramView = getDiagramView(insertionPoint);
-		if (!diagramView.isPresent()) {
-			return 0;
-		}
-		int curPadding = insertionPoint.getTop().orElse(0) - myYPosition;
-		int reqPadding = layoutConstraints().getPadding(RelativePosition.BOTTOM, ViewTypes.MESSAGE)
-				+ layoutConstraints().getPadding(RelativePosition.TOP, diagramView.get());
 		if (curPadding < reqPadding) {
 			return reqPadding - curPadding;
 		} else {
