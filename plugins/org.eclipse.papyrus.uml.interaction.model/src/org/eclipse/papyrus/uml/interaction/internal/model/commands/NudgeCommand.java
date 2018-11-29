@@ -118,7 +118,7 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 
 		private final int delta;
 
-		private Set<Shape> movingLifelineBodies = new HashSet<>();
+		private Set<Shape> movingShapes = new HashSet<>();
 
 		MoveDownVisitor(int delta) {
 			super();
@@ -134,10 +134,13 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 			if (view instanceof Shape) {
 				// Move the shape down
 				Shape shape = (Shape)view;
-				if (!isShapeOnMovingLifeline(shape)) {
+				if (!isShapeOnMovingShape(shape)) {
 					int top = layoutHelper().getTop(shape);
 					chain(layoutHelper().setTop(shape, top + delta));
 				}
+
+				// Whether we moved it, or it's moving indirectly, it's moving
+				movingShapes.add(shape);
 			} else if (view instanceof Connector && element instanceof Message) {
 				// Move connector anchors down
 				Connector connector = (Connector)view;
@@ -163,12 +166,12 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 								.map(Vertex.class::cast);
 						// Record that we're moving this
 						lifeline.map(Vertex::getDiagramView).map(diagramHelper()::getLifelineBodyShape)
-								.ifPresent(movingLifelineBodies::add);
+								.ifPresent(movingShapes::add);
 						Optional<Shape> shape = lifeline.map(Vertex::getDiagramView).map(Shape.class::cast);
 						shape.ifPresent(s -> chain(
 								layoutHelper().setTop(shape.get(), layoutHelper().getTop(s) + delta)));
 					} else if (targetVtx.hasTag(Tag.LIFELINE_DESTRUCTION)
-							&& !isShapeOnMovingLifeline(targetOn)) {
+							&& !isShapeOnMovingShape(targetOn)) {
 						// Move Destruction Shape if it's not moved implicitly by the lifeline it's on
 						Optional<Shape> shape = Optional.ofNullable(targetVtx.getDiagramView())
 								.filter(Shape.class::isInstance).map(Shape.class::cast);
@@ -229,12 +232,20 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 		 */
 		private boolean skipMove(Shape shape) {
 			return !ViewTypes.LIFELINE_BODY.equals(shape.getType()) //
-					|| movingLifelineBodies.contains(shape) //
-					|| isShapeOnMovingLifeline(shape);
+					|| movingShapes.contains(shape) //
+					|| isShapeOnMovingShape(shape);
 		}
 
-		private boolean isShapeOnMovingLifeline(Shape shape) {
-			return movingLifelineBodies.contains(shape.eContainer());
+		/**
+		 * Is a shape on (a child of) a shape that is already being nudged, and so doesn't need to be nudged,
+		 * itself?
+		 * 
+		 * @param shape
+		 *            a shape to be nudged (perhaps)
+		 * @return whether it is indirectly being nudged by being a child of a shape being nudged
+		 */
+		private boolean isShapeOnMovingShape(Shape shape) {
+			return movingShapes.contains(shape.eContainer());
 		}
 	}
 

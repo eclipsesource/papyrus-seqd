@@ -13,12 +13,15 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import static java.util.Collections.singletonList;
+import static org.eclipse.papyrus.uml.interaction.internal.model.commands.PendingNestedData.setPendingNested;
 import static org.eclipse.papyrus.uml.interaction.internal.model.commands.PendingVerticalExtentData.affectedOccurrences;
-import static org.eclipse.papyrus.uml.interaction.model.util.Executions.getLifelineView;
+import static org.eclipse.papyrus.uml.interaction.model.util.Executions.executionShapeAt;
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.equalTo;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.lessThan;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.map;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.UnaryOperator;
@@ -28,7 +31,6 @@ import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.notation.Shape;
-import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
@@ -89,20 +91,14 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 		return owner.getElement() != newOwner.getElement();
 	}
 
+	protected boolean isChangingNesting() {
+		return (getTarget() instanceof MExecution)
+				&& PendingNestedData.getPendingNestingExecution((MExecution)getTarget()).isPresent();
+	}
+
 	protected boolean isChangingPosition() {
 		return (top.isPresent() && !getTarget().getTop().equals(top))
 				|| (bottom.isPresent() && !getTarget().getBottom().equals(bottom));
-	}
-
-	protected boolean needReparentView(MExecution execution) {
-		// browse the list of parent views until we get to the real lifeline view.
-		// once found, compare to the "new" lifeline owner.
-		// if similar, no need to reparent
-		// this avoids issues in reparenting executions with nested executions
-		Optional<View> parentLifelineView = getLifelineView(execution);
-		return parentLifelineView.isPresent()
-				&& !parentLifelineView.equals(as(newOwner.getDiagramView(), View.class));
-
 	}
 
 	@Override
@@ -142,12 +138,12 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 			int newTop = top.orElseGet(() -> execution.getTop().getAsInt());
 			int newBottom = bottom.orElseGet(() -> execution.getBottom().getAsInt());
 
-			if (isChangingOwner() && needReparentView(execution)) {
-				// Move the execution shape
-				result = chain(result, diagramHelper().reparentView(executionShape.get(), lifelineView));
-			}
+			if (isChangingPosition() || isChangingOwner() || isChangingNesting()) {
+				// Handle new parent shape (moving to/from nested condition)
+				Optional<Shape> nestingExecution = executionShapeAt(lifeline, newTop, equalTo(execution));
+				Shape newParent = nestingExecution.orElse(lifelineView);
+				result = chain(result, diagramHelper().reparentView(executionShape.get(), newParent));
 
-			if (isChangingPosition() || isChangingOwner()) {
 				// Position it later, as the relative position of the execution may then be different
 				// according to the new lifeline's creation position
 				result = chain(result, layoutHelper().setTop(executionShape.get(), () -> newTop));
@@ -191,10 +187,21 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 			// that *will be* spanned do not; they only must be reattached per the step below
 			result = execution.getOccurrences().stream()
 					.map(occ -> occ.setCovered(lifeline, topMapping.apply(occ.getTop()))).reduce(chaining());
+		} else if (isChangingPosition() && !isChangingOwner()) {
+			// We are reshaping it. Refresh nested executions, if necessary
+			result = execution.getNestedExecutions().stream()
+					.filter(PendingVerticalExtentData.spannedBy(execution).negate())
+					.peek(nested -> setPendingNested(PendingNestedData.NO_EXECUTION, nested))
+					.map(nested -> nested.setOwner(lifeline, nested.getTop(), nested.getBottom()))
+					.filter(Objects::nonNull).reduce(chaining());
 		}
 
 		// Note that nested executions will be handled implicitly by either their start or finish.
 		Optional<Command> reattach = affectedOccurrences(execution).map(occ -> {
+			// If our 'execution' is now nesting another, let it know that
+			Optionals.elseMaybe(occ.getStartedExecution(), occ.getFinishedExecution())
+					.ifPresent(nested -> PendingNestedData.setPendingNested(execution, nested));
+
 			OptionalInt where = occ.getTop();
 			return defer(() -> occ.setCovered(lifeline, where));
 		}).reduce(chaining());

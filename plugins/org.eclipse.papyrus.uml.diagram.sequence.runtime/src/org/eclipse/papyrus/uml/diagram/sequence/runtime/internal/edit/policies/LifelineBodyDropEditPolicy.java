@@ -12,14 +12,20 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.getChangeBoundsRequest;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMap;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.map;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.mapToInt;
 
 import java.util.Optional;
 import java.util.OptionalInt;
 
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
+import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.DragDropEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.requests.DropObjectsRequest;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
@@ -65,13 +71,19 @@ public class LifelineBodyDropEditPolicy extends DragDropEditPolicy implements IS
 	protected Command getDropExecutionCommand(MExecution execution, DropObjectsRequest request) {
 		Optional<MLifeline> lifeline = getHostLifeline();
 
+		// FIXME: Must allow non-reordering changes
 		if (!PrivateRequestUtils.isAllowSemanticReordering(request)) {
 			// Block the operation if the semantic override modifier is not applied
 			return UnexecutableCommand.INSTANCE;
 		}
 
-		return lifeline.map(ll -> wrap(execution.setOwner(ll, OptionalInt.empty(), OptionalInt.empty())))
-				.orElse(null);
+		Optional<Point> changeBounds = Optional.ofNullable(getChangeBoundsRequest(request))
+				.map(ChangeBoundsRequest::getMoveDelta);
+		OptionalInt deltaY = mapToInt(changeBounds, Point::y);
+		OptionalInt top = flatMap(execution.getTop(), t -> map(deltaY, y -> t + y));
+		OptionalInt bottom = flatMap(execution.getBottom(), b -> map(deltaY, y -> b + y));
+
+		return lifeline.map(ll -> wrap(execution.setOwner(ll, top, bottom))).orElse(null);
 	}
 
 	protected Optional<MLifeline> getHostLifeline() {

@@ -59,8 +59,8 @@ public class NoPapyrusEditPolicyProvider extends AbstractProvider implements IEd
 				withDrop(LifelineCreationEditPolicy::new, LifelineBodyDropEditPolicy::new));
 		substitute(InteractionCompartmentEditPart.class, EditPolicyRoles.CREATION_ROLE,
 				InteractionCreationEditPolicy::new);
-		substitute(ExecutionSpecificationEditPart.class, EditPolicyRoles.CREATION_ROLE,
-				ExecutionSpecificationCreationEditPolicy::new);
+		substitute(ExecutionSpecificationEditPart.class, EditPolicyRoles.CREATION_ROLE, withDrop(
+				ExecutionSpecificationCreationEditPolicy::new, ExecutionSpecificationDropEditPolicy::new));
 
 		// Diagram assistant edit policies
 		substitute(LifelineBodyEditPart.class, EditPolicyRoles.POPUPBAR_ROLE,
@@ -164,11 +164,13 @@ public class NoPapyrusEditPolicyProvider extends AbstractProvider implements IEd
 					super.setHost(host);
 				}
 
+				@SuppressWarnings("unchecked")
 				@Override
 				protected DropObjectsRequest castToDropObjectsRequest(ChangeBoundsRequest request) {
 					DropObjectsRequest result = super.castToDropObjectsRequest(request);
 
 					PrivateRequestUtils.forwardParameters(request, result);
+					PrivateRequestUtils.setChangeBoundsRequest(result, request);
 
 					return result;
 				}

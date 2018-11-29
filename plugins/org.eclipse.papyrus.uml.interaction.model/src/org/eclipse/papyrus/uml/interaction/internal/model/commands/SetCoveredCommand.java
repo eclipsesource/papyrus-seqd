@@ -15,6 +15,7 @@ package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 import static java.lang.Math.abs;
 import static java.util.Collections.singletonList;
 import static org.eclipse.papyrus.uml.interaction.model.util.Executions.executionShapeAt;
+import static org.eclipse.papyrus.uml.interaction.model.util.Executions.splitsExecution;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.equalTo;
@@ -177,6 +178,10 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			// And re-connect the message view to the new lifeline's head
 			result = chain(result,
 					defer(() -> reconnectTarget(messageView, lifelineHead, createPosition).orElse(null)));
+		} else if ((getTarget() instanceof MExecutionOccurrence)
+				&& getTarget().getExecution().filter(splitsExecution(lifeline)).isPresent()) {
+
+			result = UnexecutableCommand.INSTANCE;
 		} else {
 			// Handle a dependent execution
 			result = dependencies(getTarget()).map(chaining(result)).orElse(result);

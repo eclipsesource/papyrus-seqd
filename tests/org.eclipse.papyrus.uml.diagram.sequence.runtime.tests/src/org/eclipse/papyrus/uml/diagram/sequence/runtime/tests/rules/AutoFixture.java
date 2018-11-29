@@ -18,6 +18,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.eclipse.gef.EditPart;
+
 /**
  * Annotation for fields that represent fixtures in the contextual model or editor, usually an
  * {@link EditorFixture}.
@@ -27,4 +29,22 @@ import java.lang.annotation.Target;
 public @interface AutoFixture {
 	/** An optional element name to search for, which may be qualified or not. */
 	String value() default "";
+
+	/** Whether the fixture is allowed not to exist (to be resolvable) in the diagram. */
+	boolean optional() default false;
+
+	//
+	// Nested types
+	//
+
+	/**
+	 * Annotation for {@link AutoFixture @AutoFixture} fields of {@link EditPart} kind to specify the visual
+	 * ID of a child of the top edit-part to resolve as the fixture.
+	 */
+	@Retention(RUNTIME)
+	@Target(FIELD)
+	public @interface VisualID {
+		/** The edit-part visual ID to resolve. */
+		String value();
+	}
 }
