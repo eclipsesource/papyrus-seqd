@@ -44,7 +44,7 @@ import org.eclipse.uml2.uml.MessageEnd;
  *
  * @author Christian W. Damus
  */
-public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
+public class NudgeCommand extends ModelCommandWithDependencies<MElementImpl<?>> {
 
 	private final int deltaY;
 
@@ -75,12 +75,13 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 	 */
 	public NudgeCommand(MElementImpl<? extends Element> element, int deltaY, boolean nudgeFollowing) {
 		super(element);
+
 		this.following = nudgeFollowing;
 		this.deltaY = deltaY;
 	}
 
 	@Override
-	protected Command createCommand() {
+	protected Command doCreateCommand() {
 		if (deltaY == 0) {
 			return IdentityCommand.INSTANCE;
 		}
@@ -230,7 +231,12 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 		 * that it just follows the shape it's anchored on in that case.
 		 */
 		private boolean skipMove(Shape shape) {
-			return movingShapes.contains(shape) || isShapeOnMovingShape(shape);
+			// Either I have direct knowledge of this shape moving
+			return movingShapes.contains(shape)
+					// Or the context has a nudge command for this shape
+					|| hasDependency(shape, NudgeCommand.class)
+					// Or the shape is (recursively) on a shape being nudged
+					|| isShapeOnMovingShape(shape);
 		}
 
 		/**

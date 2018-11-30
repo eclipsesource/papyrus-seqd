@@ -25,6 +25,7 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandWrapper;
 import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 
@@ -321,6 +322,9 @@ public class DependencyContext {
 		} else if (subject instanceof MElement<?>) {
 			// The identity of a logical model element is the underlying UML element
 			result = ((MElement<?>)subject).getElement();
+		} else if (subject instanceof View) {
+			// The identity of a notation view is its semantic element. Normalize in case of null
+			result = normalizeSubject(((View)subject).getElement());
 		}
 
 		return result;

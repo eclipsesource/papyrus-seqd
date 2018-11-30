@@ -15,6 +15,7 @@ package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 import java.util.Optional;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
@@ -54,6 +55,12 @@ public abstract class ModelCommandWithDependencies<T extends MElementImpl<?>> ex
 	protected abstract Command doCreateCommand();
 
 	protected boolean hasDependency(MElement<?> subject, Class<?> type) {
+		@SuppressWarnings("rawtypes")
+		Optional<Class> key = deps.get(subject, Class.class, type::isAssignableFrom);
+		return key.isPresent();
+	}
+
+	protected boolean hasDependency(EObject subject, Class<?> type) {
 		@SuppressWarnings("rawtypes")
 		Optional<Class> key = deps.get(subject, Class.class, type::isAssignableFrom);
 		return key.isPresent();
