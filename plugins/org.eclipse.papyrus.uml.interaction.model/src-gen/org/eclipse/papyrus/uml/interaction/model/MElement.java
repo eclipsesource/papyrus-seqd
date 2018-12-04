@@ -159,13 +159,24 @@ public interface MElement<T extends Element> extends MObject {
 	Optional<MElement<? extends Element>> following();
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> Nudge an element and all of its
+	 * following trace down or up, according to the sign of {@code deltaY}. Equivalent to
+	 * {@link #nudge(int, NudgeKind) nudge(deltaY, NudgeKind.FOLLOWING)}. <!-- end-model-doc -->
 	 * 
 	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Command" required="true"
 	 *        deltaYRequired="true"
 	 * @generated
 	 */
 	Command nudge(int deltaY);
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @model dataType="org.eclipse.papyrus.uml.interaction.model.Command" required="true"
+	 *        deltaYRequired="true" modeRequired="true"
+	 * @generated
+	 */
+	Command nudge(int deltaY, NudgeKind mode);
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->

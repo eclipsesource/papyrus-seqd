@@ -96,7 +96,6 @@ public class MMessageEndTest extends MOccurrenceTest {
 	protected String getInteractionName() {
 		switch (getName()) {
 			case "testGetExecution":
-				return "ExecutionSpecificationSideAnchors";
 			default:
 				return super.getInteractionName();
 		}
@@ -104,7 +103,15 @@ public class MMessageEndTest extends MOccurrenceTest {
 
 	@Override
 	protected void initializeFixture() {
-		setFixture(interaction.getMessages().get(0).getReceive().get());
+		switch (getName()) {
+			case "testNudge__int_NudgeKind":
+				// This message end can be nudged up without running into padding constraints
+				setFixture(interaction.getMessages().get(1).getSend().get());
+				break;
+			default:
+				setFixture(interaction.getMessages().get(0).getReceive().get());
+				break;
+		}
 	}
 
 	/**

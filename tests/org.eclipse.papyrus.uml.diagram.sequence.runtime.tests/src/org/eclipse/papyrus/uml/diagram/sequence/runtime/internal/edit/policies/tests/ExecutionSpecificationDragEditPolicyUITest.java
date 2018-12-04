@@ -553,4 +553,84 @@ public class ExecutionSpecificationDragEditPolicyUITest {
 		}
 	}
 
+	/**
+	 * Tests for bumping executions by stretching executions below them upwards.
+	 */
+	@ModelResource("one-exec.di")
+	@Maximized
+	public static class BumpingUpwards extends AbstractGraphicalEditPolicyUITest {
+		@Rule
+		public final AutoFixtureRule autoFixtures = new AutoFixtureRule(this);
+
+		@AutoFixture("Execution1")
+		private EditPart exec1EP;
+
+		@AutoFixture
+		private Rectangle exec1Geom;
+
+		private EditPart exec2EP;
+
+		private Rectangle exec2Geom;
+
+		/**
+		 * Initializes me.
+		 */
+		public BumpingUpwards() {
+			super();
+		}
+
+		@Test
+		public void stretchUpExecToBumpOther() {
+			// First, select the new execution to activate selection handles
+			editor.select(exec2Geom.getCenter());
+
+			Point grabAt = getResizeHandleGrabPoint(exec2EP, PositionConstants.NORTH);
+			Point dropAt = grabAt.getTranslated(0, -50);
+
+			// Now, stretch up the execution below
+			editor.drag(grabAt, dropAt);
+
+			// Bump up 20 + 10 for padding
+			Rectangle newExec1Geom = exec1Geom.getTranslated(0, -30);
+
+			Rectangle newExec2Geom = exec2Geom.getTranslated(0, -50);
+			newExec2Geom.setHeight(exec2Geom.height() + 50);
+
+			assertThat("Execution above not bumped up", exec1EP, isBounded(isRect(newExec1Geom)));
+
+			assertThat("Execution not stretched correctly", exec2EP, isBounded(isRect(newExec2Geom)));
+		}
+
+		/**
+		 * Verify that bumping up is limited by the position of the lifeline head.
+		 */
+		@Test
+		public void attemptStretchUpExecTooFar() {
+			// First, select the new execution to activate selection handles
+			editor.select(exec2Geom.getCenter());
+
+			Point grabAt = getResizeHandleGrabPoint(exec2EP, PositionConstants.NORTH);
+			Point dropAt = grabAt.getTranslated(0, -100);
+
+			// Now, stretch up the execution below
+			editor.drag(grabAt, dropAt);
+
+			assertThat("Execution above was moved", exec1EP, isBounded(isRect(exec1Geom)));
+
+			assertThat("Execution below was stretched", exec2EP, isBounded(isRect(exec2Geom)));
+		}
+
+		//
+		// Test fixtures
+		//
+
+		@Before
+		public void createExecutionBelow() {
+			Point where = exec1Geom.getBottom().getTranslated(0, 30);
+
+			exec2EP = editor.createShape(SequenceElementTypes.Behavior_Execution_Shape, where, null);
+			exec2Geom = getBounds(exec2EP);
+		}
+	}
+
 }

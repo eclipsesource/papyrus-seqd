@@ -12,6 +12,7 @@
  */
 package org.eclipse.papyrus.uml.interaction.model.tests;
 
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -23,6 +24,8 @@ import static org.junit.Assume.assumeThat;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.command.BasicCommandStack;
@@ -49,6 +52,8 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
+import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.NudgeKind;
 import org.eclipse.uml2.common.util.UML2Util;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Interaction;
@@ -87,6 +92,8 @@ import junit.framework.TestCase;
  * <em>Vertical Distance</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#following() <em>Following</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#nudge(int) <em>Nudge</em>}</li>
+ * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#nudge(int, org.eclipse.papyrus.uml.interaction.model.NudgeKind)
+ * <em>Nudge</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#remove() <em>Remove</em>}</li>
  * <li>{@link org.eclipse.papyrus.uml.interaction.model.MElement#precedes(org.eclipse.papyrus.uml.interaction.model.MElement)
  * <em>Precedes</em>}</li>
@@ -530,6 +537,43 @@ public abstract class MElementTest extends TestCase {
 
 			OptionalInt newTop = getFixture().getTop();
 			assertThat("Nudge missed the mark", newTop, isPresent(oldY + 15));
+		}
+	}
+
+	/**
+	 * Tests the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MElement#nudge(int, org.eclipse.papyrus.uml.interaction.model.NudgeKind)
+	 * <em>Nudge</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#nudge(int,
+	 *      org.eclipse.papyrus.uml.interaction.model.NudgeKind)
+	 * @generated NOT
+	 */
+	public void testNudge__int_NudgeKind() {
+		Command nudge = getFixture().nudge(-15, NudgeKind.ELEMENT_ONLY);
+
+		if (getFixture() instanceof MInteraction) {
+			assertThat(nudge, not(executable()));
+		} else {
+			assertThat(nudge, executable());
+			OptionalInt top = getFixture().getTop();
+			assumeThat(top, isPresentInt());
+
+			int oldY = top.getAsInt();
+
+			// A with-preceding nudge does not affect lifelines (except the one we're nudging)
+			Map<MLifeline, OptionalInt> lifelines = getFixture().getInteraction().getLifelines().stream() //
+					.filter(equalTo(getFixture()).negate()) //
+					.collect(Collectors.toMap(Function.identity(), MElement::getTop));
+
+			execute(nudge);
+
+			OptionalInt newTop = getFixture().getTop();
+			assertThat("Nudge missed the mark", newTop, isPresent(oldY - 15));
+
+			// A with-preceding nudge does not affect lifelines (except the one we're nudging)
+			lifelines.forEach(
+					(lifeline, oldTop) -> assertThat("Lifeline was nudged", lifeline.getTop(), is(oldTop)));
 		}
 	}
 

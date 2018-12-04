@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.internal.graph.GraphImpl;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Interaction;
@@ -59,6 +60,15 @@ public interface Graph {
 	 * @return its vertex
 	 */
 	Vertex vertex(Element element);
+
+	/**
+	 * Obtains the canonical vertex in this graph for the given diagram notation {@code view}.
+	 *
+	 * @param view
+	 *            a notation view in the diagram
+	 * @return its corresponding vertex
+	 */
+	Optional<Vertex> vertex(View view);
 
 	/**
 	 * Obtain a comparator that sorts vertices according to the overall interaction ordering, with a stable
@@ -141,7 +151,29 @@ public interface Graph {
 	 *            the visitor to process my vertices
 	 */
 	default void walkAfter(Vertex reference, Visitor<? super Vertex> visitor) {
-		vertices().filter(after(reference)).forEach(v -> v.accept(visitor));
+		walkAfter(reference, null, visitor);
+	}
+
+	/**
+	 * Walk a visitor over my vertices that come after the given {@code reference} vertex, in
+	 * {@linkplain #interactionOrdering() interaction order}, that match a given predicate.
+	 * 
+	 * @param reference
+	 *            the starting vertex (which is <em>not</em> visited)
+	 * @param shouldVisit
+	 *            a predicate matching vertices that should be visited
+	 * @param visitor
+	 *            the visitor to process my vertices
+	 */
+	default void walkAfter(Vertex reference, Predicate<? super Vertex> shouldVisit,
+			Visitor<? super Vertex> visitor) {
+
+		Predicate<Vertex> filter = after(reference);
+		if (shouldVisit != null) {
+			filter = filter.and(shouldVisit);
+		}
+
+		vertices().filter(filter).forEach(v -> v.accept(visitor));
 	}
 
 	/**
@@ -155,7 +187,30 @@ public interface Graph {
 	 */
 	default void walkBefore(Vertex reference, Visitor<? super Vertex> visitor) {
 		// We need to turn the vertices around for reverse interaction order
-		List<Vertex> toVisit = vertices().filter(before(reference)).collect(Collectors.toList());
+		walkBefore(reference, null, visitor);
+	}
+
+	/**
+	 * Walk a visitor over my vertices that come before the given {@code reference} vertex, in reverse
+	 * {@linkplain #interactionOrdering() interaction order}, that match a given predicate.
+	 * 
+	 * @param reference
+	 *            the starting vertex (which is <em>not</em> visited)
+	 * @param shouldVisit
+	 *            a predicate matching vertices that should be visited
+	 * @param visitor
+	 *            the visitor to process my vertices
+	 */
+	default void walkBefore(Vertex reference, Predicate<? super Vertex> shouldVisit,
+			Visitor<? super Vertex> visitor) {
+
+		Predicate<Vertex> filter = before(reference);
+		if (shouldVisit != null) {
+			filter = filter.and(shouldVisit);
+		}
+
+		// We need to turn the vertices around for reverse interaction order
+		List<Vertex> toVisit = vertices().filter(filter).collect(Collectors.toList());
 		Collections.reverse(toVisit);
 		toVisit.forEach(v -> v.accept(visitor));
 	}

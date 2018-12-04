@@ -755,10 +755,12 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	public Command setTop(Node shape, int yPosition) {
 		Command result = UnexecutableCommand.INSTANCE;
 		if (shape.getLayoutConstraint() instanceof Location) {
-			// Compute relative position
+			// Compute relative position. Do not allow a shape to extend above its container
 			int relativeY = toRelativeY(shape, yPosition);
-			result = SetCommand.create(editingDomain, shape.getLayoutConstraint(),
-					NotationPackage.Literals.LOCATION__Y, relativeY);
+			if (relativeY >= 0) {
+				result = SetCommand.create(editingDomain, shape.getLayoutConstraint(),
+						NotationPackage.Literals.LOCATION__Y, relativeY);
+			}
 		}
 		return result;
 	}

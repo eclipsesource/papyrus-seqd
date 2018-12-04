@@ -48,6 +48,7 @@ import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.NudgeKind;
 import org.eclipse.papyrus.uml.interaction.model.util.Lifelines;
 import org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates;
 import org.eclipse.uml2.uml.Element;
@@ -128,9 +129,14 @@ public class ExecutionSpecificationDragEditPolicy extends ResizableBorderItemPol
 
 				if (!padding.isPresent()) {
 					return null;
+				} else if (LogicalModelPredicates.spans(execution).test(obs)) {
+					// In the case that the obstacle we're nudging spans the object we're
+					// moving, there's nothing to nudge
+					return null;
 				} else if (LogicalModelPredicates.above(execution).test(obs)) {
 					// Negative nudge to move it upwards
-					return obs.nudge(newTop - obs.getBottom().getAsInt() - padding.getAsInt());
+					return obs.nudge(newTop - obs.getBottom().getAsInt() - padding.getAsInt(),
+							NudgeKind.PRECEDING);
 				} else {
 					// Positive nudge to move it downwards
 					return obs.nudge(newBottom - obs.getTop().getAsInt() + padding.getAsInt());

@@ -93,7 +93,15 @@ public class MMessageTest extends MElementTest {
 		if (interaction.getMessages().isEmpty()) {
 			setFixture(null);
 		} else {
-			setFixture(interaction.getMessages().get(0));
+			switch (getName()) {
+				case "testNudge__int_NudgeKind":
+					// This message can be nudged up without running into padding constraints
+					setFixture(interaction.getMessages().get(1));
+					break;
+				default:
+					setFixture(interaction.getMessages().get(0));
+					break;
+			}
 		}
 	}
 

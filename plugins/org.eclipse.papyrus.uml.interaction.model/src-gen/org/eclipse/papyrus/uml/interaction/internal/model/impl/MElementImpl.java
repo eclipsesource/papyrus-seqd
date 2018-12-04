@@ -43,6 +43,7 @@ import org.eclipse.papyrus.uml.interaction.internal.model.commands.NudgeCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
+import org.eclipse.papyrus.uml.interaction.model.NudgeKind;
 import org.eclipse.papyrus.uml.interaction.model.spi.RemovalCommand;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.NamedElement;
@@ -226,8 +227,18 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 	 * @generated NOT
 	 */
 	@Override
-	public Command nudge(int deltaY) {
-		return new NudgeCommand(this, deltaY);
+	public final Command nudge(int deltaY) {
+		return nudge(deltaY, NudgeKind.FOLLOWING);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public Command nudge(int deltaY, NudgeKind mode) {
+		return new NudgeCommand(this, deltaY, mode);
 	}
 
 	/**
@@ -485,6 +496,8 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 				return following();
 			case SequenceDiagramPackage.MELEMENT___NUDGE__INT:
 				return nudge((Integer)arguments.get(0));
+			case SequenceDiagramPackage.MELEMENT___NUDGE__INT_NUDGEKIND:
+				return nudge((Integer)arguments.get(0), (NudgeKind)arguments.get(1));
 			case SequenceDiagramPackage.MELEMENT___REMOVE:
 				return remove();
 			case SequenceDiagramPackage.MELEMENT___PRECEDES__MELEMENT:

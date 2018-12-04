@@ -296,10 +296,16 @@ public class ShrinkExpandExecutionUITest extends AbstractGraphicalEditPolicyUITe
 		assertThat("Misshapen bumped message", newAsync3Geom.getLastPoint().y(),
 				is(newAsync3Geom.getFirstPoint().y()));
 
+		Point async1Send = async1Geom.getFirstPoint();
+		Point async1Recv = async1Geom.getLastPoint();
+		assertThat("Other earlier message not nudged also", async1,
+				runs(isPoint(is(async1Send.x()), lt(async1Send.y())), //
+						isPoint(is(async1Recv.x()), lt(async1Recv.y()))));
+
 		// Verify expected non-changes
 
-		assertThat("Unrelated message changed", async1,
-				runs(isPoint(async1Geom.getFirstPoint()), isPoint(async1Geom.getLastPoint())));
+		assertThat("Unrelated message changed", async2,
+				runs(isPoint(async2Geom.getFirstPoint()), isPoint(async2Geom.getLastPoint())));
 	}
 
 	@Test

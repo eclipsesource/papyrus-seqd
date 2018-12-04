@@ -27,6 +27,7 @@ import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.papyrus.uml.interaction.model.NudgeKind;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
@@ -97,6 +98,8 @@ public class SequenceDiagramFactoryImpl extends EFactoryImpl implements Sequence
 	@Override
 	public Object createFromString(EDataType eDataType, String initialValue) {
 		switch (eDataType.getClassifierID()) {
+			case SequenceDiagramPackage.NUDGE_KIND:
+				return createNudgeKindFromString(eDataType, initialValue);
 			default:
 				throw new IllegalArgumentException(
 						"The datatype '" + eDataType.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -111,6 +114,8 @@ public class SequenceDiagramFactoryImpl extends EFactoryImpl implements Sequence
 	@Override
 	public String convertToString(EDataType eDataType, Object instanceValue) {
 		switch (eDataType.getClassifierID()) {
+			case SequenceDiagramPackage.NUDGE_KIND:
+				return convertNudgeKindToString(eDataType, instanceValue);
 			default:
 				throw new IllegalArgumentException(
 						"The datatype '" + eDataType.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -192,6 +197,29 @@ public class SequenceDiagramFactoryImpl extends EFactoryImpl implements Sequence
 	public MDestruction createMDestruction() {
 		MDestructionImpl mDestruction = new MDestructionImpl();
 		return mDestruction;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public NudgeKind createNudgeKindFromString(EDataType eDataType, String initialValue) {
+		NudgeKind result = NudgeKind.get(initialValue);
+		if (result == null) {
+			throw new IllegalArgumentException("The value '" + initialValue //$NON-NLS-1$
+					+ "' is not a valid enumerator of '" + eDataType.getName() + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		return result;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public String convertNudgeKindToString(EDataType eDataType, Object instanceValue) {
+		return instanceValue == null ? null : instanceValue.toString();
 	}
 
 	/**

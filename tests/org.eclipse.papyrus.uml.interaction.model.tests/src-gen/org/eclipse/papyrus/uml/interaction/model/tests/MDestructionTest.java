@@ -34,7 +34,6 @@ import junit.textui.TestRunner;
  * 
  * @generated
  */
-@SuppressWarnings("restriction")
 public class MDestructionTest extends MMessageEndTest {
 
 	/**

@@ -22,11 +22,11 @@ import org.eclipse.papyrus.uml.interaction.graph.Graph;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
-import org.eclipse.papyrus.uml.interaction.internal.model.impl.MMessageImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
+import org.eclipse.papyrus.uml.interaction.model.NudgeKind;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.MessageSort;
@@ -73,21 +73,21 @@ public final class Create {
 		 */
 		if (element instanceof MExecution) {
 			/* if we are an execution */
-			return new NudgeCommand((MElementImpl<? extends Element>)element, delta, false);
+			return element.nudge(delta, NudgeKind.ELEMENT_ONLY);
 		} else if (element instanceof MMessage) {
 			/* fix one half message */
 			MMessage message = (MMessage)element;
 			if (message.getElement().getMessageSort() == MessageSort.CREATE_MESSAGE_LITERAL) {
 				return creationMessageNudgeCommand(graph, editingDomain, delta, deltaChildren, message);
 			}
-			return new NudgeCommand((MElementImpl<? extends Element>)element, delta, false);
+			return element.nudge(delta, NudgeKind.ELEMENT_ONLY);
 		} else if (element instanceof MLifeline) {
 			List<Command> nudgeCommands = new ArrayList<>();
-			nudgeCommands.add(new NudgeCommand((MElementImpl<? extends Element>)element, delta, false));
+			nudgeCommands.add(element.nudge(delta, NudgeKind.ELEMENT_ONLY));
 			nudgeCommands.addAll(lifelineChildren(graph, editingDomain, deltaChildren, (MLifeline)element));
 			return CompoundModelCommand.compose(editingDomain, nudgeCommands);
 		}
-		return new NudgeCommand((MElementImpl<? extends Element>)element, delta, false);
+		return new NudgeCommand((MElementImpl<? extends Element>)element, delta, NudgeKind.ELEMENT_ONLY);
 	}
 
 	private static Command creationMessageNudgeCommand(//
@@ -104,7 +104,7 @@ public final class Create {
 		}
 
 		List<Command> nudgeCommands = new ArrayList<>();
-		nudgeCommands.add(new NudgeCommand((MMessageImpl)message, delta, false));
+		nudgeCommands.add(message.nudge(delta, NudgeKind.ELEMENT_ONLY));
 		nudgeCommands.addAll(lifelineChildren(graph, editingDomain, deltaChildren, receiver.get()));
 		return CompoundModelCommand.compose(editingDomain, nudgeCommands);
 	}

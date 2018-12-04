@@ -19,6 +19,7 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EGenericType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EOperation;
@@ -40,6 +41,7 @@ import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.NudgeKind;
 import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.uml2.types.TypesPackage;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -112,6 +114,13 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	private EClass mDestructionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	private EEnum nudgeKindEEnum = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -342,7 +351,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
-	public EOperation getMElement__Remove() {
+	public EOperation getMElement__Nudge__int_NudgeKind() {
 		return mElementEClass.getEOperations().get(5);
 	}
 
@@ -352,7 +361,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
-	public EOperation getMElement__Precedes__MElement() {
+	public EOperation getMElement__Remove() {
 		return mElementEClass.getEOperations().get(6);
 	}
 
@@ -362,8 +371,18 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
-	public EOperation getMElement__Exists() {
+	public EOperation getMElement__Precedes__MElement() {
 		return mElementEClass.getEOperations().get(7);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public EOperation getMElement__Exists() {
+		return mElementEClass.getEOperations().get(8);
 	}
 
 	/**
@@ -1182,6 +1201,16 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 	 * @generated
 	 */
 	@Override
+	public EEnum getNudgeKind() {
+		return nudgeKindEEnum;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
 	public EDataType getOptional() {
 		return optionalEDataType;
 	}
@@ -1277,6 +1306,7 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEOperation(mElementEClass, MELEMENT___VERTICAL_DISTANCE__MELEMENT);
 		createEOperation(mElementEClass, MELEMENT___FOLLOWING);
 		createEOperation(mElementEClass, MELEMENT___NUDGE__INT);
+		createEOperation(mElementEClass, MELEMENT___NUDGE__INT_NUDGEKIND);
 		createEOperation(mElementEClass, MELEMENT___REMOVE);
 		createEOperation(mElementEClass, MELEMENT___PRECEDES__MELEMENT);
 		createEOperation(mElementEClass, MELEMENT___EXISTS);
@@ -1376,6 +1406,9 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		createEOperation(mMessageEClass, MMESSAGE___GET_END__MESSAGEEND);
 
 		mDestructionEClass = createEClass(MDESTRUCTION);
+
+		// Create enums
+		nudgeKindEEnum = createEEnum(NUDGE_KIND);
 
 		// Create data types
 		optionalEDataType = createEDataType(OPTIONAL);
@@ -1518,6 +1551,11 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 		op = initEOperation(getMElement__Nudge__int(), this.getCommand(), "nudge", 1, 1, IS_UNIQUE, //$NON-NLS-1$
 				IS_ORDERED);
 		addEParameter(op, ecorePackage.getEInt(), "deltaY", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		op = initEOperation(getMElement__Nudge__int_NudgeKind(), this.getCommand(), "nudge", 1, 1, IS_UNIQUE, //$NON-NLS-1$
+				IS_ORDERED);
+		addEParameter(op, ecorePackage.getEInt(), "deltaY", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, this.getNudgeKind(), "mode", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEOperation(getMElement__Remove(), this.getCommand(), "remove", 1, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
@@ -2081,6 +2119,12 @@ public class SequenceDiagramPackageImpl extends EPackageImpl implements Sequence
 
 		initEClass(mDestructionEClass, MDestruction.class, "MDestruction", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);
+
+		// Initialize enums and add enum literals
+		initEEnum(nudgeKindEEnum, NudgeKind.class, "NudgeKind"); //$NON-NLS-1$
+		addEEnumLiteral(nudgeKindEEnum, NudgeKind.ELEMENT_ONLY);
+		addEEnumLiteral(nudgeKindEEnum, NudgeKind.FOLLOWING);
+		addEEnumLiteral(nudgeKindEEnum, NudgeKind.PRECEDING);
 
 		// Initialize data types
 		initEDataType(optionalEDataType, Optional.class, "Optional", !IS_SERIALIZABLE, //$NON-NLS-1$
