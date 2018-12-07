@@ -146,7 +146,7 @@ public class DependencyContext {
 	}
 
 	/**
-	 * Run an {@code action} in the current dependency context. For the duration of the {@code action}. this
+	 * Run an {@code action} in the current dependency context. For the duration of the {@code action}, this
 	 * context will be active as the {@linkplain #get() current context}.
 	 * 
 	 * @param action
@@ -171,7 +171,7 @@ public class DependencyContext {
 	}
 
 	/**
-	 * Run an {@code action} in the current dependency context. For the duration of the {@code action}. this
+	 * Run an {@code action} in the current dependency context. For the duration of the {@code action}, this
 	 * context will be active as the {@linkplain #get() current context}.
 	 * 
 	 * @param action
@@ -180,6 +180,38 @@ public class DependencyContext {
 	 */
 	public <T> T withContext(Supplier<? extends T> action) {
 		return withContext(__ -> action.get());
+	}
+
+	/**
+	 * Run an {@code action} in the current dependency context. For the duration of the {@code action}, this
+	 * context will be active as the {@linkplain #get() current context}. A kill-switch command that may be
+	 * combined with commands produced by the {@code action} is provided, if available, to the given handler.
+	 * 
+	 * @param action
+	 *            an action to run
+	 * @param killSwitchHandler
+	 *            a handler of the future kill-switch command. The handler should access the supplier only
+	 *            when the result of the {@code action} is to be finalized by the client, because it may only
+	 *            become ready during evaluation now or later of the {@code action} or its result. Although
+	 *            the supplier provided to the handler will never be {@code null}, the kill-switch command
+	 *            that it supplies may be {@code null} at any time
+	 * @return the result of the {@code action}
+	 */
+	public <T> Optional<T> withContext(Supplier<? extends T> action,
+			Consumer<? super Supplier<? extends Command>> killSwitchHandler) {
+
+		return withContext(ctx -> {
+			// Compute this result first because that computation can register kill switches
+			T result = action.get();
+
+			// Don't need to look for kill-switches if they won't be handled
+			if (killSwitchHandler != null) {
+				Supplier<? extends Command> killSwitchSupplier = () -> KillSwitch.check(ctx).orElse(null);
+				killSwitchHandler.accept(killSwitchSupplier);
+			}
+
+			return Optional.ofNullable(result);
+		});
 	}
 
 	/**
@@ -291,6 +323,14 @@ public class DependencyContext {
 	 */
 	public <T> Optional<T> get(Object subject, Class<T> keyType) {
 		return get(subject, keyType, TRUE);
+	}
+
+	<T> Optional<T> remove(Object subject, Class<T> keyType) {
+		Optional<T> result = get(subject, keyType);
+
+		result.ifPresent(v -> context.remove(normalizeSubject(subject), result));
+
+		return result;
 	}
 
 	/**

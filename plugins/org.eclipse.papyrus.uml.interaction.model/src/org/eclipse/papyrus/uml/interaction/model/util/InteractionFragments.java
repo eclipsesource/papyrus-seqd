@@ -71,10 +71,7 @@ public class InteractionFragments {
 		return new SequenceDiagramSwitch<MElement<? extends Element>>() {
 			@Override
 			public MElement<? extends Element> caseMMessageEnd(MMessageEnd object) {
-				if (!object.isStart() && !object.isFinish()) {
-					return object.getOwner();
-				}
-				return null;
+				return object.getOwner();
 			}
 
 			@Override

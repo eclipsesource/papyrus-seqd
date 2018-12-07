@@ -204,10 +204,14 @@ public interface ISequenceEditPolicy extends EditPolicy {
 		Consumer<DependencyContext> getPadding = ctx -> result
 				.add(wrap(DeferredPaddingCommand.get(ctx, interaction)));
 
+		// Create a top-level command and inject the kill-switch into it
+		TopCommand.Factory topCommandFactory = TopCommand.factory(commandSupplier);
+
 		// Provide a dependency context for all command construction
-		Command super_ = DependencyContext.getDynamic(getPadding).withContext(commandSupplier);
-		if (super_ != null) {
-			result.add(0, super_); // Do this first, then padding
+		Optional<Command> super_ = DependencyContext.getDynamic(getPadding) //
+				.withContext(topCommandFactory, topCommandFactory.adapt(this::wrap));
+		if (super_.isPresent()) {
+			result.add(0, super_.get()); // Do this first, then padding
 		} else {
 			// Don't need padding if there was nothing to do
 			return null;

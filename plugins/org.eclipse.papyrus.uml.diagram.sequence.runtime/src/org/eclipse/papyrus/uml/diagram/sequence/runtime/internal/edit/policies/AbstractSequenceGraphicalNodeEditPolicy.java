@@ -69,6 +69,7 @@ import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
+import org.eclipse.papyrus.uml.interaction.model.NudgeKind;
 import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.model.util.Lifelines;
@@ -514,7 +515,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		result = constrainReconnection(request, targetEnd).orElse(result);
 
-		if (result.canExecute()) {
+		if ((result != null) && result.canExecute()) {
 			// If we're still good and we're changing a self-message to a non-self-message,
 			// then straighten the message connection
 			Optional<MLifeline> oldLifeline = targetEnd.getCovered();
@@ -580,7 +581,8 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 					return null;
 				} else if (LogicalModelPredicates.above(end).test(obs)) {
 					// Negative nudge to move it upwards
-					return obs.nudge(newY - obs.getBottom().getAsInt() - padding.getAsInt());
+					return obs.nudge(newY - obs.getBottom().getAsInt() - padding.getAsInt(),
+							NudgeKind.PRECEDING);
 				} else {
 					// Positive nudge to move it downwards
 					return obs.nudge(newY - obs.getTop().getAsInt() + padding.getAsInt());

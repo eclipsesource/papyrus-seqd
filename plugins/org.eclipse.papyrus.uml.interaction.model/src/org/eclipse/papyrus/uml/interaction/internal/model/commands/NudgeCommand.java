@@ -325,10 +325,13 @@ public class NudgeCommand extends ModelCommandWithDependencies<MElementImpl<?>> 
 
 			switch (mode) {
 				case PRECEDING:
-					// Look for an execution specification that is being stretched at the top,
+					// The simple case is a shape that will be moved in the normal way
+					Predicate<Vertex> willMove = vertex()::succeeds;
+					// Or, look for an execution specification that is being stretched at the top,
 					// which implicitly is a move even though we aren't nudging the execution, itself
-					result = vertex.map(NudgeCommand.this::isExecutionStretchingAtTop).orElse(Boolean.FALSE)
-							.booleanValue();
+					willMove = willMove.or(NudgeCommand.this::isExecutionStretchingAtTop);
+
+					result = vertex.map(willMove::test).orElse(Boolean.FALSE).booleanValue();
 					break;
 				default:
 					result = false;
