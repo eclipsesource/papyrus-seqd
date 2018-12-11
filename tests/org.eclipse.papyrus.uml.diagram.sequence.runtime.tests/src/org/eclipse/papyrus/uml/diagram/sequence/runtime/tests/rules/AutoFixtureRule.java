@@ -210,7 +210,9 @@ public class AutoFixtureRule implements TestRule {
 				EObject next = iter.next();
 				if (next instanceof NamedElement) {
 					NamedElement element = (NamedElement)next;
-					if (name.equals(getValidJavaIdentifier(element.getName())) && filter.test(element)) {
+					String elementName = element.getName();
+					if ((name.equals(elementName) || name.equals(getValidJavaIdentifier(elementName)))
+							&& filter.test(element)) {
 						result = element;
 					}
 				} else {
