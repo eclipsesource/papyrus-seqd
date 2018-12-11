@@ -64,6 +64,9 @@ public abstract class AbstractGraphicalEditPolicyUITest {
 	/** The width of an execution specification. */
 	protected static final int EXEC_WIDTH = 10;
 
+	/** The default height of an execution specification. */
+	protected static final int EXEC_HEIGHT = 40;
+
 	/** Some Linux environments are off by 1 in a lot of test scenarios. */
 	@ClassRule
 	public static final TestRule TOLERANCE = GEFMatchers.defaultTolerance(1, Platform.OS_LINUX);

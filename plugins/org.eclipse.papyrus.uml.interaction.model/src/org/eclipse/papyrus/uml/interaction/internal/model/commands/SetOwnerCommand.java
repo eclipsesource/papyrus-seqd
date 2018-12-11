@@ -34,7 +34,11 @@ import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MMessage;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
+import org.eclipse.papyrus.uml.interaction.model.util.Executions;
 import org.eclipse.papyrus.uml.interaction.model.util.Lifelines;
 import org.eclipse.papyrus.uml.interaction.model.util.Optionals;
 import org.eclipse.papyrus.uml.interaction.model.util.SequenceDiagramSwitch;
@@ -49,9 +53,9 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 
 	private final MElement<? extends Element> newOwner;
 
-	private final OptionalInt top;
+	private OptionalInt top;
 
-	private final OptionalInt bottom;
+	private OptionalInt bottom;
 
 	// The element on the lifeline that we may need to nudge, if the new owner is a lifeline
 	private final Optional<MElement<? extends Element>> nudgeElement;
@@ -79,10 +83,63 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 						: Lifelines.elementAfterAbsolute(lifeline,
 								bottom.orElseGet(() -> element.getBottom().orElse(0))));
 
+		// ensure message starting the execution would still have some room
+		fixLocation();
+
 		// Publish this ownership change in the dependency context for other commands to find
 		PendingChildData.setPendingChild(newOwner, element);
 		// And vertical extent change
-		PendingVerticalExtentData.setPendingVerticalExtent(element, top, bottom);
+		PendingVerticalExtentData.setPendingVerticalExtent(element, this.top, this.bottom);
+	}
+
+	private void fixLocation() {
+		MElement<?> target = getTarget();
+		if (MExecution.class.isInstance(target)) {
+			MExecution execution = MExecution.class.cast(target);
+			boolean wasSelfMessage = wasStartingSelfMessage(execution);
+			boolean isSelfMessage = isStartingSelfMessage(execution);
+
+			if (!wasSelfMessage && isSelfMessage) {
+				if (top.isPresent()) {
+					// check if there is already a setCoveredCommand on the starting message
+					if (!execution.getStart().filter(occ -> hasDependency(occ, SetCoveredCommand.class))
+							.isPresent()) {
+						top = OptionalInt.of(top.getAsInt()
+								+ layoutHelper().getConstraints().getMinimumHeight(ViewTypes.MESSAGE));
+					}
+				}
+				if (bottom.isPresent()) {
+					if (!execution.getStart().filter(occ -> hasDependency(occ, SetCoveredCommand.class))
+							.isPresent()) {
+						bottom = OptionalInt.of(bottom.getAsInt()
+								+ layoutHelper().getConstraints().getMinimumHeight(ViewTypes.MESSAGE));
+					}
+				} else {
+					// bottom should still be set.
+					// to compute it, compute original height + new top position
+					bottom = OptionalInt.of(top.getAsInt() + execution.getBottom().getAsInt()
+							- execution.getTop().getAsInt());
+				}
+			} else if (wasSelfMessage && !isSelfMessage) {
+				if (top.isPresent()) {
+					if (!execution.getStart().filter(occ -> hasDependency(occ, SetCoveredCommand.class))
+							.isPresent()) {
+						top = OptionalInt.of(top.getAsInt()
+								- layoutHelper().getConstraints().getMinimumHeight(ViewTypes.MESSAGE));
+					}
+				}
+				if (bottom.isPresent()) {
+					if (!execution.getStart().filter(occ -> hasDependency(occ, SetCoveredCommand.class))
+							.isPresent()) {
+						bottom = OptionalInt.of(bottom.getAsInt()
+								- layoutHelper().getConstraints().getMinimumHeight(ViewTypes.MESSAGE));
+					}
+				} else {
+					bottom = OptionalInt.of(top.getAsInt() + execution.getBottom().getAsInt()
+							- execution.getTop().getAsInt());
+				}
+			}
+		}
 	}
 
 	protected boolean isChangingOwner() {
@@ -186,13 +243,61 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 			// that *will be* spanned do not; they only must be reattached per the step below
 			result = execution.getOccurrences().stream()
 					.map(occ -> occ.setCovered(lifeline, topMapping.apply(occ.getTop()))).reduce(chaining());
-		} else if (isChangingPosition() && !isChangingOwner()) {
-			// We are reshaping it. Refresh nested executions, if necessary
-			result = execution.getNestedExecutions().stream()
-					.filter(PendingVerticalExtentData.spannedBy(execution).negate())
-					.peek(nested -> setPendingNested(PendingNestedData.NO_EXECUTION, nested))
-					.map(nested -> nested.setOwner(lifeline, nested.getTop(), nested.getBottom()))
-					.filter(Objects::nonNull).reduce(chaining());
+		} else if (isChangingPosition()) {
+			if (!isChangingOwner()) {
+				// We are reshaping it. Refresh nested executions, if necessary
+				result = execution.getNestedExecutions().stream()
+						.filter(PendingVerticalExtentData.spannedBy(execution).negate())
+						.peek(nested -> setPendingNested(PendingNestedData.NO_EXECUTION, nested))
+						.map(nested -> nested.setOwner(lifeline, nested.getTop(), nested.getBottom()))
+						.filter(Objects::nonNull).reduce(chaining());
+			} else {
+				// we are moving and changing owner. Receive event of the finish message may also be move down
+				// from some pixels because of becoming a self message.
+				int deltaTop = map(this.top, t -> t - execution.getTop().getAsInt()).orElse(0);
+				UnaryOperator<OptionalInt> topMapping = deltaTop == 0 ? UnaryOperator.identity()
+						: top_ -> map(top_, t -> t + deltaTop);
+
+				result = execution.getOccurrences().stream()
+						.filter(occ -> !occ.equals(execution.getFinish().orElse(null)))
+						.map(occ -> occ.setCovered(lifeline, topMapping.apply(occ.getTop())))
+						.filter(Objects::nonNull).reduce(chaining());
+				boolean isSelfMessage = isStartingSelfMessage(execution);
+				boolean wasSelfMessage = wasStartingSelfMessage(execution);
+				if (isSelfMessage && !wasSelfMessage) {
+					UnaryOperator<OptionalInt> topFinishMapping = deltaTop == 0 ? UnaryOperator.identity()
+							: top_ -> map(top_, t -> t + deltaTop
+									+ layoutHelper().getConstraints().getMinimumHeight(ViewTypes.MESSAGE));
+					final Optional<Command> last = execution.getFinish()
+							.map(occ -> occ.setCovered(lifeline, topFinishMapping.apply(occ.getTop())));
+					if (result.isPresent()) {
+						if (last.isPresent()) {
+							result.get().chain(last.get());
+						}
+					} else {
+						result = last;
+					}
+				} else if (!isSelfMessage && wasSelfMessage) {
+					UnaryOperator<OptionalInt> topFinishMapping = deltaTop == 0 ? UnaryOperator.identity()
+							: top_ -> map(top_, t -> t// + deltaTop
+									- layoutHelper().getConstraints().getMinimumHeight(ViewTypes.MESSAGE));
+					final Optional<Command> last = execution.getFinish()
+							.map(occ -> occ.setCovered(lifeline, topFinishMapping.apply(occ.getTop())));
+					if (result.isPresent()) {
+						if (last.isPresent()) {
+							result.get().chain(last.get());
+						}
+					} else {
+						result = last;
+					}
+				} else {
+					UnaryOperator<OptionalInt> topFinishMapping = deltaTop == 0 ? UnaryOperator.identity()
+							: top_ -> map(top_, t -> t + deltaTop);
+					final Optional<Command> last = execution.getFinish()
+							.map(occ -> occ.setCovered(lifeline, topFinishMapping.apply(occ.getTop())));
+					result.map(cc -> last.map(l -> cc.chain(l))).orElseGet(() -> last);
+				}
+			}
 		}
 
 		// Note that nested executions will be handled implicitly by either their start or finish.
@@ -208,6 +313,24 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 		result = Optionals.stream(result, reattach).reduce(chaining());
 
 		return result;
+	}
+
+	private boolean isStartingSelfMessage(MExecution execution) {
+		Optional<MLifeline> sendStartLL = Executions.getStartMessage(execution).flatMap(MMessage::getSend)
+				.flatMap(MMessageEnd::getCovered);
+		return as(Optional.of(newOwner), MLifeline.class).map(MElement::getElement)
+				.equals(sendStartLL.map(MElement::getElement));
+	}
+
+	private boolean wasStartingSelfMessage(MExecution execution) {
+		Optional<MLifeline> sendStartLL = Executions.getStartMessage(execution).flatMap(MMessage::getSend)
+				.flatMap(MMessageEnd::getCovered);
+		if (!sendStartLL.isPresent()) {
+			return false;
+		}
+		return sendStartLL.equals(Executions.getStartMessage(execution).flatMap(MMessage::getReceive)
+				.flatMap(MMessageEnd::getCovered));
+
 	}
 
 	protected void ensurePadding() {

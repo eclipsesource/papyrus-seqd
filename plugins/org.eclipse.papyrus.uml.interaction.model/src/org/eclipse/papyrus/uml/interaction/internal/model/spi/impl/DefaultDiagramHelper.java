@@ -427,18 +427,6 @@ public class DefaultDiagramHelper implements DiagramHelper {
 	public Command configureSelfMessageConnector(Message message, Connector messageView) {
 		Command result = SetCommand.create(editingDomain, messageView,
 				NotationPackage.Literals.ROUTING_STYLE__ROUTING, Routing.RECTILINEAR_LITERAL);
-
-		// Compute the target anchor
-		Shape source = (Shape)messageView.getSource();
-		AnchorFactory anchorFactory = new AnchorFactory(messageView, layoutHelper());
-		int sourceDistance = layoutHelper().getYPosition(messageView.getSourceAnchor(), source)
-				- layoutHelper().getTop(source);
-		int targetDistance = sourceDistance + layoutHelper().getConstraints().getMinimumHeight(messageView);
-		String id = anchorFactory.builderFor(source).from(source).to(source).at(targetDistance).targetEnd()
-				.computeIdentity();
-		result = result.chain(SetCommand.create(editingDomain, messageView.getTargetAnchor(),
-				NotationPackage.Literals.IDENTITY_ANCHOR__ID, id));
-
 		return result;
 	}
 

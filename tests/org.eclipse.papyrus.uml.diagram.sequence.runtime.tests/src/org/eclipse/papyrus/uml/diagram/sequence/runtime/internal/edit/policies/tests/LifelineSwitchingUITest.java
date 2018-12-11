@@ -91,9 +91,6 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 	// Width of the destruction X shape
 	private static final int DESTRUCTION_WIDTH = 20;
 
-	// Width of an execution specification
-	private static final int EXEC_WIDTH = 10;
-
 	// Vertical gap between send and receive of a self-message
 	private static final int SELF_MESSAGE_HEIGHT = 20;
 
@@ -139,7 +136,7 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 
 		protected void switchLifeline(VerificationMode mode) {
 			editor.with(editor.allowSemanticReordering(),
-					() -> editor.moveSelection(at(getGrabX(), mesgY), at(getReleaseX(), mesgY)));
+					() -> editor.moveSelection(at(getGrabX(), getGrabY()), at(getReleaseX(), getReleaseY())));
 
 			// Verify the new visuals
 			mode.verify(messageEP, runs(sendX, mesgY, getNewRecvX(), getNewRecvY()));
@@ -161,7 +158,7 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 			editor.undo();
 
 			// Verify the old visuals
-			mode.verify(messageEP, runs(sendX, mesgY, getGrabX(), mesgY));
+			mode.verify(messageEP, runs(sendX, mesgY, getGrabX(), getGrabY()));
 
 			// And the old semantics
 			MMessage msg = getRequestMessage();
@@ -359,6 +356,11 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 			return getSender();
 		}
 
+		@Override
+		MLifeline requireReceiver() {
+			return requireLifeline("Lifeline1");
+		}
+
 		@ClassRule
 		public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs().createRepliesForSyncCalls();
 
@@ -367,8 +369,8 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 			super.switchLifeline(ASSERT);
 
 			// Verify the new visuals
-			mode.verify(getExecutionEditPart(),
-					isBounded(isNear(getNewRecvX(), 5), isNear(getNewRecvY()), anything(), anything()));
+			mode.verify(getExecutionEditPart(), isBounded(isNear(getReleaseX(), 5), isNear(getNewRecvY()),
+					is(EXEC_WIDTH), is(EXEC_HEIGHT)));
 
 			// And the semantics
 			MExecution exec = requireExecution();
@@ -379,6 +381,15 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 			MLifeline covered = finish.getCovered().get();
 			mode.verify("Finish coverage not changed", covered, not(requireOriginalReceiver()));
 			mode.verify("Wrong finish coverage", covered, is(requireReceiver()));
+
+			// check the reply
+			MMessage msg = getReplyMessage();
+			mode.verify("Sender changed", msg.getSender(), is(getSender()));
+			mode.verify("Receiver not changed", msg.getReceiver(), not(getOriginalReceiver()));
+			mode.verify("Wrong receiver", msg.getReceiver(), is(getReceiver()));
+			mode.verify(getReplyEditPart(), runs(getNewRecvX(), getNewRecvY() + EXEC_HEIGHT, getReleaseX(),
+					getNewRecvY() + EXEC_HEIGHT + SELF_MESSAGE_HEIGHT));
+
 		}
 
 		@Override
@@ -417,6 +428,148 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		@Override
 		int getNewRecvX() {
 			return sendX + (EXEC_WIDTH / 2);
+		}
+
+		//
+		// Test framework
+		//
+
+		EditPart getReplyEditPart() {
+			@SuppressWarnings("unchecked")
+			Optional<EditPart> editPart = editor.getDiagramEditPart().getConnections().stream().skip(1)
+					.findFirst();
+			return assuming(editPart, "No execution edit-part created");
+		}
+	}
+
+	public static class MessageSelfToUnSelfWithReply extends MessageNoExecution {
+
+		@ClassRule
+		public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs().createRepliesForSyncCalls();
+
+		@Override
+		protected int getInitialSenderX() {
+			return LIFELINE_1_BODY_X;
+		}
+
+		@Override
+		protected int getInitialSenderY() {
+			return mesgY;
+		}
+
+		@Override
+		protected int getInitialReceiverX() {
+			return LIFELINE_1_BODY_X;
+		}
+
+		@Override
+		protected int getInitialReceiverY() {
+			return mesgY + 20;
+		}
+
+		@Override
+		public int getReleaseX() {
+			return LIFELINE_2_BODY_X;
+		}
+
+		@Override
+		int getGrabX() {
+			return getInitialReceiverX() + (EXEC_WIDTH / 2);
+		}
+
+		@Override
+		int getGrabY() {
+			return getInitialReceiverY();
+		}
+
+		@Override
+		public int getNewRecvY() {
+			return mesgY;
+		}
+
+		@Override
+		int getNewRecvX() {
+			return LIFELINE_2_BODY_X - (EXEC_WIDTH / 2);
+		}
+
+		@Override
+		MLifeline requireReceiver() {
+			return requireLifeline("Lifeline2");
+		}
+
+		@Override
+		Optional<MLifeline> getReceiver() {
+			return getLifeline("Lifeline2");
+		}
+
+		@Override
+		Optional<MLifeline> getOriginalReceiver() {
+			return getLifeline("Lifeline1");
+		}
+
+		@Override
+		Optional<MLifeline> getSender() {
+			return getLifeline("Lifeline1");
+		}
+
+		@Override
+		MLifeline requireOriginalReceiver() {
+			return requireLifeline("Lifeline1");
+		}
+
+		@Override
+		protected void switchLifeline(VerificationMode mode) {
+			super.switchLifeline(ASSERT);
+
+			// Verify the new visuals
+			mode.verify(getExecutionEditPart(), isBounded(isNear(getReleaseX(), 5), isNear(getNewRecvY()),
+					is(EXEC_WIDTH), is(EXEC_HEIGHT)));
+
+			// And the semantics
+			MExecution exec = requireExecution();
+			mode.verify("Owner not changed", exec.getOwner(), not(requireOriginalReceiver()));
+			mode.verify("Wrong owner", exec.getOwner(), is(requireReceiver()));
+			MOccurrence<?> finish = verifying(mode, exec.getFinish(), "No finish occurrence");
+			mode.verify("Finish coverage lost", finish.getCovered().isPresent(), is(true));
+			MLifeline covered = finish.getCovered().get();
+			mode.verify("Finish coverage not changed", covered, not(requireOriginalReceiver()));
+			mode.verify("Wrong finish coverage", covered, is(requireReceiver()));
+
+			// check the reply
+			MMessage msg = getReplyMessage();
+			mode.verify("Sender changed", msg.getSender(), is(getReceiver()));
+			mode.verify("Wrong receiver", msg.getReceiver(), is(getSender()));
+			mode.verify(getReplyEditPart(), runs(getNewRecvX(), getNewRecvY() + EXEC_HEIGHT,
+					getInitialReceiverX(), getNewRecvY() + EXEC_HEIGHT));
+
+		}
+
+		@Override
+		protected void undoSwitchLifeline(VerificationMode mode) {
+			super.undoSwitchLifeline(ASSERT);
+
+			// Verify the old visuals
+			mode.verify(getExecutionEditPart(), isBounded(isNear(getGrabX() - EXEC_WIDTH, 5),
+					isNear(getGrabY()), is(EXEC_WIDTH), is(EXEC_HEIGHT)));
+
+			// And the old semantics
+			MExecution exec = requireExecution();
+			mode.verify("Owner not reverted", exec.getOwner(), is(requireOriginalReceiver()));
+			MOccurrence<?> finish = verifying(mode, exec.getFinish(), "No finish occurrence");
+			mode.verify("Finish coverage lost", finish.getCovered().isPresent(), is(true));
+			MLifeline covered = finish.getCovered().get();
+			mode.verify("Finish coverage not reverted", covered, is(requireOriginalReceiver()));
+		}
+
+		//
+		// Test framework
+		//
+
+		EditPart getExecutionEditPart() {
+			Optional<EditPart> editPart = Optional.of(messageEP).map(ConnectionEditPart.class::cast)
+					.map(ConnectionEditPart::getTarget)
+					.filter(ExecutionSpecificationEditPart.class::isInstance);
+			return assuming(editPart, "No execution edit-part created");
 		}
 
 		//
@@ -728,19 +881,160 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	}
 
+	@RunWith(JUnit4.class)
+	public static class ExecutionSwitchLifeline extends LifelineSwitchingUITest {
+
+		@ClassRule
+		public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs().createRepliesForSyncCalls();
+
+		@Test
+		public void switchLifeline() {
+			switchLifeline(ASSERT);
+		}
+
+		protected void switchLifeline(VerificationMode mode) {
+			editor.with(editor.allowSemanticReordering(),
+					() -> editor.moveSelection(at(getGrabX(), getGrabY()), at(getReleaseX(), getReleaseY())));
+
+			// Verify the new visuals
+			mode.verify(messageEP, runs(sendX, mesgY, getNewRecvX(), getNewRecvY()));
+
+			// And the semantics
+			MMessage msg = getRequestMessage();
+			mode.verify("Sender changed", msg.getSender(), is(getSender()));
+			mode.verify("Receiver not changed", msg.getReceiver(), not(getOriginalReceiver()));
+			mode.verify("Wrong receiver", msg.getReceiver(), is(getReceiver()));
+
+			mode.verify(getExecutionEditPart(), isBounded(isNear(getReleaseX(), 5), isNear(getNewRecvY()),
+					is(EXEC_WIDTH), is(EXEC_HEIGHT)));
+
+			// And the semantics
+			MExecution exec = requireExecution();
+			mode.verify("Owner not changed", exec.getOwner(), not(requireOriginalReceiver()));
+			mode.verify("Wrong owner", exec.getOwner(), is(requireReceiver()));
+			MOccurrence<?> finish = verifying(mode, exec.getFinish(), "No finish occurrence");
+			mode.verify("Finish coverage lost", finish.getCovered().isPresent(), is(true));
+			MLifeline covered = finish.getCovered().get();
+			mode.verify("Finish coverage not changed", covered, not(requireOriginalReceiver()));
+			mode.verify("Wrong finish coverage", covered, is(requireReceiver()));
+
+			// check the reply
+			MMessage reply = getReplyMessage();
+			mode.verify("Sender changed", reply.getSender(), is(getSender()));
+			mode.verify("Receiver not changed", reply.getReceiver(), not(getOriginalReceiver()));
+			mode.verify("Wrong receiver", reply.getReceiver(), is(getReceiver()));
+			mode.verify(getReplyEditPart(), runs(getNewRecvX(), getNewRecvY() + EXEC_HEIGHT, getReleaseX(),
+					getNewRecvY() + EXEC_HEIGHT + SELF_MESSAGE_HEIGHT));
+		}
+
+		@Override
+		public void createMessage() {
+			messageEP = createConnection(getMessageType(), at(getInitialSenderX(), getInitialSenderY()),
+					at(getInitialReceiverX(), getInitialReceiverY()));
+		}
+
+		@Override
+		int getNewRecvX() {
+			return sendX + EXEC_WIDTH / 2;
+		}
+
+		@Override
+		int getNewRecvY() {
+			return mesgY + 20;
+		}
+
+		@Override
+		int getGrabX() {
+			return super.getGrabX();
+		}
+
+		@Override
+		int getGrabY() {
+			return mesgY + EXEC_HEIGHT / 2;
+		}
+
+		@Override
+		public int getReleaseY() {
+			return getGrabY();
+		}
+
+		@Override
+		public int getReleaseX() {
+			return sendX;
+		}
+
+		@Override
+		Optional<MLifeline> getReceiver() {
+			return getLifeline("Lifeline1");
+		}
+
+		@Override
+		MLifeline requireReceiver() {
+			return requireLifeline("Lifeline1");
+		}
+
+		//
+		// Test framework
+		//
+
+		EditPart getExecutionEditPart() {
+			Optional<EditPart> editPart = Optional.of(messageEP).map(ConnectionEditPart.class::cast)
+					.map(ConnectionEditPart::getTarget)
+					.filter(ExecutionSpecificationEditPart.class::isInstance);
+			return assuming(editPart, "No execution edit-part created");
+		}
+
+		EditPart getReplyEditPart() {
+			@SuppressWarnings("unchecked")
+			Optional<EditPart> editPart = editor.getDiagramEditPart().getConnections().stream().skip(1)
+					.findFirst();
+			return assuming(editPart, "No execution edit-part created");
+		}
+
+	}
 	//
 	// Test framework
 	//
 
 	@Before
 	public void createMessage() {
-		messageEP = createConnection(getMessageType(), at(sendX, mesgY), at(recvX, mesgY));
+		messageEP = createConnection(getMessageType(), at(getInitialSenderX(), getInitialSenderY()),
+				at(getInitialReceiverX(), getInitialReceiverY()));
 
-		assumeThat(messageEP, runs(sendX, mesgY, getGrabX(), mesgY));
+		if (moveTarget()) {
+			assumeThat(messageEP, runs(getInitialSenderX(), getInitialSenderY(), getGrabX(), getGrabY()));
+		} else {
+			assumeThat(messageEP, runs(getGrabX(), getGrabY(), getInitialReceiverX(), getInitialReceiverY()));
+		}
+
+	}
+
+	protected boolean moveTarget() {
+		return true;
+	}
+
+	protected int getInitialReceiverY() {
+		return mesgY;
+	}
+
+	protected int getInitialReceiverX() {
+		return recvX;
+	}
+
+	protected int getInitialSenderY() {
+		return mesgY;
+	}
+
+	protected int getInitialSenderX() {
+		return sendX;
 	}
 
 	public int getReleaseX() {
 		return newRecvX;
+	}
+
+	public int getReleaseY() {
+		return mesgY;
 	}
 
 	IElementType getMessageType() {
@@ -749,6 +1043,10 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	int getGrabX() {
 		return recvX;
+	}
+
+	int getGrabY() {
+		return mesgY;
 	}
 
 	int getNewRecvX() {

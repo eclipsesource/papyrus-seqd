@@ -37,6 +37,13 @@ public class ExecutionSpecificationEndAnchor extends AbstractConnectionAnchor im
 	}
 
 	@Override
+	public Point getReferencePoint() {
+		Rectangle body = getOwner().getBounds().getCopy();
+		getOwner().translateToAbsolute(body);
+		return body.getBottomLeft();
+	}
+
+	@Override
 	public Point getLocation(Point reference) {
 		Rectangle body = getOwner().getBounds().getCopy();
 		getOwner().translateToAbsolute(body);

@@ -47,6 +47,7 @@ import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.model.util.Lifelines;
 import org.eclipse.papyrus.uml.interaction.model.util.Optionals;
 import org.eclipse.uml2.uml.Classifier;
@@ -135,6 +136,25 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 
 		int newYPosition = yPosition.orElseGet(() -> getTarget().getTop().getAsInt());
 
+		// enhance new position in case of message being transformed into a self message or back to a non self
+		// message
+		if (isTargetEnd()) {
+			if (isBecomingSelfMessage()) {
+				newYPosition += layoutHelper().getConstraints().getMinimumHeight(ViewTypes.MESSAGE);
+			} else if (isBecomingNonSelfMessage()) {
+				// retrieve source end position
+				Optional<MMessageEnd> sourceEnd = Optionals.as(Optional.of(getTarget()), MMessageEnd.class)
+						.flatMap(MMessageEnd::getOtherEnd);
+				Optional<MMessage> message = Optionals.as(Optional.of(getTarget()), MMessageEnd.class)
+						.map(MMessageEnd::getOwner);
+				if (message.isPresent() && message.get().isSynchronous()) {
+					newYPosition = sourceEnd.map(MMessageEnd::getTop).orElse(yPosition).getAsInt();
+				} else {
+					newYPosition = yPosition.getAsInt();
+				}
+			}
+		}
+
 		// Can't put an interaction fragment on a lifeline that is already destroyed
 		if (!existsAt(lifeline, newYPosition)) {
 			return bomb();
@@ -183,7 +203,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			result = bomb();
 		} else {
 			// Handle a dependent execution
-			result = dependencies(getTarget()).map(chaining(result)).orElse(result);
+			result = dependencies(getTarget(), newYPosition).map(chaining(result)).orElse(result);
 
 			// Handle message details
 			if (getTarget() instanceof MMessageEnd) {
@@ -196,7 +216,36 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 		return result;
 	}
 
-	protected Optional<Command> dependencies(MOccurrence<? extends Element> occurrence) {
+	private boolean isTargetEnd() {
+		Optional<MMessageEnd> end = Optionals.as(Optional.of(getTarget()), MMessageEnd.class);
+		Optional<MMessageEnd> receive = end.map(MMessageEnd::getOwner).flatMap(MMessage::getReceive);
+		return end.isPresent() && end.equals(receive);
+	}
+
+	protected boolean isBecomingSelfMessage() {
+		return isChangingLifeline() && willBeSelfMessage() && !wasSelfMessage();
+	}
+
+	protected boolean isBecomingNonSelfMessage() {
+		return isChangingPosition() && wasSelfMessage() && !willBeSelfMessage();
+	}
+
+	protected boolean wasSelfMessage() {
+		Optional<MLifeline> otherLifeline = Optionals.as(Optional.of(getTarget()), MMessageEnd.class)
+				.flatMap(MMessageEnd::getOtherEnd).flatMap(MMessageEnd::getCovered);
+		Optional<MLifeline> endlifeline = Optionals.as(Optional.of(getTarget()), MMessageEnd.class)
+				.flatMap(MMessageEnd::getCovered);
+		return endlifeline.isPresent() && endlifeline.equals(otherLifeline);
+	}
+
+	protected boolean willBeSelfMessage() {
+		Optional<MMessageEnd> otherEnd = Optionals.as(Optional.of(getTarget()), MMessageEnd.class)
+				.flatMap(MMessageEnd::getOtherEnd);
+		return (otherEnd.flatMap(MMessageEnd::getCovered).map(MLifeline::getElement).orElse(null) == lifeline
+				.getElement());
+	}
+
+	protected Optional<Command> dependencies(MOccurrence<? extends Element> occurrence, int newYPosition) {
 		List<Command> result = new ArrayList<>();
 		Consumer<Command> commandSink = cmd -> Optional.ofNullable(cmd).ifPresent(result::add);
 
@@ -213,11 +262,11 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 		if (!isThisMessageEndBeingDisconnected) {
 			// Either we aren't disconnecting the message end, or it's not a message
 			// end that we're moving
-			occurrence.getStartedExecution()
-					.map(exec -> exec.setOwner(lifeline, yPosition, OptionalInt.empty()))
+			occurrence.getStartedExecution().filter(exec -> !hasDependency(exec, SetOwnerCommand.class))
+					.map(exec -> exec.setOwner(lifeline, OptionalInt.of(newYPosition), OptionalInt.empty()))
 					.ifPresent(result::add);
-			occurrence.getFinishedExecution()
-					.map(exec -> exec.setOwner(lifeline, OptionalInt.empty(), yPosition))
+			occurrence.getFinishedExecution().filter(exec -> !hasDependency(exec, SetOwnerCommand.class))
+					.map(exec -> exec.setOwner(lifeline, OptionalInt.empty(), OptionalInt.of(newYPosition)))
 					.ifPresent(result::add);
 		}
 
@@ -225,12 +274,12 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 		if ((occurrence instanceof MMessageEnd) && !(occurrence instanceof MDestruction)) {
 			MMessageEnd end = (MMessageEnd)occurrence;
 			if (isChangingLifeline() || isChangingPosition()) {
-				collectMessageDependencies(end, isDisconnectingMessageEnd, commandSink);
+				collectMessageDependencies(end, isDisconnectingMessageEnd, newYPosition, commandSink);
 			}
 		} else if (occurrence instanceof MExecutionOccurrence) {
 			MExecutionOccurrence execOcc = (MExecutionOccurrence)occurrence;
 			if (isChangingLifeline() || isChangingPosition()) {
-				collectExecutionOccurrenceDependencies(execOcc, commandSink);
+				collectExecutionOccurrenceDependencies(execOcc, newYPosition, commandSink);
 			}
 		}
 
@@ -245,10 +294,11 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 	 * @param isDisconnecting
 	 *            whether the {@code end} is being disconnected from the start/finish of an execution
 	 *            specification
+	 * @param newYPosition
 	 * @param commandSink
 	 *            accumulator of dependency commands (accepts {@code null} values)
 	 */
-	private void collectMessageDependencies(MMessageEnd end, boolean isDisconnecting,
+	private void collectMessageDependencies(MMessageEnd end, boolean isDisconnecting, int newYPosition,
 			Consumer<? super Command> commandSink) {
 
 		MMessage message = end.getOwner();
@@ -260,7 +310,6 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 
 		Connector connector = edge.get();
 		Shape lifelineBody = getLifelineBody().get();
-		int newYPosition = yPosition.orElseGet(() -> end.getTop().getAsInt());
 
 		// Handle attached execution specification, unless we're detaching from a message end
 		Optional<MExecutionOccurrence> replacement = isDisconnecting ? Optional.empty()
@@ -285,13 +334,13 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 				commandSink.accept(defer(
 						() -> reconnectSource(connector, newAttachedShape.get(), newYPosition).orElse(null)));
 				Optional<MMessageEnd> otherEnd = end.getOtherEnd();
-				otherEnd.flatMap(this::handleSelfMessageChange).ifPresent(commandSink);
+				otherEnd.flatMap(oEnd -> handleSelfMessageChange(oEnd, newYPosition)).ifPresent(commandSink);
 				otherEnd.flatMap(this::handleOppositeSendOrReplyMessage).ifPresent(commandSink);
 			} else if (end.isReceive()) {
 				commandSink.accept(defer(
 						() -> reconnectTarget(connector, newAttachedShape.get(), newYPosition).orElse(null)));
 				Optional<MMessageEnd> otherEnd = end.getOtherEnd();
-				otherEnd.flatMap(this::handleSelfMessageChange).ifPresent(commandSink);
+				otherEnd.flatMap(oEnd -> handleSelfMessageChange(oEnd, newYPosition)).ifPresent(commandSink);
 				otherEnd.flatMap(this::handleOppositeSendOrReplyMessage).ifPresent(commandSink);
 			} // else don't know what to do with it
 		}
@@ -319,9 +368,34 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 							map(exec.getBottom(), b -> b + deltaY))).ifPresent(commandSink);
 				} else {
 					Optional<MLifeline> otherCovered = other.flatMap(MMessageEnd::getCovered);
-					OptionalInt otherNewY = map(otherY, y -> y + deltaY);
 
 					// Track this end
+					final OptionalInt otherNewY;
+					if (end.isStart()) {
+						otherNewY = PendingVerticalExtentData.getPendingTop(end.getExecution().get());
+					} else if (end.isFinish()) {
+						OptionalInt tmp = PendingVerticalExtentData
+								.getPendingBottom(end.getExecution().get());
+						if (otherEnd.isReceive()) {
+							// add an additional room for the self message
+							if (isBecomingSelfMessage() && !wasSelfMessage()) {
+								tmp = OptionalInt.of(tmp.getAsInt() + layoutHelper().getConstraints()
+										.getMinimumHeight(ViewTypes.MESSAGE));
+							}
+						}
+						otherNewY = tmp;
+					} else {
+						OptionalInt tmp = yPosition;
+						// only a simple occurrence on the execution. Move using delta
+						if (otherEnd.isReceive()) {
+							// add an additional room for the self message
+							if (isBecomingSelfMessage() && !wasSelfMessage()) {
+								tmp = OptionalInt.of(tmp.getAsInt() + layoutHelper().getConstraints()
+										.getMinimumHeight(ViewTypes.MESSAGE));
+							}
+						}
+						otherNewY = tmp;
+					}
 					otherCovered.map(ll -> otherEnd.setCovered(ll, otherNewY)).ifPresent(commandSink);
 				}
 			} else if (message.isSynchronous()
@@ -329,6 +403,21 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 				Optional<MLifeline> otherCovered = otherEnd.getCovered();
 				// Track this end
 				otherCovered.map(ll -> otherEnd.setCovered(ll, yPosition)).ifPresent(commandSink);
+			} else {
+				Optional<MLifeline> otherCovered = other.flatMap(MMessageEnd::getCovered);
+				// only a simple occurrence on the execution. Move using delta
+				if (otherEnd.isReceive()) {
+					// add an additional room for the self message
+					if (isBecomingSelfMessage() && !wasSelfMessage()) {
+						// ensure the position has a least the space for self messages, but it could be bigger
+						int minLayout = yPosition.getAsInt()
+								+ layoutHelper().getConstraints().getMinimumHeight(ViewTypes.MESSAGE);
+						int currentOtherPos = otherEnd.getTop().getAsInt();
+						OptionalInt otherNewY = OptionalInt.of(Math.max(minLayout, currentOtherPos));
+						otherCovered.map(ll -> otherEnd.setCovered(ll, otherNewY)).ifPresent(commandSink);
+					}
+				}
+
 			}
 		}
 	}
@@ -405,7 +494,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 				.map(MMessageEnd.class::cast).map(MMessageEnd::getOwner);
 	}
 
-	Optional<Command> handleSelfMessageChange(MMessageEnd otherEnd) {
+	Optional<Command> handleSelfMessageChange(MMessageEnd otherEnd, int newYPosition) {
 		Optional<Command> result;
 
 		// If the message end opposite one being moved to this lifeline is already on that lifeline,
@@ -434,14 +523,14 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			Command bend;
 			if (otherEnd.isSend()) {
 				// We're reconnecting the source end, but we need to maintain the gap
-				int newYPosition = currentYPosition - height;
-				Shape newAttachShape = executionShapeAt(lifeline, newYPosition).orElse(lifelineBody);
+				// int newYPosition = currentYPosition - height;
+				Shape newAttachShape = executionShapeAt(lifeline, currentYPosition).orElse(lifelineBody);
 				bend = reconnectSource(connector, newAttachShape, currentYPosition)
 						.orElse(IdentityCommand.INSTANCE);
 			} else {
-				int newYPosition = currentYPosition + height;
-				Shape newAttachShape = executionShapeAt(lifeline, newYPosition).orElse(lifelineBody);
-				bend = reconnectTarget(connector, newAttachShape, newYPosition)
+				int newReceivePosition = Math.max(newYPosition, currentYPosition);
+				Shape newAttachShape = executionShapeAt(lifeline, newReceivePosition).orElse(lifelineBody);
+				bend = reconnectTarget(connector, newAttachShape, newReceivePosition)
 						.orElse(IdentityCommand.INSTANCE);
 			}
 
@@ -464,7 +553,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 	 * @param commandSink
 	 *            accumulator of dependency commands (accepts {@code null} values)
 	 */
-	private void collectExecutionOccurrenceDependencies(MExecutionOccurrence occurrence,
+	private void collectExecutionOccurrenceDependencies(MExecutionOccurrence occurrence, int newYPosition,
 			Consumer<? super Command> commandSink) {
 
 		boolean shouldReplace = (occurrence.isStart() || occurrence.isFinish())
@@ -472,7 +561,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 		if (shouldReplace) {
 			// Replace it by a message end? But not if we exist because of separation
 			// of a message end from the execution in the first place
-			Optional<MMessageEnd> end = getMessageEnd(yPosition);
+			Optional<MMessageEnd> end = getMessageEnd(OptionalInt.of(newYPosition));
 			end.map(occurrence::replaceBy).ifPresent(commandSink);
 		}
 	}
