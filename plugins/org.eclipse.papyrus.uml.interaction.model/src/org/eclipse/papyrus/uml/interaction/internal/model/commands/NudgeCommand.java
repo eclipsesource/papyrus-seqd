@@ -13,21 +13,21 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.mapToObj;
 
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.IdentityCommand;
-import org.eclipse.emf.common.command.UnexecutableCommand;
-import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
-import org.eclipse.gmf.runtime.notation.NotationPackage;
 import org.eclipse.gmf.runtime.notation.Shape;
-import org.eclipse.gmf.runtime.notation.Size;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.graph.GroupKind;
 import org.eclipse.papyrus.uml.interaction.graph.Tag;
@@ -35,8 +35,12 @@ import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
 import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
-import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
+import org.eclipse.papyrus.uml.interaction.model.NudgeKind;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.ExecutionSpecification;
+import org.eclipse.uml2.uml.Interaction;
+import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageEnd;
 
@@ -46,11 +50,11 @@ import org.eclipse.uml2.uml.MessageEnd;
  *
  * @author Christian W. Damus
  */
-public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
+public class NudgeCommand extends ModelCommandWithDependencies<MElementImpl<?>> {
 
 	private final int deltaY;
 
-	private boolean following;
+	private NudgeKind mode;
 
 	/**
 	 * Initializes me.
@@ -61,7 +65,7 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 	 *            the distance by which to nudge the {@code element}
 	 */
 	public NudgeCommand(MElementImpl<? extends Element> element, int deltaY) {
-		this(element, deltaY, true);
+		this(element, deltaY, NudgeKind.FOLLOWING);
 	}
 
 	/**
@@ -71,18 +75,19 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 	 *            the element to be nudged up or down
 	 * @param deltaY
 	 *            the distance by which to nudge the {@code element}
-	 * @param nudgeFollowing
-	 *            <code>true</code> if following elements should be nudged as well, <code>false</code> if only
-	 *            the given elements should be moved
+	 * @param mode
+	 *            the consequential nudges to compute, also (include following/preceding elements or only the
+	 *            original {@code element} to be nudged)
 	 */
-	public NudgeCommand(MElementImpl<? extends Element> element, int deltaY, boolean nudgeFollowing) {
+	public NudgeCommand(MElementImpl<? extends Element> element, int deltaY, NudgeKind mode) {
 		super(element);
-		this.following = nudgeFollowing;
+
+		this.mode = mode;
 		this.deltaY = deltaY;
 	}
 
 	@Override
-	protected Command createCommand() {
+	protected Command doCreateCommand() {
 		if (deltaY == 0) {
 			return IdentityCommand.INSTANCE;
 		}
@@ -95,13 +100,47 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 			// Visit this vertex
 			vertex.accept(moveDown);
 
-			if (following) {
-				// And all following
-				getGraph().walkAfter(vertex, moveDown);
+			switch (mode) {
+				case FOLLOWING:
+					// And all following
+					getGraph().walkAfter(vertex, moveDown);
+					break;
+				case PRECEDING:
+					// And all the preceding, except for elements that cannot be nudged
+					Predicate<Vertex> visitorFilter = this::nudgeByConsequence;
+
+					// And executions whose start ends are being nudged but not their
+					// bottoms (so we stretch them)
+					Predicate<Vertex> topStretching = this::isExecutionStretchingAtTop;
+					visitorFilter = visitorFilter.and(topStretching.negate());
+
+					getGraph().walkBefore(vertex, visitorFilter, moveDown);
+					break;
+				default:
+					// Nothing further
+					break;
 			}
 		}
 
 		return moveDown.getResult();
+	}
+
+	private boolean nudgeByConsequence(Vertex vertex) {
+		// Don't attempt to nudge lifeline heads and the diagram, itself, in the precedents of a nudge
+		return !(vertex.getInteractionElement() instanceof Lifeline) //
+				&& !(vertex.getInteractionElement() instanceof Interaction);
+	}
+
+	private boolean isExecutionStretchingAtTop(Vertex vertex) {
+		boolean result = false;
+
+		if (vertex.getInteractionElement() instanceof ExecutionSpecification) {
+			// We are stretching this if we will nudge the top but not the bottom
+			result = (mode == NudgeKind.PRECEDING)
+					&& vertex.successor(Tag.EXECUTION_FINISH).filter(vertex()::precedes).isPresent();
+		}
+
+		return result;
 	}
 
 	//
@@ -126,7 +165,6 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 			this.delta = delta;
 		}
 
-		@SuppressWarnings("boxing")
 		@Override
 		protected void process(Vertex vertex) {
 			Element element = vertex.getInteractionElement();
@@ -185,19 +223,44 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 						}
 					}
 				}
+			} else if (vertex.hasTag(Tag.EXECUTION_START) && !isMessageEndNudgeCommand(element)) {
+				// Stretch the execution specification, but only if we aren't nudging the bottom
+				Optional<Vertex> exec = vertex.successor(Tag.EXECUTION_START);
+				if (/* Not already visited */ !visited(exec)
+						&& /* Not to be visited */ (mode != NudgeKind.FOLLOWING)) {
+
+					exec.map(Vertex::getDiagramView).map(Shape.class::cast).ifPresent(shape -> {
+						LayoutHelper layout = layoutHelper();
+						int top = layout.getTop(shape);
+						int bottom = layout.getBottom(shape);
+
+						// Move the top accordingly
+						chain(layout.setTop(shape, top + delta));
+						// But pin the bottom where it is, to effect the stretch
+						chain(layout.setBottom(shape, bottom - delta));
+
+						// And things attached to this shape that are not supposed to be moving
+						// need to be nudged in the opposite direction
+						spannedVerticesNotNudged(exec.get()).map(this::nudgeBack).forEach(this::chain);
+					});
+				}
 			} else if (vertex.hasTag(Tag.EXECUTION_FINISH) && !isMessageEndNudgeCommand(element)) {
 				// Stretch the execution specification, but only if we didn't nudge the top
 				Optional<Vertex> exec = vertex.predecessor(Tag.EXECUTION_FINISH);
-				if (!visited(exec)) {
-					Optional<Shape> shape = exec.map(Vertex::getDiagramView).map(Shape.class::cast);
-					Optional<Size> sizeConstraint = shape.map(Shape::getLayoutConstraint)
-							.filter(Size.class::isInstance).map(Size.class::cast);
-					sizeConstraint.ifPresent(size -> chain(SetCommand.create(getEditingDomain(), size,
-							NotationPackage.Literals.SIZE__HEIGHT, size.getHeight() + delta)));
+				if (/* Not already visited */ !visited(exec)
+						&& /* Not to be visited */ (mode != NudgeKind.PRECEDING)) {
+
+					exec.map(Vertex::getDiagramView).map(Shape.class::cast).ifPresent(shape -> {
+						LayoutHelper layout = layoutHelper();
+						int bottom = layout.getBottom(shape);
+
+						// Move the bottom to effect the stretch
+						chain(layout.setBottom(shape, bottom + delta));
+					});
 				}
 			} else if (view instanceof Diagram) {
 				// Can't nudge the diagram, of course
-				chain(UnexecutableCommand.INSTANCE);
+				chain(bomb());
 			} else if (isMessageEndNudgeCommand(element)) {
 				/*
 				 * If this is an explicit nudge command for a message end, make sure that this end is nudged,
@@ -228,11 +291,17 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 		}
 
 		/**
-		 * Only move message ends when anchored on lifeline.
+		 * Only move message ends when anchored on a shape that isn't already moving, as the assumption is
+		 * that it just follows the shape it's anchored on in that case.
 		 */
 		private boolean skipMove(Shape shape) {
-			return !ViewTypes.LIFELINE_BODY.equals(shape.getType()) //
-					|| movingShapes.contains(shape) //
+			// Either I have direct knowledge of this shape moving
+			return movingShapes.contains(shape)
+					// Or it will be moving but we just haven't visited it, yet
+					|| willBeMoving(shape)
+					// Or the context has a nudge command for this shape
+					|| hasDependency(shape, NudgeCommand.class)
+					// Or the shape is (recursively) on a shape being nudged
 					|| isShapeOnMovingShape(shape);
 		}
 
@@ -247,6 +316,94 @@ public class NudgeCommand extends ModelCommand<MElementImpl<?>> {
 		private boolean isShapeOnMovingShape(Shape shape) {
 			return movingShapes.contains(shape.eContainer());
 		}
+
+		private boolean willBeMoving(Shape shape) {
+			boolean result;
+
+			// If we can't find a vertex, assume it won't be moving
+			Optional<Vertex> vertex = vertex().graph().vertex(shape);
+
+			switch (mode) {
+				case PRECEDING:
+					// The simple case is a shape that will be moved in the normal way
+					Predicate<Vertex> willMove = vertex()::succeeds;
+					// Or, look for an execution specification that is being stretched at the top,
+					// which implicitly is a move even though we aren't nudging the execution, itself
+					willMove = willMove.or(NudgeCommand.this::isExecutionStretchingAtTop);
+
+					result = vertex.map(willMove::test).orElse(Boolean.FALSE).booleanValue();
+					break;
+				default:
+					result = false;
+			}
+
+			return result;
+		}
+
+		/**
+		 * Obtain the vertices spanned by an {@code execution} vertex that are neither
+		 * <ul>
+		 * <li>also being nudged nor</li>
+		 * <li>the vertex encapsulating the start or finish occurrence nor</li>
+		 * <li>ahead of our original vertex being nudged in the direction that we're iterating the graph</li>
+		 * </ul>
+		 * 
+		 * @param execution
+		 *            the vertex of an execution specification
+		 * @return the spanned vertices that are not already or going to be visited
+		 */
+		private Stream<Vertex> spannedVerticesNotNudged(Vertex execution) {
+			Stream<Vertex> result;
+
+			if (!execution.isGroup()) {
+				result = Stream.empty();
+			} else {
+				// Not the start or finish, though, which are pinned to the ends of the
+				// execution and so not independently nudgeable (at least, not fir our purpose)
+				Predicate<Vertex> isExec = execution::equals;
+				Predicate<Vertex> isStart = v -> v.successor(Tag.EXECUTION_START).filter(isExec).isPresent();
+				Predicate<Vertex> isFinish = v -> v.predecessor(Tag.EXECUTION_FINISH).filter(isExec)
+						.isPresent();
+				Predicate<Vertex> isBeingNudged = this::visited;
+				isBeingNudged = isBeingNudged.or(this::willBeVisited);
+
+				result = execution.toGroup().members() //
+						.filter(isBeingNudged.or(isStart).or(isFinish).negate());
+			}
+
+			return result;
+		}
+
+		/**
+		 * Query whether a vertex will be visited later on in the current nudge calculation.
+		 * 
+		 * @param vertex
+		 *            a vertex
+		 * @return whether it will be visited
+		 */
+		private boolean willBeVisited(Vertex vertex) {
+			switch (mode) {
+				case PRECEDING:
+					return vertex.precedes(vertex());
+				case FOLLOWING:
+					return vertex.succeeds(vertex());
+				default:
+					return false;
+			}
+		}
+
+		/**
+		 * Create a command to nudge a {@code vertex} back against the prevailing nudge direction.
+		 * 
+		 * @param vertex
+		 *            a vertex to back-nudge
+		 * @return the command
+		 */
+		private Command nudgeBack(Vertex vertex) {
+			OptionalInt top = layoutHelper().getTop(vertex);
+			return mapToObj(top, y -> layoutHelper().setTop(vertex, y - delta)).orElse(bomb());
+		}
+
 	}
 
 }

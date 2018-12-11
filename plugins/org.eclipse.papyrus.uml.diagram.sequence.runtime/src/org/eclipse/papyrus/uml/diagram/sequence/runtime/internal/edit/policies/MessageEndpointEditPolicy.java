@@ -12,15 +12,17 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageFeedbackHelper.getLocation;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.forwardParameters;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.getOriginalMouseLocation;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.getOriginalSourceLocation;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.getOriginalTargetLocation;
-import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.isAllowSemanticReordering;
-import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setAllowSemanticReordering;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setForce;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setOriginalMouseLocation;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setOriginalSourceLocation;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setOriginalTargetLocation;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setUpdatedSourceLocation;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setUpdatedTargetLocation;
 
 import com.google.common.eventbus.EventBus;
 
@@ -149,14 +151,17 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 	protected void showConnectionMoveFeedback(BendpointRequest request) {
 		if (originalSource == null) {
 			originalSource = getConnection().getSourceAnchor();
-			Point sourceLocation = MessageFeedbackHelper.getLocation(originalSource);
+			Point sourceLocation = getLocation(originalSource);
 			setOriginalSourceLocation(request, sourceLocation);
 		}
+		setUpdatedSourceLocation(request, getLocation(getConnection().getSourceAnchor()));
+
 		if (originalTarget == null) {
 			originalTarget = getConnection().getTargetAnchor();
-			Point targetLocation = MessageFeedbackHelper.getLocation(originalTarget);
+			Point targetLocation = getLocation(originalTarget);
 			setOriginalTargetLocation(request, targetLocation);
 		}
+		setUpdatedTargetLocation(request, getLocation(getConnection().getTargetAnchor()));
 
 		FeedbackHelper helper = getFeedbackHelper(request);
 		helper.setMovingStartAnchor(false);
@@ -262,8 +267,8 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 			sourceReq.setTargetEditPart(source);
 			sourceReq.setConnectionEditPart(connection);
 			sourceReq.setLocation(sourceLocation);
+			forwardParameters(sourceReq, request);
 			setForce(sourceReq, true);
-			setAllowSemanticReordering(sourceReq, isAllowSemanticReordering(request));
 
 			// In case the result of the drag moves the source end to a different edit-part
 			// (for example, a different execution specification)
@@ -286,8 +291,8 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 				targetReq.setTargetEditPart(target);
 				targetReq.setConnectionEditPart(connection);
 				targetReq.setLocation(targetLocation);
+				forwardParameters(targetReq, request);
 				setForce(targetReq, true);
-				setAllowSemanticReordering(targetReq, isAllowSemanticReordering(request));
 
 				// In case the result of the drag moves the target end to a different edit-part
 				target = retargetRequest(target, targetReq);

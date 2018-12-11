@@ -47,6 +47,7 @@ import org.eclipse.gmf.runtime.notation.util.NotationSwitch;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil;
 import org.eclipse.papyrus.uml.interaction.graph.util.Suppliers;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.KillSwitch;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredSetCommand;
 import org.eclipse.papyrus.uml.interaction.model.spi.FontHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints;
@@ -755,10 +756,20 @@ public class DefaultLayoutHelper implements LayoutHelper {
 	public Command setTop(Node shape, int yPosition) {
 		Command result = UnexecutableCommand.INSTANCE;
 		if (shape.getLayoutConstraint() instanceof Location) {
-			// Compute relative position
+			// Compute relative position. Do not allow a shape to extend above its container
 			int relativeY = toRelativeY(shape, yPosition);
-			result = SetCommand.create(editingDomain, shape.getLayoutConstraint(),
-					NotationPackage.Literals.LOCATION__Y, relativeY);
+			if (relativeY >= 0) {
+				result = SetCommand.create(editingDomain, shape.getLayoutConstraint(),
+						NotationPackage.Literals.LOCATION__Y, relativeY);
+				// Cancel a kill switch if there was one
+				KillSwitch.cancel(shape);
+			} else {
+				// Drop in a kill switch in case this isn't a temporary condition
+				EObject container = shape.eContainer();
+				KillSwitch.register(shape,
+						// The kill switch only remains valid if the shape isn't deleted
+						() -> (shape.eContainer() == container) && (container.eResource() != null));
+			}
 		}
 		return result;
 	}
@@ -796,6 +807,16 @@ public class DefaultLayoutHelper implements LayoutHelper {
 				String newID = m.replaceFirst("$1" + Integer.toString(anchorPos)); //$NON-NLS-1$
 				result = SetCommand.create(editingDomain, anchor,
 						NotationPackage.Literals.IDENTITY_ANCHOR__ID, newID);
+
+				if (anchorPos < 0) {
+					// Drop in a kill switch in case this isn't a temporary condition
+					KillSwitch.register(anchor,
+							// The kill switch only remains valid if the anchor isn't deleted
+							() -> (anchor.eContainer() == onShape) && (onShape.eResource() != null));
+				} else {
+					// Cancel a kill switch if there was one
+					KillSwitch.cancel(anchor);
+				}
 			} else {
 				m = EXEC_START_FINISH_ANCHOR_PATTERN.matcher(id);
 				if (m.matches()) {

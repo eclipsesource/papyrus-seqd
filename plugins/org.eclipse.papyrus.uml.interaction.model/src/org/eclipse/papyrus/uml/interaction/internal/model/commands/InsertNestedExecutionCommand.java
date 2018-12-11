@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.OptionalInt;
 
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
@@ -128,7 +127,7 @@ public class InsertNestedExecutionCommand extends ModelCommand.Creation<MExecuti
 	protected Command createCommand() {
 		Vertex reference = vertex(before);
 		if (reference == null) {
-			return UnexecutableCommand.INSTANCE;
+			return bomb();
 		}
 
 		OptionalInt referenceY;
@@ -139,7 +138,7 @@ public class InsertNestedExecutionCommand extends ModelCommand.Creation<MExecuti
 		}
 
 		if (!referenceY.isPresent()) {
-			return UnexecutableCommand.INSTANCE;
+			return bomb();
 		}
 
 		List<MElement<? extends Element>> timeline = getTimeline(getTarget().getInteraction());

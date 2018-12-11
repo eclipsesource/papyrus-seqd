@@ -47,6 +47,8 @@ public class GraphImpl implements Graph {
 
 	private final Map<Element, VertexImpl> vertices = new ConcurrentHashMap<>();
 
+	private final Map<View, VertexImpl> diagramViews = new ConcurrentHashMap<>();
+
 	private final VertexImpl initial;
 
 	private final Function<Element, VertexImpl> vertexFactory;
@@ -72,10 +74,26 @@ public class GraphImpl implements Graph {
 		if (sequenceDiagram == null) {
 			vertexFactory = new VertexFactory()::doSwitch;
 		} else {
-			vertexFactory = new VertexFactoryWithDiagram(sequenceDiagram)::doSwitch;
+			Function<Element, VertexImpl> withDiagram = new VertexFactoryWithDiagram(
+					sequenceDiagram)::doSwitch;
+			withDiagram = withDiagram.andThen(this::mapView);
+			vertexFactory = withDiagram;
+
+			// And start with the initial
+			mapView(initial);
 		}
 
 		new GraphComputer(this).compute();
+	}
+
+	private VertexImpl mapView(VertexImpl vertex) {
+		View notation = vertex.getDiagramView();
+
+		if (notation != null) {
+			diagramViews.put(notation, vertex);
+		}
+
+		return vertex;
 	}
 
 	/**
@@ -123,6 +141,11 @@ public class GraphImpl implements Graph {
 	@Override
 	public final VertexImpl vertex(Element element) {
 		return vertices.computeIfAbsent(element, vertexFactory);
+	}
+
+	@Override
+	public final Optional<Vertex> vertex(View view) {
+		return Optional.ofNullable(diagramViews.get(view));
 	}
 
 	@Override

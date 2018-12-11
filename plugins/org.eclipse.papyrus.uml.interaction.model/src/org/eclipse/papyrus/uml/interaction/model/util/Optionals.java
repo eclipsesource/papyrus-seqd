@@ -14,6 +14,7 @@ package org.eclipse.papyrus.uml.interaction.model.util;
 
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -262,7 +263,20 @@ public class Optionals {
 	 * @return the {@code value} if it satisfies the {@code predicate}, otherwise empty
 	 */
 	public static OptionalInt filter(OptionalInt value, IntPredicate predicate) {
-		return (value.isPresent() && predicate.test(value.getAsInt())) ? value : OptionalInt.empty();
+		return test(value, predicate) ? value : OptionalInt.empty();
+	}
+
+	/**
+	 * Query whether an optional integer {@code value} matches some {@code predicate}.
+	 * 
+	 * @param value
+	 *            an optional integer value
+	 * @param predicate
+	 *            an integer predicate
+	 * @return whether the {@code value} satisfies the {@code predicate}
+	 */
+	public static boolean test(OptionalInt value, IntPredicate predicate) {
+		return value.isPresent() && predicate.test(value.getAsInt());
 	}
 
 	/**
@@ -282,5 +296,24 @@ public class Optionals {
 		} else {
 			orElse.run();
 		}
+	}
+
+	/**
+	 * Query whether two optionals match on a {@code predicate}.
+	 * 
+	 * @param optional1
+	 *            an optional
+	 * @param optional2
+	 *            another optional
+	 * @param predicate
+	 *            a predicate
+	 * @return {@code true} if both optionals are {@linkplain Optional#isPresent() present} and satisfy the
+	 *         {@code predicate}; {@code false}, otherwise
+	 */
+	public static <T> boolean test(Optional<? extends T> optional1, Optional<? extends T> optional2,
+			BiPredicate<? super T, ? super T> predicate) {
+
+		return optional1.isPresent() && optional2.isPresent()
+				&& predicate.test(optional1.get(), optional2.get());
 	}
 }

@@ -12,9 +12,11 @@
  */
 package org.eclipse.papyrus.uml.interaction.internal.model.impl;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
 import org.eclipse.papyrus.uml.interaction.model.MDestruction;
+import org.eclipse.papyrus.uml.interaction.model.NudgeKind;
 import org.eclipse.uml2.uml.DestructionOccurrenceSpecification;
 
 /**
@@ -49,6 +51,14 @@ public class MDestructionImpl extends MMessageEndImpl implements MDestruction {
 	@Override
 	protected EClass eStaticClass() {
 		return SequenceDiagramPackage.Literals.MDESTRUCTION;
+	}
+
+	/**
+	 * The destruction occurrence has a real shape of its own, so it is nudged in its own right.
+	 */
+	@Override
+	public Command nudge(int deltaY, NudgeKind mode) {
+		return basicNudge(deltaY, mode);
 	}
 
 } // MDestructionImpl

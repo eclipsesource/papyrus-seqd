@@ -15,7 +15,6 @@ package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 import java.util.Optional;
 
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MExecutionImpl;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
@@ -60,7 +59,7 @@ public abstract class CreateExecutionOccurrenceCommand extends ModelCommandWithD
 	protected Command doCreateCommand() {
 		Optional<MOccurrence<?>> previous = isFinish ? getTarget().getFinish() : getTarget().getStart();
 		if (previous.filter(MExecutionOccurrence.class::isInstance).isPresent()) {
-			return UnexecutableCommand.INSTANCE;
+			return bomb();
 		}
 
 		// Create the execution occurrence in the interaction

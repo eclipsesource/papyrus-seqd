@@ -15,6 +15,7 @@ package org.eclipse.papyrus.uml.interaction.internal.model;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -170,12 +171,20 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MELEMENT___NUDGE__INT = 4;
 
 	/**
+	 * The operation id for the '<em>Nudge</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MELEMENT___NUDGE__INT_NUDGEKIND = 5;
+
+	/**
 	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int MELEMENT___REMOVE = 5;
+	int MELEMENT___REMOVE = 6;
 
 	/**
 	 * The operation id for the '<em>Precedes</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -183,7 +192,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MELEMENT___PRECEDES__MELEMENT = 6;
+	int MELEMENT___PRECEDES__MELEMENT = 7;
 
 	/**
 	 * The operation id for the '<em>Exists</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -191,7 +200,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MELEMENT___EXISTS = 7;
+	int MELEMENT___EXISTS = 8;
 
 	/**
 	 * The number of operations of the '<em>MElement</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
@@ -200,7 +209,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MELEMENT_OPERATION_COUNT = 8;
+	int MELEMENT_OPERATION_COUNT = 9;
 
 	/**
 	 * The meta object id for the
@@ -315,6 +324,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MINTERACTION___NUDGE__INT = MELEMENT___NUDGE__INT;
+
+	/**
+	 * The operation id for the '<em>Nudge</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MINTERACTION___NUDGE__INT_NUDGEKIND = MELEMENT___NUDGE__INT_NUDGEKIND;
 
 	/**
 	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -577,6 +594,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MLIFELINE___NUDGE__INT = MELEMENT___NUDGE__INT;
+
+	/**
+	 * The operation id for the '<em>Nudge</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MLIFELINE___NUDGE__INT_NUDGEKIND = MELEMENT___NUDGE__INT_NUDGEKIND;
 
 	/**
 	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -888,6 +913,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MEXECUTION___NUDGE__INT = MELEMENT___NUDGE__INT;
 
 	/**
+	 * The operation id for the '<em>Nudge</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION___NUDGE__INT_NUDGEKIND = MELEMENT___NUDGE__INT_NUDGEKIND;
+
+	/**
 	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -1157,6 +1190,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MOCCURRENCE___NUDGE__INT = MELEMENT___NUDGE__INT;
 
 	/**
+	 * The operation id for the '<em>Nudge</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MOCCURRENCE___NUDGE__INT_NUDGEKIND = MELEMENT___NUDGE__INT_NUDGEKIND;
+
+	/**
 	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -1338,6 +1379,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MEXECUTION_OCCURRENCE___NUDGE__INT = MOCCURRENCE___NUDGE__INT;
+
+	/**
+	 * The operation id for the '<em>Nudge</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MEXECUTION_OCCURRENCE___NUDGE__INT_NUDGEKIND = MOCCURRENCE___NUDGE__INT_NUDGEKIND;
 
 	/**
 	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1574,6 +1623,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MMESSAGE_END___NUDGE__INT = MOCCURRENCE___NUDGE__INT;
 
 	/**
+	 * The operation id for the '<em>Nudge</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE_END___NUDGE__INT_NUDGEKIND = MOCCURRENCE___NUDGE__INT_NUDGEKIND;
+
+	/**
 	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -1780,6 +1837,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int MMESSAGE___NUDGE__INT = MELEMENT___NUDGE__INT;
+
+	/**
+	 * The operation id for the '<em>Nudge</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MMESSAGE___NUDGE__INT_NUDGEKIND = MELEMENT___NUDGE__INT_NUDGEKIND;
 
 	/**
 	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2007,6 +2072,14 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MDESTRUCTION___NUDGE__INT = MMESSAGE_END___NUDGE__INT;
 
 	/**
+	 * The operation id for the '<em>Nudge</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int MDESTRUCTION___NUDGE__INT_NUDGEKIND = MMESSAGE_END___NUDGE__INT_NUDGEKIND;
+
+	/**
 	 * The operation id for the '<em>Remove</em>' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -2066,13 +2139,23 @@ public interface SequenceDiagramPackage extends EPackage {
 	int MDESTRUCTION_OPERATION_COUNT = MMESSAGE_END_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.eclipse.papyrus.uml.interaction.model.NudgeKind <em>Nudge
+	 * Kind</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.papyrus.uml.interaction.model.NudgeKind
+	 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getNudgeKind()
+	 * @generated
+	 */
+	int NUDGE_KIND = 9;
+
+	/**
 	 * The meta object id for the '<em>Optional</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @see java.util.Optional
 	 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getOptional()
 	 * @generated
 	 */
-	int OPTIONAL = 9;
+	int OPTIONAL = 10;
 
 	/**
 	 * The meta object id for the '<em>Optional Int</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc
@@ -2082,7 +2165,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getOptionalInt()
 	 * @generated
 	 */
-	int OPTIONAL_INT = 10;
+	int OPTIONAL_INT = 11;
 
 	/**
 	 * The meta object id for the '<em>Command</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2091,7 +2174,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getCommand()
 	 * @generated
 	 */
-	int COMMAND = 11;
+	int COMMAND = 12;
 
 	/**
 	 * The meta object id for the '<em>Creation Command</em>' data type. <!-- begin-user-doc --> <!--
@@ -2101,7 +2184,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getCreationCommand()
 	 * @generated
 	 */
-	int CREATION_COMMAND = 12;
+	int CREATION_COMMAND = 13;
 
 	/**
 	 * The meta object id for the '<em>EObject</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2110,7 +2193,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getEObject()
 	 * @generated
 	 */
-	int EOBJECT = 13;
+	int EOBJECT = 14;
 
 	/**
 	 * The meta object id for the '<em>Execution Creation Command Parameter</em>' data type. <!--
@@ -2120,7 +2203,7 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getExecutionCreationCommandParameter()
 	 * @generated
 	 */
-	int EXECUTION_CREATION_COMMAND_PARAMETER = 14;
+	int EXECUTION_CREATION_COMMAND_PARAMETER = 15;
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.papyrus.uml.interaction.model.MElement
@@ -2243,6 +2326,18 @@ public interface SequenceDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EOperation getMElement__Nudge__int();
+
+	/**
+	 * Returns the meta object for the
+	 * '{@link org.eclipse.papyrus.uml.interaction.model.MElement#nudge(int, org.eclipse.papyrus.uml.interaction.model.NudgeKind)
+	 * <em>Nudge</em>}' operation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the '<em>Nudge</em>' operation.
+	 * @see org.eclipse.papyrus.uml.interaction.model.MElement#nudge(int,
+	 *      org.eclipse.papyrus.uml.interaction.model.NudgeKind)
+	 * @generated
+	 */
+	EOperation getMElement__Nudge__int_NudgeKind();
 
 	/**
 	 * Returns the meta object for the '{@link org.eclipse.papyrus.uml.interaction.model.MElement#remove()
@@ -3203,6 +3298,16 @@ public interface SequenceDiagramPackage extends EPackage {
 	EClass getMDestruction();
 
 	/**
+	 * Returns the meta object for enum '{@link org.eclipse.papyrus.uml.interaction.model.NudgeKind <em>Nudge
+	 * Kind</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for enum '<em>Nudge Kind</em>'.
+	 * @see org.eclipse.papyrus.uml.interaction.model.NudgeKind
+	 * @generated
+	 */
+	EEnum getNudgeKind();
+
+	/**
 	 * Returns the meta object for data type '{@link java.util.Optional <em>Optional</em>}'. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -3385,6 +3490,14 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation MELEMENT___NUDGE__INT = eINSTANCE.getMElement__Nudge__int();
+
+		/**
+		 * The meta object literal for the '<em><b>Nudge</b></em>' operation. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EOperation MELEMENT___NUDGE__INT_NUDGEKIND = eINSTANCE.getMElement__Nudge__int_NudgeKind();
 
 		/**
 		 * The meta object literal for the '<em><b>Remove</b></em>' operation. <!-- begin-user-doc --> <!--
@@ -4098,6 +4211,16 @@ public interface SequenceDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EClass MDESTRUCTION = eINSTANCE.getMDestruction();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.papyrus.uml.interaction.model.NudgeKind
+		 * <em>Nudge Kind</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @see org.eclipse.papyrus.uml.interaction.model.NudgeKind
+		 * @see org.eclipse.papyrus.uml.interaction.internal.model.impl.SequenceDiagramPackageImpl#getNudgeKind()
+		 * @generated
+		 */
+		EEnum NUDGE_KIND = eINSTANCE.getNudgeKind();
 
 		/**
 		 * The meta object literal for the '<em>Optional</em>' data type. <!-- begin-user-doc --> <!--

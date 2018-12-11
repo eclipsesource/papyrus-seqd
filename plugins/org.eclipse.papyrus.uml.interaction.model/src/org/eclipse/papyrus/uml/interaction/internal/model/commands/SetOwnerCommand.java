@@ -28,7 +28,6 @@ import java.util.function.UnaryOperator;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.IdentityCommand;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MElementImpl;
@@ -115,7 +114,7 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 
 			@Override
 			public Command defaultCase(EObject object) {
-				return UnexecutableCommand.INSTANCE;
+				return bomb();
 			}
 		}.doSwitch((EObject)getTarget());
 	}

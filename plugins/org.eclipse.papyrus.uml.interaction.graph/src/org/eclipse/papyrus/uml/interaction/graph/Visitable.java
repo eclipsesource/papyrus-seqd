@@ -108,4 +108,25 @@ public interface Visitable<T extends Visitable<T>> {
 	 */
 	boolean exists();
 
+	/**
+	 * Query whether I am a {@link Group}.
+	 * 
+	 * @return whether I am a {@linkplain Group group} of visitable things.
+	 * @see #toGroup()
+	 */
+	default boolean isGroup() {
+		return this instanceof Group;
+	}
+
+	/**
+	 * Cast me as a {@link Group}.
+	 * 
+	 * @return myself, as a {@code Group}
+	 * @throws ClassCastException
+	 *             if I am {@linkplain #isGroup() not a group}
+	 * @see #isGroup()
+	 */
+	default Group<T> toGroup() {
+		return (Group<T>)this;
+	}
 }

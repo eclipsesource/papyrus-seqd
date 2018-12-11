@@ -35,7 +35,14 @@
       </eGenericType>
     </eOperations>
     <eOperations name="nudge" lowerBound="1" eType="#//Command">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Nudge an element and all of its following trace down or up, according to the sign of {@code deltaY}.  Equivalent to {@link #nudge(int, NudgeKind) nudge(deltaY, NudgeKind.FOLLOWING)}."/>
+      </eAnnotations>
       <eParameters name="deltaY" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </eOperations>
+    <eOperations name="nudge" lowerBound="1" eType="#//Command">
+      <eParameters name="deltaY" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      <eParameters name="mode" lowerBound="1" eType="#//NudgeKind"/>
     </eOperations>
     <eOperations name="remove" lowerBound="1" eType="#//Command"/>
     <eOperations name="precedes" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
@@ -781,4 +788,21 @@
       instanceClassName="org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter"
       serializable="false"/>
   <eClassifiers xsi:type="ecore:EClass" name="MDestruction" eSuperTypes="#//MMessageEnd"/>
+  <eClassifiers xsi:type="ecore:EEnum" name="NudgeKind">
+    <eLiterals name="elementOnly">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Nudge only the element and no others."/>
+      </eAnnotations>
+    </eLiterals>
+    <eLiterals name="following" value="1">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Nudge the element and all following (below) it in the trace."/>
+      </eAnnotations>
+    </eLiterals>
+    <eLiterals name="preceding" value="2">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Nudge the element and all preceding (above) it in the trace."/>
+      </eAnnotations>
+    </eLiterals>
+  </eClassifiers>
 </ecore:EPackage>

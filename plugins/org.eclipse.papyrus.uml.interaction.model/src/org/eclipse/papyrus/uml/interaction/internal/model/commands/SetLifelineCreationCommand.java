@@ -27,6 +27,7 @@ import org.eclipse.papyrus.uml.interaction.internal.model.impl.MLifelineImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
+import org.eclipse.papyrus.uml.interaction.model.NudgeKind;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.MessageSort;
 
@@ -70,7 +71,7 @@ public class SetLifelineCreationCommand extends ModelCommandWithDependencies<MLi
 				.sorted(vertically().reversed());
 		Optional<Command> nudges = toNudge //
 				.map(elem -> (Command)new NudgeCommand((MElementImpl<? extends Element>)elem, -deltaTop,
-						false))
+						NudgeKind.ELEMENT_ONLY))
 				.reduce(chaining());
 
 		result = nudges.map(chaining(result)).orElse(result);

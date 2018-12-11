@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.OptionalInt;
 
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.notation.Shape;
@@ -125,7 +124,7 @@ public class InsertExecutionCommand extends ModelCommand.Creation<MLifelineImpl,
 	protected Command createCommand() {
 		Vertex reference = vertex(before);
 		if (reference == null) {
-			return UnexecutableCommand.INSTANCE;
+			return bomb();
 		}
 
 		OptionalInt referenceY;
@@ -138,7 +137,7 @@ public class InsertExecutionCommand extends ModelCommand.Creation<MLifelineImpl,
 		}
 
 		if (!referenceY.isPresent()) {
-			return UnexecutableCommand.INSTANCE;
+			return bomb();
 		}
 
 		// Determine the semantic element before which to insert the execution and its

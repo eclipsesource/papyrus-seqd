@@ -15,6 +15,11 @@
       utilityPackageSuffix="model.util" providerPackageSuffix="model.provider" presentationPackageSuffix="model.presentation"
       testsPackageSuffix="model.tests" generateExampleClass="false" multipleEditorPages="false"
       generateModelWizard="false" ecorePackage="seqd.ecore#/" publicationLocation="">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="seqd.ecore#//NudgeKind">
+      <genEnumLiterals ecoreEnumLiteral="seqd.ecore#//NudgeKind/elementOnly"/>
+      <genEnumLiterals ecoreEnumLiteral="seqd.ecore#//NudgeKind/following"/>
+      <genEnumLiterals ecoreEnumLiteral="seqd.ecore#//NudgeKind/preceding"/>
+    </genEnums>
     <genDataTypes ecoreDataType="seqd.ecore#//Optional">
       <genTypeParameters ecoreTypeParameter="seqd.ecore#//Optional/T"/>
     </genDataTypes>
@@ -41,6 +46,10 @@
       <genOperations ecoreOperation="seqd.ecore#//MElement/following"/>
       <genOperations ecoreOperation="seqd.ecore#//MElement/nudge">
         <genParameters ecoreParameter="seqd.ecore#//MElement/nudge/deltaY"/>
+      </genOperations>
+      <genOperations ecoreOperation="seqd.ecore#//MElement/nudge.1">
+        <genParameters ecoreParameter="seqd.ecore#//MElement/nudge.1/deltaY"/>
+        <genParameters ecoreParameter="seqd.ecore#//MElement/nudge.1/mode"/>
       </genOperations>
       <genOperations ecoreOperation="seqd.ecore#//MElement/remove"/>
       <genOperations ecoreOperation="seqd.ecore#//MElement/precedes">

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_6FjZsPlaEeiUDs0SSuHgJg" name="Nudging">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_6JdCQPlaEeiUDs0SSuHgJg">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_6FnEEPlaEeiUDs0SSuHgJg" name="Interaction1">
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_6paUsPlaEeiUDs0SSuHgJg" name="lifeline1" coveredBy="_7f6e4PlaEeiUDs0SSuHgJg _8Wx1cPlaEeiUDs0SSuHgJg _8WzDlPlaEeiUDs0SSuHgJg _9ZXT0PlaEeiUDs0SSuHgJg"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_6teVUPlaEeiUDs0SSuHgJg" name="lifeline2" coveredBy="_7f7F8PlaEeiUDs0SSuHgJg _9ZXT0flaEeiUDs0SSuHgJg _8WzDkPlaEeiUDs0SSuHgJg _8Wx1cflaEeiUDs0SSuHgJg _8WzDk_laEeiUDs0SSuHgJg _Y26OEPlbEeiEd7ueRYhdrg _Y27cNPlbEeiEd7ueRYhdrg _LMklAflbEeiEd7ueRYhdrg _LMiIwPlbEeiEd7ueRYhdrg"/>
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_R_GBsPlbEeiEd7ueRYhdrg" name="lifeline3" coveredBy="_Y26OEflbEeiEd7ueRYhdrg _Y27cMPlbEeiEd7ueRYhdrg _Y27cM_lbEeiEd7ueRYhdrg _LMj98PlbEeiEd7ueRYhdrg _LMiIwflbEeiEd7ueRYhdrg _LMklAPlbEeiEd7ueRYhdrg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_7f6e4PlaEeiUDs0SSuHgJg" name="async1-send" covered="_6paUsPlaEeiUDs0SSuHgJg" message="_7f7F8flaEeiUDs0SSuHgJg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_7f7F8PlaEeiUDs0SSuHgJg" name="async1-recv" covered="_6teVUPlaEeiUDs0SSuHgJg" message="_7f7F8flaEeiUDs0SSuHgJg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_8Wx1cPlaEeiUDs0SSuHgJg" name="request1-send" covered="_6paUsPlaEeiUDs0SSuHgJg" message="_8Wx1cvlaEeiUDs0SSuHgJg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_8Wx1cflaEeiUDs0SSuHgJg" name="request1-recv" covered="_6teVUPlaEeiUDs0SSuHgJg" message="_8Wx1cvlaEeiUDs0SSuHgJg"/>
+    <fragment xmi:type="uml:ActionExecutionSpecification" xmi:id="_8WzDkPlaEeiUDs0SSuHgJg" name="exec1" covered="_6teVUPlaEeiUDs0SSuHgJg" finish="_8WzDk_laEeiUDs0SSuHgJg" start="_8Wx1cflaEeiUDs0SSuHgJg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_Y26OEPlbEeiEd7ueRYhdrg" name="request2-send" covered="_6teVUPlaEeiUDs0SSuHgJg" message="_Y26OEvlbEeiEd7ueRYhdrg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_Y26OEflbEeiEd7ueRYhdrg" name="request2-recv" covered="_R_GBsPlbEeiEd7ueRYhdrg" message="_Y26OEvlbEeiEd7ueRYhdrg"/>
+    <fragment xmi:type="uml:ActionExecutionSpecification" xmi:id="_Y27cMPlbEeiEd7ueRYhdrg" name="exec2" covered="_R_GBsPlbEeiEd7ueRYhdrg" finish="_Y27cM_lbEeiEd7ueRYhdrg" start="_Y26OEflbEeiEd7ueRYhdrg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_Y27cM_lbEeiEd7ueRYhdrg" name="reply2-send" covered="_R_GBsPlbEeiEd7ueRYhdrg" message="_Y27cNflbEeiEd7ueRYhdrg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_Y27cNPlbEeiEd7ueRYhdrg" name="reply2-recv" covered="_6teVUPlaEeiUDs0SSuHgJg" message="_Y27cNflbEeiEd7ueRYhdrg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_8WzDk_laEeiUDs0SSuHgJg" name="reply1-send" covered="_6teVUPlaEeiUDs0SSuHgJg" message="_8WzqoPlaEeiUDs0SSuHgJg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_8WzDlPlaEeiUDs0SSuHgJg" name="reply1-recv" covered="_6paUsPlaEeiUDs0SSuHgJg" message="_8WzqoPlaEeiUDs0SSuHgJg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_LMiIwPlbEeiEd7ueRYhdrg" name="request3-send" covered="_6teVUPlaEeiUDs0SSuHgJg" message="_LMiv0PlbEeiEd7ueRYhdrg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_LMiIwflbEeiEd7ueRYhdrg" name="request3-recv" covered="_R_GBsPlbEeiEd7ueRYhdrg" message="_LMiv0PlbEeiEd7ueRYhdrg"/>
+    <fragment xmi:type="uml:ActionExecutionSpecification" xmi:id="_LMj98PlbEeiEd7ueRYhdrg" name="exec3" covered="_R_GBsPlbEeiEd7ueRYhdrg" finish="_LMklAPlbEeiEd7ueRYhdrg" start="_LMiIwflbEeiEd7ueRYhdrg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_LMklAPlbEeiEd7ueRYhdrg" name="reply3-send" covered="_R_GBsPlbEeiEd7ueRYhdrg" message="_LMklAvlbEeiEd7ueRYhdrg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_LMklAflbEeiEd7ueRYhdrg" name="reply3-recv" covered="_6teVUPlaEeiUDs0SSuHgJg" message="_LMklAvlbEeiEd7ueRYhdrg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_9ZXT0PlaEeiUDs0SSuHgJg" name="async2-send" covered="_6paUsPlaEeiUDs0SSuHgJg" message="_9ZXT0vlaEeiUDs0SSuHgJg"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_9ZXT0flaEeiUDs0SSuHgJg" name="async2-recv" covered="_6teVUPlaEeiUDs0SSuHgJg" message="_9ZXT0vlaEeiUDs0SSuHgJg"/>
+    <message xmi:type="uml:Message" xmi:id="_7f7F8flaEeiUDs0SSuHgJg" name="async1" messageSort="asynchCall" receiveEvent="_7f7F8PlaEeiUDs0SSuHgJg" sendEvent="_7f6e4PlaEeiUDs0SSuHgJg"/>
+    <message xmi:type="uml:Message" xmi:id="_8Wx1cvlaEeiUDs0SSuHgJg" name="request1" receiveEvent="_8Wx1cflaEeiUDs0SSuHgJg" sendEvent="_8Wx1cPlaEeiUDs0SSuHgJg"/>
+    <message xmi:type="uml:Message" xmi:id="_8WzqoPlaEeiUDs0SSuHgJg" name="reply1" messageSort="reply" receiveEvent="_8WzDlPlaEeiUDs0SSuHgJg" sendEvent="_8WzDk_laEeiUDs0SSuHgJg"/>
+    <message xmi:type="uml:Message" xmi:id="_9ZXT0vlaEeiUDs0SSuHgJg" name="async2" messageSort="asynchCall" receiveEvent="_9ZXT0flaEeiUDs0SSuHgJg" sendEvent="_9ZXT0PlaEeiUDs0SSuHgJg"/>
+    <message xmi:type="uml:Message" xmi:id="_LMiv0PlbEeiEd7ueRYhdrg" name="request3" receiveEvent="_LMiIwflbEeiEd7ueRYhdrg" sendEvent="_LMiIwPlbEeiEd7ueRYhdrg"/>
+    <message xmi:type="uml:Message" xmi:id="_LMklAvlbEeiEd7ueRYhdrg" name="reply3" messageSort="reply" receiveEvent="_LMklAflbEeiEd7ueRYhdrg" sendEvent="_LMklAPlbEeiEd7ueRYhdrg"/>
+    <message xmi:type="uml:Message" xmi:id="_Y26OEvlbEeiEd7ueRYhdrg" name="request2" receiveEvent="_Y26OEflbEeiEd7ueRYhdrg" sendEvent="_Y26OEPlbEeiEd7ueRYhdrg"/>
+    <message xmi:type="uml:Message" xmi:id="_Y27cNflbEeiEd7ueRYhdrg" name="reply2" messageSort="reply" receiveEvent="_Y27cNPlbEeiEd7ueRYhdrg" sendEvent="_Y27cM_lbEeiEd7ueRYhdrg"/>
+  </packagedElement>
+</uml:Model>

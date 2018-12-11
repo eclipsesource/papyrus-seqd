@@ -39,7 +39,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.command.DeleteCommand;
 import org.eclipse.emf.edit.command.SetCommand;
@@ -308,7 +307,7 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 	@Override
 	protected Command doCreateCommand() {
 		if (!absoluteSendYReference().isPresent() || !absoluteReceiveYReference().isPresent()) {
-			return UnexecutableCommand.INSTANCE;
+			return bomb();
 		}
 		int absoluteSendY = absoluteSendYReference().getAsInt();
 		int absoluteRecvY = absoluteReceiveYReference().getAsInt();
@@ -316,7 +315,7 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 		Optional<MExecution> sendingExec = Executions.executionAt(getTarget(), absoluteSendY);
 		Vertex sender = sendingExec.map(this::vertex).orElseGet(this::vertex);
 		if (sender == null || sender.getDiagramView() == null) {
-			return UnexecutableCommand.INSTANCE;
+			return bomb();
 		}
 
 		// Receive: Is there actually an execution occurrence here?
@@ -335,19 +334,19 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 		@SuppressWarnings("hiding")
 		Vertex receiver = receivingExec.map(this::vertex).orElseGet(() -> vertex(this.receiver));
 		if (receiver == null || receiver.getDiagramView() == null) {
-			return UnexecutableCommand.INSTANCE;
+			return bomb();
 		}
 
 		switch (sort) {
 			case CREATE_MESSAGE_LITERAL:
 				/* self-creation makes no sense */
 				if (isSelfMessage()) {
-					return UnexecutableCommand.INSTANCE;
+					return bomb();
 				}
 
 				/* receiver must have no elements before */
 				if (this.receiver.elementAt(recvOffset + relativeTopOfBefore()).isPresent()) {
-					return UnexecutableCommand.INSTANCE;
+					return bomb();
 				}
 				break;
 			case DELETE_MESSAGE_LITERAL:
@@ -361,7 +360,7 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 				findElementsBelow(absoluteDeleteY, elementsBelow, this.receiver.getOccurrences().stream(),
 						false);
 				if (!elementsBelow.isEmpty()) {
-					return UnexecutableCommand.INSTANCE;
+					return bomb();
 				}
 				break;
 			default:
@@ -936,12 +935,12 @@ public class InsertMessageCommand extends ModelCommandWithDependencies.Creation<
 				result = msgEnd.isReceive()
 						? result.chain(SetCommand.create(getEditingDomain(), exec,
 								EXECUTION_SPECIFICATION__START, msgEnd))
-						: UnexecutableCommand.INSTANCE;
+						: bomb();
 			} else {
 				result = msgEnd.isSend()
 						? result.chain(SetCommand.create(getEditingDomain(), exec,
 								EXECUTION_SPECIFICATION__FINISH, msgEnd))
-						: UnexecutableCommand.INSTANCE;
+						: bomb();
 			}
 
 			return result;

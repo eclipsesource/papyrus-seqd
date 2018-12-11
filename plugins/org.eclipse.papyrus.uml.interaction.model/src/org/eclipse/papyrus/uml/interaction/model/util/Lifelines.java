@@ -14,6 +14,7 @@ package org.eclipse.papyrus.uml.interaction.model.util;
 
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.above;
 import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.below;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.elseMaybe;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToObj;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.map;
@@ -21,13 +22,17 @@ import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.mapToInt;
 
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.function.Predicate;
 
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.MObjectImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
+import org.eclipse.papyrus.uml.interaction.model.MExecution;
+import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
 import org.eclipse.papyrus.uml.interaction.model.spi.LayoutHelper;
 import org.eclipse.uml2.uml.Element;
@@ -76,6 +81,42 @@ public class Lifelines {
 		// Note that the "element at" is often actually above; that's what element-at means
 		return elementAtAbsolute(lifeline, y)
 				.flatMap(elem -> elseMaybe(Optional.of(elem).filter(above(y)), lifeline.preceding(elem)));
+	}
+
+	public static Optional<MExecutionOccurrence> getExecutionStart(MLifeline lifeline, int y) {
+		OptionalInt y_ = OptionalInt.of(y);
+		return as(Optional.of(lifeline)
+				.flatMap(ll -> ll.getExecutions().stream()
+						.filter(exec -> exec.getDiagramView().isPresent() && exec.getTop().equals(y_))
+						.findFirst())
+				.flatMap(MExecution::getStart), MExecutionOccurrence.class);
+	}
+
+	public static Optional<MExecutionOccurrence> getExecutionFinish(MLifeline lifeline, int y) {
+		OptionalInt y_ = OptionalInt.of(y);
+		return as(Optional.of(lifeline)
+				.flatMap(ll -> ll.getExecutions().stream()
+						.filter(exec -> exec.getDiagramView().isPresent() && exec.getBottom().equals(y_))
+						.findFirst())
+				.flatMap(MExecution::getFinish), MExecutionOccurrence.class);
+	}
+
+	public static Optional<MMessageEnd> getMessageReceive(MLifeline lifeline, int y) {
+		return getMessageEnd(lifeline, y, MMessageEnd::isReceive);
+	}
+
+	private static Optional<MMessageEnd> getMessageEnd(MLifeline lifeline, int y,
+			Predicate<? super MMessageEnd> filter) {
+		OptionalInt y_ = OptionalInt.of(y);
+		return Optional.of(lifeline).flatMap(ll -> ll.getOccurrences().stream() //
+				.filter(MMessageEnd.class::isInstance).map(MMessageEnd.class::cast) //
+				.filter(filter) //
+				.filter(end -> end.getTop().equals(y_)) //
+				.findFirst());
+	}
+
+	public static Optional<MMessageEnd> getMessageSend(MLifeline lifeline, int y) {
+		return getMessageEnd(lifeline, y, MMessageEnd::isSend);
 	}
 
 }
