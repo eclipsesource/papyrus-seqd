@@ -13,73 +13,92 @@
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
 import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import org.eclipse.emf.common.command.AbstractCommand;
-import org.eclipse.emf.common.util.BasicEList.UnmodifiableEList;
-import org.eclipse.emf.common.util.ECollections;
-import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.common.command.IdentityCommand;
+import org.eclipse.emf.edit.command.MoveCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.impl.LogicalModelPlugin;
+import org.eclipse.papyrus.uml.interaction.internal.model.impl.MInteractionImpl;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
-import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.util.LogicalModelOrdering;
 import org.eclipse.uml2.uml.Interaction;
 import org.eclipse.uml2.uml.InteractionFragment;
+import org.eclipse.uml2.uml.UMLPackage;
 
 /**
  * A command that establishes correct semantic ordering of the {@link Interaction#getFragments() fragments} of
  * the interaction according to the visual timeline.
  */
-public class SortSemanticsCommand extends AbstractCommand {
-
-	private MInteraction interaction;
-
-	private EList<InteractionFragment> ownerList;
-
-	private EList<InteractionFragment> value;
+public class SortSemanticsCommand extends ModelCommand<MInteractionImpl> {
 
 	/**
-	 * Initializes me with the {@code interaction}
+	 * Initializes me with the {@code interaction} whose fragments I sort.
 	 */
-	public SortSemanticsCommand(MInteraction interaction) {
-		super(LogicalModelPlugin.INSTANCE.getString("sortCommand.label"), //$NON-NLS-1$
-				LogicalModelPlugin.INSTANCE.getString("sortCommand.desc")); //$NON-NLS-1$
-
-		this.interaction = interaction;
-		this.ownerList = interaction.getElement().getFragments();
+	public SortSemanticsCommand(MInteractionImpl interaction) {
+		super(interaction);
 	}
 
 	@Override
 	protected boolean prepare() {
-		value = new UnmodifiableEList<>(ownerList.size(), ownerList.toArray());
-
+		// Don't create the command, yet. We can always do something
 		return true;
 	}
 
 	@Override
 	public void execute() {
-		Function<InteractionFragment, MElement<?>> logicalModelFunction = fragment -> interaction
-				.getElement(fragment).orElse(null);
-		Comparator<InteractionFragment> ordering = Comparator.comparing(logicalModelFunction,
-				LogicalModelOrdering.semantically());
-
-		ECollections.sort(ownerList, ordering);
-	}
-
-	protected void applyAndReverse() {
-		EList<InteractionFragment> newValue = new UnmodifiableEList<>(ownerList.size(), ownerList.toArray());
-		ECollections.setEList(ownerList, value);
-		value = newValue;
-	}
-
-	@Override
-	public void undo() {
-		applyAndReverse();
+		if (super.prepare()) {
+			super.execute();
+		}
 	}
 
 	@Override
 	public void redo() {
-		applyAndReverse();
+		// We have to compute the command again in case we were first executed
+		// for calculation of a pessimistic compound's executability and that
+		// was only a portion of the overall operation
+		command = null;
+		execute();
+	}
+
+	@SuppressWarnings("boxing")
+	@Override
+	protected Command createCommand() {
+		Interaction owner = getTarget().getElement();
+		List<InteractionFragment> fragments = owner.getFragments();
+
+		// Compute the sorted order of the fragments
+		Function<InteractionFragment, MElement<?>> logicalModelFunction = fragment -> getTarget()
+				.getElement(fragment).orElse(null);
+		Comparator<InteractionFragment> ordering = Comparator.comparing(logicalModelFunction,
+				LogicalModelOrdering.semantically());
+
+		AtomicInteger counter = new AtomicInteger(0);
+		Map<InteractionFragment, Integer> indexMap = fragments.stream().sorted(ordering).sequential()
+				.collect(Collectors.toMap(Function.identity(), __ -> counter.getAndIncrement()));
+
+		// Build the sort command
+		CompoundCommand result = new CompoundCommand(
+				LogicalModelPlugin.INSTANCE.getString("sortCommand.label"), //$NON-NLS-1$
+				LogicalModelPlugin.INSTANCE.getString("sortCommand.desc")); //$NON-NLS-1$
+
+		for (int i = 0; i < fragments.size(); i++) {
+			InteractionFragment next = fragments.get(i);
+			int index = indexMap.get(next).intValue();
+
+			if (index != i) {
+				// Fragment isn't in its correct place
+				result.append(MoveCommand.create(getEditingDomain(), owner,
+						UMLPackage.Literals.INTERACTION__FRAGMENT, next, index));
+			}
+		}
+
+		return result.isEmpty() ? /* Nothing to do */ IdentityCommand.INSTANCE : result;
 	}
 
 }
