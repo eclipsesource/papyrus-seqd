@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.command.Command;
@@ -296,7 +297,7 @@ public class MInteractionTest extends MElementTest {
 
 		// Scramble the semantic order. Note that a unique EList cannot be shuffled in situ
 		List<InteractionFragment> shuffle = new ArrayList<>(fragments);
-		Collections.shuffle(shuffle);
+		Collections.shuffle(shuffle, new Random(1l));
 		ECollections.setEList(fragments, shuffle);
 
 		// And fix it
