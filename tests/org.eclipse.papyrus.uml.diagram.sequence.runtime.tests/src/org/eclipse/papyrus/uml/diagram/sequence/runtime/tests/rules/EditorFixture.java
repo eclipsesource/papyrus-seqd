@@ -22,6 +22,8 @@ import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
@@ -41,11 +43,13 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.Request;
+import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.tools.ConnectionCreationTool;
 import org.eclipse.gef.tools.SelectionTool;
@@ -55,7 +59,9 @@ import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewAndElemen
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateUnspecifiedTypeConnectionRequest;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateUnspecifiedTypeRequest;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewAndElementRequest;
+import org.eclipse.gmf.runtime.diagram.ui.requests.EditCommandRequestWrapper;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
+import org.eclipse.gmf.runtime.emf.type.core.requests.DestroyElementRequest;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.core.sasheditor.di.contentprovider.utils.IPageUtils;
@@ -90,11 +96,15 @@ public class EditorFixture extends ModelFixture.Edit {
 	public static final Dimension DEFAULT_SIZE = null;
 
 	private IProject project;
+
 	private IFile diFile;
+
 	private IEditorPart editor;
+
 	private boolean isMaximized;
 
 	private int mouseButton = 1;
+
 	private int modifierKeys = 0;
 
 	/**
@@ -118,7 +128,6 @@ public class EditorFixture extends ModelFixture.Edit {
 
 	/**
 	 * Initializes me.
-	 *
 	 */
 	public EditorFixture() {
 		super();
@@ -198,6 +207,7 @@ public class EditorFixture extends ModelFixture.Edit {
 
 	@Override
 	protected URL getResourceURL(Description description, String path) {
+		@SuppressWarnings("hiding")
 		IProject project = getProject(description);
 		IFile file = project.getFile(path);
 
@@ -280,32 +290,30 @@ public class EditorFixture extends ModelFixture.Edit {
 	//
 
 	/**
-	 * Create a new shape in the current diagram by automating the creation tool.
-	 * Fails if the shape cannot be created or cannot be found in the diagram after
-	 * creation.
+	 * Create a new shape in the current diagram by automating the creation tool. Fails if the shape cannot be
+	 * created or cannot be found in the diagram after creation.
 	 *
 	 * @param type
 	 *            the type of shape to create
 	 * @param location
 	 *            the location (mouse pointer) at which to create the shape
 	 * @param size
-	 *            the size of the shape to create, or {@code null} for the default
-	 *            size as would be created when just clicking in the diagram
+	 *            the size of the shape to create, or {@code null} for the default size as would be created
+	 *            when just clicking in the diagram
 	 * @return the newly created shape edit-part
 	 */
 	public EditPart createShape(IElementType type, Point location, Dimension size) {
 		DiagramEditPart diagram = getDiagramEditPart();
 		EditPartViewer viewer = diagram.getViewer();
-		CreateUnspecifiedTypeRequest[] request = { null };
+		CreateUnspecifiedTypeRequest[] request = {null };
 
-		AspectUnspecifiedTypeCreationTool tool = new AspectUnspecifiedTypeCreationTool(
-				singletonList(type)) {
+		AspectUnspecifiedTypeCreationTool tool = new AspectUnspecifiedTypeCreationTool(singletonList(type)) {
 
 			@Override
 			protected Request createTargetRequest() {
 				Request result = super.createTargetRequest();
 				if (result instanceof CreateUnspecifiedTypeRequest) {
-					request[0] = (CreateUnspecifiedTypeRequest) result;
+					request[0] = (CreateUnspecifiedTypeRequest)result;
 				}
 				return result;
 			}
@@ -353,29 +361,26 @@ public class EditorFixture extends ModelFixture.Edit {
 
 		// Find the new edit-part
 		assertThat("No unsepecified-type request", request[0], notNullValue());
-		CreateViewAndElementRequest createRequest = (CreateViewAndElementRequest) request[0]
+		CreateViewAndElementRequest createRequest = (CreateViewAndElementRequest)request[0]
 				.getRequestForType(type);
 		assertThat("No specific create request", createRequest, notNullValue());
-		View createdView = (View) createRequest.getViewAndElementDescriptor().getAdapter(View.class);
+		View createdView = (View)createRequest.getViewAndElementDescriptor().getAdapter(View.class);
 		assertThat("No view created", createdView, notNullValue());
-		EditPart result = (EditPart) viewer.getEditPartRegistry().get(createdView);
+		EditPart result = (EditPart)viewer.getEditPartRegistry().get(createdView);
 		assertThat("New edit-part not found", result, notNullValue());
 		return result;
 	}
 
 	/**
-	 * Create a new connection in the current diagram by automating the creation
-	 * tool. Fails if the connection cannot be created or cannot be found in the
-	 * diagram after creation.
+	 * Create a new connection in the current diagram by automating the creation tool. Fails if the connection
+	 * cannot be created or cannot be found in the diagram after creation.
 	 *
 	 * @param type
 	 *            the type of shape to create
 	 * @param start
-	 *            the location (mouse pointer) at which to start drawing the
-	 *            connection
+	 *            the location (mouse pointer) at which to start drawing the connection
 	 * @param finish
-	 *            the location (mouse pointer) at which to finish drawing the
-	 *            connection
+	 *            the location (mouse pointer) at which to finish drawing the connection
 	 * @return the newly created connection edit-part
 	 */
 	public EditPart createConnection(IElementType type, Point start, Point finish) {
@@ -385,16 +390,15 @@ public class EditorFixture extends ModelFixture.Edit {
 	EditPart drawConnection(IElementType type, Point start, Point finish, boolean complete) {
 		DiagramEditPart diagram = getDiagramEditPart();
 		EditPartViewer viewer = diagram.getViewer();
-		CreateUnspecifiedTypeConnectionRequest[] request = { null };
+		CreateUnspecifiedTypeConnectionRequest[] request = {null };
 
-		@SuppressWarnings("restriction")
 		ConnectionCreationTool tool = new org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceConnectionCreationTool(
 				singletonList(type)) {
 			@Override
 			protected CreateConnectionRequest createTargetRequest() {
 				CreateConnectionRequest result = super.createTargetRequest();
 				if (result instanceof CreateUnspecifiedTypeConnectionRequest) {
-					request[0] = (CreateUnspecifiedTypeConnectionRequest) result;
+					request[0] = (CreateUnspecifiedTypeConnectionRequest)result;
 				}
 				return result;
 			}
@@ -449,30 +453,26 @@ public class EditorFixture extends ModelFixture.Edit {
 
 		// Find the new edit-part
 		assertThat("No unsepecified-type request", request[0], notNullValue());
-		CreateConnectionViewAndElementRequest createRequest = (CreateConnectionViewAndElementRequest) request[0]
+		CreateConnectionViewAndElementRequest createRequest = (CreateConnectionViewAndElementRequest)request[0]
 				.getRequestForType(type);
 		assertThat("No specific create request", createRequest, notNullValue());
-		View createdView = (View) createRequest.getConnectionViewAndElementDescriptor()
-				.getAdapter(View.class);
+		View createdView = (View)createRequest.getConnectionViewAndElementDescriptor().getAdapter(View.class);
 		assertThat("No view created", createdView, notNullValue());
-		EditPart result = (EditPart) getDiagramEditPart().getViewer().getEditPartRegistry()
-				.get(createdView);
+		EditPart result = (EditPart)getDiagramEditPart().getViewer().getEditPartRegistry().get(createdView);
 		assertThat("New edit-part not found", result, notNullValue());
 		return result;
 	}
 
 	/**
-	 * Operate the mouse pointer as though to create a new connection in the current
-	 * diagram, but do not click to complete it.
+	 * Operate the mouse pointer as though to create a new connection in the current diagram, but do not click
+	 * to complete it.
 	 *
 	 * @param type
 	 *            the type of shape to create
 	 * @param start
-	 *            the location (mouse pointer) at which to start drawing the
-	 *            connection
+	 *            the location (mouse pointer) at which to start drawing the connection
 	 * @param finish
-	 *            the location (mouse pointer) at which to hover the end of the
-	 *            connection
+	 *            the location (mouse pointer) at which to hover the end of the connection
 	 */
 	public void hoverConnection(IElementType type, Point start, Point finish) {
 		drawConnection(type, start, finish, false);
@@ -506,11 +506,9 @@ public class EditorFixture extends ModelFixture.Edit {
 	 * Select an object in the diagram and drag it to another location.
 	 *
 	 * @param start
-	 *            the location (mouse pointer) at which to start dragging the
-	 *            selection
+	 *            the location (mouse pointer) at which to start dragging the selection
 	 * @param finish
-	 *            the location (mouse pointer) at which to finish dragging the
-	 *            selection
+	 *            the location (mouse pointer) at which to finish dragging the selection
 	 */
 	public void moveSelection(Point start, Point finish) {
 		select(start);
@@ -559,8 +557,7 @@ public class EditorFixture extends ModelFixture.Edit {
 	 * @param start
 	 *            the location (mouse pointer) at which to start dragging the object
 	 * @param finish
-	 *            the location (mouse pointer) at which to finish dragging the
-	 *            object
+	 *            the location (mouse pointer) at which to finish dragging the object
 	 */
 	public void drag(Point start, Point finish) {
 		DiagramEditPart diagram = getDiagramEditPart();
@@ -613,6 +610,34 @@ public class EditorFixture extends ModelFixture.Edit {
 		mouse.type = SWT.MouseUp;
 		tool.mouseUp(new MouseEvent(mouse), viewer);
 
+		flushDisplayEvents();
+	}
+
+	/**
+	 * Delete the selection.
+	 */
+	public void delete() {
+		@SuppressWarnings("unchecked")
+		List<? extends EditPart> selection = getDiagramEditPart().getViewer().getSelectedEditParts();
+
+		Optional<Command> delete = selection.stream().map(ep -> ep.getCommand(delete(ep)))
+				.filter(Objects::nonNull).reduce(Command::chain);
+
+		assertThat("No delete command", delete.isPresent(), is(true));
+		delete.ifPresent(this::execute);
+	}
+
+	private Request delete(EditPart ep) {
+		DestroyElementRequest destroy = new DestroyElementRequest(getDiagramEditPart().getEditingDomain(),
+				ep.getAdapter(EObject.class), false);
+		return new EditCommandRequestWrapper(destroy);
+	}
+
+	public void execute(Command command) {
+		assertThat("no command to execute", command, notNullValue());
+		assertThat("command is not executable", command.canExecute(), is(true));
+
+		getDiagramEditPart().getViewer().getEditDomain().getCommandStack().execute(command);
 		flushDisplayEvents();
 	}
 
@@ -694,8 +719,8 @@ public class EditorFixture extends ModelFixture.Edit {
 	}
 
 	/**
-	 * Obtain a fake supplier that just fails the test with the given
-	 * {@code message} instead of supplying a result.
+	 * Obtain a fake supplier that just fails the test with the given {@code message} instead of supplying a
+	 * result.
 	 *
 	 * @param message
 	 *            the failure message
@@ -781,7 +806,7 @@ public class EditorFixture extends ModelFixture.Edit {
 	 *            the mouse button
 	 * @return the mouse button modifiers
 	 */
-	public Modifiers mouseButton(int mouseButton) {
+	public Modifiers mouseButton(@SuppressWarnings("hiding") int mouseButton) {
 		return ModifiersImpl.withInt( //
 				() -> setMouseButton(mouseButton), //
 				this::setMouseButton);
@@ -794,8 +819,8 @@ public class EditorFixture extends ModelFixture.Edit {
 	}
 
 	/**
-	 * Obtain modifiers applying the option to allow semantic re-ordering (which is
-	 * <tt>Command</tt> on Mac and <tt>Ctrl</tt> on other platforms).
+	 * Obtain modifiers applying the option to allow semantic re-ordering (which is <tt>Command</tt> on Mac
+	 * and <tt>Ctrl</tt> on other platforms).
 	 *
 	 * @return the modifier key modifiers
 	 */
@@ -823,8 +848,8 @@ public class EditorFixture extends ModelFixture.Edit {
 	}
 
 	/**
-	 * Absence of modifiers, useful for clients that require some kind of modifiers
-	 * instance, even if actual modifiers are not needed.
+	 * Absence of modifiers, useful for clients that require some kind of modifiers instance, even if actual
+	 * modifiers are not needed.
 	 *
 	 * @return a modifiers implementation that does nothing
 	 */
@@ -836,7 +861,6 @@ public class EditorFixture extends ModelFixture.Edit {
 		// Pass
 	}
 
-	@SuppressWarnings("restriction")
 	private SelectionTool createSelectionTool() {
 		return new org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceSelectionTool();
 	}
@@ -876,6 +900,7 @@ public class EditorFixture extends ModelFixture.Edit {
 
 	private static final class ModifiersImpl implements Modifiers {
 		private final Runnable apply;
+
 		private final Runnable unapply;
 
 		private ModifiersImpl(Runnable apply, Runnable unapply) {
@@ -890,7 +915,7 @@ public class EditorFixture extends ModelFixture.Edit {
 		}
 
 		static Modifiers withInt(IntSupplier apply, IntConsumer unapply) {
-			final int[] holder = { 0 };
+			final int[] holder = {0 };
 			return with(() -> holder[0] = apply.getAsInt(), () -> unapply.accept(holder[0]));
 		}
 
