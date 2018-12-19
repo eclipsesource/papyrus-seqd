@@ -23,6 +23,7 @@ import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToInt;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.lessThan;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.map;
+import static org.eclipse.uml2.uml.MessageSort.CREATE_MESSAGE_LITERAL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -221,7 +222,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 					.ifPresent(result::add);
 		}
 
-		// Destructions are handled differently
+		// Destructions and creations are handled differently
 		if ((occurrence instanceof MMessageEnd) && !(occurrence instanceof MDestruction)) {
 			MMessageEnd end = (MMessageEnd)occurrence;
 			if (isChangingLifeline() || isChangingPosition()) {
@@ -324,13 +325,26 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 					// Track this end
 					otherCovered.map(ll -> otherEnd.setCovered(ll, otherNewY)).ifPresent(commandSink);
 				}
-			} else if (message.isSynchronous()
-					|| (otherEnd.isReceive() && lessThan(otherEnd.getTop(), yPosition))) {
+			} else if (shouldTrackOppositeEnd(end)) {
 				Optional<MLifeline> otherCovered = otherEnd.getCovered();
 				// Track this end
 				otherCovered.map(ll -> otherEnd.setCovered(ll, yPosition)).ifPresent(commandSink);
 			}
 		}
+	}
+
+	private boolean shouldTrackOppositeEnd(MMessageEnd end) {
+		return !isCreateMessage(end) && isSynchronousWithOppositeAboveTargetY(end);
+	}
+
+	private boolean isCreateMessage(MMessageEnd end) {
+		return CREATE_MESSAGE_LITERAL.equals(end.getOwner().getElement().getMessageSort());
+	}
+
+	private boolean isSynchronousWithOppositeAboveTargetY(MMessageEnd end) {
+		MMessage message = end.getOwner();
+		MMessageEnd otherEnd = end.getOtherEnd().get();
+		return message.isSynchronous() || (otherEnd.isReceive() && lessThan(otherEnd.getTop(), yPosition));
 	}
 
 	private Optional<Command> handleOppositeSendOrReplyMessage(MMessageEnd otherEnd) {
