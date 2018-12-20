@@ -58,11 +58,16 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 
 	private static final int INITIAL_Y = 200;
 
+	// See DefaultLayoutConstriants ViewTypes.LIFELINE_HEADER
+	private static final int LIFELINE_HEADER_WIDTH = 100;
+
 	private final int sendX;
 
 	private final int recvX;
 
 	private final boolean moveDown;
+
+	private boolean rightToLeft;
 
 	/**
 	 * Initializes me.
@@ -88,6 +93,7 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 			recvX = LIFELINE_2_BODY_X;
 		}
 
+		this.rightToLeft = rightToLeft;
 		this.moveDown = moveDown;
 	}
 
@@ -124,6 +130,27 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 		editor.moveSelection(at(x, INITIAL_Y), at(x, y));
 
 		assertThat(messageEP, runs(sendX, y, recvX, y));
+	}
+
+	@Test
+	public void moveCreateMessage() {
+		EditPart messageEP = createConnection(SequenceElementTypes.Create_Message_Edge, at(sendX, INITIAL_Y),
+				at(recvX, INITIAL_Y));
+
+		// recvX must be shifted by the half of lifeline header width to the right or to the left
+		int recAnchorX = LIFELINE_HEADER_WIDTH / 2;
+		if (rightToLeft) {
+			recAnchorX *= -1;
+		}
+		assumeThat(messageEP, runs(sendX, INITIAL_Y, recvX - recAnchorX, INITIAL_Y));
+
+		int delta = moveDown ? 30 : -30;
+		int x = (sendX + recvX) / 2;
+		int y = INITIAL_Y + delta;
+
+		editor.moveSelection(at(x, INITIAL_Y), at(x, y));
+
+		assertThat(messageEP, runs(sendX, y, recvX - recAnchorX, y));
 	}
 
 	/**
