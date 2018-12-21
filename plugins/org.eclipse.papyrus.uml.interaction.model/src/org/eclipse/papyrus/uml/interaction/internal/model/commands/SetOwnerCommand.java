@@ -117,8 +117,10 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 				} else {
 					// bottom should still be set.
 					// to compute it, compute original height + new top position
-					bottom = OptionalInt.of(top.getAsInt() + execution.getBottom().getAsInt()
-							- execution.getTop().getAsInt());
+					if (top.isPresent()) {
+						bottom = OptionalInt.of(top.getAsInt() + execution.getBottom().getAsInt()
+								- execution.getTop().getAsInt());
+					}
 				}
 			} else if (wasSelfMessage && !isSelfMessage) {
 				if (top.isPresent()) {
