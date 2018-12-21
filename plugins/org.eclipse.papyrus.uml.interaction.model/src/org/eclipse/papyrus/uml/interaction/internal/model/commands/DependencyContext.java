@@ -148,6 +148,11 @@ public class DependencyContext {
 				return withContext(ctx -> ctx.remove(subject, keyType));
 			}
 
+			@Override
+			public <V> ChildContext<V> runNested(Supplier<? extends V> computation) {
+				return withContext(ctx -> super.runNested(computation));
+			}
+
 		};
 	}
 
@@ -548,6 +553,132 @@ public class DependencyContext {
 			Function<? super DependencyContext, ? extends CreationCommand<T>> futureCommand) {
 
 		return deferCreateCommand(() -> futureCommand.apply(this));
+	}
+
+	/**
+	 * Create a child context and execute the given {@code action} in it. The child context inherits all of my
+	 * state and can later {@link ChildContext#commit() commit} its state back to mine for continuing
+	 * calculations.
+	 * 
+	 * @param action
+	 *            the action to run in the child context
+	 * @return a token for later {@link ChildContext#commit() commit} of the child context
+	 * @see ChildContext#commit()
+	 */
+	public ChildContext<Void> runNested(Runnable action) {
+		return runNested(() -> {
+			action.run();
+			return null;
+		});
+	}
+
+	/**
+	 * Create a child context and execute the given {@code computation} in it. The child context inherits all
+	 * of my state and can later {@link ChildContext#commit() commit} its state back to mine for continuing
+	 * calculations.
+	 * 
+	 * @param action
+	 *            the action to run in the child context
+	 * @return a token for later {@link ChildContext#commit() commit} of the child context
+	 * @see ChildContext#commit()
+	 */
+	public <V> ChildContext<V> runNested(Supplier<? extends V> computation) {
+		return new ChildContext<V>().withContext(computation);
+	}
+
+	//
+	// Nested types
+	//
+
+	/**
+	 * A token representing a nested {@link DependencyContext} that inherits the state of its parent and can
+	 * optionally {@link #commit() commit} its state back to that parent.
+	 */
+	public final class ChildContext<V> implements Supplier<V> {
+
+		private final DependencyContext state;
+
+		private boolean committed;
+
+		private V value;
+
+		ChildContext() {
+			super();
+
+			this.state = new DependencyContext() {
+				// Implement inheritance of context from the parent
+				@Override
+				public <T> Optional<T> get(Object subject, Class<T> keyType, Predicate<? super T> filter) {
+
+					Optional<T> result = super.get(subject, keyType, filter);
+
+					if (!result.isPresent()) {
+						// Try the parent context
+						result = parent().get(subject, keyType, filter);
+					}
+
+					return result;
+				}
+			};
+		}
+
+		private ChildContext(DependencyContext state) {
+			super();
+
+			this.state = state;
+		}
+
+		ChildContext<V> withContext(Supplier<? extends V> action) {
+			return state.withContext(() -> {
+				value = action.get();
+				return this;
+			});
+		}
+
+		/**
+		 * Commits the state of a {@linkplain DependencyContext#runNested(Runnable) child context} into its
+		 * parent. Has no effect for a root context (that has no parent) or for a child that has already been
+		 * committed. In the latter case, any additional state that has been accumulated will just be lost.
+		 * 
+		 * @throws IllegalStateException
+		 *             if I represent a child of the null context
+		 */
+		public void commit() {
+			if (!committed) {
+				committed = true;
+
+				if (parent() == NULL_CONTEXT) {
+					throw new IllegalStateException("committing child of the null context"); //$NON-NLS-1$
+				}
+
+				parent().context.putAll(state.context);
+			}
+		}
+
+		DependencyContext parent() {
+			return DependencyContext.this;
+		}
+
+		@Override
+		public V get() {
+			return value;
+		}
+
+		/**
+		 * Obtains a continuation of myself in the same nested context. After this, I can no longer be
+		 * {@linkplain #commit() committed} but only the continuation may be. This is useful for computations
+		 * in a stream or other situation where functional chaining is employed.
+		 * 
+		 * @param continuation
+		 *            a function that transforms my value to a new result
+		 * @return a new child context that replaces me and, if the context is to be committed to the parent,
+		 *         is the one that would have to be committed
+		 */
+		public <U> ChildContext<U> andThen(Function<? super V, ? extends U> continuation) {
+			committed = true; // Don't allow me to commit
+			return new ChildContext<U>(state).withContext(() -> continuation.apply(get()));
+		}
+
 	}
 
 }

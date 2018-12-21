@@ -12,6 +12,8 @@
 
 package org.eclipse.papyrus.uml.interaction.model.tests;
 
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.DependencyContext;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.tests.DependencyContextTest;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.tests.SetCoveredCommandTest;
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.tests.DefaultLayoutHelperTest;
 import org.eclipse.papyrus.uml.interaction.internal.model.spi.impl.tests.LogicalModelAdapterTest;
@@ -42,6 +44,7 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({ //
+		DependencyContextTest.class, //
 		DefaultLayoutHelperTest.class, //
 		CreateMessageTest.class, CreateSyncMessageTest.class, CreateMessageTestB.class,
 		CreateDeleteMessageTest.class, CreateSelfMessageNudgeTest.class, //

@@ -11,11 +11,14 @@
  *****************************************************************************/
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts;
 
+import static org.eclipse.gmf.runtime.notation.NotationPackage.Literals.IDENTITY_ANCHOR__ID;
 import static org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.Modifiers.ARROW;
 
 import com.google.common.eventbus.EventBus;
 
 import java.beans.PropertyChangeEvent;
+import java.util.List;
+import java.util.stream.Stream;
 
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
@@ -26,7 +29,10 @@ import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineDecoration;
 import org.eclipse.draw2d.RotatableDecoration;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.gef.DragTracker;
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.Request;
@@ -35,9 +41,11 @@ import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
 import org.eclipse.gmf.runtime.draw2d.ui.internal.figures.ConnectionLayerEx;
 import org.eclipse.gmf.runtime.draw2d.ui.mapmode.IMapMode;
 import org.eclipse.gmf.runtime.notation.ArrowType;
+import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.gmf.runtime.notation.NotationPackage;
 import org.eclipse.gmf.runtime.notation.Routing;
 import org.eclipse.gmf.runtime.notation.RoutingStyle;
+import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.MessageFigure;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.ConnectionFigureMagnetHelper;
@@ -48,6 +56,8 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.M
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.locators.SelfMessageRouter;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.MessageMoveTracker;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.tools.SequenceConnectionSelectionTracker;
+import org.eclipse.papyrus.uml.interaction.model.MInteraction;
+import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -94,6 +104,7 @@ public class MessageEditPart extends ConnectionNodeEditPart implements ISequence
 			updateArrowDecoration();
 			refreshLineType();
 		}
+		refreshLifelineIfHeightOrPositionHasChanged(notification);
 	}
 
 	@Override
@@ -116,6 +127,39 @@ public class MessageEditPart extends ConnectionNodeEditPart implements ISequence
 				arrowType = ArrowType.OPEN_ARROW;
 		}
 		messageFigure.setTargetDecoration(getArrowDecoration(arrowType));
+	}
+
+	private void refreshLifelineIfHeightOrPositionHasChanged(Notification notification) {
+		if (concernsAncestor(notification) && isHeightOrYPositionChange(notification)) {
+			MInteraction.getInstance(this.getDiagramView()).getLifelines().stream()
+					.forEach(this::refreshLifeline);
+		}
+	}
+
+	private boolean concernsAncestor(Notification notification) {
+		Object notifier = notification.getNotifier();
+		return notifier instanceof EObject && EcoreUtil.isAncestor(getNotationView(), (EObject)notifier);
+	}
+
+	protected boolean isHeightOrYPositionChange(Notification notification) {
+		return notification.getNotifier() instanceof IdentityAnchor
+				&& IDENTITY_ANCHOR__ID == notification.getFeature();
+	}
+
+	private void refreshLifeline(MLifeline lifeline) {
+		lifeline.getDiagramView().ifPresent(this::refreshEditPartOfShape);
+	}
+
+	private void refreshEditPartOfShape(Shape shape) {
+		Object lifelineEditPart = getViewer().getEditPartRegistry().get(shape);
+		if (lifelineEditPart instanceof EditPart) {
+			EditPart editPart = (EditPart)lifelineEditPart;
+			List<?> lifelineEditpartChildren = editPart.getChildren();
+			Stream<EditPart> childEditParts = lifelineEditpartChildren.stream()
+					.filter(EditPart.class::isInstance).map(EditPart.class::cast);
+			childEditParts.forEach(EditPart::refresh);
+			editPart.refresh();
+		}
 	}
 
 	protected Message getMessage() {

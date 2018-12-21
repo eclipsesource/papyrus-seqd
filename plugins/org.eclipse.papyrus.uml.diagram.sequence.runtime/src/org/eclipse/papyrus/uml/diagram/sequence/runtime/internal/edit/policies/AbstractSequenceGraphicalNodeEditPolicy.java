@@ -39,6 +39,7 @@ import java.util.stream.Stream;
 import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.ConnectionRouter;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.emf.common.command.CommandWrapper;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.EditPart;
@@ -69,6 +70,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.locators.SelfMe
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.WeakEventBusDelegator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.CreateRequestSwitch;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.DependencyContext;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
@@ -259,13 +261,13 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 						MElement<?> _startBefore = startBefore;
 						int _startOffset = startOffset;
 						return createSelectionCommand(getAvailableExecutionTypes()
-								.map(execType -> sender.insertMessageAfter(_startBefore, _startOffset,
-										receiver, anchorDesc.elementBefore.orElse(receiver),
+								.map(computeNested(execType -> sender.insertMessageAfter(_startBefore,
+										_startOffset, receiver, anchorDesc.elementBefore.orElse(receiver),
 										anchorDesc.offset, start.sort, null,
 										new ExecutionCreationCommandParameter(true, shouldCreateReply(),
-												execType)))
-								.map(cmd -> injectViewInto(getEditingDomain(),
-										request.getConnectionViewDescriptor(), cmd))
+												execType))))
+								.map(thenCompute(cmd -> injectViewInto(getEditingDomain(),
+										request.getConnectionViewDescriptor(), cmd)))
 								.collect(Collectors.toList()));
 					} else {
 						result = injectViewInto(getEditingDomain(), request.getConnectionViewDescriptor(),
@@ -306,12 +308,12 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 						MElement<?> _startBefore = startBefore;
 						int _startOffset = startOffset;
 						return createSelectionCommand(getAvailableExecutionTypes()
-								.map(execType -> sender.insertMessageAfter(_startBefore, _startOffset,
-										receiver, start.sort, null,
+								.map(computeNested(execType -> sender.insertMessageAfter(_startBefore,
+										_startOffset, receiver, start.sort, null,
 										new ExecutionCreationCommandParameter(true, shouldCreateReply(),
-												execType)))
-								.map(cmd -> injectViewInto(getEditingDomain(),
-										request.getConnectionViewDescriptor(), cmd))
+												execType))))
+								.map(thenCompute(cmd -> injectViewInto(getEditingDomain(),
+										request.getConnectionViewDescriptor(), cmd)))
 								.collect(Collectors.toList()));
 					}
 
@@ -335,16 +337,21 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				: Stream.of(ACTION_EXECUTION_SPECIFICATION, BEHAVIOR_EXECUTION_SPECIFICATION);
 	}
 
-	protected Command createSelectionCommand(CreationCommand<?>... commands) {
+	@SafeVarargs
+	protected final Command createSelectionCommand(
+			DependencyContext.ChildContext<? extends CreationCommand<?>>... commands) {
 		return createSelectionCommand(Arrays.asList(commands));
 	}
 
 	protected Command createSelectionCommand(
-			List<? extends org.eclipse.emf.common.command.Command> commands) {
+			List<DependencyContext.ChildContext<? extends org.eclipse.emf.common.command.Command>> commands) {
 		if (commands.isEmpty()) {
 			return UnexecutableCommand.INSTANCE;
 		} else if (commands.size() == 1) {
-			return wrap(commands.get(0));
+			DependencyContext.ChildContext<? extends org.eclipse.emf.common.command.Command> ctx = commands
+					.get(0);
+			ctx.commit();
+			return wrap(ctx.get());
 		}
 
 		Shell shell = Display.getCurrent().getActiveShell();
@@ -352,6 +359,21 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		SelectAndExecuteCommand selectAndExecuteCommand = new SelectAndExecuteCommand(
 				Messages.CreateSynchronousMessagePopupCommandLabel, shell, wrappedCommands);
 		return wrap(new GMFtoEMFCommandWrapper(selectAndExecuteCommand));
+	}
+
+	private Command wrap(
+			DependencyContext.ChildContext<? extends org.eclipse.emf.common.command.Command> choice) {
+
+		return wrap(new CommandWrapper(choice.get()) {
+			@Override
+			public void execute() {
+				// Commit into the parent context for continued calculations
+				choice.commit();
+
+				// And do the thing
+				super.execute();
+			}
+		});
 	}
 
 	/**
