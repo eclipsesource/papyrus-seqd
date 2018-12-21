@@ -373,13 +373,20 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 					// Track this end
 					final OptionalInt otherNewY;
 					if (end.isStart()) {
-						otherNewY = PendingVerticalExtentData.getPendingTop(end.getExecution().get());
+						if (wasSelfMessage() && willBeSelfMessage()) {
+							otherNewY = OptionalInt.of(PendingVerticalExtentData
+									.getPendingTop(end.getExecution().get()).getAsInt()
+									- layoutHelper().getConstraints().getMinimumHeight(ViewTypes.MESSAGE));
+						} else {
+							otherNewY = PendingVerticalExtentData.getPendingTop(end.getExecution().get());
+						}
+
 					} else if (end.isFinish()) {
 						OptionalInt tmp = PendingVerticalExtentData
 								.getPendingBottom(end.getExecution().get());
 						if (otherEnd.isReceive()) {
 							// add an additional room for the self message
-							if (isBecomingSelfMessage() && !wasSelfMessage()) {
+							if (willBeSelfMessage()) {
 								tmp = OptionalInt.of(tmp.getAsInt() + layoutHelper().getConstraints()
 										.getMinimumHeight(ViewTypes.MESSAGE));
 							}
