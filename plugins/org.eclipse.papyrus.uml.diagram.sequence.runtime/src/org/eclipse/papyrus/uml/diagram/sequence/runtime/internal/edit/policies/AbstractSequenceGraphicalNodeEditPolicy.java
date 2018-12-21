@@ -424,7 +424,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				&& !(isForce(request) && message.getReceiver()
 						.flatMap(rcvr -> getExecutionStart(rcvr, getUpdatedTargetLocation(request)))
 						.isPresent())) {
-			result = getNudgeObstacleCommand(request, message.getReceive().get(), y); // XXX Send?
+			result = getNudgeObstacleCommand(request, message.getSend().get(), y);
 		}
 
 		// If the message didn't have a send end, we wouldn't be reconnecting it
@@ -586,30 +586,46 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 	private org.eclipse.emf.common.command.Command getNudgeObstacleCommand(ReconnectRequest request,
 			MMessageEnd end, int newY) {
 
-		org.eclipse.emf.common.command.Command result = null;
+		org.eclipse.emf.common.command.Command result;
 
 		// Check for semantic re-ordering
-		if (!isAllowSemanticReordering(request)) {
-			Optional<MElement<? extends Element>> obstacle = getObstacle(end, newY < end.getTop().getAsInt(),
-					newY);
+		if (isAllowSemanticReordering(request)) {
+			result = null;
+		} else {
+			class NudgeRecord {
+				// Nothing needed
+			}
 
-			// If there's an obstacle, bump it and everything following (preceding) out of the way
-			result = obstacle.map(obs -> {
-				// Both diagram views exist if we detected the obstacle
-				OptionalInt padding = getLayoutHelper().getPadding(end.getOwner().getDiagramView().get(),
-						(View)obs.getDiagramView().get());
+			DependencyContext ctx = DependencyContext.get();
+			boolean movingUp = newY < end.getTop().getAsInt();
+			if ((movingUp == end.isReceive())
+					&& end.getOtherEnd().flatMap(other -> ctx.get(other, NudgeRecord.class)).isPresent()) {
 
-				if (!padding.isPresent()) {
-					return null;
-				} else if (LogicalModelPredicates.above(end).test(obs)) {
-					// Negative nudge to move it upwards
-					return obs.nudge(newY - obs.getBottom().getAsInt() - padding.getAsInt(),
-							NudgeKind.PRECEDING);
-				} else {
-					// Positive nudge to move it downwards
-					return obs.nudge(newY - obs.getTop().getAsInt() + padding.getAsInt());
-				}
-			}).orElse(null);
+				// We have a nudge command for the other end. Don't override that
+				result = null;
+			} else {
+				Optional<MElement<? extends Element>> obstacle = getObstacle(end, movingUp, newY);
+
+				// If there's an obstacle, bump it and everything following (preceding) out of the way
+				result = obstacle.map(obs -> {
+					// Both diagram views exist if we detected the obstacle
+					OptionalInt padding = getLayoutHelper().getPadding(end.getOwner().getDiagramView().get(),
+							(View)obs.getDiagramView().get());
+
+					if (!padding.isPresent()) {
+						return null;
+					} else if (LogicalModelPredicates.above(end).test(obs)) {
+						// Negative nudge to move it upwards
+						return obs.nudge(newY - obs.getBottom().getAsInt() - padding.getAsInt(),
+								NudgeKind.PRECEDING);
+					} else {
+						// Positive nudge to move it downwards
+						return obs.nudge(newY - obs.getTop().getAsInt() + padding.getAsInt());
+					}
+				}).orElse(null);
+			}
+
+			ctx.put(end, new NudgeRecord());
 		}
 
 		return result;
