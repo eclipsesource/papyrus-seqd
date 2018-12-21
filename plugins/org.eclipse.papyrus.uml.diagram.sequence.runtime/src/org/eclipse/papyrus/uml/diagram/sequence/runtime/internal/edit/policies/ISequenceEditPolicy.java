@@ -13,6 +13,7 @@
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -207,6 +208,47 @@ public interface ISequenceEditPolicy extends EditPolicy {
 
 		// Don't need padding and sorting if there was nothing to do
 		return super_.map(rootCtx).orElse(null);
+	}
+
+	/**
+	 * Perform a {@code computation} in a nested dependency context.
+	 * 
+	 * @param computation
+	 *            a computation to perform
+	 * @return the result of the nested computation, encapsulated in the child context
+	 * @see DependencyContext#runNested(Supplier)
+	 */
+	default <V> DependencyContext.ChildContext<V> computeNested(Supplier<? extends V> computation) {
+		return DependencyContext.getDynamic().runNested(computation);
+	}
+
+	/**
+	 * Obtain a function that performs a {@code computation} in a nested dependency context.
+	 * 
+	 * @param computation
+	 *            a computation to perform
+	 * @return the nested computation function
+	 * @see #computeNested(Supplier)
+	 * @see DependencyContext#runNested(Supplier)
+	 */
+	default <T, R> Function<T, DependencyContext.ChildContext<R>> computeNested(
+			Function<? super T, R> computation) {
+
+		return input -> computeNested(() -> computation.apply(input));
+	}
+
+	/**
+	 * Obtain a function that continues a computation in a nested dependency context.
+	 * 
+	 * @param continuation
+	 *            the continuation of the computation
+	 * @return the continuation function
+	 * @see DependencyContext.ChildContext#andThen(Function)
+	 */
+	default <V, U> Function<DependencyContext.ChildContext<V>, DependencyContext.ChildContext<U>> thenCompute(
+			Function<V, U> continuation) {
+
+		return input -> input.andThen(continuation);
 	}
 
 }
