@@ -26,6 +26,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.command.CommandWrapper;
+import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.gmf.runtime.notation.Bounds;
@@ -304,6 +306,19 @@ public class MInteractionTest extends MElementTest {
 
 		List<String> sortedOrder = fragments.stream().map(NamedElement::getName).collect(Collectors.toList());
 		assertThat("Fragments not correctly sorted", sortedOrder, is(correctOrder));
+	}
+
+	public void testSort_alreadySorted() {
+		Command sort = getFixture().sort();
+		assertThat("Cannot sort", sort, executable());
+
+		// Go through the motions
+		execute(sort);
+
+		// The sort should have been trivial
+		assertThat("Unexpected kind of command", sort, instanceOf(CommandWrapper.class));
+		CommandWrapper wrapper = (CommandWrapper)sort;
+		assertThat("Sort was not a no-op", wrapper.getCommand(), is(IdentityCommand.INSTANCE));
 	}
 
 } // MInteractionTest

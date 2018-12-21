@@ -17,11 +17,8 @@ import static org.eclipse.emf.ecore.util.EcoreUtil.isAncestor;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.eclipse.emf.common.command.Command;
@@ -36,10 +33,10 @@ import org.eclipse.emf.edit.command.DeleteCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.papyrus.uml.interaction.graph.Vertex;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
-import org.eclipse.papyrus.uml.interaction.internal.model.commands.CompoundModelCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.DeferredPaddingCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.DependencyContext;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.NudgeCommand;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.RootContextHandler;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
@@ -355,19 +352,13 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 	 * @see #withDependencies(Class, Supplier)
 	 */
 	protected <C extends Command> Command withPadding(Class<C> key, Supplier<? extends C> commandFactory) {
-		List<Command> compound = new ArrayList<>(2);
-
-		Consumer<DependencyContext> getPadding = ctx -> compound.add(DeferredPaddingCommand.get(ctx, this));
+		RootContextHandler<Command> rootCtx = RootContextHandler.create(this);
 
 		// Avoid cycling through this element again if it has already created this command
-		Command result = DependencyContext.getDynamic(getPadding).apply(this, key, __ -> commandFactory.get()) //
+		Command result = DependencyContext.getDynamic(rootCtx).apply(this, key, __ -> commandFactory.get()) //
 				.orElse(null);
-		if (result != null) {
-			compound.add(0, result); // Do this first, then padding
-			result = CompoundModelCommand.compose(getEditingDomain(), compound);
-		}
 
-		return result;
+		return rootCtx.apply(result);
 	}
 
 	/**
@@ -387,19 +378,16 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 	protected <R extends EObject> CreationCommand<R> createWithPadding(
 			Class<? extends CreationCommand<R>> key, Supplier<? extends CreationCommand<R>> commandFactory) {
 
-		Command[] padding = {null };
-
-		Consumer<DependencyContext> getPadding = ctx -> padding[0] = DeferredPaddingCommand.get(ctx, this);
+		RootContextHandler<Command> rootCtx = RootContextHandler.create(this);
 
 		// Avoid cycling through this element again if it has already created this command
-		CreationCommand<R> result = DependencyContext.getDynamic(getPadding)
+		CreationCommand<R> command = DependencyContext.getDynamic(rootCtx)
 				.apply(this, key, __ -> commandFactory.get()) //
 				.orElse(null);
-		if ((result != null) && (padding[0] != null)) {
-			// Do this first, then padding
-			result = result.chain(padding[0]);
-		}
 
+		// This cast is safe by the implementation of Command::chain in CreationCommands
+		@SuppressWarnings("unchecked")
+		CreationCommand<R> result = (CreationCommand<R>)rootCtx.apply(command);
 		return result;
 	}
 
@@ -414,24 +402,9 @@ public abstract class MElementImpl<T extends Element> extends MObjectImpl<T> imp
 	 * @return the {@code command}, wrapped with sorting if necessary
 	 */
 	protected Command withSemanticSorting(Command command) {
-		List<Command> result = new ArrayList<>(2);
-
-		Command sort = getInteraction().sort();
-		if (sort != null) {
-			result.add(sort);
-		}
-
-		// Avoid cycling through this element again if it has already created this command
-		if (command != null) {
-			result.add(0, command); // Do this first, then sorting
-		}
-
-		if (!result.isEmpty()) {
-			// Don't use a pessimistic compound because sorting is expensive and has no dependencies
-			return new CompoundCommand(0, result);
-		}
-
-		return null;
+		MInteraction interaction = getInteraction();
+		DependencyContext.getDynamic().put(interaction, interaction.sort());
+		return command;
 	}
 
 	/**

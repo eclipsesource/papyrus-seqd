@@ -23,6 +23,7 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.pol
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setOriginalTargetLocation;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setUpdatedSourceLocation;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.setUpdatedTargetLocation;
+import static org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes.LIFELINE_BODY;
 
 import com.google.common.eventbus.EventBus;
 
@@ -55,15 +56,17 @@ import org.eclipse.gmf.runtime.draw2d.ui.internal.figures.ConnectionLayerEx;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.Routing;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.LifelineHeaderEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageFeedbackHelper.Mode;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.handles.SequenceConnectionEndpointHandle;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.locators.SelfMessageRouter;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.CommandCreatedEvent;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
-import org.eclipse.papyrus.uml.interaction.internal.model.commands.DependencyContext;
 import org.eclipse.papyrus.uml.interaction.model.MDestruction;
+import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
 
 /**
@@ -105,7 +108,7 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 	@Override
 	public Command getCommand(Request request) {
 		// Provide a dependency context for all command construction
-		return DependencyContext.getDynamic().withContext(() -> {
+		return withPadding(request, () -> {
 			Command result;
 
 			if (REQ_CREATE_BENDPOINT.equals(request.getType())) {
@@ -390,6 +393,23 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 				OptionalInt newY = y.isPresent() ? OptionalInt.of(y.getAsInt() + deltaY) : y;
 
 				updateTarget = wrap(destruction.setCovered(destruction.getCovered().get(), newY));
+			} else if (isCreation(target)) {
+				// Move the connected lifeline header, not the connector end
+				Lifeline element = (Lifeline)target.getAdapter(EObject.class);
+				MLifeline lifeline = getInteraction().getLifeline(element).get();
+				OptionalInt currentY = lifeline.getDiagramView() //
+						.map(getLayoutHelper()::getTop) //
+						.map(OptionalInt::of).orElse(OptionalInt.empty());
+				int lifelineBodyHeight = lifeline.getDiagramView() //
+						.map(getLayoutHelper()::getHeight) //
+						.orElse(Integer.valueOf(getLayoutConstraints().getMinimumHeight(LIFELINE_BODY))) //
+						.intValue();
+				if (currentY.isPresent()) {
+					int newY = currentY.getAsInt() + deltaY + lifelineBodyHeight / 2;
+					updateTarget = wrap(lifeline.makeCreatedAt(OptionalInt.of(newY)));
+				} else {
+					updateTarget = null;
+				}
 			} else {
 				// Move the connector end
 				ReconnectRequest targetReq = new ReconnectRequest(REQ_RECONNECT_TARGET);
@@ -423,6 +443,14 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 		}
 
 		return result;
+	}
+
+	private boolean isCreation(EditPart target) {
+		if (target instanceof LifelineHeaderEditPart
+				&& target.getAdapter(EObject.class) instanceof Lifeline) {
+			return true;
+		}
+		return false;
 	}
 
 	/**

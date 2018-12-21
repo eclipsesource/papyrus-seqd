@@ -142,6 +142,12 @@ public class DependencyContext {
 
 				return withContext(ctx -> ctx.get(subject, keyType, filter, keySupplier));
 			}
+
+			@Override
+			<T> Optional<T> remove(Object subject, Class<T> keyType) {
+				return withContext(ctx -> ctx.remove(subject, keyType));
+			}
+
 		};
 	}
 
@@ -328,7 +334,7 @@ public class DependencyContext {
 	<T> Optional<T> remove(Object subject, Class<T> keyType) {
 		Optional<T> result = get(subject, keyType);
 
-		result.ifPresent(v -> context.remove(normalizeSubject(subject), result));
+		result.ifPresent(v -> context.remove(normalizeSubject(subject), v));
 
 		return result;
 	}
@@ -457,19 +463,39 @@ public class DependencyContext {
 	 */
 	public static Command defer(Supplier<? extends Command> futureCommand) {
 		// Capture the current context for later
-		return getDynamic().withContext(() -> new CommandWrapper() {
-			private final DependencyContext ctx = DependencyContext.get();
+		return getDynamic().withContext(ctx -> ctx.deferCommand(futureCommand));
+	}
 
+	/**
+	 * Obtain a command that will be computed later in this current context.
+	 * 
+	 * @param futureCommand
+	 *            a future creation command
+	 * @return a deferred command that applies this context in the future
+	 */
+	public Command deferCommand(Supplier<? extends Command> futureCommand) {
+		return new CommandWrapper() {
 			@Override
 			protected Command createCommand() {
-				Command result = ctx.withContext(futureCommand);
+				Command result = withContext(futureCommand);
 				if (result == null) {
 					// The deferral is optional
 					result = IdentityCommand.INSTANCE;
 				}
 				return result;
 			}
-		});
+		};
+	}
+
+	/**
+	 * Obtain a command that will be computed later in this current context.
+	 * 
+	 * @param futureCommand
+	 *            a future creation command
+	 * @return a deferred command that applies this context in the future
+	 */
+	public Command defer(Function<? super DependencyContext, ? extends Command> futureCommand) {
+		return deferCommand(() -> futureCommand.apply(this));
 	}
 
 	/**
@@ -483,21 +509,45 @@ public class DependencyContext {
 			Supplier<? extends CreationCommand<T>> futureCommand) {
 
 		// Capture the current context for later
-		return getDynamic().withContext(() -> new CreationCommand.Wrapper<T>(null) {
-			private final DependencyContext ctx = DependencyContext.get();
+		return getDynamic().withContext(ctx -> ctx.deferCreateCommand(futureCommand));
+	}
 
+	/**
+	 * Obtain a creation command that will be computed later in this current context.
+	 * 
+	 * @param futureCommand
+	 *            a future creation command
+	 * @return a deferred command that applies this context in the future
+	 */
+	public <T extends EObject> CreationCommand<T> deferCreateCommand(
+			Supplier<? extends CreationCommand<T>> futureCommand) {
+
+		return new CreationCommand.Wrapper<T>(null) {
 			@Override
 			public CreationCommand<T> getCommand() {
 				// This cast is safe by construction
 				@SuppressWarnings("cast")
 				CreationCommand<T> result = (CreationCommand<T>)super.getCommand();
 				if (result == null) {
-					result = ctx.withContext(futureCommand);
+					result = withContext(futureCommand);
 					this.command = result;
 				}
 				return result;
 			}
-		});
+		};
+	}
+
+	/**
+	 * Obtain a creation command that will be computed later in this current context.
+	 * 
+	 * @param futureCommand
+	 *            a future creation command
+	 * @return a deferred command that applies this context in the future
+	 */
+	public <T extends EObject> CreationCommand<T> deferCreate(
+			Function<? super DependencyContext, ? extends CreationCommand<T>> futureCommand) {
+
+		return deferCreateCommand(() -> futureCommand.apply(this));
 	}
 
 }

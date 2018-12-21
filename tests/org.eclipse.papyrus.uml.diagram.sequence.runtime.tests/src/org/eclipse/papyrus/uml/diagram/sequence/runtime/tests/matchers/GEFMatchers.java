@@ -76,14 +76,11 @@ public class GEFMatchers {
 	}
 
 	/**
-	 * Set the default tolerance for geometry assertions. The default-default
-	 * tolerance is zero.
+	 * Set the default tolerance for geometry assertions. The default-default tolerance is zero.
 	 *
 	 * @param newDefaultTolerance
 	 *            the new default tolerance
-	 *
 	 * @return the previous default tolerance (useful to restore it, later)
-	 *
 	 * @throws IllegalArgumentException
 	 *             if the tolerance is negative
 	 */
@@ -100,20 +97,15 @@ public class GEFMatchers {
 	}
 
 	/**
-	 * Set the {@linkplain #setDefaultTolerance(int) default tolerance} for the
-	 * duration of a test.
+	 * Set the {@linkplain #setDefaultTolerance(int) default tolerance} for the duration of a test.
 	 *
 	 * @param tolerance
 	 *            the tolerance to apply to the test
 	 * @param platformFilters
-	 *            optional {@linkplain Platform#getOS() platform os/arch/ws}
-	 *            specifiers to match to enable the tolerance. If none of the
-	 *            specified filters matches, then the tolerance rule has no effect
-	 *            (whatever is otherwise the default tolerance will continue to be
-	 *            effective)
-	 *
+	 *            optional {@linkplain Platform#getOS() platform os/arch/ws} specifiers to match to enable the
+	 *            tolerance. If none of the specified filters matches, then the tolerance rule has no effect
+	 *            (whatever is otherwise the default tolerance will continue to be effective)
 	 * @return the tolerance rule
-	 *
 	 * @see #setDefaultTolerance(int)
 	 */
 	public static TestRule defaultTolerance(int tolerance, String... platformFilters) {
@@ -159,7 +151,6 @@ public class GEFMatchers {
 	 *            the expected width
 	 * @param height
 	 *            the expected height
-	 *
 	 * @return the rectangle matcher
 	 */
 	public static Matcher<Rectangle> isRect(int x, int y, int width, int height) {
@@ -177,7 +168,6 @@ public class GEFMatchers {
 	 *            matcher for the width, or {@code null} if none
 	 * @param height
 	 *            matcher for the height or {@code null} if none
-	 *
 	 * @return the rectangle matcher
 	 */
 	public static Matcher<Rectangle> isRect(Matcher<? super Integer> x, Matcher<? super Integer> y,
@@ -189,8 +179,8 @@ public class GEFMatchers {
 				boolean appended = false;
 				description.appendText("rectangle that ");
 
-				SelfDescribing[] parts = { x, y, width, height };
-				String[] names = { "x", "y", "width", "height" };
+				SelfDescribing[] parts = {x, y, width, height };
+				String[] names = {"x", "y", "width", "height" };
 				for (int i = 0; i < parts.length; i++) {
 					if (parts[i] == null) {
 						continue;
@@ -244,7 +234,6 @@ public class GEFMatchers {
 	 *            the expected x location
 	 * @param y
 	 *            the expected y location
-	 *
 	 * @return the point matcher
 	 */
 	public static Matcher<Point> isPoint(int x, int y) {
@@ -256,7 +245,6 @@ public class GEFMatchers {
 	 *
 	 * @param location
 	 *            the expected point location
-	 *
 	 * @return the point matcher
 	 */
 	public static Matcher<Point> isPoint(Point location) {
@@ -270,7 +258,6 @@ public class GEFMatchers {
 	 *            the expected point location
 	 * @param tolerance
 	 *            a tolerance to allow in the point's coördinates
-	 *
 	 * @return the point matcher
 	 */
 	public static Matcher<Point> isPoint(Point location, int tolerance) {
@@ -284,7 +271,6 @@ public class GEFMatchers {
 	 *            matcher for the x location, or {@code null} if none
 	 * @param y
 	 *            matcher for the y location, or {@code null} if none
-	 *
 	 * @return the point matcher
 	 */
 	public static Matcher<Point> isPoint(Matcher<? super Integer> x, Matcher<? super Integer> y) {
@@ -295,8 +281,8 @@ public class GEFMatchers {
 				boolean appended = false;
 				description.appendText("point that ");
 
-				SelfDescribing[] parts = { x, y };
-				String[] names = { "x", "y" };
+				SelfDescribing[] parts = {x, y };
+				String[] names = {"x", "y" };
 				for (int i = 0; i < parts.length; i++) {
 					if (parts[i] == null) {
 						continue;
@@ -340,7 +326,6 @@ public class GEFMatchers {
 	 *            the expected width
 	 * @param height
 	 *            the expected height
-	 *
 	 * @return the dimension matcher
 	 */
 	public static Matcher<Dimension> isSize(int width, int height) {
@@ -354,11 +339,9 @@ public class GEFMatchers {
 	 *            matcher for the width, or {@code null} if none
 	 * @param height
 	 *            matcher for the height or {@code null} if none
-	 *
 	 * @return the dimension matcher
 	 */
-	public static Matcher<Dimension> isSize(Matcher<? super Integer> width,
-			Matcher<? super Integer> height) {
+	public static Matcher<Dimension> isSize(Matcher<? super Integer> width, Matcher<? super Integer> height) {
 
 		return new TypeSafeDiagnosingMatcher<Dimension>() {
 			@Override
@@ -366,8 +349,8 @@ public class GEFMatchers {
 				boolean appended = false;
 				description.appendText("dimension that ");
 
-				SelfDescribing[] parts = { width, height };
-				String[] names = { "width", "height" };
+				SelfDescribing[] parts = {width, height };
+				String[] names = {"width", "height" };
 				for (int i = 0; i < parts.length; i++) {
 					if (parts[i] == null) {
 						continue;
@@ -409,7 +392,6 @@ public class GEFMatchers {
 	 *
 	 * @param where
 	 *            the point matchers
-	 *
 	 * @return the point-list matcher
 	 */
 	@SafeVarargs
@@ -451,7 +433,6 @@ public class GEFMatchers {
 	 *            the start matcher
 	 * @param to
 	 *            the end matcher
-	 *
 	 * @return the point-list matcher
 	 */
 	public static Matcher<PointList> runs(Matcher<? super Point> from, Matcher<? super Point> to) {
@@ -482,12 +463,11 @@ public class GEFMatchers {
 	}
 
 	/**
-	 * Matcher for a horizontal point-list, in which all Y coördinates are the same,
-	 * within a {@code tolerance}.
+	 * Matcher for a horizontal point-list, in which all Y coördinates are the same, within a
+	 * {@code tolerance}.
 	 *
 	 * @param tolerance
 	 *            the tolerated deviation of any Y coördinates from the average
-	 *
 	 * @return the point-list matcher
 	 */
 	public static Matcher<PointList> isHorizontal(double tolerance) {
@@ -530,6 +510,15 @@ public class GEFMatchers {
 		};
 	}
 
+	public static Matcher<Point> above(Point location) {
+		return new FeatureMatcher<Point, Integer>(NumberMatchers.lt(location.y()), "y coördinate", "y") {
+			@Override
+			protected Integer featureValueOf(Point actual) {
+				return actual.y();
+			}
+		};
+	}
+
 	/**
 	 * Matcher for the start and end of point-list.
 	 *
@@ -537,7 +526,6 @@ public class GEFMatchers {
 	 *            the start point
 	 * @param toX,&nbsp;toY
 	 *            the end point
-	 *
 	 * @return the point-list matcher
 	 */
 	public static Matcher<PointList> runs(int fromX, int fromY, int toX, int toY) {
@@ -553,7 +541,6 @@ public class GEFMatchers {
 	 *            the expected y location
 	 * @param tolerance
 	 *            a tolerance for errors in the point coördinate values
-	 *
 	 * @return the point matcher
 	 */
 	public static Matcher<Point> isPoint(int x, int y, int tolerance) {
@@ -569,7 +556,6 @@ public class GEFMatchers {
 	 *            the expected height
 	 * @param tolerance
 	 *            a tolerance for errors in the dimension measures
-	 *
 	 * @return the point matcher
 	 */
 	public static Matcher<Dimension> isSize(int width, int height, int tolerance) {
@@ -589,7 +575,6 @@ public class GEFMatchers {
 	 *            the expected height
 	 * @param tolerance
 	 *            a tolerance for errors in the rectangle coördinate values
-	 *
 	 * @return the rectangle matcher
 	 */
 	public static Matcher<Rectangle> isRect(int x, int y, int width, int height, int tolerance) {
@@ -602,7 +587,6 @@ public class GEFMatchers {
 	 *
 	 * @param rect
 	 *            the expected rectangle geometry
-	 *
 	 * @return the rectangle matcher
 	 */
 	public static Matcher<Rectangle> isRect(Rectangle rect) {
@@ -616,7 +600,6 @@ public class GEFMatchers {
 	 *            the expected rectangle geometry
 	 * @param tolerance
 	 *            a tolerance for errors in the rectangle coördinate values
-	 *
 	 * @return the rectangle matcher
 	 */
 	public static Matcher<Rectangle> isRect(Rectangle rect, int tolerance) {
@@ -632,7 +615,6 @@ public class GEFMatchers {
 	 *            the end point
 	 * @param tolerance
 	 *            a tolerance for errors in the point coördinate values
-	 *
 	 * @return the point-list matcher
 	 */
 	public static Matcher<PointList> runs(int fromX, int fromY, int toX, int toY, int tolerance) {
@@ -715,9 +697,9 @@ public class GEFMatchers {
 
 	static Function<GraphicalEditPart, IFigure> feedback() {
 		return ep -> {
-			IFigure feedbackLayer = ((LayerManager) ep.getRoot()).getLayer(LayerConstants.FEEDBACK_LAYER);
+			IFigure feedbackLayer = ((LayerManager)ep.getRoot()).getLayer(LayerConstants.FEEDBACK_LAYER);
 			// We anticipate only a single active feedback figure
-			return ((List<?>) feedbackLayer.getChildren()).stream().filter(IFigure.class::isInstance)
+			return ((List<?>)feedbackLayer.getChildren()).stream().filter(IFigure.class::isInstance)
 					.map(IFigure.class::cast).findAny().orElse(null);
 		};
 	}
@@ -767,8 +749,8 @@ public class GEFMatchers {
 	}
 
 	/**
-	 * Assertions on the geometry of GEF figures. All coördinates are in absolute
-	 * space, as is the convention of the <em>Logical Model</em>.
+	 * Assertions on the geometry of GEF figures. All coördinates are in absolute space, as is the convention
+	 * of the <em>Logical Model</em>.
 	 */
 	public static class Figures {
 
@@ -854,8 +836,8 @@ public class GEFMatchers {
 	}
 
 	/**
-	 * Assertions on the geometry of GEF edit-parts. All coördinates are in absolute
-	 * space, as is the convention of the <em>Logical Model</em>.
+	 * Assertions on the geometry of GEF edit-parts. All coördinates are in absolute space, as is the
+	 * convention of the <em>Logical Model</em>.
 	 */
 	public static class EditParts {
 

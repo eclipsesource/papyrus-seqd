@@ -383,7 +383,7 @@ public class MInteractionImpl extends MElementImpl<Interaction> implements MInte
 	 */
 	@Override
 	public Command sort() {
-		return withDependencies(SortSemanticsCommand.class, () -> new SortSemanticsCommand(this));
+		return new SortSemanticsCommand(this);
 	}
 
 	private int bottomOfMElement(MElement<? extends Element> mElement) {

@@ -12,10 +12,7 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -31,7 +28,6 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateUnspecifiedTypeConnectionRequest;
@@ -42,8 +38,8 @@ import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnetManager;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ISequenceEditPart;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.CompoundModelCommand;
-import org.eclipse.papyrus.uml.interaction.internal.model.commands.DeferredPaddingCommand;
 import org.eclipse.papyrus.uml.interaction.internal.model.commands.DependencyContext;
+import org.eclipse.papyrus.uml.interaction.internal.model.commands.RootContextHandler;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.model.spi.DiagramHelper;
@@ -197,36 +193,20 @@ public interface ISequenceEditPolicy extends EditPolicy {
 			return commandSupplier.get();
 		}
 
-		List<Command> result = new ArrayList<>(2);
-
 		// Get the current interaction instance (we would recompute a new one later, otherwise)
 		MInteraction interaction = getInteraction();
-		Consumer<DependencyContext> getPadding = ctx -> result
-				.add(wrap(DeferredPaddingCommand.get(ctx, interaction)));
+		RootContextHandler<Command> rootCtx = RootContextHandler.create(interaction, this::wrap,
+				Command::chain);
 
 		// Create a top-level command and inject the kill-switch into it
 		TopCommand.Factory topCommandFactory = TopCommand.factory(commandSupplier);
 
 		// Provide a dependency context for all command construction
-		Optional<Command> super_ = DependencyContext.getDynamic(getPadding) //
+		Optional<Command> super_ = DependencyContext.getDynamic(rootCtx) //
 				.withContext(topCommandFactory, topCommandFactory.adapt(this::wrap));
-		if (super_.isPresent()) {
-			result.add(0, super_.get()); // Do this first, then padding
-		} else {
-			// Don't need padding if there was nothing to do
-			return null;
-		}
 
-		switch (result.size()) {
-			case 0:
-				return null;
-			case 1:
-				return result.get(0);
-			default:
-				CompoundCommand compound = new CompoundCommand();
-				result.forEach(compound::add);
-				return compound;
-		}
+		// Don't need padding and sorting if there was nothing to do
+		return super_.map(rootCtx).orElse(null);
 	}
 
 }

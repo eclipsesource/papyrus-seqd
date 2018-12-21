@@ -193,12 +193,14 @@ public class NudgeCommand extends ModelCommandWithDependencies<MElementImpl<?>> 
 					int sourceY = layoutHelper().getYPosition(source, sourceOn);
 					int targetY = layoutHelper().getYPosition(target, targetOn);
 
-					if (!skipMove(sourceOn)) {
+					boolean sourceSkipped = skipMove(sourceOn);
+					if (!sourceSkipped) {
 						chain(layoutHelper().setYPosition(source, sourceOn, sourceY + delta));
 					}
 
 					Vertex targetVtx = vertex.graph().vertex(message.getReceiveEvent());
-					if (targetVtx.hasTag(Tag.LIFELINE_CREATION)) {
+					boolean targetSkipped = skipMove(targetOn);
+					if (targetVtx.hasTag(Tag.LIFELINE_CREATION) && !targetSkipped) {
 						// Move the lifeline down
 						Optional<Vertex> lifeline = targetVtx.group(GroupKind.LIFELINE)
 								.map(Vertex.class::cast);
@@ -208,19 +210,22 @@ public class NudgeCommand extends ModelCommandWithDependencies<MElementImpl<?>> 
 						Optional<Shape> shape = lifeline.map(Vertex::getDiagramView).map(Shape.class::cast);
 						shape.ifPresent(s -> chain(
 								layoutHelper().setTop(shape.get(), layoutHelper().getTop(s) + delta)));
-					} else if (targetVtx.hasTag(Tag.LIFELINE_DESTRUCTION)
-							&& !isShapeOnMovingShape(targetOn)) {
+					} else if (targetVtx.hasTag(Tag.LIFELINE_DESTRUCTION) && !targetSkipped) {
 						// Move Destruction Shape if it's not moved implicitly by the lifeline it's on
 						Optional<Shape> shape = Optional.ofNullable(targetVtx.getDiagramView())
 								.filter(Shape.class::isInstance).map(Shape.class::cast);
 						shape.ifPresent(s -> {
 							chain(layoutHelper().setTop(s, layoutHelper().getTop(shape.get()) + delta));
 						});
-					} else {
+					} else if (!targetSkipped) {
 						// Ordinary message end. Move it down
-						if (!skipMove(targetOn)) {
-							chain(layoutHelper().setYPosition(target, targetOn, targetY + delta));
-						}
+						chain(layoutHelper().setYPosition(target, targetOn, targetY + delta));
+					} else if (sourceSkipped) {
+						// If we skipped moving both ends because they are attached to things that
+						// are moving, that means we are implicitly moved.
+						// Ensure that the nudge does not end up unexecutable by not producing any
+						// delegate command, so drop in a no-op now
+						chain(IdentityCommand.INSTANCE);
 					}
 				}
 			} else if (vertex.hasTag(Tag.EXECUTION_START) && !isMessageEndNudgeCommand(element)) {
