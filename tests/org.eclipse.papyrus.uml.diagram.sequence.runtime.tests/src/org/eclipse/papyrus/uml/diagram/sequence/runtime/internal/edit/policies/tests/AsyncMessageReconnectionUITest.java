@@ -21,8 +21,6 @@ import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
-import com.google.common.collect.Ordering;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,19 +34,16 @@ import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.eclipse.uml2.uml.Interaction;
 import org.eclipse.uml2.uml.InteractionFragment;
 import org.eclipse.uml2.uml.MessageOccurrenceSpecification;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 /**
- * Integration regression tests for certain nudge scenarios involving asynchronous messages in
- * <a href="https://github.com/eclipsesource/papyrus-seqd/issues/432">Issue #432</a> and
+ * Integration regression tests for certain reconnection scenarios involving asynchronous messages in
  * <a href="https://github.com/eclipsesource/papyrus-seqd/issues/425">Issue #425</a>.
  */
-@ModelResource("AsyncMessages.di")
+@ModelResource("AsyncMessages2.di")
 @Maximized
-public class AsyncMessageNudgingUITest extends AbstractGraphicalEditPolicyUITest {
+public class AsyncMessageReconnectionUITest extends AbstractGraphicalEditPolicyUITest {
 
 	@Rule
 	public final AutoFixtureRule autoFixtures = new AutoFixtureRule(this);
@@ -77,93 +72,57 @@ public class AsyncMessageNudgingUITest extends AbstractGraphicalEditPolicyUITest
 	@AutoFixture
 	private MessageOccurrenceSpecification _2r;
 
-	private List<InteractionFragment> fragmentOrder;
-
 	/**
 	 * Initializes me.
 	 */
-	public AsyncMessageNudgingUITest() {
+	public AsyncMessageReconnectionUITest() {
 		super();
 	}
 
 	/**
-	 * Test nudging a sloped message up not above another sloped message, but so that it would be trying to
-	 * split that message (and verify that the other message is appropriately nudged out of the way).
+	 * Test that moving the send event of an overlapped message down with the keyboard modifier will re-order
+	 * fragments instead of nudging them.
 	 */
 	@Test
-	public void nudgeAsync2UpABit() {
-		// This would drop the sending end of message 2 within the vertical span of message 1
-		Point grabAt = asyncMessage2Geom.getMidpoint();
-		Point dropAt = new Point(grabAt.x(), asyncMessage1Geom.getLastPoint().y());
-
-		editor.moveSelection(grabAt, dropAt);
-		autoFixtures.refresh();
-
-		assertThat("AsyncMessage1 not bumped", asyncMessage1Geom.getLastPoint(),
-				isPoint(anything(), lt(asyncMessage2Geom.getFirstPoint().y())));
-	}
-
-	/**
-	 * Test nudging a sloped message up fully above another sloped message (and verify that the other message
-	 * is appropriately nudged out of the way).
-	 */
-	@Test
-	public void nudgeAsync2AboveAsync1() {
-		int async2Height = asyncMessage2Geom.getLastPoint().y() - asyncMessage2Geom.getFirstPoint().y();
-
-		// This would drop the receiving end of message 2 above the sending end of message 1
-		Point grabAt = asyncMessage2Geom.getMidpoint();
-		Point dropAt = new Point(grabAt.x(), asyncMessage1Geom.getFirstPoint().y() - (async2Height / 2) - 10);
-
-		editor.moveSelection(grabAt, dropAt);
-		autoFixtures.refresh();
-
-		assertThat("AsyncMessage1 not bumped", asyncMessage1Geom.getLastPoint(),
-				isPoint(anything(), lt(asyncMessage2Geom.getFirstPoint().y())));
-	}
-
-	/**
-	 * Test that moving the send event of an overlapped message down will nudge fragments instead of
-	 * re-ordering them.
-	 */
-	@Test
-	@ModelResource("AsyncMessages2.di")
-	public void nudgeSendEventDown() {
+	public void reorderSendEventDown() {
 		editor.select(asyncMessage1Geom.getMidpoint());
 		Point grabAt = getConnectionHandleGrabPoint(asyncMessage1, SOURCE_END);
 		// This would drop the send event mid-way between message 2 send and message 1 receive
 		Point dropAt = new Point(asyncMessage1Geom.getFirstPoint().x(),
 				(asyncMessage1Geom.getLastPoint().y() + asyncMessage2Geom.getFirstPoint().y()) / 2);
 
-		editor.drag(grabAt, dropAt);
+		editor.with(editor.allowSemanticReordering(), () -> editor.drag(grabAt, dropAt));
 		autoFixtures.refresh();
 
-		assertThat("AsyncMessage2 not bumped", asyncMessage2Geom.getFirstPoint(),
-				isPoint(anything(), gt(asyncMessage1Geom.getFirstPoint().y())));
-		assertThat("Messages not still overlapped", asyncMessage1Geom.getLastPoint(),
-				isPoint(anything(), gt(asyncMessage2Geom.getFirstPoint().y())));
+		assertThat("AsyncMessage2 bumped", asyncMessage2Geom.getFirstPoint(),
+				isPoint(anything(), lt(asyncMessage1Geom.getFirstPoint().y())));
+		assertThat("Messages not fully overlapped", asyncMessage1Geom.getLastPoint(),
+				isPoint(anything(), lt(asyncMessage2Geom.getLastPoint().y())));
+
+		verifyFragmentsSemanticOrder(_2s, _1s, _1r, _2r);
 	}
 
 	/**
-	 * Test that moving the receive event of an overlapped message up will nudge fragments instead of
-	 * re-ordering them.
+	 * Test that moving the receive event of an overlapped message up with the keyboard modifier will re-order
+	 * fragments instead of nudging them.
 	 */
 	@Test
-	@ModelResource("AsyncMessages2.di")
-	public void nudgeReceiveEventUp() {
+	public void reorderReceiveEventUp() {
 		editor.select(asyncMessage2Geom.getMidpoint());
 		Point grabAt = getConnectionHandleGrabPoint(asyncMessage2, TARGET_END);
 		// This would drop the receive event mid-way between message 2 send and message 1 receive
 		Point dropAt = new Point(asyncMessage2Geom.getLastPoint().x(),
 				(asyncMessage1Geom.getLastPoint().y() + asyncMessage2Geom.getFirstPoint().y()) / 2);
 
-		editor.drag(grabAt, dropAt);
+		editor.with(editor.allowSemanticReordering(), () -> editor.drag(grabAt, dropAt));
 		autoFixtures.refresh();
 
-		assertThat("AsyncMessage1 not bumped", asyncMessage1Geom.getLastPoint(),
-				isPoint(anything(), lt(asyncMessage2Geom.getLastPoint().y())));
-		assertThat("Messages not still overlapped", asyncMessage1Geom.getLastPoint(),
-				isPoint(anything(), gt(asyncMessage2Geom.getFirstPoint().y())));
+		assertThat("AsyncMessage1 bumped", asyncMessage1Geom.getLastPoint(),
+				isPoint(anything(), gt(asyncMessage2Geom.getLastPoint().y())));
+		assertThat("Messages not fully overlapped", asyncMessage2Geom.getFirstPoint(),
+				isPoint(anything(), gt(asyncMessage1Geom.getFirstPoint().y())));
+
+		verifyFragmentsSemanticOrder(_1s, _2s, _2r, _1r);
 	}
 
 	//
@@ -171,27 +130,21 @@ public class AsyncMessageNudgingUITest extends AbstractGraphicalEditPolicyUITest
 	//
 
 	/**
-	 * Capture the initial fragment order, to verify afterwards that it is unchanged.
+	 * Verify that a bunch of interaction {@code fragments} are in the order specified.
+	 * 
+	 * @param fragments
+	 *            interaction fragments in their expected model order
 	 */
-	@Before
-	public void snapshotFragmentOrder() {
-		fragmentOrder = Arrays.asList(_1s, _1r, _2s, _2r);
-		fragmentOrder.sort(Ordering.explicit(editor.getInteraction().getFragments()));
-	}
-
-	/**
-	 * None of our nudging operations changes the semantic order of the involved interaction fragments.
-	 */
-	@After
-	public void assertFragmentsSemanticOrder() {
+	void verifyFragmentsSemanticOrder(InteractionFragment... fragments) {
 		Interaction interaction = editor.getInteraction();
 		List<InteractionFragment> allFragments = interaction.getFragments();
+		List<InteractionFragment> fragmentsOfInterest = Arrays.asList(fragments);
 
-		for (int i = 1; i < fragmentOrder.size(); i++) {
-			InteractionFragment prev = fragmentOrder.get(i - 1);
-			InteractionFragment next = fragmentOrder.get(i);
+		for (int i = 1; i < fragmentsOfInterest.size(); i++) {
+			InteractionFragment prev = fragmentsOfInterest.get(i - 1);
+			InteractionFragment next = fragmentsOfInterest.get(i);
 
-			int expectedOrder = fragmentOrder.indexOf(next) - fragmentOrder.indexOf(prev);
+			int expectedOrder = fragmentsOfInterest.indexOf(next) - fragmentsOfInterest.indexOf(prev);
 			int actualOrder = allFragments.indexOf(next) - allFragments.indexOf(prev);
 
 			if (signum(actualOrder) != signum(expectedOrder)) {
