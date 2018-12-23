@@ -20,6 +20,7 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.pol
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.CommandUtil.injectViewInto;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil.getSort;
 import static org.eclipse.papyrus.uml.interaction.model.util.InteractionFragments.getObstacle;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToInt;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.flatMapToObj;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.mapToInt;
@@ -73,6 +74,7 @@ import org.eclipse.papyrus.uml.interaction.model.MMessage;
 import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.NudgeKind;
 import org.eclipse.papyrus.uml.interaction.model.spi.ExecutionCreationCommandParameter;
+import org.eclipse.papyrus.uml.interaction.model.spi.LayoutConstraints.RelativePosition;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.papyrus.uml.interaction.model.util.Lifelines;
 import org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates;
@@ -604,23 +606,43 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 				// We have a nudge command for the other end. Don't override that
 				result = null;
 			} else {
-				Optional<MElement<? extends Element>> obstacle = getObstacle(end, movingUp, newY);
+				Optional<MElement<? extends Element>> obstacle;
+				if (isForce(request)) {
+					// If we're moving the message, then the other end may determine the obstacle, depending
+					// on the direction we're moving it
+					MMessage message = end.getOwner();
+					int newTop = end.isSend() ? newY
+							: message.getTop().getAsInt() + (newY - end.getTop().getAsInt());
+					int newBottom = end.isReceive() ? newY
+							: message.getBottom().getAsInt() + (newY - end.getBottom().getAsInt());
+					obstacle = getObstacle(end.getOwner(), movingUp, newTop, newBottom);
+				} else {
+					obstacle = getObstacle(end, movingUp, newY);
+				}
 
 				// If there's an obstacle, bump it and everything following (preceding) out of the way
 				result = obstacle.map(obs -> {
-					// Both diagram views exist if we detected the obstacle
-					OptionalInt padding = getLayoutHelper().getPadding(end.getOwner().getDiagramView().get(),
-							(View)obs.getDiagramView().get());
+					Optional<? extends View> myView = end.getOwner().getDiagramView();
+					Optional<? extends View> obsView = as(obs.getDiagramView(), View.class);
 
-					if (!padding.isPresent()) {
-						return null;
-					} else if (LogicalModelPredicates.above(end).test(obs)) {
+					int padding;
+					if (myView.isPresent() && obsView.isPresent()) {
+						padding = getLayoutHelper().getPadding(myView.get(), obsView.get())
+								.orElse(getLayoutConstraints().getPadding(
+										movingUp ? RelativePosition.BOTTOM : RelativePosition.TOP,
+										obsView.get()));
+					} else {
+						// Some plausible default padding
+						padding = getLayoutConstraints().getPadding(
+								movingUp ? RelativePosition.BOTTOM : RelativePosition.TOP, ViewTypes.MESSAGE);
+					}
+
+					if (LogicalModelPredicates.above(end).test(obs)) {
 						// Negative nudge to move it upwards
-						return obs.nudge(newY - obs.getBottom().getAsInt() - padding.getAsInt(),
-								NudgeKind.PRECEDING);
+						return obs.nudge(newY - obs.getBottom().getAsInt() - padding, NudgeKind.PRECEDING);
 					} else {
 						// Positive nudge to move it downwards
-						return obs.nudge(newY - obs.getTop().getAsInt() + padding.getAsInt());
+						return obs.nudge(newY - obs.getTop().getAsInt() + padding);
 					}
 				}).orElse(null);
 			}
