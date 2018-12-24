@@ -17,7 +17,6 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GE
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.at;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeThat;
 
 import java.util.Arrays;
 import java.util.function.IntPredicate;
@@ -26,11 +25,13 @@ import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.gef.EditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageEndpointEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -47,8 +48,11 @@ import org.junit.runners.Parameterized.Parameters;
 public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 
 	@ClassRule
-	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs()
+	public static final LightweightSeqDPrefs prefs = new LightweightSeqDPrefs()
 			.dontCreateExecutionsForSyncMessages();
+
+	@ClassRule
+	public static final TestRule tolerance = GEFMatchers.defaultTolerance(1);
 
 	// Horizontal position of the first lifeline's body
 	private static final int LIFELINE_1_BODY_X = 121;
@@ -104,16 +108,20 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, INITIAL_Y),
 				at(recvX, slopeY)); // always sloping down, of course
 
-		assumeThat(messageEP, runs(sendX, INITIAL_Y, recvX, slopeY));
+		// Get actual geometry
+		int sX = getSource(messageEP).x();
+		int rX = getTarget(messageEP).x();
+		int sY = getSourceY(messageEP);
+		int rY = getTargetY(messageEP);
 
 		int delta = moveDown ? 30 : -30;
-		int x = sendX + (recvX - sendX) / 4;
-		int grabY = INITIAL_Y + (slopeY - INITIAL_Y) / 4;
+		int x = sX + (rX - sX) / 4;
+		int grabY = sY + (rY - sY) / 4;
 		int y = grabY + delta;
 
 		editor.moveSelection(at(x, grabY), at(x, y));
 
-		assertThat(messageEP, runs(sendX, INITIAL_Y + delta, recvX, slopeY + delta));
+		assertThat(messageEP, runs(sX, sY + delta, rX, rY + delta));
 	}
 
 	@Test
@@ -121,15 +129,18 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 		EditPart messageEP = createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, INITIAL_Y),
 				at(recvX, INITIAL_Y));
 
-		assumeThat(messageEP, runs(sendX, INITIAL_Y, recvX, INITIAL_Y));
+		// Get actual geometry
+		int sX = getSource(messageEP).x();
+		int rX = getTarget(messageEP).x();
+		int rY = getTargetY(messageEP);
 
 		int delta = moveDown ? 30 : -30;
-		int x = (sendX + recvX) / 2;
-		int y = INITIAL_Y + delta;
+		int x = (sX + rX) / 2;
+		int y = rY + delta;
 
-		editor.moveSelection(at(x, INITIAL_Y), at(x, y));
+		editor.moveSelection(at(x, rY), at(x, y));
 
-		assertThat(messageEP, runs(sendX, y, recvX, y));
+		assertThat(messageEP, runs(sX, y, rX, y));
 	}
 
 	@Test
@@ -142,13 +153,17 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 		if (rightToLeft) {
 			recAnchorX *= -1;
 		}
-		assumeThat(messageEP, runs(sendX, INITIAL_Y, recvX - recAnchorX, INITIAL_Y));
+
+		// Get actual geometry
+		int sX = getSource(messageEP).x();
+		int rX = getTarget(messageEP).x();
+		int rY = getTargetY(messageEP);
 
 		int delta = moveDown ? 30 : -30;
-		int x = (sendX + recvX) / 2;
-		int y = INITIAL_Y + delta;
+		int x = (sX + rX) / 2;
+		int y = rY + delta;
 
-		editor.moveSelection(at(x, INITIAL_Y), at(x, y));
+		editor.moveSelection(at(x, rY), at(x, y));
 
 		assertThat(messageEP, runs(sendX, y, recvX - recAnchorX, y));
 	}
@@ -173,29 +188,33 @@ public class MessageMoveUITest extends AbstractGraphicalEditPolicyUITest {
 
 		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, INITIAL_Y),
 				at(recvX, slopeY)); // always sloping down, of course
-		assumeThat(messageEP, runs(sendX, INITIAL_Y, recvX, slopeY));
+
+		// Get actual geometry
+		int sX = getSource(messageEP).x();
+		int rX = getTarget(messageEP).x();
+		int sY = getSourceY(messageEP);
+		int rY = getTargetY(messageEP);
 
 		// Be sure to create messages in top-down order to avoid nudging and
 		// far enough apart to avoid padding
 		if (moveDown) {
-			otherEP = createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, otherY),
-					at(recvX, otherY));
+			otherEP = createConnection(SequenceElementTypes.Sync_Message_Edge, at(sX, otherY),
+					at(rX, otherY));
 		}
 
 		int delta = moveDown ? 60 : -60;
-		int x = (sendX + recvX) / 2;
-		int grabY = (INITIAL_Y + slopeY) / 2;
+		int x = (sX + rX) / 2;
+		int grabY = (sY + rY) / 2;
 		int y = grabY + delta;
 
 		editor.moveSelection(at(x, grabY), at(x, y));
 
-		assertThat("Message should have moved", messageEP,
-				runs(sendX, INITIAL_Y + delta, recvX, slopeY + delta));
+		assertThat("Message should have moved", messageEP, runs(sX, sY + delta, rX, rY + delta));
 
 		// Where do we expect the other message to have ended up?
 		IntPredicate relationship = moveDown //
-				? val -> val > slopeY + delta //
-				: val -> val < INITIAL_Y + delta;
+				? val -> val > rY + delta //
+				: val -> val < sY + delta;
 
 		PointList otherPoints = getPoints(otherEP);
 		assertThat("Other message no longer horizontal", otherPoints.getLastPoint().y(),
