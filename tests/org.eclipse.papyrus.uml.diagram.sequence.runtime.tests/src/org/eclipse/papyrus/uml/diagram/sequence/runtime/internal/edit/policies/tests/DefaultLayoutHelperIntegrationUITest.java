@@ -16,6 +16,8 @@ import static java.util.Collections.singletonList;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.is;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.isPoint;
 import static org.hamcrest.CoreMatchers.anything;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -42,14 +44,13 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.t
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture;
 import org.eclipse.papyrus.uml.interaction.model.MElement;
-import org.eclipse.papyrus.uml.interaction.model.MExecutionOccurrence;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
+import org.eclipse.papyrus.uml.interaction.model.MOccurrence;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelFixture;
 import org.eclipse.uml2.uml.Element;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.junit.After;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -66,8 +67,8 @@ import org.junit.runners.parameterized.BlockJUnit4ClassRunnerWithParameters;
 import org.junit.runners.parameterized.TestWithParameters;
 
 /**
- * An integration test for the {@code DefaultLayoutHelper}, that it correctly
- * computes the locations of visuals in the diagram.
+ * An integration test for the {@code DefaultLayoutHelper}, that it correctly computes the locations of
+ * visuals in the diagram.
  */
 @RunWith(PerEditPartTests.class)
 public class DefaultLayoutHelperIntegrationUITest {
@@ -114,15 +115,14 @@ public class DefaultLayoutHelperIntegrationUITest {
 		// Get the notation view
 		Optional<? extends EObject> view = element.getDiagramView();
 		if (!view.isPresent()) {
-			// These aren't supposed to have views
-			if (!(element instanceof MExecutionOccurrence)) {
-				fail("No diagram view");
-			}
-			Assume.assumeFalse("Execution occurrences have no views", true);
+			// MOccurrences (and only MOccurrences) aren't supposed to have views
+			assertThat("Element that is not an MOccurrence has no view", element,
+					instanceOf(MOccurrence.class));
+			return;
 		}
 
 		// Compare the view's extent as GEF knows it
-		String failure = (String) new NotationSwitch() {
+		String failure = (String)new NotationSwitch() {
 			@Override
 			public Object caseShape(Shape shape) {
 				return verify(GEFMatchers.Figures.isBounded(anything(), is(top), anything(), is(height)),
@@ -141,14 +141,14 @@ public class DefaultLayoutHelperIntegrationUITest {
 					return String.format("Different top and bottom: %d ≠ %d", top, bottom);
 				}
 
-				Edge edge = (Edge) anchor.eContainer();
+				Edge edge = (Edge)anchor.eContainer();
 				switch (anchor.eContainmentFeature().getFeatureID()) {
-				case NotationPackage.EDGE__SOURCE_ANCHOR:
-					return verify(GEFMatchers.Figures.runs(isPoint(anything(), is(top)), anything()),
-							getFigure(edge));
-				case NotationPackage.EDGE__TARGET_ANCHOR:
-					return verify(GEFMatchers.Figures.runs(anything(), isPoint(anything(), is(bottom))),
-							getFigure(edge));
+					case NotationPackage.EDGE__SOURCE_ANCHOR:
+						return verify(GEFMatchers.Figures.runs(isPoint(anything(), is(top)), anything()),
+								getFigure(edge));
+					case NotationPackage.EDGE__TARGET_ANCHOR:
+						return verify(GEFMatchers.Figures.runs(anything(), isPoint(anything(), is(bottom))),
+								getFigure(edge));
 				}
 
 				return null;
@@ -195,8 +195,8 @@ public class DefaultLayoutHelperIntegrationUITest {
 	}
 
 	static IFigure getFigure(View view) {
-		EditPart ep = (EditPart) EDITOR.getDiagramEditPart().getViewer().getEditPartRegistry().get(view);
-		return (ep instanceof GraphicalEditPart) ? ((GraphicalEditPart) ep).getFigure() : null;
+		EditPart ep = (EditPart)EDITOR.getDiagramEditPart().getViewer().getEditPartRegistry().get(view);
+		return (ep instanceof GraphicalEditPart) ? ((GraphicalEditPart)ep).getFigure() : null;
 	}
 
 	//
@@ -241,13 +241,13 @@ public class DefaultLayoutHelperIntegrationUITest {
 			TestClass testClass = getTestClass();
 
 			// Don't assert the root interaction object because the diagram has no bounds
-			for (Iterator<EObject> iter = ((EObject) interaction).eAllContents(); iter.hasNext();) {
+			for (Iterator<EObject> iter = ((EObject)interaction).eAllContents(); iter.hasNext();) {
 				@SuppressWarnings("unchecked")
-				MElement<? extends Element> next = (MElement<? extends Element>) iter.next();
+				MElement<? extends Element> next = (MElement<? extends Element>)iter.next();
 				String uriFragment = EcoreUtil.getURI(next.getElement()).fragment();
 
 				Supplier<MElement<?>> translocator = () -> {
-					Element uml = (Element) EDITOR.getModel().eResource().getEObject(uriFragment);
+					Element uml = (Element)EDITOR.getModel().eResource().getEObject(uriFragment);
 					return getInteraction().getElement(uml).get();
 				};
 

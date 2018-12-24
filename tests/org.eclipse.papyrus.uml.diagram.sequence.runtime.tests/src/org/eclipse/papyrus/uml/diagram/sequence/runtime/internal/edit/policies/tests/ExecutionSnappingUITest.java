@@ -14,9 +14,7 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.
 
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.at;
 import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.isNear;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assume.assumeThat;
@@ -29,21 +27,17 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightS
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.model.MInteraction;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
-import org.eclipse.uml2.uml.ExecutionOccurrenceSpecification;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Message;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * Integration test cases for the execution start/finish replacement behaviour
- * when snapping to message ends.
+ * Integration test cases for the execution start/finish replacement behaviour when snapping to message ends.
  *
  * @author Christian W. Damus
  */
-@SuppressWarnings("restriction")
 @ModelResource("one-exec.di")
 @Maximized
 public class ExecutionSnappingUITest extends AbstractGraphicalEditPolicyUITest {
@@ -59,13 +53,17 @@ public class ExecutionSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	private static final int LL2_BODY_X = 281;
 
 	private static final boolean ABOVE = true;
+
 	private static final boolean BELOW = false;
 
 	private static final int EXEC_START_Y = 165;
+
 	private static final int EXEC_HEIGHT = 82;
+
 	private static final int EXEC_FINISH_Y = EXEC_START_Y + EXEC_HEIGHT;
 
 	private EditPart execEP;
+
 	private ExecutionSpecification exec;
 
 	/**
@@ -92,64 +90,13 @@ public class ExecutionSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		assertThat("Execution specification did not snap to message end", execTop, isNear(msgY));
 
 		// The message receive event starts the execution
-		Message message = (Message) messageEP.getAdapter(EObject.class);
+		Message message = (Message)messageEP.getAdapter(EObject.class);
 		assertThat("Execution not started by message end", exec.getStart(), is(message.getReceiveEvent()));
 
 		// The message send and receive both are still semantically before the execution
 		assertThat("Message ends out of order", message.getSendEvent(),
 				editor.semanticallyPrecedes(message.getReceiveEvent()));
 		assertThat("Execution out of order", exec, editor.semanticallyFollows(message.getReceiveEvent()));
-	}
-
-	@Test
-	@Ignore("Exec start should only bind to request receive")
-	public void snapStartToSyncCallSend() {
-		int msgY = EXEC_START_Y - 30;
-		EditPart messageEP = editor.createConnection(SequenceElementTypes.Sync_Message_Edge,
-				at(LL2_BODY_X, msgY), at(LL1_BODY_X, msgY));
-		msgY = getSourceY(messageEP); // Find where it actually ended up
-
-		// The top of the execution snaps to the message end. Offset by one to click on
-		// the execution figure's edge, accounting also for nudging on message creation
-		int execTop = getTop(execEP);
-		editor.moveSelection(at(LL2_BODY_X, execTop + 1), at(LL2_BODY_X, withinMagnet(msgY, BELOW)));
-
-		execTop = getTop(execEP);
-
-		assertThat("Execution specification did not snap to message end", execTop, isNear(msgY));
-
-		// The message receive event *does not* start the execution
-		Message message = (Message) messageEP.getAdapter(EObject.class);
-		assertThat("Execution is started by message send", exec.getStart(), not(message.getSendEvent()));
-		assertThat("Execution start is lost", exec.getStart(),
-				instanceOf(ExecutionOccurrenceSpecification.class));
-	}
-
-	@Test
-	@Ignore("Exec finish should only bind to reply send")
-	public void snapFinishToReplyReceive() {
-		int msgY = EXEC_FINISH_Y + 20;
-		EditPart messageEP = editor.createConnection(SequenceElementTypes.Reply_Message_Edge,
-				at(LL1_BODY_X, msgY), at(LL2_BODY_X, msgY));
-
-		// Find where things actually ended up
-		msgY = getTargetY(messageEP);
-		int execBottom = getBottom(execEP);
-
-		// The bottom of the execution snaps to the message end. Offset by one to click
-		// on the execution figure's edge
-		editor.moveSelection(at(LL2_BODY_X, execBottom - 1), at(LL2_BODY_X, withinMagnet(msgY, ABOVE)));
-
-		execBottom = getBottom(execEP);
-
-		assertThat("Execution specification did not snap to message end", execBottom, isNear(msgY));
-
-		// The message receive event *does not* finish the execution
-		Message message = (Message) messageEP.getAdapter(EObject.class);
-		assertThat("Execution is finished by message receive", exec.getFinish(),
-				not(message.getReceiveEvent()));
-		assertThat("Execution finish is lost", exec.getFinish(),
-				instanceOf(ExecutionOccurrenceSpecification.class));
 	}
 
 	@Test
@@ -171,7 +118,7 @@ public class ExecutionSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		assertThat("Execution specification did not snap to message end", execBottom, isNear(msgY));
 
 		// The message receive event starts the execution
-		Message message = (Message) messageEP.getAdapter(EObject.class);
+		Message message = (Message)messageEP.getAdapter(EObject.class);
 		assertThat("Execution not finished by message end", exec.getFinish(), is(message.getSendEvent()));
 
 		// The message send and receive both are still semantically after the execution
