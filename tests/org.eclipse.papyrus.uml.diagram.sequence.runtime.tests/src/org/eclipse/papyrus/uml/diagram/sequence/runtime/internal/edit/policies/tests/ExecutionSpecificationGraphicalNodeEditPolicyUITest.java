@@ -31,19 +31,20 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- * Integration test cases for the
- * {@link ExecutionSpecificationGraphicalNodeEditPolicy} class.
+ * Integration test cases for the {@link ExecutionSpecificationGraphicalNodeEditPolicy} class.
  *
  * @author Christian W. Damus
  */
-@SuppressWarnings("restriction")
 @ModelResource("one-exec.di")
 @Maximized
 @RunWith(Parameterized.class)
 public class ExecutionSpecificationGraphicalNodeEditPolicyUITest extends AbstractGraphicalEditPolicyUITest {
 
+	private static final int MESSAGE_Y = 195;
+
 	@ClassRule
-	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs().dontCreateExecutionsForSyncMessages();
+	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs()
+			.dontCreateExecutionsForSyncMessages();
 
 	// Horizontal position of the first lifeline's body
 	private static final int LIFELINE_1_BODY_X = 121;
@@ -52,6 +53,7 @@ public class ExecutionSpecificationGraphicalNodeEditPolicyUITest extends Abstrac
 	private static final int LIFELINE_2_BODY_X = 281;
 
 	private static final boolean SENDER = true; // source = true
+
 	private static final boolean RECEIVER = !SENDER;
 
 	private final int sendX;
@@ -61,7 +63,8 @@ public class ExecutionSpecificationGraphicalNodeEditPolicyUITest extends Abstrac
 	/**
 	 * Initializes me.
 	 */
-	public ExecutionSpecificationGraphicalNodeEditPolicyUITest(boolean rightToLeft, String direction) {
+	public ExecutionSpecificationGraphicalNodeEditPolicyUITest(boolean rightToLeft,
+			@SuppressWarnings("unused") String direction) {
 		super();
 
 		if (rightToLeft) {
@@ -75,16 +78,18 @@ public class ExecutionSpecificationGraphicalNodeEditPolicyUITest extends Abstrac
 
 	@Test
 	public void createAsyncMessage() {
-		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 195), at(recvX, 195));
+		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, MESSAGE_Y),
+				at(recvX, MESSAGE_Y));
 
-		assertThat(messageEP, runs(x(SENDER), 195, x(RECEIVER), 195, 2));
+		assertThat(messageEP, runs(x(SENDER), MESSAGE_Y, x(RECEIVER), MESSAGE_Y, 2));
 	}
 
 	@Test
 	public void createSyncMessage() {
-		EditPart messageEP = createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, 195), at(recvX, 195));
+		EditPart messageEP = createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, MESSAGE_Y),
+				at(recvX, MESSAGE_Y));
 
-		assertThat(messageEP, runs(x(SENDER), 195, x(RECEIVER), 195, 2));
+		assertThat(messageEP, runs(x(SENDER), MESSAGE_Y, x(RECEIVER), MESSAGE_Y, 2));
 	}
 
 	//
@@ -94,19 +99,18 @@ public class ExecutionSpecificationGraphicalNodeEditPolicyUITest extends Abstrac
 	@Parameters(name = "{1}")
 	public static Iterable<Object[]> parameters() {
 		return Arrays.asList(new Object[][] { //
-				{ false, "left-to-right" }, //
-				{ true, "right-to-left" }, //
+				{false, "left-to-right" }, //
+				{true, "right-to-left" }, //
 		});
 	}
 
 	/**
-	 * Compute an adjusted {@code x} coördinate based the test message's
-	 * directionality and whether that end is at an execution specification or a
-	 * lifeline stem.
+	 * Compute an adjusted {@code x} coordinate based the test message's directionality and whether that end
+	 * is at an execution specification or a lifeline stem.
 	 *
-	 * @param source whether this is the source end of the message
-	 *
-	 * @return the adjusted X coördinate
+	 * @param source
+	 *            whether this is the source end of the message
+	 * @return the adjusted X coordinate
 	 */
 	int x(boolean source) {
 		if (sendX > recvX) {
