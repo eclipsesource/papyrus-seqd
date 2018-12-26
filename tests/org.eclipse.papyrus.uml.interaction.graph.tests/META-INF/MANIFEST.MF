@@ -16,5 +16,6 @@ Bundle-Description: Tests of the core run-time APIs of the sequence diagram.
 Export-Package: org.eclipse.papyrus.uml.interaction.graph.tests,
  org.eclipse.papyrus.uml.interaction.tests.matchers;version="1.0.0",
  org.eclipse.papyrus.uml.interaction.tests.rules;version="1.0.0",
+ org.eclipse.papyrus.uml.interaction.tests.runners;version="1.0.0",
  org.eclipse.papyrus.uml.interaction.tests.util;version="1.0.0"
 Automatic-Module-Name: org.eclipse.papyrus.uml.interaction.graph.tests
