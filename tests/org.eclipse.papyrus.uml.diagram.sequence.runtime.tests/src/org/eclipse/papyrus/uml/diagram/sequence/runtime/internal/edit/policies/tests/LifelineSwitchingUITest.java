@@ -46,6 +46,7 @@ import org.eclipse.papyrus.infra.gmfdiag.common.utils.DiagramEditPartsUtil;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.DestructionSpecificationEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ExecutionSpecificationEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
@@ -65,6 +66,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
@@ -73,11 +75,14 @@ import org.junit.runners.JUnit4;
  *
  * @author Christian W. Damus
  */
-@SuppressWarnings("restriction")
+@SuppressWarnings({"restriction", "hiding" })
 @ModelResource("three-lifelines.di")
 @Maximized
 @RunWith(Enclosed.class)
 public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
+
+	@ClassRule
+	public static TestRule tolerance = GEFMatchers.defaultTolerance(1);
 
 	// Horizontal position of the first lifeline's body
 	private static final int LIFELINE_1_BODY_X = 121;
@@ -216,7 +221,7 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 
 			// Verify the new visuals
 			mode.verify(getExecutionEditPart(),
-					isBounded(isNear(getNewRecvX(), 5), isNear(getNewRecvY()), anything(), anything()));
+					isBounded(isNear(getNewExecX()), isNear(getNewRecvY()), anything(), anything()));
 
 			// And the semantics
 			MExecution exec = requireExecution();
@@ -267,6 +272,9 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 			return super.getNewRecvX() - (EXEC_WIDTH / 2);
 		}
 
+		int getNewExecX() {
+			return getNewRecvX();
+		}
 	}
 
 	public static class MessageSelfNoReply extends MessageNoReply {
@@ -278,12 +286,18 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 
 		@Override
 		public int getNewRecvX() {
-			return sendX;
+			return sendX + (EXEC_WIDTH / 2);
 		}
 
 		@Override
 		public int getNewRecvY() {
 			return mesgY + 20;
+		}
+
+		@Override
+		int getNewExecX() {
+			// In this case, the message attaches on the right side, not the left, so account for that
+			return super.getNewExecX() - EXEC_WIDTH;
 		}
 
 		@Override
@@ -340,26 +354,6 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 	}
 
 	public static class MessageSelfWithReply extends MessageNoExecution {
-
-		@Override
-		public int getReleaseX() {
-			return sendX;
-		}
-
-		@Override
-		public int getNewRecvY() {
-			return mesgY + 20;
-		}
-
-		@Override
-		Optional<MLifeline> getReceiver() {
-			return getSender();
-		}
-
-		@Override
-		MLifeline requireReceiver() {
-			return requireLifeline("Lifeline1");
-		}
 
 		@ClassRule
 		public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs().createRepliesForSyncCalls();
@@ -418,6 +412,21 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 					.map(ConnectionEditPart::getTarget)
 					.filter(ExecutionSpecificationEditPart.class::isInstance);
 			return assuming(editPart, "No execution edit-part created");
+		}
+
+		@Override
+		public int getReleaseX() {
+			return sendX;
+		}
+
+		@Override
+		public int getNewRecvY() {
+			return mesgY + 20;
+		}
+
+		@Override
+		Optional<MLifeline> getReceiver() {
+			return getSender();
 		}
 
 		@Override
@@ -493,11 +502,6 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		}
 
 		@Override
-		MLifeline requireReceiver() {
-			return requireLifeline("Lifeline2");
-		}
-
-		@Override
 		Optional<MLifeline> getReceiver() {
 			return getLifeline("Lifeline2");
 		}
@@ -510,11 +514,6 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		@Override
 		Optional<MLifeline> getSender() {
 			return getLifeline("Lifeline1");
-		}
-
-		@Override
-		MLifeline requireOriginalReceiver() {
-			return requireLifeline("Lifeline1");
 		}
 
 		@Override
@@ -866,7 +865,7 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 			// The connections all exist already. Just locate the request message
 			MMessage request = requireMessage("request");
 			messageEP = requireEditPart(request);
-			assumeThat(messageEP, runs(sendX, mesgY, getGrabX(), mesgY));
+			assumeThat(messageEP, runs(sendX, mesgY, getGrabX(), mesgY, 2));
 		}
 
 		@Override
@@ -966,11 +965,6 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		@Override
 		Optional<MLifeline> getReceiver() {
 			return getLifeline("Lifeline1");
-		}
-
-		@Override
-		MLifeline requireReceiver() {
-			return requireLifeline("Lifeline1");
 		}
 
 		//
@@ -1078,28 +1072,32 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		return asserting(getLifeline(name), "No such lifeline: " + name);
 	}
 
+	MLifeline requireLifeline(Optional<MLifeline> lifeline) {
+		return asserting(lifeline, "No such lifeline");
+	}
+
 	Optional<MLifeline> getSender() {
 		return getLifeline("Lifeline1");
 	}
 
-	MLifeline requireSender() {
-		return requireLifeline("Lifeline1");
+	final MLifeline requireSender() {
+		return requireLifeline(getSender());
 	}
 
 	Optional<MLifeline> getReceiver() {
 		return getLifeline("Lifeline3");
 	}
 
-	MLifeline requireReceiver() {
-		return requireLifeline("Lifeline3");
+	final MLifeline requireReceiver() {
+		return requireLifeline(getReceiver());
 	}
 
 	Optional<MLifeline> getOriginalReceiver() {
 		return getLifeline("Lifeline2");
 	}
 
-	MLifeline requireOriginalReceiver() {
-		return requireLifeline("Lifeline2");
+	final MLifeline requireOriginalReceiver() {
+		return requireLifeline(getOriginalReceiver());
 	}
 
 	Optional<MExecution> getExecution() {

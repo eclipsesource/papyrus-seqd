@@ -29,6 +29,7 @@ import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.papyrus.infra.gmfdiag.common.utils.DiagramEditPartsUtil;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
@@ -39,14 +40,13 @@ import org.eclipse.uml2.uml.OccurrenceSpecification;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 
 /**
- * Integration test cases for disconnection of messages from execution
- * specification start/finish.
+ * Integration test cases for disconnection of messages from execution specification start/finish.
  *
  * @author Christian W. Damus
  */
-@SuppressWarnings("restriction")
 @ModelResource("two-lifelines.di")
 @Maximized
 public class MessageExecutionUITest extends AbstractGraphicalEditPolicyUITest {
@@ -55,19 +55,25 @@ public class MessageExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs().createExecutionsForSyncMessages()
 			.createRepliesForSyncCalls();
 
+	@ClassRule
+	public static TestRule tolerance = GEFMatchers.defaultTolerance(1);
+
 	// Horizontal position of the first lifeline's body
 	private static final int LL1_BODY_X = 121;
 
 	// Horizontal position of the second lifeline's body
 	private static final int LL2_BODY_X = 281;
 
-	private static final int EXEC_WIDTH = 10;
-
 	private EditPart requestEP;
+
 	private Message request;
+
 	private EditPart execEP;
+
 	private ExecutionSpecification exec;
+
 	private EditPart replyEP;
+
 	private Message reply;
 
 	/**
@@ -146,8 +152,8 @@ public class MessageExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 
 		editor.drag(grabAt, dropStart);
 
-		assertThat("Request message not moved", requestEP, runs(LL1_BODY_X, dropStart.y,
-				LL2_BODY_X - (EXEC_WIDTH / 2), dropStart.y, RESIZE_TOLERANCE));
+		assertThat("Request message not moved", requestEP,
+				runs(LL1_BODY_X, dropStart.y, LL2_BODY_X - (EXEC_WIDTH / 2), dropStart.y, RESIZE_TOLERANCE));
 
 		int oldBottom = execBounds.bottom();
 		execBounds.setY(dropStart.y);
@@ -171,8 +177,7 @@ public class MessageExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 				LL1_BODY_X, dropFinish.y, RESIZE_TOLERANCE));
 
 		execBounds.setHeight(dropFinish.y - execBounds.y);
-		assertThat("Execution not moved or resized", execEP,
-				isBounded(isRect(execBounds, RESIZE_TOLERANCE)));
+		assertThat("Execution not moved or resized", execEP, isBounded(isRect(execBounds, RESIZE_TOLERANCE)));
 	}
 
 	@Test
@@ -197,8 +202,7 @@ public class MessageExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 		assertThat("Execution not moved/resized", execEP, isBounded(isRect(execBounds, RESIZE_TOLERANCE)));
 
 		MessageEnd requestRecv = request.getReceiveEvent();
-		assertThat("Incorrect semantic ordering", exec.getStart(),
-				editor.semanticallyPrecedes(requestRecv));
+		assertThat("Incorrect semantic ordering", exec.getStart(), editor.semanticallyPrecedes(requestRecv));
 	}
 
 	@Test
@@ -218,8 +222,7 @@ public class MessageExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 				runs(LL2_BODY_X - (EXEC_WIDTH / 2), msgY, LL1_BODY_X, msgY, RESIZE_TOLERANCE));
 
 		execBounds.setHeight(dropFinish.y - execBounds.y);
-		assertThat("Execution not moved or resized", execEP,
-				isBounded(isRect(execBounds, RESIZE_TOLERANCE)));
+		assertThat("Execution not moved or resized", execEP, isBounded(isRect(execBounds, RESIZE_TOLERANCE)));
 
 		MessageEnd replySend = reply.getSendEvent();
 		assertThat("Incorrect semantic ordering", exec.getFinish(), editor.semanticallyFollows(replySend));
@@ -235,25 +238,23 @@ public class MessageExecutionUITest extends AbstractGraphicalEditPolicyUITest {
 				at(LL2_BODY_X, 200));
 		assumeThat("Request message not created", requestEP, notNullValue());
 
-		request = (Message) requestEP.getAdapter(EObject.class);
+		request = (Message)requestEP.getAdapter(EObject.class);
 
-		exec = ((OccurrenceSpecification) request.getReceiveEvent()).getCovered().getCoveredBys().stream()
+		exec = ((OccurrenceSpecification)request.getReceiveEvent()).getCovered().getCoveredBys().stream()
 				.filter(ExecutionSpecification.class::isInstance).map(ExecutionSpecification.class::cast)
 				.findFirst().orElse(null);
-		execEP = (exec == null)
-				? null
+		execEP = (exec == null) ? null
 				: DiagramEditPartsUtil.getChildByEObject(exec, editor.getDiagramEditPart(), false);
 		assumeThat("Execution not created", execEP, notNullValue());
 
-		reply = ((MessageEnd) exec.getFinish()).getMessage();
-		replyEP = (reply == null)
-				? null
+		reply = ((MessageEnd)exec.getFinish()).getMessage();
+		replyEP = (reply == null) ? null
 				: DiagramEditPartsUtil.getChildByEObject(reply, editor.getDiagramEditPart(), true);
 		assumeThat("Reply message not created", replyEP, notNullValue());
 	}
 
 	static Point getMessageGrabPoint(EditPart editPart) {
-		Connection connection = (Connection) ((ConnectionEditPart) editPart).getFigure();
+		Connection connection = (Connection)((ConnectionEditPart)editPart).getFigure();
 		return connection.getPoints().getMidpoint();
 	}
 }

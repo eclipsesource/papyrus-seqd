@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assume.assumeThat;
 
 import java.util.Arrays;
 
@@ -30,6 +31,7 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ExecutionSpecificationEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.MessageEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
@@ -39,6 +41,7 @@ import org.eclipse.uml2.uml.MessageSort;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -56,6 +59,9 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 	@ClassRule
 	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs()
 			.dontCreateExecutionsForSyncMessages();
+
+	@ClassRule
+	public static TestRule tolerance = GEFMatchers.defaultTolerance(1);
 
 	// Horizontal position of the first lifeline's body
 	private static final int LIFELINE_1_BODY_X = 121;
@@ -132,6 +138,12 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 				}
 				break;
 			default:
+				if (messageEP == null) {
+					assumeThat("Should fail to get a message edit-part only for create message", messageSort,
+							equalTo(MessageSort.CREATE_MESSAGE_LITERAL));
+					return; // Unreachable
+				}
+
 				if (mode != CreationMode.WITH_EXECUTION) {
 					assertThat(messageEP, runs(x(), top(), x(), bottom(), 2));
 				} else {

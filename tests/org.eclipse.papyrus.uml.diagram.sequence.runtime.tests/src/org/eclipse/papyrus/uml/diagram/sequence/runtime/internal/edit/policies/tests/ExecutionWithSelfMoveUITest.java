@@ -21,6 +21,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.AutoFixture;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.AutoFixtureRule;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
@@ -29,8 +30,10 @@ import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.Message;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 
 /**
  * UI test for moving executions with self start / finish messages.
@@ -38,6 +41,9 @@ import org.junit.Test;
 @ModelResource("execution-self.di")
 @Maximized
 public class ExecutionWithSelfMoveUITest extends AbstractGraphicalEditPolicyUITest {
+
+	@ClassRule
+	public static TestRule tolerance = GEFMatchers.defaultTolerance(1);
 
 	@Rule
 	public final AutoFixtureRule autoFixtures = new AutoFixtureRule(this);

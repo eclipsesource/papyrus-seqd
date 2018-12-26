@@ -278,6 +278,9 @@ public class ExecutionSpecificationDragEditPolicyUITest {
 		@Rule
 		public final AutoFixtureRule autoFixtures = new AutoFixtureRule(this);
 
+		@ClassRule
+		public static TestRule tolerance = GEFMatchers.defaultTolerance(1);
+
 		@AutoFixture("exec1")
 		private ExecutionSpecification exec;
 
