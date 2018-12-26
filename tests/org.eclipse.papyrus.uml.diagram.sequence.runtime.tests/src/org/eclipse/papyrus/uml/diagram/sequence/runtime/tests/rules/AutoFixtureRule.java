@@ -211,7 +211,8 @@ public class AutoFixtureRule implements TestRule {
 				if (next instanceof NamedElement) {
 					NamedElement element = (NamedElement)next;
 					String elementName = element.getName();
-					if ((name.equals(elementName) || name.equals(getValidJavaIdentifier(elementName)))
+					if ((name.equalsIgnoreCase(elementName)
+							|| name.equalsIgnoreCase(getValidJavaIdentifier(elementName)))
 							&& filter.test(element)) {
 						result = element;
 					}

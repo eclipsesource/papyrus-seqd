@@ -17,6 +17,7 @@ import java.util.OptionalInt;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntBinaryOperator;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
 import java.util.function.IntUnaryOperator;
@@ -71,6 +72,23 @@ public class Optionals {
 	 */
 	public static OptionalInt map(OptionalInt optional, IntUnaryOperator operator) {
 		return optional.isPresent() ? OptionalInt.of(operator.applyAsInt(optional.getAsInt())) : optional;
+	}
+
+	/**
+	 * Applies an integer-valued binary {@code operator} to two optional integers.
+	 * 
+	 * @param left
+	 *            an optional integer value, left input to the {@code operator}
+	 * @param right
+	 *            another optional integer value, right input to the {@code operator}
+	 * @param operator
+	 *            an operator to apply
+	 * @return the optional {@code operator} result
+	 */
+	public static OptionalInt apply(OptionalInt left, OptionalInt right, IntBinaryOperator operator) {
+		return (left.isPresent() && right.isPresent())
+				? OptionalInt.of(operator.applyAsInt(left.getAsInt(), right.getAsInt()))
+				: OptionalInt.empty();
 	}
 
 	/**

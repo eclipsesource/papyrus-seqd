@@ -43,6 +43,9 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixtur
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
+import org.eclipse.papyrus.uml.interaction.tests.runners.Delegate;
+import org.eclipse.papyrus.uml.interaction.tests.runners.FilterWith;
+import org.eclipse.papyrus.uml.interaction.tests.runners.Filtered;
 import org.eclipse.uml2.uml.ExecutionSpecification;
 import org.eclipse.uml2.uml.Message;
 import org.hamcrest.CoreMatchers;
@@ -50,20 +53,24 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.junit.runner.manipulation.Filter;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- * Integration test cases for the {@link LifelineBodyGraphicalNodeEditPolicy}
- * class's message re-connection behaviour.
+ * Integration test cases for the {@link LifelineBodyGraphicalNodeEditPolicy} class's message re-connection
+ * behaviour.
  *
  * @author Christian W. Damus
  */
-@SuppressWarnings("restriction")
+@SuppressWarnings("hiding")
 @ModelResource("two-lifelines.di")
 @Maximized
-@RunWith(Parameterized.class)
+@RunWith(Filtered.class)
+@Delegate(Parameterized.class)
+@FilterWith(MessageSnappingUITest.Applicable.class)
 public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	@ClassRule
@@ -77,24 +84,30 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	private static final int LL2_BODY_X = 281;
 
 	private static final boolean EXEC_START = true;
+
 	private static final int EXEC_START_Y = 145;
 
 	private static final boolean EXEC_FINISH = false;
+
 	private static final int EXEC_HEIGHT = 60;
+
 	private static final int EXEC_WIDTH = 10;
 
 	private final boolean snapping;
+
 	private final EditorFixture.Modifiers modifiers;
+
 	private final Function<Matcher<?>, Matcher<?>> modifiersMatcherFunction;
+
 	private EditPart execEP;
+
 	private ExecutionSpecification exec;
 
 	/**
 	 * Initializes me.
 	 *
 	 * @param withSnap
-	 *            whether to allow snapping ({@code true}) or suppress it
-	 *            ({@code false})
+	 *            whether to allow snapping ({@code true}) or suppress it ({@code false})
 	 * @param snapString
 	 *            a string representation of {@code withSnap}
 	 */
@@ -127,16 +140,14 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 			assertThat(messageEP, withModifiers(runs(LL1_BODY_X, execTop, left(LL2_BODY_X), execTop, 1)));
 
 			// The message receive event starts the execution
-			Message message = (Message) messageEP.getAdapter(EObject.class);
+			Message message = (Message)messageEP.getAdapter(EObject.class);
 			assertThat(exec.getStart(), withModifiers(is(message.getReceiveEvent())));
 
 			// The message send and receive both are semantically before the execution
 			assertThat("Message ends out of order", message.getSendEvent(),
 					editor.semanticallyPrecedes(message.getReceiveEvent()));
-			assertThat("Execution out of order", exec,
-					editor.semanticallyFollows(message.getReceiveEvent()));
-			assertThat("Execution finish out of order", exec,
-					editor.semanticallyPrecedes(exec.getFinish()));
+			assertThat("Execution out of order", exec, editor.semanticallyFollows(message.getReceiveEvent()));
+			assertThat("Execution finish out of order", exec, editor.semanticallyPrecedes(exec.getFinish()));
 		});
 	}
 
@@ -151,7 +162,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		assertThat(messageEP, withModifiers(runs(LL1_BODY_X, 120, left(LL2_BODY_X), execTop, 1)));
 
 		// The message receive event starts the execution
-		Message message = (Message) messageEP.getAdapter(EObject.class);
+		Message message = (Message)messageEP.getAdapter(EObject.class);
 		assertThat(exec.getStart(), withModifiers(is(message.getReceiveEvent())));
 	}
 
@@ -167,7 +178,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		assertThat(messageEP, withModifiers(runs(left(LL2_BODY_X), execBottom, LL1_BODY_X, execBottom, 1)));
 
 		// The message send event finishes the execution
-		Message message = (Message) messageEP.getAdapter(EObject.class);
+		Message message = (Message)messageEP.getAdapter(EObject.class);
 		assertThat(exec.getFinish(), withModifiers(is(message.getSendEvent())));
 	}
 
@@ -181,8 +192,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		editor.with(modifiers,
 				() -> editor.moveSelection(midMessage, at(midMessage.x(), withinMagnet(EXEC_START))));
 		Point newMessageMidpoint = getMessageGrabPoint(messageEP);
-		assumeThat("Message not moved", newMessageMidpoint,
-				not(isPoint(midMessage.x(), midMessage.y(), 5)));
+		assumeThat("Message not moved", newMessageMidpoint, not(isPoint(midMessage.x(), midMessage.y(), 5)));
 
 		int execTop = getTop(execEP);
 		assertThat(messageEP, withModifiers(runs(LL1_BODY_X, execTop, left(LL2_BODY_X), execTop, 1)));
@@ -202,8 +212,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	}
 
 	/**
-	 * Verify that magnets are updated when the size of an execution occurrence
-	 * changes.
+	 * Verify that magnets are updated when the size of an execution occurrence changes.
 	 */
 	@Test
 	public void magnetUpdatesOnSize() {
@@ -227,8 +236,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	}
 
 	/**
-	 * Verify that magnets are updated when the location of an execution occurrence
-	 * changes.
+	 * Verify that magnets are updated when the location of an execution occurrence changes.
 	 */
 	@Test
 	public void magnetUpdatesOnLocation() {
@@ -239,8 +247,8 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		// have a policy for moving it (only for resize) so be direct about it instead
 		// of automating the selection tool
 		EditPart execEP = getLastCreatedEditPart();
-		Node execView = (Node) execEP.getModel();
-		Location location = (Location) execView.getLayoutConstraint();
+		Node execView = (Node)execEP.getModel();
+		Location location = (Location)execView.getLayoutConstraint();
 		SetBoundsCommand command = new SetBoundsCommand(editor.getDiagramEditPart().getEditingDomain(),
 				"Move execution down", new EObjectAdapter(execView),
 				at(location.getX(), location.getY() + 100));
@@ -264,8 +272,8 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	@Parameters(name = "{1}")
 	public static Iterable<Object[]> parameters() {
 		return Arrays.asList(new Object[][] { //
-				{ true, "snap to magnet" }, //
-				{ false, "suppress snapping" }, //
+				{true, "snap to magnet" }, //
+				{false, "suppress snapping" }, //
 		});
 	}
 
@@ -275,12 +283,12 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 				at(LL2_BODY_X, EXEC_START_Y), sized(0, EXEC_HEIGHT));
 		assumeThat("Execution specification not created", execEP, notNullValue());
 
-		exec = (ExecutionSpecification) execEP.getAdapter(EObject.class);
+		exec = (ExecutionSpecification)execEP.getAdapter(EObject.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	<T> Matcher<T> withModifiers(Matcher<T> matcher) {
-		return (Matcher<T>) modifiersMatcherFunction.apply(matcher);
+		return (Matcher<T>)modifiersMatcherFunction.apply(matcher);
 	}
 
 	int withinMagnet(boolean execStart) {
@@ -299,7 +307,38 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 	}
 
 	static Point getMessageGrabPoint(EditPart editPart) {
-		Connection connection = (Connection) ((ConnectionEditPart) editPart).getFigure();
+		Connection connection = (Connection)((ConnectionEditPart)editPart).getFigure();
 		return connection.getPoints().getMidpoint();
+	}
+
+	//
+	// Nested types
+	//
+
+	/**
+	 * Filter selecting the valid combinations of parameters for the suite.
+	 */
+	public static final class Applicable extends Filter {
+
+		/**
+		 * Initializes me.
+		 */
+		public Applicable() {
+			super();
+		}
+
+		@Override
+		public boolean shouldRun(Description description) {
+			String name = description.getDisplayName();
+
+			// It doesn't make sense to test magnet updates when we aren't snapping to magnets
+			return !name.startsWith("magnetUpdates") || !name.contains("[suppress snapping]");
+		}
+
+		@Override
+		public String describe() {
+			return "applicable parameters";
+		}
+
 	}
 }

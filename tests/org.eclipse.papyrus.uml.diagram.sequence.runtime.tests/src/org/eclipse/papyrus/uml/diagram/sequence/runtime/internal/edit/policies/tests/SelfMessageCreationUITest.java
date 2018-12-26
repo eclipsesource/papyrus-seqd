@@ -86,7 +86,7 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 
 		messageSort = sort;
 		this.mode = mode;
-		messageX = mode == CreationMode.ON_EXECUTION ? LIFELINE_2_BODY_X + 1 : LIFELINE_1_BODY_X + 1;
+		messageX = mode == CreationMode.ON_EXECUTION ? LIFELINE_2_BODY_X : LIFELINE_1_BODY_X;
 		messageY = Y_POSITION + (mode.isTall() ? CUSTOM_SPAN : 0);
 
 	}
