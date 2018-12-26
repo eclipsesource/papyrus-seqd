@@ -135,6 +135,8 @@ public class ExecutionAnchorsUITest extends AbstractGraphicalEditPolicyUITest {
 	@After
 	public void checkAfter() {
 		editor.undo();
+		editor.forceRefresh();
+		editor.flushDisplayEvents();
 		assertEquals(request_source, getSource(requestEP));
 		assertEquals(request_target, getTarget(requestEP));
 

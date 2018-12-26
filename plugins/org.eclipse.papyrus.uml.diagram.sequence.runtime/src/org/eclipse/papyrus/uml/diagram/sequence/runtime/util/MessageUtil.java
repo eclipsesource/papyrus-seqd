@@ -22,12 +22,15 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewRequest;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateUnspecifiedTypeConnectionRequest;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.emf.type.core.IHintedType;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.MessageEditPart;
 import org.eclipse.papyrus.uml.interaction.graph.util.CrossReferenceUtil;
+import org.eclipse.papyrus.uml.interaction.model.util.Optionals;
 import org.eclipse.papyrus.uml.service.types.element.UMLElementTypes;
 import org.eclipse.papyrus.uml.service.types.utils.ElementUtil;
 import org.eclipse.uml2.uml.ExecutionSpecification;
@@ -122,6 +125,19 @@ public class MessageUtil {
 
 	public static boolean isSynchronousMessage(IElementType messageType) {
 		return isSynchronous(getSort(messageType));
+	}
+
+	@SuppressWarnings("boxing")
+	public static boolean isSynchronousMessage(ConnectionEditPart editPart) {
+		Optional<MessageEditPart> connection = Optionals.as(Optional.ofNullable(editPart),
+				MessageEditPart.class);
+
+		return connection.map(MessageEditPart::resolveSemanticElement)//
+				.filter(Message.class::isInstance)//
+				.map(Message.class::cast) //
+				.map(Message::getMessageSort) //
+				.map(MessageUtil::isSynchronous) //
+				.orElse(false);
 	}
 
 	public static boolean isSynchronous(MessageSort messageSort) {

@@ -12,11 +12,15 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
+import static org.eclipse.papyrus.uml.interaction.model.util.LogicalModelPredicates.equalTo;
+
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
+import org.eclipse.papyrus.uml.interaction.model.MLifeline;
 import org.eclipse.uml2.uml.Element;
 
 /**
@@ -82,6 +86,13 @@ public final class PendingChildData extends PendingContainmentChangeData<MElemen
 						.forEach(nested -> setPendingChild(owner, nested));
 			}
 		}
+	}
+
+	public static <T extends MElement<? extends Element>> Predicate<T> changesContainer(MLifeline owner) {
+		return self -> {
+			Optional<MElement<? extends Element>> pendingParent = getPendingOwner(self);
+			return pendingParent.filter(equalTo(owner)).isPresent();
+		};
 	}
 
 }

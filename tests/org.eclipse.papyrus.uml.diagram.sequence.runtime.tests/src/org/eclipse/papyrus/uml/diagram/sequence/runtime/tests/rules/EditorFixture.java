@@ -46,6 +46,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.Request;
@@ -451,6 +452,8 @@ public class EditorFixture extends ModelFixture.Edit {
 			return null;
 		}
 
+		forceRefresh();
+
 		// Find the new edit-part
 		assertThat("No unsepecified-type request", request[0], notNullValue());
 		CreateConnectionViewAndElementRequest createRequest = (CreateConnectionViewAndElementRequest)request[0]
@@ -461,6 +464,15 @@ public class EditorFixture extends ModelFixture.Edit {
 		EditPart result = (EditPart)getDiagramEditPart().getViewer().getEditPartRegistry().get(createdView);
 		assertThat("New edit-part not found", result, notNullValue());
 		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void forceRefresh() {
+		getDiagramEditPart().getConnections().stream().map(ConnectionEditPart.class::cast)
+				.forEach(cep -> ((ConnectionEditPart)cep).getFigure().invalidate());
+		getDiagramEditPart().getConnections().stream().map(ConnectionEditPart.class::cast)
+				.forEach(cep -> ((ConnectionEditPart)cep).getFigure().validate());
+		getDiagramEditPart().refresh();
 	}
 
 	/**
@@ -611,6 +623,8 @@ public class EditorFixture extends ModelFixture.Edit {
 		tool.mouseUp(new MouseEvent(mouse), viewer);
 
 		flushDisplayEvents();
+
+		forceRefresh();
 	}
 
 	/**

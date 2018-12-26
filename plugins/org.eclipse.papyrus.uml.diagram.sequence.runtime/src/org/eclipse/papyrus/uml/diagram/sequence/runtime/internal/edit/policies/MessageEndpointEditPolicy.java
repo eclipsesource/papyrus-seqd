@@ -34,10 +34,13 @@ import java.util.Optional;
 import java.util.OptionalInt;
 
 import org.eclipse.draw2d.ConnectionAnchor;
+import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.ConnectionLocator;
+import org.eclipse.draw2d.ConnectionRouter;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
+import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
@@ -49,11 +52,14 @@ import org.eclipse.gef.requests.LocationRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
+import org.eclipse.gmf.runtime.draw2d.ui.internal.figures.ConnectionLayerEx;
 import org.eclipse.gmf.runtime.notation.Node;
+import org.eclipse.gmf.runtime.notation.Routing;
 import org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnet;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.LifelineHeaderEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageFeedbackHelper.Mode;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.handles.SequenceConnectionEndpointHandle;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.locators.SelfMessageRouter;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.CommandCreatedEvent;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
 import org.eclipse.papyrus.uml.interaction.model.MDestruction;
@@ -66,6 +72,7 @@ import org.eclipse.uml2.uml.Message;
 /**
  * Endpoint edit-policy for management of message ends.
  */
+@SuppressWarnings("restriction")
 public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy implements ISequenceEditPolicy {
 
 	private final EventBus bus;
@@ -78,7 +85,13 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 
 	private ConnectionAnchor originalTarget;
 
+	private ConnectionRouter originalRouter;
+
 	private MessageFeedbackHelper feedbackHelper;
+
+	private SelfMessageRouter selfMessageRouter;
+
+	private Object originalConstraint;
 
 	/**
 	 * Initializes me with my event bus.
@@ -121,9 +134,70 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 			boolean source = request.isMovingStartAnchor();
 			feedbackHelper = new MessageFeedbackHelper(source ? Mode.MOVE_SOURCE : Mode.MOVE_TARGET, synch,
 					getMagnetManager(), getLayoutConstraints());
+			updateFeedbackRouter(request);
 			feedbackHelper.setConnection(getConnection());
+		} else {
+			// only a potential update on the router (rectilinear to oblique and vice versa)
+			Point p = request.getLocation();
+			updateFeedbackRouter(request);
+			feedbackHelper.update(null, p);
+
 		}
 		return feedbackHelper;
+	}
+
+	private void updateFeedbackRouter(ReconnectRequest request) {
+		ConnectionRouter connectionRouter = getConnectionRouter(request);
+		getConnection().setConnectionRouter(connectionRouter);
+
+	}
+
+	protected ConnectionRouter getConnectionRouter(ReconnectRequest rr) {
+		// return a rectilinear router for connexion on same element, and an oblique one when source and
+		// target are different
+		EditPart source;
+		EditPart target;
+		if (rr.isMovingStartAnchor()) {
+			source = rr.getTarget();
+			target = rr.getConnectionEditPart().getTarget();
+		} else {
+			source = rr.getConnectionEditPart().getSource();
+			target = rr.getTarget();
+		}
+
+		return getConnectionRouter(source, target);
+	}
+
+	protected ConnectionRouter getConnectionRouter(EditPart source, EditPart target) {
+
+		Routing routingVal = Routing.MANUAL_LITERAL;
+
+		if (source == target) {
+			routingVal = Routing.RECTILINEAR_LITERAL;
+		} else {
+			// TODO check for source or target contained in the parent list of the other ?
+			// will only implement oblique there currently
+		}
+		ConnectionLayer cLayer = (ConnectionLayer)getLayer(LayerConstants.CONNECTION_LAYER);
+		if (cLayer instanceof ConnectionLayerEx) {
+			ConnectionLayerEx cLayerEx = (ConnectionLayerEx)cLayer;
+			if (routingVal == Routing.MANUAL_LITERAL) {
+				return cLayerEx.getObliqueRouter();
+			} else if (routingVal == Routing.RECTILINEAR_LITERAL) {
+				return getSelfMessageRouter();
+			} else if (routingVal == Routing.TREE_LITERAL) {
+				return cLayerEx.getTreeRouter();
+			}
+		}
+		return cLayer.getConnectionRouter();
+	}
+
+	private ConnectionRouter getSelfMessageRouter() {
+		if (selfMessageRouter == null) {
+			int minimumWidth = getLayoutConstraints().getMinimumWidth(ViewTypes.MESSAGE);
+			selfMessageRouter = new SelfMessageRouter(minimumWidth);
+		}
+		return selfMessageRouter;
 	}
 
 	@Override
@@ -149,6 +223,25 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 		super.eraseConnectionMoveFeedback(request);
 		lastMouseLocation = null;
 		feedbackHelper = null;
+
+		getConnection().setConnectionRouter(originalRouter);
+		getConnection().setRoutingConstraint(originalConstraint);
+
+		originalRouter = null;
+		originalConstraint = null;
+	}
+
+	@Override
+	protected void showConnectionMoveFeedback(ReconnectRequest request) {
+		if (originalRouter == null) {
+			originalRouter = getConnection().getConnectionRouter();
+			if (originalConstraint == null) {
+				// This one may be null, so this is saved only once with the original router.
+				originalConstraint = getConnection().getRoutingConstraint();
+			}
+		}
+
+		super.showConnectionMoveFeedback(request);
 	}
 
 	protected void showConnectionMoveFeedback(BendpointRequest request) {
@@ -165,6 +258,14 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 			setOriginalTargetLocation(request, targetLocation);
 		}
 		setUpdatedTargetLocation(request, getLocation(getConnection().getTargetAnchor()));
+
+		if (originalRouter == null) {
+			originalRouter = getConnection().getConnectionRouter();
+			if (originalConstraint == null) {
+				// This one may be null, so this is saved only once with the original router.
+				originalConstraint = getConnection().getRoutingConstraint();
+			}
+		}
 
 		FeedbackHelper helper = getFeedbackHelper(request);
 		helper.setMovingStartAnchor(false);
@@ -190,10 +291,14 @@ public class MessageEndpointEditPolicy extends ConnectionEndpointEditPolicy impl
 
 		getConnection().setSourceAnchor(originalSource);
 		getConnection().setTargetAnchor(originalTarget);
+		getConnection().setConnectionRouter(originalRouter);
+		getConnection().setRoutingConstraint(originalConstraint);
 
 		lastMouseLocation = null;
 		originalSource = null;
 		originalTarget = null;
+		originalRouter = null;
+		originalConstraint = null;
 		feedbackHelper = null;
 	}
 

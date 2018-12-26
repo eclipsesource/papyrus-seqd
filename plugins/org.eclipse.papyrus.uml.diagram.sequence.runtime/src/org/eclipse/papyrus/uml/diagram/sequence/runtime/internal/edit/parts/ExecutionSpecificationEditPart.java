@@ -24,6 +24,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.gef.DragTracker;
 import org.eclipse.gef.EditPart;
+import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.BorderedBorderItemEditPart;
@@ -136,7 +137,11 @@ public class ExecutionSpecificationEditPart extends BorderedBorderItemEditPart i
 	}
 
 	private void refreshEditPartOfShape(Shape shape) {
-		Object lifelineEditPart = getViewer().getEditPartRegistry().get(shape);
+		EditPartViewer viewer = getViewer();
+		if (viewer == null) {
+			return;
+		}
+		Object lifelineEditPart = viewer.getEditPartRegistry().get(shape);
 		if (lifelineEditPart instanceof EditPart) {
 			EditPart editPart = (EditPart)lifelineEditPart;
 			List<?> lifelineEditpartChildren = editPart.getChildren();

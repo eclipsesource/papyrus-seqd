@@ -48,15 +48,18 @@ public class MessageFigure extends PolylineConnectionEx {
 
 	@Override
 	public void validate() {
-		super.validate();
-
+		if (isValid()) {
+			return;
+		}
 		MessageDirection direction = computeDirection();
 		if (getSourceAnchor() instanceof ISideAnchor) {
-			((ISideAnchor)getSourceAnchor()).setConnectionSide(direction.getExecutionSide(true));
+			int side = direction.getExecutionSide(true);
+			((ISideAnchor)getSourceAnchor()).setConnectionSide(side);
 		}
 		if (getTargetAnchor() instanceof ISideAnchor) {
 			((ISideAnchor)getTargetAnchor()).setConnectionSide(direction.getExecutionSide(false));
 		}
+		super.validate();
 	}
 
 	MessageDirection computeDirection() {

@@ -37,10 +37,14 @@ import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.draw2d.ConnectionLayer;
+import org.eclipse.draw2d.ConnectionRouter;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.common.command.CommandWrapper;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
@@ -51,8 +55,10 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewRequest;
+import org.eclipse.gmf.runtime.draw2d.ui.internal.figures.ConnectionLayerEx;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.notation.Connector;
+import org.eclipse.gmf.runtime.notation.Routing;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.emf.gmf.command.GMFtoEMFCommandWrapper;
 import org.eclipse.papyrus.infra.gmfdiag.common.commands.SelectAndExecuteCommand;
@@ -61,6 +67,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Activator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.Messages;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ISequenceEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.MessageFeedbackHelper.Mode;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.locators.SelfMessageRouter;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.WeakEventBusDelegator;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.CreateRequestSwitch;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
@@ -91,9 +98,12 @@ import org.eclipse.uml2.uml.MessageSort;
  *
  * @author Christian W. Damus
  */
+@SuppressWarnings("restriction")
 public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy implements ISequenceEditPolicy {
 
 	private final EventBus bus = new EventBus();
+
+	private SelfMessageRouter selfMessageRouter;
 
 	/**
 	 * Initializes me.
@@ -276,7 +286,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 					otherMagnet.map(IMagnet::getLocation).ifPresent(startLocation::setLocation);
 
 					// Enforce a horizontal layout (subject to magnet constraints, with the
-					// target magnet having precendence)
+					// target magnet having precedence)
 					if (startLocation.y() != absoluteY || otherMagnet.isPresent()) {
 						if (!otherMagnet.isPresent()) {
 							// Update the source to match the target
@@ -387,19 +397,68 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 			Point p = request.getLocation();
 			connectionFeedback = createDummyConnection(request);
-			connectionFeedback.setConnectionRouter(getDummyConnectionRouter(request));
+			updateFeedbackRouter(request);
 			connectionFeedback.setSourceAnchor(getSourceConnectionAnchor(request));
 			feedbackHelper.setConnection(connectionFeedback);
 			addFeedback(connectionFeedback);
+			feedbackHelper.update(null, p);
+		} else {
+			// only a potential update on the router (rectilinear to oblique and vice versa)
+			Point p = request.getLocation();
+			updateFeedbackRouter(request);
 			feedbackHelper.update(null, p);
 		}
 
 		return feedbackHelper;
 	}
 
+	private void updateFeedbackRouter(CreateConnectionRequest request) {
+		ConnectionRouter dummyConnectionRouter = getDummyConnectionRouter(request);
+		connectionFeedback.setConnectionRouter(dummyConnectionRouter);
+
+	}
+
 	@Override
 	protected void showCreationFeedback(CreateConnectionRequest request) {
 		super.showCreationFeedback(request);
+	}
+
+	@Override
+	protected ConnectionRouter getDummyConnectionRouter(CreateConnectionRequest ccr) {
+		// return a rectilinear router for connexion on same element, and an oblique one when source and
+		// target are different
+		EditPart source = ccr.getSourceEditPart();
+		EditPart target = ccr.getTargetEditPart();
+		Routing routingVal = Routing.MANUAL_LITERAL;
+
+		if (source == target) {
+			routingVal = Routing.RECTILINEAR_LITERAL;
+		} else {
+			// TODO check for source or target contained in the parent list of the other ?
+			// will only implement oblique there currently
+
+		}
+
+		ConnectionLayer cLayer = (ConnectionLayer)getLayer(LayerConstants.CONNECTION_LAYER);
+		if (cLayer instanceof ConnectionLayerEx) {
+			ConnectionLayerEx cLayerEx = (ConnectionLayerEx)cLayer;
+			if (routingVal == Routing.MANUAL_LITERAL) {
+				return cLayerEx.getObliqueRouter();
+			} else if (routingVal == Routing.RECTILINEAR_LITERAL) {
+				return getSelfMessageRouter();
+			} else if (routingVal == Routing.TREE_LITERAL) {
+				return cLayerEx.getTreeRouter();
+			}
+		}
+		return super.getDummyConnectionRouter(ccr);
+	}
+
+	private ConnectionRouter getSelfMessageRouter() {
+		if (selfMessageRouter == null) {
+			int minimumWidth = getLayoutConstraints().getMinimumWidth(ViewTypes.MESSAGE);
+			selfMessageRouter = new SelfMessageRouter(minimumWidth);
+		}
+		return selfMessageRouter;
 	}
 
 	@Override
@@ -451,7 +510,9 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 	protected Optional<org.eclipse.emf.common.command.Command> constrainReconnection(ReconnectRequest request,
 			MMessageEnd end) {
-
+		// Disallow semantic reordering below the next element on the lifeline.
+		// But if this is a self-message, then don't worry about crossing over the
+		// other end, because it's also moving
 		Optional<MLifeline> lifeline = getLifeline(); // The lifeline under the pointer
 		boolean selfMessage = end.getOtherEnd().flatMap(MMessageEnd::getCovered).equals(lifeline);
 		boolean wasSelfMessage = end.getOtherEnd().flatMap(MMessageEnd::getCovered).equals(end.getCovered());

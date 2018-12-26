@@ -25,9 +25,7 @@ import org.eclipse.papyrus.uml.diagram.sequence.figure.anchors.AnchorParser.Anch
  */
 public class LifelineBodyAnchor extends AbstractConnectionAnchor implements ISequenceAnchor {
 
-	private final LifelineBodyFigure lifelinebodyFigure;
 	private int distance;
-
 
 	public LifelineBodyAnchor(LifelineBodyFigure lifelinebodyFigure, int distance) {
 		super(lifelinebodyFigure);
@@ -35,7 +33,6 @@ public class LifelineBodyAnchor extends AbstractConnectionAnchor implements ISeq
 		// Note: this causes issues for policies/interaction, because the body is far away
 		// from the Lifeline's Bounds. However, we're only interested in rendering here, and this works fine
 		this.distance = distance;
-		this.lifelinebodyFigure = lifelinebodyFigure;
 	}
 
 	@Override
@@ -45,13 +42,24 @@ public class LifelineBodyAnchor extends AbstractConnectionAnchor implements ISeq
 
 	@Override
 	public Point getLocation(Point reference) {
-		Rectangle body = lifelinebodyFigure.getBounds().getCopy();
-		lifelinebodyFigure.translateToAbsolute(body);
-		int boundedHeight = Math.min(distance, body.height);
-		int realHeight = (int)Math.round(boundedHeight * getScale(lifelinebodyFigure));
-		Point location = new Point(0, realHeight);
-		location.translate(body.getTopLeft());
-		return location;
+		return getReferencePoint();
+	}
+
+	@Override
+	public Point getReferencePoint() {
+		if (getOwner() == null) {
+			return null;
+		} else {
+			// reference point is the top of the lifeline
+			// useful for the router
+			Rectangle body = getOwner().getBounds().getCopy();
+			getOwner().translateToAbsolute(body);
+			int boundedHeight = Math.min(distance, body.height);
+			int realHeight = (int)Math.round(boundedHeight * getScale(getOwner()));
+			Point location = new Point(1, realHeight);
+			location.translate(body.getTopLeft());
+			return location;
+		}
 	}
 
 	/**

@@ -14,7 +14,6 @@ package org.eclipse.papyrus.uml.interaction.internal.model.spi.impl;
 
 import static org.eclipse.papyrus.uml.interaction.graph.util.Suppliers.compose;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -46,7 +45,6 @@ import org.eclipse.gmf.runtime.notation.Routing;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.Size;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.gmf.runtime.notation.datatype.RelativeBendpoint;
 import org.eclipse.papyrus.uml.interaction.model.CreationCommand;
 import org.eclipse.papyrus.uml.interaction.model.CreationParameters;
 import org.eclipse.papyrus.uml.interaction.model.spi.DeferredCreateCommand;
@@ -346,30 +344,29 @@ public class DefaultDiagramHelper implements DiagramHelper {
 							: targetView);
 			if (selfMessage) {
 				// A self message is fixed at the minimal gap if it is of a synchronous sort
-				int minTargetDistance = sourceDistance
-						+ layoutHelper().getConstraints().getMinimumHeight(result);
+				// warning, source distance and target distance may be in 2 different local dimensions
+				// so the computation has to be done in absolute coordinates then translated back to local
+				// dimensions
+
+				int minTargetDistance = sourceY.getAsInt()
+						+ layoutHelper().getConstraints().getMinimumHeight(result)
+						- layoutHelper()
+								.getTop(ViewTypes.DESTRUCTION_SPECIFICATION.equals(targetView.getType())
+										? (Shape)targetView.eContainer() // Calculate relative to the lifeline
+										: targetView);
 				targetDistance = syncMessage ? minTargetDistance
 						: Math.max(targetDistance, minTargetDistance);
 			}
 			anchorFactory.builderFor(targetView).from(sourceView).to(targetView).at(targetDistance)
 					.targetEnd().build();
 
-			// We need to have a bendpoints list, even if it's empty
-			RelativeBendpoints bendpoints = (RelativeBendpoints)result
-					.createBendpoints(NotationPackage.Literals.RELATIVE_BENDPOINTS);
-
 			// Specific routing for self-messages
 			if (selfMessage) {
 				result.setRouting(Routing.RECTILINEAR_LITERAL);
-
-				int xOffset = layoutHelper().getConstraints().getMinimumWidth(result);
-				int yOffset = layoutHelper().getConstraints().getMinimumHeight(result);
-				RelativeBendpoint bp1 = new RelativeBendpoint(0, 0, 0, -yOffset);
-				RelativeBendpoint bp2 = new RelativeBendpoint(xOffset, 0, xOffset, -yOffset);
-				RelativeBendpoint bp3 = new RelativeBendpoint(xOffset, yOffset, xOffset, 0);
-				RelativeBendpoint bp4 = new RelativeBendpoint(0, yOffset, 0, 0);
-				bendpoints.setPoints(Arrays.asList(bp1, bp2, bp3, bp4));
 			}
+
+			RelativeBendpoints bendpoints = NotationFactory.eINSTANCE.createRelativeBendpoints();
+			result.setBendpoints(bendpoints);
 
 			// create a decoration node to be seen by CSS rules
 			DecorationNode nameLabel = (DecorationNode)result
@@ -430,27 +427,6 @@ public class DefaultDiagramHelper implements DiagramHelper {
 	public Command configureSelfMessageConnector(Message message, Connector messageView) {
 		Command result = SetCommand.create(editingDomain, messageView,
 				NotationPackage.Literals.ROUTING_STYLE__ROUTING, Routing.RECTILINEAR_LITERAL);
-
-		// Compute the target anchor
-		Shape source = (Shape)messageView.getSource();
-		AnchorFactory anchorFactory = new AnchorFactory(messageView, layoutHelper());
-		int sourceDistance = layoutHelper().getYPosition(messageView.getSourceAnchor(), source)
-				- layoutHelper().getTop(source);
-		int targetDistance = sourceDistance + layoutHelper().getConstraints().getMinimumHeight(messageView);
-		String id = anchorFactory.builderFor(source).from(source).to(source).at(targetDistance).targetEnd()
-				.computeIdentity();
-		result = result.chain(SetCommand.create(editingDomain, messageView.getTargetAnchor(),
-				NotationPackage.Literals.IDENTITY_ANCHOR__ID, id));
-
-		int xOffset = layoutHelper().getConstraints().getMinimumWidth(messageView);
-		int yOffset = layoutHelper().getConstraints().getMinimumHeight(messageView);
-		RelativeBendpoint bp1 = new RelativeBendpoint(0, 0, 0, -yOffset);
-		RelativeBendpoint bp2 = new RelativeBendpoint(xOffset, 0, xOffset, -yOffset);
-		RelativeBendpoint bp3 = new RelativeBendpoint(xOffset, yOffset, xOffset, 0);
-		RelativeBendpoint bp4 = new RelativeBendpoint(0, yOffset, 0, 0);
-		result = result.chain(SetCommand.create(editingDomain, messageView.getBendpoints(),
-				NotationPackage.Literals.RELATIVE_BENDPOINTS__POINTS, Arrays.asList(bp1, bp2, bp3, bp4)));
-
 		return result;
 	}
 
@@ -458,8 +434,10 @@ public class DefaultDiagramHelper implements DiagramHelper {
 	public Command configureStraightMessageConnector(Message message, Connector messageView) {
 		Command result = SetCommand.create(editingDomain, messageView,
 				NotationPackage.Literals.ROUTING_STYLE__ROUTING, Routing.MANUAL_LITERAL);
-		result = result.chain(SetCommand.create(editingDomain, messageView.getBendpoints(),
-				NotationPackage.Literals.RELATIVE_BENDPOINTS__POINTS, Collections.EMPTY_LIST));
+		if (messageView.getBendpoints() != null) {
+			result = result.chain(SetCommand.create(editingDomain, messageView.getBendpoints(),
+					NotationPackage.Literals.RELATIVE_BENDPOINTS__POINTS, Collections.EMPTY_LIST));
+		}
 		return result;
 	}
 
@@ -476,6 +454,24 @@ public class DefaultDiagramHelper implements DiagramHelper {
 				.to((Shape)connector.getTarget()).sourceEnd().at(yOffset).computeIdentity();
 		result = result.chain(SetCommand.create(editingDomain, anchor,
 				NotationPackage.Literals.IDENTITY_ANCHOR__ID, newID));
+
+		// if message changes from self message to standard, or from standard to self, the routing style must
+		// be updated.
+		// compute the future value of self message
+		Lifeline sourceLL = getLifeline(newSource);
+		Lifeline targetLL = getLifeline(connector.getTarget());
+		boolean selfMessage = (sourceLL != null) && (sourceLL == targetLL);
+
+		Routing newRouting = Routing.MANUAL_LITERAL;
+		if (selfMessage) {
+			newRouting = Routing.RECTILINEAR_LITERAL;
+		}
+
+		// should force?
+		if (newRouting != connector.getRouting()) {
+			result.chain(SetCommand.create(editingDomain, connector,
+					NotationPackage.Literals.ROUTING_STYLE__ROUTING, newRouting));
+		}
 
 		return result;
 	}
@@ -505,6 +501,23 @@ public class DefaultDiagramHelper implements DiagramHelper {
 				.from((Shape)connector.getSource()).to(newTarget).targetEnd().at(yOffset).computeIdentity();
 		result = result.chain(SetCommand.create(editingDomain, anchor,
 				NotationPackage.Literals.IDENTITY_ANCHOR__ID, newID));
+
+		// if message changes from self message to standard, or from standard to self, the routing style must
+		// be updated.
+		// compute the future value of self message
+		Lifeline sourceLL = getLifeline(connector.getSource());
+		Lifeline targetLL = getLifeline(newTarget);
+		boolean selfMessage = (sourceLL != null) && (sourceLL == targetLL);
+
+		Routing newRouting = Routing.MANUAL_LITERAL;
+		if (selfMessage) {
+			newRouting = Routing.RECTILINEAR_LITERAL;
+		}
+		// should force?
+		if (newRouting != connector.getRouting()) {
+			result.chain(SetCommand.create(editingDomain, connector,
+					NotationPackage.Literals.ROUTING_STYLE__ROUTING, newRouting));
+		}
 
 		return result;
 	}

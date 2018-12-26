@@ -18,6 +18,8 @@ import org.eclipse.papyrus.uml.interaction.internal.model.commands.PendingVertic
 import org.eclipse.papyrus.uml.interaction.model.MElement;
 import org.eclipse.papyrus.uml.interaction.model.MExecution;
 import org.eclipse.papyrus.uml.interaction.model.MLifeline;
+import org.eclipse.papyrus.uml.interaction.model.MMessage;
+import org.eclipse.papyrus.uml.interaction.model.MMessageEnd;
 import org.eclipse.papyrus.uml.interaction.model.spi.ViewTypes;
 import org.eclipse.uml2.uml.Element;
 
@@ -46,6 +48,16 @@ public class Executions {
 		return parentLifelineView(as(view.map(EObject::eContainer), View.class));
 	}
 
+	public static Optional<MMessage> getStartMessage(MExecution execution) {
+		return execution.getStart().filter(MMessageEnd.class::isInstance).map(MMessageEnd.class::cast)
+				.map(MMessageEnd::getOwner);
+	}
+
+	public static Optional<MMessage> getFinishMessage(MExecution execution) {
+		return execution.getFinish().filter(MMessageEnd.class::isInstance).map(MMessageEnd.class::cast)
+				.map(MMessageEnd::getOwner);
+	}
+
 	public static Optional<MExecution> executionAt(MLifeline lifeline, int absoluteY) {
 		return executionAt(lifeline, absoluteY, alwaysFalse());
 	}
@@ -61,8 +73,10 @@ public class Executions {
 				.max(LogicalModelOrdering.vertically());
 
 		return elseMaybe(movingToLifeline, // Easy case
-				() -> lifeline.getExecutions().stream().filter(spanning)
-						.max(LogicalModelOrdering.vertically()));
+				() -> lifeline.getExecutions().stream().filter(spanning).filter(t -> {
+					Optional<MElement<? extends Element>> pendingOwner = PendingChildData.getPendingOwner(t);
+					return !pendingOwner.isPresent() || pendingOwner.get().equals(lifeline);
+				}).max(LogicalModelOrdering.vertically()));
 	}
 
 	public static Optional<Shape> executionShapeAt(MLifeline lifeline, int absoluteY) {
