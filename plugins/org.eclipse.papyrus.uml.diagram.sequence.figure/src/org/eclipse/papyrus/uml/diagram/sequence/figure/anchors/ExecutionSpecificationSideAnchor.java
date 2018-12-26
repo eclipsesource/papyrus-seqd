@@ -12,6 +12,7 @@
 package org.eclipse.papyrus.uml.diagram.sequence.figure.anchors;
 
 import static org.eclipse.draw2d.PositionConstants.LEFT;
+import static org.eclipse.draw2d.PositionConstants.RIGHT;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.AbstractConnectionAnchor;
@@ -29,7 +30,7 @@ public class ExecutionSpecificationSideAnchor extends AbstractConnectionAnchor i
 
 	public ExecutionSpecificationSideAnchor(IFigure figure, int height) {
 		super(figure);
-		this.side = LEFT;
+		this.side = RIGHT;
 		this.height = height;
 	}
 
