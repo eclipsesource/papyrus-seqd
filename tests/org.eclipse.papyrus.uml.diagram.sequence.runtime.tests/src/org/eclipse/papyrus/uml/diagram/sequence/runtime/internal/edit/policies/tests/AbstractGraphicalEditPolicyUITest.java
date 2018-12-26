@@ -34,6 +34,7 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.editparts.LayerManager;
+import org.eclipse.gef.handles.ConnectionHandle;
 import org.eclipse.gef.handles.ResizeHandle;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
@@ -56,13 +57,18 @@ public abstract class AbstractGraphicalEditPolicyUITest {
 	private static final int RESIZE_HANDLE_SIZE = 7;
 
 	/**
-	 * Tolerance for assertion of locations based on the dragging of a resize
-	 * handle.
+	 * Tolerance for assertion of locations based on the dragging of a resize handle.
 	 */
-	protected static final int RESIZE_TOLERANCE = (int) Math.floor(RESIZE_HANDLE_SIZE / 2.0);
+	protected static final int RESIZE_TOLERANCE = (int)Math.floor(RESIZE_HANDLE_SIZE / 2.0);
 
 	/** The width of an execution specification. */
 	protected static final int EXEC_WIDTH = 10;
+
+	/** Constant for the source end of a connection edit-part. */
+	protected static final int SOURCE_END = 0;
+
+	/** Constant for the target end of a connection edit-part. */
+	protected static final int TARGET_END = 1;
 
 	/** Some Linux environments are off by 1 in a lot of test scenarios. */
 	@ClassRule
@@ -86,17 +92,16 @@ public abstract class AbstractGraphicalEditPolicyUITest {
 	}
 
 	/**
-	 * Create a new shape in the current diagram by automating the creation tool.
-	 * Fails if the shape cannot be created or cannot be found in the diagram after
-	 * creation.
+	 * Create a new shape in the current diagram by automating the creation tool. Fails if the shape cannot be
+	 * created or cannot be found in the diagram after creation.
 	 *
 	 * @param type
 	 *            the type of shape to create
 	 * @param location
 	 *            the location (mouse pointer) at which to create the shape
 	 * @param size
-	 *            the size of the shape to create, or {@code null} for the default
-	 *            size as would be created when just clicking in the diagram
+	 *            the size of the shape to create, or {@code null} for the default size as would be created
+	 *            when just clicking in the diagram
 	 * @return the newly created shape edit-part
 	 */
 	protected EditPart createShape(IElementType type, Point location, Dimension size) {
@@ -105,18 +110,15 @@ public abstract class AbstractGraphicalEditPolicyUITest {
 	}
 
 	/**
-	 * Create a new connection in the current diagram by automating the creation
-	 * tool. Fails if the connection cannot be created or cannot be found in the
-	 * diagram after creation.
+	 * Create a new connection in the current diagram by automating the creation tool. Fails if the connection
+	 * cannot be created or cannot be found in the diagram after creation.
 	 *
 	 * @param type
 	 *            the type of shape to create
 	 * @param start
-	 *            the location (mouse pointer) at which to start drawing the
-	 *            connection
+	 *            the location (mouse pointer) at which to start drawing the connection
 	 * @param finish
-	 *            the location (mouse pointer) at which to finish drawing the
-	 *            connection
+	 *            the location (mouse pointer) at which to finish drawing the connection
 	 * @return the newly created connection edit-part
 	 */
 	protected EditPart createConnection(IElementType type, Point start, Point finish) {
@@ -134,7 +136,7 @@ public abstract class AbstractGraphicalEditPolicyUITest {
 	}
 
 	protected static Rectangle getBounds(EditPart editPart) {
-		IFigure figure = ((GraphicalEditPart) editPart).getFigure();
+		IFigure figure = ((GraphicalEditPart)editPart).getFigure();
 		Rectangle result = figure.getBounds().getCopy();
 		figure.getParent().translateToAbsolute(result);
 		return result;
@@ -153,40 +155,39 @@ public abstract class AbstractGraphicalEditPolicyUITest {
 	}
 
 	protected static IFigure getResizeHandle(EditPart editPart, int position) {
-		((IGraphicalEditPart) editPart).getFigure();
-		LayerManager manager = (LayerManager) editPart.getViewer().getEditPartRegistry()
-				.get(LayerManager.ID);
+		((IGraphicalEditPart)editPart).getFigure();
+		LayerManager manager = (LayerManager)editPart.getViewer().getEditPartRegistry().get(LayerManager.ID);
 		IFigure handleLayer = manager.getLayer(LayerConstants.HANDLE_LAYER);
 
 		Rectangle bounds = getBounds(editPart);
 		Point hitTarget;
 		switch (position) {
-		case PositionConstants.NORTH_WEST:
-			hitTarget = bounds.getTopLeft();
-			break;
-		case PositionConstants.NORTH:
-			hitTarget = bounds.getTop();
-			break;
-		case PositionConstants.NORTH_EAST:
-			hitTarget = bounds.getTopRight();
-			break;
-		case PositionConstants.EAST:
-			hitTarget = bounds.getRight();
-			break;
-		case PositionConstants.SOUTH_EAST:
-			hitTarget = bounds.getBottomRight();
-			break;
-		case PositionConstants.SOUTH:
-			hitTarget = bounds.getBottom();
-			break;
-		case PositionConstants.SOUTH_WEST:
-			hitTarget = bounds.getBottomLeft();
-			break;
-		case PositionConstants.WEST:
-			hitTarget = bounds.getLeft();
-			break;
-		default:
-			throw new IllegalArgumentException("position : " + position);
+			case PositionConstants.NORTH_WEST:
+				hitTarget = bounds.getTopLeft();
+				break;
+			case PositionConstants.NORTH:
+				hitTarget = bounds.getTop();
+				break;
+			case PositionConstants.NORTH_EAST:
+				hitTarget = bounds.getTopRight();
+				break;
+			case PositionConstants.EAST:
+				hitTarget = bounds.getRight();
+				break;
+			case PositionConstants.SOUTH_EAST:
+				hitTarget = bounds.getBottomRight();
+				break;
+			case PositionConstants.SOUTH:
+				hitTarget = bounds.getBottom();
+				break;
+			case PositionConstants.SOUTH_WEST:
+				hitTarget = bounds.getBottomLeft();
+				break;
+			case PositionConstants.WEST:
+				hitTarget = bounds.getLeft();
+				break;
+			default:
+				throw new IllegalArgumentException("position : " + position);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -201,13 +202,43 @@ public abstract class AbstractGraphicalEditPolicyUITest {
 		return getResizeHandle(editPart, position).getBounds().getCenter();
 	}
 
+	protected static IFigure getConnectionHandle(EditPart editPart, int end) {
+		((IGraphicalEditPart)editPart).getFigure();
+		LayerManager manager = (LayerManager)editPart.getViewer().getEditPartRegistry().get(LayerManager.ID);
+		IFigure handleLayer = manager.getLayer(LayerConstants.HANDLE_LAYER);
+
+		PointList points = getPoints(editPart);
+		Point hitTarget;
+		switch (end) {
+			case SOURCE_END:
+				hitTarget = points.getFirstPoint();
+				break;
+			case TARGET_END:
+				hitTarget = points.getLastPoint();
+				break;
+			default:
+				throw new IllegalArgumentException("end : " + end);
+		}
+
+		@SuppressWarnings("unchecked")
+		List<? extends IFigure> handles = handleLayer.getChildren();
+		Optional<? extends IFigure> result = handles.stream().filter(ConnectionHandle.class::isInstance)
+				.filter(h -> h.getBounds().contains(hitTarget)).findAny();
+		assertThat("Connection handle not found", result.isPresent(), is(true));
+		return result.get();
+	}
+
+	protected static Point getConnectionHandleGrabPoint(EditPart editPart, int end) {
+		return getConnectionHandle(editPart, end).getBounds().getCenter();
+	}
+
 	protected static Point getSource(EditPart connectionEditPart) {
 		PointList points = getPoints(connectionEditPart);
 		return points.getFirstPoint();
 	}
 
 	protected static PointList getPoints(EditPart connectionEditPart) {
-		Connection connection = (Connection) ((ConnectionEditPart) connectionEditPart).getFigure();
+		Connection connection = (Connection)((ConnectionEditPart)connectionEditPart).getFigure();
 		PointList result = connection.getPoints().getCopy();
 		connection.getParent().translateToAbsolute(result);
 		return result;
