@@ -34,6 +34,7 @@ import java.util.Optional;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
@@ -47,6 +48,8 @@ import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.Dest
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ExecutionSpecificationEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.AutoFixture;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.AutoFixtureRule;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.internal.model.SequenceDiagramPackage;
@@ -64,6 +67,7 @@ import org.eclipse.uml2.uml.Element;
 import org.junit.AssumptionViolatedException;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.rules.TestRule;
@@ -789,13 +793,46 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 	@ModelResource("execution-busy.di")
 	public static class ExecutionSpanningOccurrences extends MessageNoExecution {
 
-		private static final int LIFELINE_4_BODY_X = 596;
+		@Rule
+		public final AutoFixtureRule autoFixtures = new AutoFixtureRule(this);
 
-		private final int m2Y = 173;
+		@AutoFixture
+		private EditPart requestEP;
 
-		private final int m3Y = 198;
+		@AutoFixture
+		private PointList requestGeom;
 
-		private final int m4Y = 223;
+		@AutoFixture
+		private EditPart m2EP;
+
+		@AutoFixture
+		private PointList m2Geom;
+
+		@AutoFixture
+		private EditPart m3EP;
+
+		@AutoFixture
+		private PointList m3Geom;
+
+		@AutoFixture
+		private EditPart m4EP;
+
+		@AutoFixture
+		private PointList m4Geom;
+
+		@AutoFixture
+		private EditPart replyEP;
+
+		@AutoFixture
+		private PointList replyGeom;
+
+		private int LIFELINE_4_BODY_X;
+
+		private int m2Y;
+
+		private int m3Y;
+
+		private int m4Y;
 
 		@Override
 		protected void switchLifeline(VerificationMode mode) {
@@ -863,19 +900,29 @@ public class LifelineSwitchingUITest extends AbstractGraphicalEditPolicyUITest {
 		@Override
 		public void createMessage() {
 			// The connections all exist already. Just locate the request message
-			MMessage request = requireMessage("request");
-			messageEP = requireEditPart(request);
-			assumeThat(messageEP, runs(sendX, mesgY, getGrabX(), mesgY, 2));
+			messageEP = requestEP;
+			mesgY = requestGeom.getLastPoint().y();
+
+			// Get select geometric parameters
+			LIFELINE_4_BODY_X = m3Geom.getLastPoint().x();
+			m2Y = m2Geom.getLastPoint().y();
+			m3Y = m3Geom.getLastPoint().y();
+			m4Y = m4Geom.getLastPoint().y();
 		}
 
 		@Override
 		int getGrabX() {
-			return super.getGrabX() - (EXEC_WIDTH / 2);
+			return requestGeom.getLastPoint().x();
+		}
+
+		@Override
+		public int getReleaseX() {
+			return m2Geom.getLastPoint().x();
 		}
 
 		@Override
 		int getNewRecvX() {
-			return super.getNewRecvX() - (EXEC_WIDTH / 2);
+			return m2Geom.getLastPoint().x() - (EXEC_WIDTH / 2);
 		}
 
 	}
