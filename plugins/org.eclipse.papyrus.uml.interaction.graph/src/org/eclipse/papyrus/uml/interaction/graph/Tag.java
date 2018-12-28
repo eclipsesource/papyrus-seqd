@@ -37,7 +37,17 @@ public enum Tag {
 	 * Tags a {@link Vertex} that is an execution finish occurrence or an {@code Edge} that links an execution
 	 * specification vertex to its finish vertex.
 	 */
-	EXECUTION_FINISH;
+	EXECUTION_FINISH,
+	/**
+	 * Tags a {@link Vertex} that is the sending of a message or an {@code Edge} that links a message vertex
+	 * to the message-end vertex that sends it.
+	 */
+	MESSAGE_SEND,
+	/**
+	 * Tags a {@link Vertex} that is the receiving of a message or an {@code Edge} that links a message vertex
+	 * to the message-end vertex that receives it.
+	 */
+	MESSAGE_RECEIVE;
 
 	static {
 		if (values().length > 16) {

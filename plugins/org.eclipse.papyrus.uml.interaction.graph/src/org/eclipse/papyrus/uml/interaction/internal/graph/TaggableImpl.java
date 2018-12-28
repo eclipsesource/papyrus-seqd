@@ -46,6 +46,10 @@ abstract class TaggableImpl<T extends TaggableImpl<T>> implements Taggable {
 		return (tags & (1 << tag.ordinal())) != 0;
 	}
 
+	final void copyTags(TaggableImpl<T> copyFrom) {
+		this.tags = copyFrom.tags;
+	}
+
 	@SuppressWarnings("unchecked")
 	T tag(Tag tag) {
 		tags |= 1 << tag.ordinal();

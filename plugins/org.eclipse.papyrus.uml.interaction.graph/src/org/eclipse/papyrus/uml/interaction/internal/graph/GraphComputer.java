@@ -104,7 +104,12 @@ public class GraphComputer {
 		if (existing != null) {
 			// This edge already exists
 			result.destroy();
-			result = existing.setGroupKind(groupKind);
+
+			// Transfer grouping and tagging details
+			existing.setGroupKind(groupKind);
+			existing.copyTags(result);
+
+			result = existing;
 		}
 
 		return result.setGroupKind(groupKind);
@@ -315,7 +320,8 @@ public class GraphComputer {
 
 		@Override
 		public Void caseMessage(Message message) {
-			EdgeImpl edge = edge(message, message.getReceiveEvent());
+			EdgeImpl edge = edge(message, tag(message.getReceiveEvent(), Tag.MESSAGE_RECEIVE))
+					.tag(Tag.MESSAGE_RECEIVE);
 
 			if (message.getMessageSort() == MessageSort.CREATE_MESSAGE_LITERAL) {
 				// Create message precedes the created lifeline
@@ -343,7 +349,7 @@ public class GraphComputer {
 		public Void caseMessageEnd(MessageEnd end) {
 			Message message = end.getMessage();
 			if ((message != null) && end.isSend()) {
-				edge(end, message);
+				edge(tag(end, Tag.MESSAGE_SEND), message).tag(Tag.MESSAGE_SEND);
 			}
 			return null;
 		}

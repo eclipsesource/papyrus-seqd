@@ -12,7 +12,10 @@
 
 package org.eclipse.papyrus.uml.interaction.internal.model.commands;
 
+import static org.eclipse.papyrus.uml.interaction.graph.GraphPredicates.after;
+import static org.eclipse.papyrus.uml.interaction.graph.GraphPredicates.before;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.as;
+import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.mapPresent;
 import static org.eclipse.papyrus.uml.interaction.model.util.Optionals.mapToObj;
 
 import java.util.HashSet;
@@ -27,6 +30,7 @@ import org.eclipse.emf.common.command.IdentityCommand;
 import org.eclipse.gmf.runtime.notation.Connector;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
+import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.Shape;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.interaction.graph.GroupKind;
@@ -157,12 +161,30 @@ public class NudgeCommand extends ModelCommandWithDependencies<MElementImpl<?>> 
 
 		private final int delta;
 
-		private Set<Shape> movingShapes = new HashSet<>();
+		private final Set<Shape> movingShapes = new HashSet<>();
+
+		/**
+		 * Query whether a vertex will be visited later on in the current nudge calculation.
+		 */
+		private final Predicate<Vertex> willBeVisited;
 
 		MoveDownVisitor(int delta) {
 			super();
 
 			this.delta = delta;
+
+			switch (mode) {
+				case PRECEDING:
+					willBeVisited = before(vertex());
+					break;
+				case FOLLOWING:
+					willBeVisited = after(vertex());
+					break;
+				default:
+					// Only processing one element, so none others will be visited
+					willBeVisited = __ -> false;
+					break;
+			}
 		}
 
 		@Override
@@ -216,6 +238,24 @@ public class NudgeCommand extends ModelCommandWithDependencies<MElementImpl<?>> 
 								.filter(Shape.class::isInstance).map(Shape.class::cast);
 						shape.ifPresent(s -> {
 							chain(layoutHelper().setTop(s, layoutHelper().getTop(shape.get()) + delta));
+						});
+					} else if (targetVtx.hasTag(Tag.EXECUTION_START) && !targetSkipped
+							&& !targetVtx.successor(Tag.EXECUTION_START).filter(willBeVisited).isPresent()) {
+
+						// Stretch/shrink the execution specification at the top, but not if we are walking
+						// the following graph because then we would find this to move it anyways
+						Optional<Vertex> startedExec = targetVtx.successor(Tag.EXECUTION_START);
+						Optional<Node> execShape = as(startedExec.map(Vertex::getDiagramView), Node.class);
+						execShape.ifPresent(exec -> {
+							chain(layoutHelper().setTop(exec, layoutHelper().getTop(exec) + delta));
+
+							// And pin attached objects that won't otherwise be nudged. This includes
+							// the finish occurrence to pin the bottom of the execution
+							mapPresent(startedExec.get().toGroup().members().filter(willBeVisited.negate())
+									.map(m -> {
+										OptionalInt top = layoutHelper().getTop(m);
+										return mapToObj(top, t -> layoutHelper().setTop(m, t - delta));
+									})).map(Command.class::cast).forEach(this::chain);
 						});
 					} else if (!targetSkipped) {
 						// Ordinary message end. Move it down
@@ -332,9 +372,16 @@ public class NudgeCommand extends ModelCommandWithDependencies<MElementImpl<?>> 
 				case PRECEDING:
 					// The simple case is a shape that will be moved in the normal way
 					Predicate<Vertex> willMove = vertex()::succeeds;
+
 					// Or, look for an execution specification that is being stretched at the top,
-					// which implicitly is a move even though we aren't nudging the execution, itself
-					willMove = willMove.or(NudgeCommand.this::isExecutionStretchingAtTop);
+					// which implicitly is a move even though we aren't nudging the execution, itself.
+					// *Unless* it is an execution that is being stretched at the top because it is
+					// started by the message that we are nudging
+					Predicate<Vertex> stretching = NudgeCommand.this::isExecutionStretchingAtTop;
+					Predicate<Vertex> startedByThis = vtx -> vtx.predecessor(Tag.EXECUTION_START)
+							.flatMap(start -> start.predecessor(Tag.MESSAGE_RECEIVE))
+							.filter(Predicate.isEqual(vertex())).isPresent();
+					willMove = willMove.or(stretching.and(startedByThis.negate()));
 
 					result = vertex.map(willMove::test).orElse(Boolean.FALSE).booleanValue();
 					break;
@@ -370,31 +417,13 @@ public class NudgeCommand extends ModelCommandWithDependencies<MElementImpl<?>> 
 				Predicate<Vertex> isFinish = v -> v.predecessor(Tag.EXECUTION_FINISH).filter(isExec)
 						.isPresent();
 				Predicate<Vertex> isBeingNudged = this::visited;
-				isBeingNudged = isBeingNudged.or(this::willBeVisited);
+				isBeingNudged = isBeingNudged.or(willBeVisited);
 
 				result = execution.toGroup().members() //
 						.filter(isBeingNudged.or(isStart).or(isFinish).negate());
 			}
 
 			return result;
-		}
-
-		/**
-		 * Query whether a vertex will be visited later on in the current nudge calculation.
-		 * 
-		 * @param vertex
-		 *            a vertex
-		 * @return whether it will be visited
-		 */
-		private boolean willBeVisited(Vertex vertex) {
-			switch (mode) {
-				case PRECEDING:
-					return vertex.precedes(vertex());
-				case FOLLOWING:
-					return vertex.succeeds(vertex());
-				default:
-					return false;
-			}
 		}
 
 		/**
