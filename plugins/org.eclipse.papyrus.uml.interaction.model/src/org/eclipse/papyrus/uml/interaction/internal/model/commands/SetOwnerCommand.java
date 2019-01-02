@@ -245,6 +245,22 @@ public class SetOwnerCommand extends ModelCommandWithDependencies<MElementImpl<?
 			// that *will be* spanned do not; they only must be reattached per the step below
 			result = execution.getOccurrences().stream()
 					.map(occ -> occ.setCovered(lifeline, topMapping.apply(occ.getTop()))).reduce(chaining());
+
+			if (isStartingSelfMessage(execution)) {
+				// specific case of a self message starting the execution => it should also be moved of delta
+				final Optional<Command> moveInitial = execution.getStart().map(MMessageEnd.class::cast)
+						.flatMap(MMessageEnd::getOtherEnd)
+						.map(occ -> occ.setCovered(lifeline, topMapping.apply(occ.getTop())));
+
+				if (moveInitial.isPresent()) {
+					if (result.isPresent()) {
+						result.get().chain(moveInitial.get());
+					} else {
+						result = moveInitial;
+					}
+				}
+			}
+
 		} else if (isChangingPosition()) {
 			if (!isChangingOwner()) {
 				// We are reshaping it. Refresh nested executions, if necessary

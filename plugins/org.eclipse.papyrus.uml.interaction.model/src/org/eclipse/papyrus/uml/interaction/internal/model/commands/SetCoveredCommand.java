@@ -224,11 +224,11 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 	}
 
 	protected boolean isBecomingSelfMessage() {
-		return isChangingLifeline() && willBeSelfMessage() && !wasSelfMessage();
+		return willBeSelfMessage() && !wasSelfMessage();
 	}
 
 	protected boolean isBecomingNonSelfMessage() {
-		return isChangingPosition() && wasSelfMessage() && !willBeSelfMessage();
+		return wasSelfMessage() && !willBeSelfMessage();
 	}
 
 	protected boolean wasSelfMessage() {
@@ -335,13 +335,11 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 				commandSink.accept(defer(
 						() -> reconnectSource(connector, newAttachedShape.get(), newYPosition).orElse(null)));
 				Optional<MMessageEnd> otherEnd = end.getOtherEnd();
-				otherEnd.flatMap(oEnd -> handleSelfMessageChange(oEnd, newYPosition)).ifPresent(commandSink);
 				otherEnd.flatMap(this::handleOppositeSendOrReplyMessage).ifPresent(commandSink);
 			} else if (end.isReceive()) {
 				commandSink.accept(defer(
 						() -> reconnectTarget(connector, newAttachedShape.get(), newYPosition).orElse(null)));
 				Optional<MMessageEnd> otherEnd = end.getOtherEnd();
-				otherEnd.flatMap(oEnd -> handleSelfMessageChange(oEnd, newYPosition)).ifPresent(commandSink);
 				otherEnd.flatMap(this::handleOppositeSendOrReplyMessage).ifPresent(commandSink);
 			} // else don't know what to do with it
 		}
@@ -373,7 +371,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 					// Track this end
 					final OptionalInt otherNewY;
 					if (end.isStart()) {
-						if (wasSelfMessage() && willBeSelfMessage()) {
+						if (!wasSelfMessage() && willBeSelfMessage()) {
 							otherNewY = OptionalInt.of(PendingVerticalExtentData
 									.getPendingTop(end.getExecution().get()).getAsInt()
 									- layoutHelper().getConstraints().getMinimumHeight(ViewTypes.MESSAGE));
@@ -415,7 +413,7 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 				// only a simple occurrence on the execution. Move using delta
 				if (otherEnd.isReceive()) {
 					// add an additional room for the self message
-					if (isBecomingSelfMessage() && !wasSelfMessage()) {
+					if (isBecomingSelfMessage()) {
 						// ensure the position has a least the space for self messages, but it could be bigger
 						int minLayout = yPosition.getAsInt()
 								+ layoutHelper().getConstraints().getMinimumHeight(ViewTypes.MESSAGE);
@@ -544,7 +542,6 @@ public class SetCoveredCommand extends ModelCommandWithDependencies<MOccurrenceI
 			Command bend;
 			if (otherEnd.isSend()) {
 				// We're reconnecting the source end, but we need to maintain the gap
-				// int newYPosition = currentYPosition - height;
 				Shape newAttachShape = executionShapeAt(lifeline, currentYPosition).orElse(lifelineBody);
 				bend = reconnectSource(connector, newAttachShape, currentYPosition)
 						.orElse(IdentityCommand.INSTANCE);

@@ -151,6 +151,9 @@ public class MessageEditPart extends ConnectionNodeEditPart implements ISequence
 	}
 
 	private void refreshEditPartOfShape(Shape shape) {
+		if(getViewer() == null) {
+			return;
+		}
 		Object lifelineEditPart = getViewer().getEditPartRegistry().get(shape);
 		if (lifelineEditPart instanceof EditPart) {
 			EditPart editPart = (EditPart)lifelineEditPart;
@@ -245,7 +248,11 @@ public class MessageEditPart extends ConnectionNodeEditPart implements ISequence
 
 	@Override
 	protected void handlePropertyChangeEvent(PropertyChangeEvent event) {
-
+		// Avoid calling super, as it only handles the refresh of the routing property. The super method
+		// refreshes the router based on the routing style of the notation model. In the case of feedback, the
+		// router may be different (getting from a self message to a normal message for example). So refresh
+		// should be avoided in this case, and connection router shall be updated on notation model change
+		// only. The feedback router is handled in the feedback related methods.
 	}
 
 	@Override

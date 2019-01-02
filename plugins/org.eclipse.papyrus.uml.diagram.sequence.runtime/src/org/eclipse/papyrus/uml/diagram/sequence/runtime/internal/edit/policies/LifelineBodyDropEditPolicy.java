@@ -79,21 +79,24 @@ public class LifelineBodyDropEditPolicy extends DragDropEditPolicy implements IS
 			return UnexecutableCommand.INSTANCE;
 		}
 
+		// check if there is a change of lifeline, in this case, opt for the start event cover change
+		// this allows for nice handling of self messages.
+		// note that this forbids the execution to change lifeline and move along the new lifeline
+		if (lifeline.isPresent() && !lifeline.get().equals(execution.getOwner())) {
+
+			Optional<MOccurrence<? extends Element>> start = execution.getStart();
+			if (start.isPresent()) {
+				return lifeline.map(ll -> wrap(start.get().setCovered(ll, execution.getTop()))).orElse(null);
+			}
+		}
+
+		// if not, let the execution move along the line.
 		Optional<Point> changeBounds = Optional.ofNullable(getChangeBoundsRequest(request))
 				.map(ChangeBoundsRequest::getMoveDelta);
 		OptionalInt deltaY = mapToInt(changeBounds, Point::y);
 		OptionalInt top = flatMap(execution.getTop(), t -> map(deltaY, y -> t + y));
 		OptionalInt bottom = flatMap(execution.getBottom(), b -> map(deltaY, y -> b + y));
 
-		// check if there is a change of lifeline, in this case, opt for the start event cover change
-		// this allows for nice handling of self messages.
-		if (lifeline.isPresent() && !lifeline.get().equals(execution.getOwner())) {
-
-			Optional<MOccurrence<? extends Element>> start = execution.getStart();
-			if (start.isPresent()) {
-				return lifeline.map(ll -> wrap(start.get().setCovered(ll, top))).orElse(null);
-			}
-		}
 		// default behavior, use the set owner API.
 		return lifeline.map(ll -> wrap(execution.setOwner(ll, top, bottom))).orElse(null);
 	}

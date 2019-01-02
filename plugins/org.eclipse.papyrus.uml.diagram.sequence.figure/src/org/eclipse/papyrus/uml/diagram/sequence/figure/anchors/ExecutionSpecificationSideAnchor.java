@@ -30,7 +30,7 @@ public class ExecutionSpecificationSideAnchor extends AbstractConnectionAnchor i
 
 	public ExecutionSpecificationSideAnchor(IFigure figure, int height) {
 		super(figure);
-		this.side = RIGHT;
+		this.side = RIGHT; // by default, anchors are located on the right.
 		this.height = height;
 	}
 

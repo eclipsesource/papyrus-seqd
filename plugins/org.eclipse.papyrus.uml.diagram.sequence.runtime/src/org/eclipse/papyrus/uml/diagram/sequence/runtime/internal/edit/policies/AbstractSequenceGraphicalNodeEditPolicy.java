@@ -14,7 +14,6 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies;
 
 import static java.lang.Math.abs;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.getUpdatedSourceLocation;
-import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.getUpdatedTargetLocation;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.isAllowSemanticReordering;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.PrivateRequestUtils.isForce;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.util.CommandUtil.injectViewInto;
@@ -479,15 +478,12 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		OptionalInt yPosition = OptionalInt.of(y);
 
 		org.eclipse.emf.common.command.Command result = null;
+
 		// Check for semantic re-ordering if we're not connecting to an execution
-		if (!getExecutionFinish(lifeline.get(), request.getLocation()).isPresent()
-				// Or if we're moving both ends and the other is not connecting to an execution
-				&& !(isForce(request) && message.getReceiver()
-						.flatMap(rcvr -> getExecutionStart(rcvr, getUpdatedTargetLocation(request)))
-						.isPresent())) {
+		if (!getExecutionFinish(lifeline.get(), request.getLocation()).isPresent()) {
+			// should ensure the execution start is nudged
 			result = getNudgeObstacleCommand(request, message.getSend().get(), y);
 		}
-
 		// If the message didn't have a send end, we wouldn't be reconnecting it
 		MMessageEnd sourceEnd = message.getSend().get();
 		org.eclipse.emf.common.command.Command createFinish = null;

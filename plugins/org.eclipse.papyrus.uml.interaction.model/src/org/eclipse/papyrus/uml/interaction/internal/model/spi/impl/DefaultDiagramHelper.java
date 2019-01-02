@@ -469,7 +469,7 @@ public class DefaultDiagramHelper implements DiagramHelper {
 
 		// should force?
 		if (newRouting != connector.getRouting()) {
-			result.chain(SetCommand.create(editingDomain, connector,
+			result = result.chain(SetCommand.create(editingDomain, connector,
 					NotationPackage.Literals.ROUTING_STYLE__ROUTING, newRouting));
 		}
 
@@ -515,7 +515,7 @@ public class DefaultDiagramHelper implements DiagramHelper {
 		}
 		// should force?
 		if (newRouting != connector.getRouting()) {
-			result.chain(SetCommand.create(editingDomain, connector,
+			result = result.chain(SetCommand.create(editingDomain, connector,
 					NotationPackage.Literals.ROUTING_STYLE__ROUTING, newRouting));
 		}
 

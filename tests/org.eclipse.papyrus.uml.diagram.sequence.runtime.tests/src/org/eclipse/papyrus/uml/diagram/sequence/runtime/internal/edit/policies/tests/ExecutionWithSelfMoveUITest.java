@@ -110,7 +110,7 @@ public class ExecutionWithSelfMoveUITest extends AbstractGraphicalEditPolicyUITe
 
 	@Test
 	public void moveUpExecution() {
-		int delta = -50;
+		int delta = -30;
 
 		Point grabAt = execution1Rect.getCenter();
 		Point dropAt = execution1Rect.getCenter().translate(0, delta);
@@ -118,15 +118,14 @@ public class ExecutionWithSelfMoveUITest extends AbstractGraphicalEditPolicyUITe
 
 		// check result
 		Rectangle exec1EPNew = execution1Rect.getCopy().translate(new Point(0, delta));
-		EditPart exec1EP = findEditPart("execution-self::Interaction1::Execution1", false);
-		assertThat(getBounds(exec1EP), equalTo(exec1EPNew));
 		PointList newRequestPoints = requestPoints.getCopy();
 		newRequestPoints.translate(0, delta);
 		assertThat(requestEP, runs(exec1EPNew.getCenter().x(), exec1EPNew.getTop().y() - 20,
 				exec1EPNew.getTopRight().x(), exec1EPNew.getTopRight().y()));
 
-		PointList newReplyPoints = replyPoints.getCopy();
-		newReplyPoints.translate(0, delta);
+		EditPart exec1EP = findEditPart("execution-self::Interaction1::Execution1", false);
+		assertThat(getBounds(exec1EP), equalTo(exec1EPNew));
+
 		assertThat(replyEP, runs(exec1EPNew.getBottomRight().x(), exec1EPNew.getBottomRight().y(),
 				exec1EPNew.getCenter().x(), exec1EPNew.getBottom().y() + 20));
 	}
