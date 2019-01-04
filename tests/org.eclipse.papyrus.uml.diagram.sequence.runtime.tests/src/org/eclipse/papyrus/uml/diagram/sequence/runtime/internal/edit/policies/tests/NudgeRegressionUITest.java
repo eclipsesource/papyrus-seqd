@@ -16,6 +16,7 @@ import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GE
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.isPoint;
 import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.gt;
 import static org.eclipse.papyrus.uml.interaction.tests.matchers.NumberMatchers.lt;
+import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -76,6 +77,12 @@ public class NudgeRegressionUITest extends AbstractGraphicalEditPolicyUITest {
 
 	@AutoFixture
 	private PointList async2Geom;
+
+	@AutoFixture
+	private EditPart request1;
+
+	@AutoFixture
+	private PointList request1Geom;
 
 	/**
 	 * Initializes me.
@@ -147,6 +154,22 @@ public class NudgeRegressionUITest extends AbstractGraphicalEditPolicyUITest {
 		assertThat("message not moved", msgY, lt(y));
 		assertThat("execution not bumped", exec3Geom.bottom(), lt(msgY));
 		assertThat("execution reshaped", exec3Geom.height(), is(height));
+	}
+
+	@Test
+	public void moveNestedExecUp() {
+		Point grabAt = exec2Geom.getCenter();
+		Point dropAt = exec2Geom.getCenter().getTranslated(0, -50);
+
+		int x = request1Geom.getLastPoint().x(); // This should not change
+
+		editor.moveSelection(grabAt, dropAt);
+		autoFixtures.refresh();
+
+		int y = exec2Geom.y(); // This will have changed
+
+		assertThat("async1 not bumped", async1Geom.getLastPoint(), isPoint(anything(), lt(y)));
+		assertThat("request1 not bumped", request1Geom.getLastPoint(), isPoint(is(x), lt(y)));
 	}
 
 	//
