@@ -315,21 +315,23 @@ public class ExecutionSpecificationDragEditPolicy extends ResizableBorderItemPol
 			IBorderItemEditPart borderItemEP = (IBorderItemEditPart)getHost();
 			IFigure feedback = getDragSourceFeedbackFigure();
 			PrecisionRectangle rect = new PrecisionRectangle(getInitialFeedbackBounds().getCopy());
-			getHostFigure().getParent().translateToAbsolute(rect);
 
+			// translate to absolute to integrate the delta with scaling
+			getHostFigure().translateToAbsolute(rect);
 			rect.translate(moveDelta);
 			if (sizeDelta != null) {
 				rect.resize(sizeDelta);
 			}
-
-			// And bring it into the lifeline's coördinate space
-			Rectangle lifelineBounds = onLifeline.getBounds().getCopy();
-			onLifeline.getParent().translateToAbsolute(lifelineBounds);
-			rect.translate(lifelineBounds.getLocation().getNegated());
+			// return to the relative dimensions
+			getHostFigure().translateToRelative(rect);
 
 			IFigure borderItemfigure = borderItemEP.getFigure();
+			// valid location is computed on a relative base from the body figure
+			rect.translate(getHostFigure().getParent().getBounds().getLocation().negate());
 			Rectangle realLocation = locator.getValidLocation(rect.getCopy(), borderItemfigure);
-			onLifeline.translateToAbsolute(realLocation);
+
+			// feedback bounds should be in the absolute coordinates
+			getHostFigure().translateToAbsolute(realLocation);
 
 			feedback.translateToRelative(realLocation);
 			feedback.setBounds(realLocation);

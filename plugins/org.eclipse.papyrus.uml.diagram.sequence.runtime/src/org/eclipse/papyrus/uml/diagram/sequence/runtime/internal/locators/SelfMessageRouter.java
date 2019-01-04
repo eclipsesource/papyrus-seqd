@@ -17,6 +17,7 @@ import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
+import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.gmf.runtime.draw2d.ui.internal.routers.ObliqueRouter;
 import org.eclipse.gmf.runtime.draw2d.ui.internal.routers.OrthogonalRouter;
 
@@ -46,14 +47,18 @@ public class SelfMessageRouter extends ObliqueRouter implements OrthogonalRouter
 		Point sourceLoc = source.getLocation(source.getReferencePoint());
 		Point targetLoc = target.getLocation(target.getReferencePoint());
 
+		conn.translateToRelative(sourceLoc);
+		conn.translateToRelative(targetLoc);
+
 		// ensure the segment stays vertical and not oblique.
 		int sourceX = sourceLoc.x();
 		int targetX = targetLoc.x();
-		int vSegmentX = Math.min(sourceX + space(), targetX + space());
+		double vSegmentX = Math.min(sourceX + space(), targetX + space());
 
 		points.addPoint(sourceLoc);
-		points.addPoint(new Point(vSegmentX, sourceLoc.y()));
-		points.addPoint(new Point(vSegmentX, targetLoc.y()));
+		points.addPoint(new PrecisionPoint(vSegmentX, sourceLoc.y()));
+		points.addPoint(new PrecisionPoint(vSegmentX, targetLoc.y()));
+
 		points.addPoint(targetLoc);
 
 		return points;
@@ -62,5 +67,4 @@ public class SelfMessageRouter extends ObliqueRouter implements OrthogonalRouter
 	private int space() {
 		return space;
 	}
-
 }
