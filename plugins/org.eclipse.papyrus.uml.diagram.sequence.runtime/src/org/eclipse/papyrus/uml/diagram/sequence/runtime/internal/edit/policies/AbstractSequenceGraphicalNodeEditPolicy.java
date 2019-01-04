@@ -38,6 +38,8 @@ import java.util.stream.Stream;
 
 import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.ConnectionRouter;
+import org.eclipse.draw2d.Viewport;
+import org.eclipse.draw2d.ViewportUtilities;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.common.command.CommandWrapper;
 import org.eclipse.emf.ecore.EClass;
@@ -474,13 +476,17 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		// This is known to exist because we're manipulating an existing message in the diagram
 		MMessage message = getInteraction().getMessage(_message.get()).get();
-		int y = request.getLocation().y();
+
+		Point location = request.getLocation();
+
+		fixScroll(location);
+		int y = location.y();
 		OptionalInt yPosition = OptionalInt.of(y);
 
 		org.eclipse.emf.common.command.Command result = null;
 
 		// Check for semantic re-ordering if we're not connecting to an execution
-		if (!getExecutionFinish(lifeline.get(), request.getLocation()).isPresent()) {
+		if (!getExecutionFinish(lifeline.get(), location).isPresent()) {
 			// should ensure the execution start is nudged
 			result = getNudgeObstacleCommand(request, message.getSend().get(), y);
 		}
@@ -562,7 +568,11 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		// This is known to exist because we're manipulating an existing message in the diagram
 		MMessage message = getInteraction().getMessage(_message.get()).get();
-		int y = request.getLocation().y();
+
+		Point location = request.getLocation();
+
+		fixScroll(location);
+		int y = location.y();
 		if (!isForce(request) && MessageUtil.isSynchronous(message.getElement().getMessageSort())
 		// Synchronous message that is not a self-message
 				&& message.getSender().isPresent()
@@ -574,7 +584,7 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 
 		org.eclipse.emf.common.command.Command result = null;
 		// Check for semantic re-ordering if we're not connecting to an execution
-		if (!getExecutionStart(lifeline.get(), request.getLocation()).isPresent()
+		if (!getExecutionStart(lifeline.get(), location).isPresent()
 				// Or if we're moving both ends and the other is not connecting to an execution
 				&& !(isForce(request) && message.getSender()
 						.flatMap(sndr -> getExecutionFinish(sndr, getUpdatedSourceLocation(request)))
@@ -622,6 +632,22 @@ public abstract class AbstractSequenceGraphicalNodeEditPolicy extends GraphicalN
 		}
 
 		return wrap(result);
+	}
+
+	private void fixScroll(Point location) {
+		Viewport enclosingViewport = ViewportUtilities.getRootViewport(getHostFigure());
+		if (enclosingViewport != null) {
+			location.performTranslate(enclosingViewport.getHorizontalRangeModel().getValue(),
+					enclosingViewport.getVerticalRangeModel().getValue());
+		}
+	}
+
+	private void unfixScroll(Point location) {
+		Viewport enclosingViewport = ViewportUtilities.getRootViewport(getHostFigure());
+		if (enclosingViewport != null) {
+			location.performTranslate(-enclosingViewport.getHorizontalRangeModel().getValue(),
+					-enclosingViewport.getVerticalRangeModel().getValue());
+		}
 	}
 
 	protected boolean shouldCreateExecution() {
