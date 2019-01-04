@@ -14,6 +14,7 @@ package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.
 
 import static org.eclipse.papyrus.uml.diagram.sequence.figure.magnets.IMagnetManager.MODIFIER_NO_SNAPPING;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.isPoint;
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.isBounded;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.runs;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.at;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.sized;
@@ -184,17 +185,20 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 
 	@Test
 	public void moveSyncCallMessage() {
+		int execTop = getTop(execEP);
+		int size = getBottom(execEP) - execTop;
 		EditPart messageEP = createConnection(SequenceElementTypes.Sync_Message_Edge, at(LL1_BODY_X, 120),
 				at(LL2_BODY_X, 120));
 		Point midMessage = getMessageGrabPoint(messageEP);
 
 		// The receiving end snaps to the exec start and the sending end matches
-		editor.with(modifiers,
+		editor.with(modifiers.and(editor.allowSemanticReordering()),
 				() -> editor.moveSelection(midMessage, at(midMessage.x(), withinMagnet(EXEC_START))));
 		Point newMessageMidpoint = getMessageGrabPoint(messageEP);
 		assumeThat("Message not moved", newMessageMidpoint, not(isPoint(midMessage.x(), midMessage.y(), 5)));
 
-		int execTop = getTop(execEP);
+		// check exec position
+		assertThat(execEP, isBounded(left(LL2_BODY_X), execTop, EXEC_WIDTH, size));
 		assertThat(messageEP, withModifiers(runs(LL1_BODY_X, execTop, left(LL2_BODY_X), execTop, 1)));
 	}
 
@@ -205,6 +209,7 @@ public class MessageSnappingUITest extends AbstractGraphicalEditPolicyUITest {
 		Point midMessage = getMessageGrabPoint(messageEP);
 
 		// The sending end snaps to the exec start and the receiving end matches
+		// only if the semantic reordering is activated. Otherwise, it will only push down the exec spec
 		editor.with(modifiers,
 				() -> editor.moveSelection(midMessage, at(midMessage.x(), withinMagnet(EXEC_FINISH))));
 		int execBottom = getBottom(execEP);

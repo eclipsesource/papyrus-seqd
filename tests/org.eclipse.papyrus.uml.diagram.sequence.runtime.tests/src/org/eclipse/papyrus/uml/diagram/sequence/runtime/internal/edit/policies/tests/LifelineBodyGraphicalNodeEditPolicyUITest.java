@@ -24,30 +24,34 @@ import java.util.Arrays;
 import org.eclipse.gef.EditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineBodyGraphicalNodeEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.Figures;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- * Integration test cases for the {@link LifelineBodyGraphicalNodeEditPolicy}
- * class.
+ * Integration test cases for the {@link LifelineBodyGraphicalNodeEditPolicy} class.
  *
  * @author Christian W. Damus
  */
-@SuppressWarnings("restriction")
 @ModelResource("two-lifelines.di")
 @Maximized
 @RunWith(Parameterized.class)
 public class LifelineBodyGraphicalNodeEditPolicyUITest extends AbstractGraphicalEditPolicyUITest {
 
 	@ClassRule
-	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs().dontCreateExecutionsForSyncMessages();
+	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs()
+			.dontCreateExecutionsForSyncMessages();
+
+	@ClassRule
+	public static TestRule tolerance = GEFMatchers.defaultTolerance(1);
 
 	// Horizontal position of the first lifeline's body
 	private static final int LIFELINE_1_BODY_X = 121;
@@ -60,7 +64,12 @@ public class LifelineBodyGraphicalNodeEditPolicyUITest extends AbstractGraphical
 	private final int recvX;
 
 	/**
-	 * Initializes me.
+	 * Initializes me with my test parameters.
+	 * 
+	 * @param rightToLeft
+	 *            whether to draw the message from right-to-left (otherwise, left-to-right)
+	 * @param direction
+	 *            human-readable interpretation of the {@code leftToRight} parameter
 	 */
 	public LifelineBodyGraphicalNodeEditPolicyUITest(boolean rightToLeft, String direction) {
 		super();
@@ -76,21 +85,24 @@ public class LifelineBodyGraphicalNodeEditPolicyUITest extends AbstractGraphical
 
 	@Test
 	public void createAsyncMessage() {
-		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 125), at(recvX, 125));
+		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 125),
+				at(recvX, 125));
 
 		assertThat(messageEP, runs(sendX, 125, recvX, 125, 2));
 	}
 
 	@Test
 	public void createSlopedAsyncMessage() {
-		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 125), at(recvX, 140));
+		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 125),
+				at(recvX, 140));
 
 		assertThat("Message should be sloped", messageEP, runs(sendX, 125, recvX, 140, 2));
 	}
 
 	@Test
 	public void attemptBackwardSlopedAsyncMessage_allowed() {
-		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 140), at(recvX, 138));
+		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 140),
+				at(recvX, 138));
 
 		// The target to which the user draw the message should have priority over the
 		// source
@@ -106,7 +118,8 @@ public class LifelineBodyGraphicalNodeEditPolicyUITest extends AbstractGraphical
 
 	@Test
 	public void createCrossedAsyncMessages() {
-		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 150), at(recvX, 150));
+		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 150),
+				at(recvX, 150));
 
 		assumeThat(messageEP, runs(sendX, 150, recvX, 150, 2));
 
@@ -117,14 +130,17 @@ public class LifelineBodyGraphicalNodeEditPolicyUITest extends AbstractGraphical
 
 	@Test
 	public void attemptSlopedSyncMessage() {
-		EditPart messageEP = createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, 115), at(recvX, 130));
+		EditPart messageEP = createConnection(SequenceElementTypes.Sync_Message_Edge, at(sendX, 115),
+				at(recvX, 130));
 
-		assertThat("Message should be horizontal to receive location", messageEP, runs(sendX, 130, recvX, 130, 2));
+		assertThat("Message should be horizontal to receive location", messageEP,
+				runs(sendX, 130, recvX, 130, 2));
 	}
 
 	@Test
 	public void asyncMessageLessThanSlopeThreshold() {
-		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 115), at(recvX, 119));
+		EditPart messageEP = createConnection(SequenceElementTypes.Async_Message_Edge, at(sendX, 115),
+				at(recvX, 119));
 
 		assertThat("Message should be horizontal", messageEP, isHorizontal());
 	}
@@ -172,8 +188,8 @@ public class LifelineBodyGraphicalNodeEditPolicyUITest extends AbstractGraphical
 	@Parameters(name = "{1}")
 	public static Iterable<Object[]> parameters() {
 		return Arrays.asList(new Object[][] { //
-				{ false, "left-to-right" }, //
-				{ true, "right-to-left" }, //
+				{false, "left-to-right" }, //
+				{true, "right-to-left" }, //
 		});
 	}
 }

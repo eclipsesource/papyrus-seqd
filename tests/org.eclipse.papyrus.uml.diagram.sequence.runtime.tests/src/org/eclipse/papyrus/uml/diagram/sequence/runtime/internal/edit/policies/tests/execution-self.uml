@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_chcE4AUpEemuyflIUac6iQ" name="execution-self">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_clKHQAUpEemuyflIUac6iQ">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_chsjkAUpEemuyflIUac6iQ" name="Interaction1">
+    <lifeline xmi:type="uml:Lifeline" xmi:id="_dQaDsAUpEemuyflIUac6iQ" name="Lifeline1" coveredBy="_eRz2UAUpEemuyflIUac6iQ _eRz2UQUpEemuyflIUac6iQ _eR0dZQUpEemuyflIUac6iQ _eR1EcgUpEemuyflIUac6iQ _eR1EcwUpEemuyflIUac6iQ"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_eRz2UAUpEemuyflIUac6iQ" name="s-request" covered="_dQaDsAUpEemuyflIUac6iQ" message="_eRz2UgUpEemuyflIUac6iQ"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_eRz2UQUpEemuyflIUac6iQ" name="r-request" covered="_dQaDsAUpEemuyflIUac6iQ" message="_eRz2UgUpEemuyflIUac6iQ"/>
+    <fragment xmi:type="uml:ActionExecutionSpecification" xmi:id="_eR0dZQUpEemuyflIUac6iQ" name="Execution1" covered="_dQaDsAUpEemuyflIUac6iQ" finish="_eR1EcgUpEemuyflIUac6iQ" start="_eRz2UQUpEemuyflIUac6iQ"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_eR1EcgUpEemuyflIUac6iQ" name="s-reply" covered="_dQaDsAUpEemuyflIUac6iQ" message="_eR1EdAUpEemuyflIUac6iQ"/>
+    <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_eR1EcwUpEemuyflIUac6iQ" name="r-reply" covered="_dQaDsAUpEemuyflIUac6iQ" message="_eR1EdAUpEemuyflIUac6iQ"/>
+    <message xmi:type="uml:Message" xmi:id="_eRz2UgUpEemuyflIUac6iQ" name="request" receiveEvent="_eRz2UQUpEemuyflIUac6iQ" sendEvent="_eRz2UAUpEemuyflIUac6iQ"/>
+    <message xmi:type="uml:Message" xmi:id="_eR1EdAUpEemuyflIUac6iQ" name="reply" messageSort="reply" receiveEvent="_eR1EcwUpEemuyflIUac6iQ" sendEvent="_eR1EcgUpEemuyflIUac6iQ"/>
+  </packagedElement>
+</uml:Model>

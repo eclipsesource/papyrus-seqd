@@ -12,24 +12,36 @@
 
 package org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.tests;
 
+import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.isBounded;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers.EditParts.runs;
 import static org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.EditorFixture.at;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assume.assumeThat;
 
 import java.util.Arrays;
 
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
+import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.ExecutionSpecificationEditPart;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.parts.MessageEditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.util.MessageUtil;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
+import org.eclipse.uml2.uml.Message;
 import org.eclipse.uml2.uml.MessageSort;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -47,6 +59,9 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 	@ClassRule
 	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs()
 			.dontCreateExecutionsForSyncMessages();
+
+	@ClassRule
+	public static TestRule tolerance = GEFMatchers.defaultTolerance(1);
 
 	// Horizontal position of the first lifeline's body
 	private static final int LIFELINE_1_BODY_X = 121;
@@ -79,6 +94,7 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 		this.mode = mode;
 		messageX = mode == CreationMode.ON_EXECUTION ? LIFELINE_2_BODY_X : LIFELINE_1_BODY_X;
 		messageY = Y_POSITION + (mode.isTall() ? CUSTOM_SPAN : 0);
+
 	}
 
 	@Test
@@ -122,9 +138,30 @@ public class SelfMessageCreationUITest extends AbstractGraphicalEditPolicyUITest
 				}
 				break;
 			default:
+				if (messageEP == null) {
+					assumeThat("Should fail to get a message edit-part only for create message", messageSort,
+							equalTo(MessageSort.CREATE_MESSAGE_LITERAL));
+					return; // Unreachable
+				}
+
 				if (mode != CreationMode.WITH_EXECUTION) {
 					assertThat(messageEP, runs(x(), top(), x(), bottom(), 2));
-				} // TODO: Assert the self-message shape with execution when we draw it properly
+				} else {
+					// messageEP is the sync message.
+					assertThat(messageEP, runs(x(), top(), x() + 5, bottom()));
+
+					// then find the execution linked to this message
+					assertThat(messageEP, instanceOf(MessageEditPart.class));
+					EditPart executionEP = ((MessageEditPart)messageEP).getTarget();
+					assertThat(executionEP, instanceOf(ExecutionSpecificationEditPart.class));
+					assertThat(executionEP, isBounded(x() - 5, bottom(), 10, 40)); // default sizes
+					ConnectionEditPart replyEP = (ConnectionEditPart)((ExecutionSpecificationEditPart)executionEP)
+							.getSourceConnections().get(0);
+					EObject reply = ((View)replyEP.getModel()).getElement();
+					assertThat(reply, instanceOf(Message.class));
+					assertThat(((Message)reply).getMessageSort(), equalTo(MessageSort.REPLY_LITERAL));
+					assertThat(replyEP, runs(x() + 5, bottom() + 40, x(), bottom() + 40 + MINIMUM_SPAN));
+				}
 
 				break;
 		}

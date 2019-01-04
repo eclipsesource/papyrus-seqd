@@ -22,30 +22,35 @@ import java.util.Arrays;
 import org.eclipse.gef.EditPart;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.edit.policies.LifelineBodyGraphicalNodeEditPolicy;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.internal.providers.SequenceElementTypes;
+import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.matchers.GEFMatchers;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.LightweightSeqDPrefs;
 import org.eclipse.papyrus.uml.diagram.sequence.runtime.tests.rules.Maximized;
 import org.eclipse.papyrus.uml.interaction.tests.rules.ModelResource;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- * Integration test cases for the {@link LifelineBodyGraphicalNodeEditPolicy}
- * class's message re-connection behaviour.
+ * Integration test cases for the {@link LifelineBodyGraphicalNodeEditPolicy} class's message re-connection
+ * behaviour.
  *
  * @author Christian W. Damus
  */
-@SuppressWarnings("restriction")
 @ModelResource("two-lifelines.di")
 @Maximized
 @RunWith(Parameterized.class)
 public class MessageReconnectionUITest extends AbstractGraphicalEditPolicyUITest {
-	
+
 	@ClassRule
-	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs().dontCreateExecutionsForSyncMessages();
-	
+	public static LightweightSeqDPrefs prefs = new LightweightSeqDPrefs()
+			.dontCreateExecutionsForSyncMessages();
+
+	@ClassRule
+	public static TestRule tolerance = GEFMatchers.defaultTolerance(1);
+
 	// Horizontal position of the first lifeline's body
 	private static final int LIFELINE_1_BODY_X = 121;
 
@@ -64,6 +69,19 @@ public class MessageReconnectionUITest extends AbstractGraphicalEditPolicyUITest
 
 	/**
 	 * Initializes me.
+	 * 
+	 * @param rightToLeft
+	 *            whether to draw the message from right to left (otherwise, left to right)
+	 * @param direction
+	 *            human-presentable representation of the {@code rightToLeft} parameter
+	 * @param moveSource
+	 *            whether the move the source end of the message (otherwise, the target)
+	 * @param whichEnd
+	 *            human-presentable representation of the {@code moveSource} parameter
+	 * @param rightToLeft
+	 *            whether to move the message end down in the diagram (otherwise, up)
+	 * @param whichWay
+	 *            human-presentable representation of the {@code moveDown} parameter
 	 */
 	public MessageReconnectionUITest(boolean rightToLeft, String direction, boolean moveSource,
 			String whichEnd, boolean moveDown, String whichWay) {
@@ -134,8 +152,7 @@ public class MessageReconnectionUITest extends AbstractGraphicalEditPolicyUITest
 
 		editor.moveSelection(at(x, INITIAL_Y), at(x, y));
 
-		assertThat("Was able to move sync message end", messageEP,
-				runs(sendX, INITIAL_Y, recvX, INITIAL_Y));
+		assertThat("Was able to move sync message end", messageEP, runs(sendX, INITIAL_Y, recvX, INITIAL_Y));
 	}
 
 	//
@@ -145,14 +162,14 @@ public class MessageReconnectionUITest extends AbstractGraphicalEditPolicyUITest
 	@Parameters(name = "{1}, {3}, {5}")
 	public static Iterable<Object[]> parameters() {
 		return Arrays.asList(new Object[][] { //
-				{ false, "left-to-right", false, "target", false, "up" }, //
-				{ false, "left-to-right", false, "target", true, "down" }, //
-				{ false, "left-to-right", true, "source", false, "up" }, //
-				{ false, "left-to-right", true, "source", true, "down" }, //
-				{ true, "right-to-left", false, "target", false, "up" }, //
-				{ true, "right-to-left", false, "target", true, "down" }, //
-				{ true, "right-to-left", true, "source", false, "up" }, //
-				{ true, "right-to-left", true, "source", true, "down" }, //
+				{false, "left-to-right", false, "target", false, "up" }, //
+				{false, "left-to-right", false, "target", true, "down" }, //
+				{false, "left-to-right", true, "source", false, "up" }, //
+				{false, "left-to-right", true, "source", true, "down" }, //
+				{true, "right-to-left", false, "target", false, "up" }, //
+				{true, "right-to-left", false, "target", true, "down" }, //
+				{true, "right-to-left", true, "source", false, "up" }, //
+				{true, "right-to-left", true, "source", true, "down" }, //
 		});
 	}
 

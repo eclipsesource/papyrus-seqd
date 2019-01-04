@@ -64,6 +64,9 @@ public abstract class AbstractGraphicalEditPolicyUITest {
 	/** The width of an execution specification. */
 	protected static final int EXEC_WIDTH = 10;
 
+	/** The default height of an execution specification. */
+	protected static final int EXEC_HEIGHT = 40;
+
 	/** Constant for the source end of a connection edit-part. */
 	protected static final int SOURCE_END = 0;
 
