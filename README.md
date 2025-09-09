@@ -1,4 +1,6 @@
-# Papyrus Sequence Diagrams [![Build Status](https://travis-ci.org/eclipsesource/papyrus-seqd.svg?branch=master)](https://travis-ci.org/eclipsesource/papyrus-seqd)
+# Papyrus Sequence Diagrams [![Project - Deprecated](https://img.shields.io/badge/Project-Deprecated-a42e51)](https://github.com/eclipsesource/.github/blob/main/repository-classification.md) [![Aim - Product](https://img.shields.io/badge/Aim-Product-brightgreen)](https://github.com/eclipsesource/.github/blob/main/repository-classification.md)
+
+> This project has been deprecated and is not further maintained.
 
 ## Installation
 
